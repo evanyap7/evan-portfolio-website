@@ -349,6 +349,31 @@
   letter-spacing: -0.01em;
 }
 
+.about__lead {
+  display: grid;
+  align-content: start;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+/* Framed like the project previews: hard outline and key-style shadow. */
+.about__photo {
+  width: 100%;
+  max-width: 24rem;
+  overflow: hidden;
+  border: 2px solid var(--ink-key);
+  border-radius: 1.5rem;
+  background: var(--tint-lilac);
+  box-shadow: 0 5px 0 var(--ink-key);
+}
+
+.about__photo img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: 50% 22%;
+}
+
 .about__body {
   display: grid;
   gap: 1.1rem;
