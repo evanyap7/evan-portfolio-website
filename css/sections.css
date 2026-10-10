@@ -98,9 +98,71 @@
   font-weight: 600;
 }
 
+/* Browser-frame preview of a live site. The hard shadow matches the keys. */
+.preview {
+  display: block;
+  align-self: start;
+  overflow: hidden;
+  border: 2px solid var(--ink-key);
+  border-radius: 0.875rem;
+  background: var(--paper);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 5px 0 var(--ink-key);
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+.preview:hover {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--ink-key);
+}
+
+.preview__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid var(--ink-key);
+  background: var(--tint-lilac);
+}
+
+.preview__dots {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.preview__dots i {
+  width: 0.6rem;
+  height: 0.6rem;
+  border: 1.5px solid var(--ink-key);
+  border-radius: 50%;
+  background: #ffb7d5;
+}
+
+.preview__dots i:nth-child(2) { background: #ffd98e; }
+.preview__dots i:nth-child(3) { background: #b9f2df; }
+
+.preview__url {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0.15rem 0.75rem;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview__shot {
+  width: 100%;
+  height: auto;
+}
+
 .project__body {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  align-content: start;
   gap: 1.5rem;
 }
 
@@ -160,8 +222,12 @@
 @media (min-width: 900px) {
   .project {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 3rem;
+    gap: 1.5rem 3rem;
   }
+
+  .project__head { grid-column: 1; grid-row: 1; }
+  .preview { grid-column: 1; grid-row: 2; }
+  .project__body { grid-column: 2; grid-row: 1 / span 2; }
 }
 
 /* Also built -------------------------------------------------------- */
