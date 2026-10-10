@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="css/keyboard.css">
   <link rel="stylesheet" href="css/marquee.css">
   <link rel="stylesheet" href="css/sections.css">
+  <link rel="stylesheet" href="css/contact.css">
 
   <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -314,6 +315,29 @@
       </dl>
     </section>
   </main>
+
+  <footer class="contact" id="contact" aria-labelledby="contact-title">
+    <canvas class="contact__canvas" data-shader aria-hidden="true"></canvas>
+
+    <div class="contact__inner">
+      <h2 class="contact__title" id="contact-title">
+        <span>Good work</span>
+        <span>starts with <em>hello.</em></span>
+      </h2>
+      <div>
+        <p class="contact__invite">Have a project in mind, a half-formed idea, or just want to say hi?</p>
+        <a class="contact__email" href="#contact" data-contact-link><span data-contact-text>Email me</span></a>
+      </div>
+    </div>
+
+    <div class="site-footer">
+      <p>© 2026 Evan Yap</p>
+      <p class="site-footer__links">
+        <a href="https://github.com/evanyap7" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/evanyapzhikai/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </div>
+  </footer>
 
   <script type="module" src="js/main.js"></script>
 </body>
