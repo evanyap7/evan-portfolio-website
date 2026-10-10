@@ -49,6 +49,7 @@
 }
 
 .site-nav .site-nav__cta {
+  gap: 0.35em;
   min-height: 2.5rem;
   margin-left: 0.25rem;
   padding-inline: 1rem;
@@ -91,7 +92,20 @@
 
 .hero__intro {
   position: relative;
+  display: grid;
+  gap: clamp(1rem, 1.8vw, 1.5rem) 2rem;
   padding: clamp(2rem, 4.2vw, 3.5rem) var(--gutter) clamp(1.75rem, 3vw, 2.5rem);
+}
+
+@media (min-width: 1100px) {
+  .hero__intro {
+    grid-template-columns: 1fr minmax(16rem, 21rem);
+    align-items: end;
+  }
+
+  .hero__lede {
+    padding-bottom: 0.9rem;
+  }
 }
 
 .hero__title {
@@ -117,7 +131,6 @@
 
 .hero__lede {
   max-width: 34rem;
-  margin-top: clamp(1rem, 1.8vw, 1.5rem);
   color: var(--muted);
   font-size: clamp(1rem, 1.3vw, 1.1875rem);
 }

@@ -146,6 +146,7 @@
   letter-spacing: 0.16em;
   text-align: center;
   writing-mode: vertical-rl;
+  text-orientation: sideways;
 }
 
 /* Press states ------------------------------------------------------ */
