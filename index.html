@@ -300,152 +300,154 @@
         <p class="section__note">Singapore</p>
       </header>
 
-      <div class="about">
-        <p class="about__statement" data-reveal>I build AI tools that take hours out of real work, then <em>measure whether they did.</em></p>
+      <div class="tabs" data-tabs>
+        <div class="tabs__list" role="tablist" aria-label="About me" hidden>
+          <button class="tab" role="tab" type="button" id="tab-story" aria-controls="story" aria-selected="true">Story</button>
+          <button class="tab" role="tab" type="button" id="tab-experience" aria-controls="experience" aria-selected="false" tabindex="-1">Experience</button>
+          <button class="tab" role="tab" type="button" id="tab-toolkit" aria-controls="toolkit" aria-selected="false" tabindex="-1">Toolkit</button>
+        </div>
 
-        <div class="about__body" data-reveal>
-          <p>I’m Evan Yap, an Engineering Systems and Design student at the Singapore University of Technology and Design, studying for a dual degree with a Master’s in Technology Entrepreneurship as one of six recipients of its Technology Entrepreneurship Programme Scholarship. I work where data, automation and AI meet: agents that do the research, models that test the assumptions, and interfaces that make the answer easy to act on.</p>
-          <p>At Univers I’m an AI Business Consultant for aviation, transportation and logistics clients. I built an AI decarbonisation and audit agent that cuts about three hours of manual research from each facility audit, and calibrated an HVAC energy model that lands within 2–3 percentage points of observed consumption. I then turn that analysis into decision-ready business cases for the Senior Director, the Global Lead and senior client stakeholders.</p>
-          <p>Away from the keyboard I captain SUTD’s men’s floorball team, serve on my house executive committee, train as a HYROX athlete, volunteer in my church’s worship ministry and run on a lot of coffee.</p>
+        <div class="tabs__panel" role="tabpanel" id="story" aria-labelledby="tab-story" tabindex="0">
+          <div class="about">
+            <p class="about__statement" data-reveal>I build AI tools that take hours out of real work, then <em>measure whether they did.</em></p>
 
-          <div class="recognition">
-            <h3 class="eyebrow">Recognition</h3>
-            <dl class="recognition__list">
-              <div class="recognition__row">
-                <dt>Top 5</dt>
-                <dd>Univers Website Revamp Challenge, 2026. Finalist against senior solution architects worldwide, pitched live to the CEO.</dd>
+            <div class="about__body" data-reveal>
+              <p>I’m Evan Yap, an Engineering Systems and Design student at the Singapore University of Technology and Design, studying for a dual degree with a Master’s in Technology Entrepreneurship as one of six recipients of its Technology Entrepreneurship Programme Scholarship. I work where data, automation and AI meet: agents that do the research, models that test the assumptions, and interfaces that make the answer easy to act on.</p>
+              <p>At Univers I’m an AI Business Consultant for aviation, transportation and logistics clients. I built an AI decarbonisation and audit agent that cuts about three hours of manual research from each facility audit, and calibrated an HVAC energy model that lands within 2–3 percentage points of observed consumption. I then turn that analysis into decision-ready business cases for the Senior Director, the Global Lead and senior client stakeholders.</p>
+              <p>Away from the keyboard I captain SUTD’s men’s floorball team, serve on my house executive committee, train as a HYROX athlete, volunteer in my church’s worship ministry and run on a lot of coffee.</p>
+
+              <div class="recognition">
+                <h3 class="eyebrow">Recognition</h3>
+                <dl class="recognition__list">
+                  <div class="recognition__row">
+                    <dt>Top 5</dt>
+                    <dd>Univers Website Revamp Challenge, 2026. Finalist against senior solution architects worldwide, pitched live to the CEO.</dd>
+                  </div>
+                  <div class="recognition__row">
+                    <dt>2nd place</dt>
+                    <dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge Hackathon, 2026, with Project V-Bây.</dd>
+                  </div>
+                  <div class="recognition__row">
+                    <dt>1 of 6</dt>
+                    <dd>Recipients of the SUTD Technology Entrepreneurship Programme Scholarship.</dd>
+                  </div>
+                  <div class="recognition__row">
+                    <dt>Nominated</dt>
+                    <dd>Best Storytelling and Execution, 03.007 Innovating with Design and AI, for Dragon Tiles.</dd>
+                  </div>
+                  <div class="recognition__row">
+                    <dt>Invited</dt>
+                    <dd>Discover Citadel, Barclays Discovery and the Goldman Sachs Operations Academy, all 2026.</dd>
+                  </div>
+                </dl>
               </div>
-              <div class="recognition__row">
-                <dt>2nd place</dt>
-                <dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge Hackathon, 2026, with Project V-Bây.</dd>
+
+              <div class="education" id="education">
+                <h3 class="eyebrow">Education</h3>
+                <img class="education__logo" src="img/logos/sutd.svg" alt="" width="103" height="40">
+                <p class="education__school">Singapore University of Technology and Design</p>
+                <p>Bachelor of Engineering (Engineering Systems and Design) and Master of Science in Technology Entrepreneurship, expected May 2030.</p>
+                <p class="education__detail">One of six recipients of the SUTD Technology Entrepreneurship Programme Scholarship. Coursework in algorithms and object-oriented programming, machine learning, and data modelling and visualisation.</p>
               </div>
-              <div class="recognition__row">
-                <dt>1 of 6</dt>
-                <dd>Recipients of the SUTD Technology Entrepreneurship Programme Scholarship.</dd>
-              </div>
-              <div class="recognition__row">
-                <dt>Nominated</dt>
-                <dd>Best Storytelling and Execution, 03.007 Innovating with Design and AI, for Dragon Tiles.</dd>
-              </div>
-              <div class="recognition__row">
-                <dt>Invited</dt>
-                <dd>Discover Citadel, Barclays Discovery and the Goldman Sachs Operations Academy, all 2026.</dd>
-              </div>
-            </dl>
+            </div>
           </div>
+        </div>
 
-          <div class="education" id="education">
-            <h3 class="eyebrow">Education</h3>
-            <img class="education__logo" src="img/logos/sutd.svg" alt="" width="103" height="40">
-            <p class="education__school">Singapore University of Technology and Design</p>
-            <p>Bachelor of Engineering (Engineering Systems and Design) and Master of Science in Technology Entrepreneurship, expected May 2030.</p>
-            <p class="education__detail">One of six recipients of the SUTD Technology Entrepreneurship Programme Scholarship. Coursework in algorithms and object-oriented programming, machine learning, and data modelling and visualisation.</p>
-          </div>
+        <div class="tabs__panel" role="tabpanel" id="experience" aria-labelledby="tab-experience" tabindex="0">
+          <h3 class="visually-hidden">Experience</h3>
+          <ol class="roles">
+            <li class="role" data-reveal>
+              <div>
+                <h3 class="role__title"><img class="role__logo" src="img/logos/univers.svg" alt="Univers" width="142" height="30"></h3>
+                <p class="role__meta">Intern, AI Business Consultant (Aviation, Transportation, Logistics) · Aug 2026 – present</p>
+              </div>
+              <ul class="role__points">
+                <li>Built and deployed an AI decarbonisation and audit agent with Next.js, the Vercel AI SDK and Groq inference. It automates ESG disclosure ingestion and client claim verification, cutting manual research by about three hours per facility audit.</li>
+                <li>Developed and calibrated an HVAC energy-consumption regression model that lands within 2–3 percentage points of observed consumption, used to validate client energy assumptions and find efficiency opportunities.</li>
+                <li>Prioritised AI and energy-management use cases by expected impact, telemetry availability, feasibility and effort, and turned the analysis into business cases and roadmaps for the Senior Director, Global Lead and senior client stakeholders.</li>
+              </ul>
+            </li>
+
+            <li class="role" data-reveal>
+              <div>
+                <h3 class="role__title">EvanYapFitness</h3>
+                <p class="role__meta">Founder · Sept 2024 – Jan 2026</p>
+              </div>
+              <ul class="role__points">
+                <li>Founded and grew an online coaching brand to 2.2k followers and 10k average views per post by iterating on content analytics and A/B-tested messaging.</li>
+                <li>Designed a structured intake pipeline in Google Forms and Excel covering training history, lifestyle constraints and nutrition habits for more than 20 clients.</li>
+                <li>Set up an AI-assisted workflow with Perplexity to draft training and meal templates from client profiles, which I then refined by hand. It halved the average programming time per client.</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+
+        <div class="tabs__panel" role="tabpanel" id="toolkit" aria-labelledby="tab-toolkit" tabindex="0">
+          <h3 class="visually-hidden">Toolkit</h3>
+          <dl class="toolkit">
+            <div class="toolkit__group" data-reveal>
+              <dt class="eyebrow">Languages</dt>
+              <dd>
+                <ul class="chips">
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#python"/></svg>Python</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#typescript"/></svg>TypeScript</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#javascript"/></svg>JavaScript</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#cplusplus"/></svg>C++</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#c"/></svg>C</li>
+                <li class="chip">SQL</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#html5"/></svg>HTML</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#css3"/></svg>CSS</li>
+                </ul>
+              </dd>
+            </div>
+            <div class="toolkit__group" data-reveal>
+              <dt class="eyebrow">Frameworks</dt>
+              <dd>
+                <ul class="chips">
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#nextdotjs"/></svg>Next.js</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#react"/></svg>React</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#nodedotjs"/></svg>Node.js</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#tailwindcss"/></svg>Tailwind CSS</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#threedotjs"/></svg>Three.js</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#vercel"/></svg>Vercel AI SDK</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#zod"/></svg>Zod</li>
+                <li class="chip">REST APIs</li>
+                <li class="chip">OAuth 2.0</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#telegram"/></svg>Telegram Bot API</li>
+                </ul>
+              </dd>
+            </div>
+            <div class="toolkit__group" data-reveal>
+              <dt class="eyebrow">AI and data</dt>
+              <dd>
+                <ul class="chips">
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#anthropic"/></svg>Claude API</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlegemini"/></svg>Google Gemini</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#perplexity"/></svg>Perplexity Sonar</li>
+                <li class="chip">LLM agents</li>
+                <li class="chip">Prompt engineering</li>
+                <li class="chip">Data analysis</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlesheets"/></svg>Excel and Sheets</li>
+                </ul>
+              </dd>
+            </div>
+            <div class="toolkit__group" data-reveal>
+              <dt class="eyebrow">Cloud and tools</dt>
+              <dd>
+                <ul class="chips">
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#vercel"/></svg>Vercel</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#git"/></svg>Git</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#github"/></svg>GitHub</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlecloud"/></svg>Google Cloud</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#gmail"/></svg>Gmail API</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlecalendar"/></svg>Calendar API</li>
+                <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlesheets"/></svg>Sheets API</li>
+                </ul>
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
-    </section>
-
-    <section class="section" id="experience" aria-labelledby="experience-title">
-      <header class="section__head">
-        <h2 class="section__title" id="experience-title">Experience</h2>
-        <p class="section__note">2024 – present</p>
-      </header>
-
-      <ol>
-        <li class="role" data-reveal>
-          <div>
-            <h3 class="role__title"><img class="role__logo" src="img/logos/univers.svg" alt="Univers" width="142" height="30"></h3>
-            <p class="role__meta">Intern, AI Business Consultant (Aviation, Transportation, Logistics) · Aug 2026 – present</p>
-          </div>
-          <ul class="role__points">
-            <li>Built and deployed an AI decarbonisation and audit agent with Next.js, the Vercel AI SDK and Groq inference. It automates ESG disclosure ingestion and client claim verification, cutting manual research by about three hours per facility audit.</li>
-            <li>Developed and calibrated an HVAC energy-consumption regression model that lands within 2–3 percentage points of observed consumption, used to validate client energy assumptions and find efficiency opportunities.</li>
-            <li>Prioritised AI and energy-management use cases by expected impact, telemetry availability, feasibility and effort, and turned the analysis into business cases and roadmaps for the Senior Director, Global Lead and senior client stakeholders.</li>
-          </ul>
-        </li>
-
-        <li class="role" data-reveal>
-          <div>
-            <h3 class="role__title">EvanYapFitness</h3>
-            <p class="role__meta">Founder · Sept 2024 – Jan 2026</p>
-          </div>
-          <ul class="role__points">
-            <li>Founded and grew an online coaching brand to 2.2k followers and 10k average views per post by iterating on content analytics and A/B-tested messaging.</li>
-            <li>Designed a structured intake pipeline in Google Forms and Excel covering training history, lifestyle constraints and nutrition habits for more than 20 clients.</li>
-            <li>Set up an AI-assisted workflow with Perplexity to draft training and meal templates from client profiles, which I then refined by hand. It halved the average programming time per client.</li>
-          </ul>
-        </li>
-      </ol>
-    </section>
-
-    <section class="section" id="toolkit" aria-labelledby="toolkit-title">
-      <header class="section__head">
-        <h2 class="section__title" id="toolkit-title">Toolkit</h2>
-        <p class="section__note">What I reach for</p>
-      </header>
-
-      <dl class="toolkit">
-        <div class="toolkit__group" data-reveal>
-          <dt class="eyebrow">Languages</dt>
-          <dd>
-            <ul class="chips">
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#python"/></svg>Python</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#typescript"/></svg>TypeScript</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#javascript"/></svg>JavaScript</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#cplusplus"/></svg>C++</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#c"/></svg>C</li>
-            <li class="chip">SQL</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#html5"/></svg>HTML</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#css3"/></svg>CSS</li>
-            </ul>
-          </dd>
-        </div>
-        <div class="toolkit__group" data-reveal>
-          <dt class="eyebrow">Frameworks</dt>
-          <dd>
-            <ul class="chips">
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#nextdotjs"/></svg>Next.js</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#react"/></svg>React</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#nodedotjs"/></svg>Node.js</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#tailwindcss"/></svg>Tailwind CSS</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#threedotjs"/></svg>Three.js</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#vercel"/></svg>Vercel AI SDK</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#zod"/></svg>Zod</li>
-            <li class="chip">REST APIs</li>
-            <li class="chip">OAuth 2.0</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#telegram"/></svg>Telegram Bot API</li>
-            </ul>
-          </dd>
-        </div>
-        <div class="toolkit__group" data-reveal>
-          <dt class="eyebrow">AI and data</dt>
-          <dd>
-            <ul class="chips">
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#anthropic"/></svg>Claude API</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlegemini"/></svg>Google Gemini</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#perplexity"/></svg>Perplexity Sonar</li>
-            <li class="chip">LLM agents</li>
-            <li class="chip">Prompt engineering</li>
-            <li class="chip">Data analysis</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlesheets"/></svg>Excel and Sheets</li>
-            </ul>
-          </dd>
-        </div>
-        <div class="toolkit__group" data-reveal>
-          <dt class="eyebrow">Cloud and tools</dt>
-          <dd>
-            <ul class="chips">
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#vercel"/></svg>Vercel</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#git"/></svg>Git</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#github"/></svg>GitHub</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlecloud"/></svg>Google Cloud</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#gmail"/></svg>Gmail API</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlecalendar"/></svg>Calendar API</li>
-            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlesheets"/></svg>Sheets API</li>
-            </ul>
-          </dd>
-        </div>
-      </dl>
     </section>
   </main>
 
