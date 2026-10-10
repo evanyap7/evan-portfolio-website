@@ -291,6 +291,41 @@
   font-size: clamp(1rem, 1.25vw, 1.125rem);
 }
 
+/* Recognition ------------------------------------------------------- */
+.recognition {
+  margin-top: 1.25rem;
+}
+
+.recognition__list {
+  margin-top: 0.75rem;
+}
+
+.recognition__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.15rem 1.5rem;
+  padding-block: 0.9rem;
+  border-top: 1px solid var(--rule);
+}
+
+.recognition__row dt {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.recognition__row dd {
+  font-size: 1rem;
+}
+
+@media (min-width: 600px) {
+  .recognition__row {
+    grid-template-columns: 8rem minmax(0, 1fr);
+  }
+}
+
 .education {
   margin-top: 1.25rem;
   padding-top: 1.25rem;
