@@ -150,7 +150,7 @@
   font-weight: 600;
 }
 
-/* Browser-frame preview of a live site. The hard shadow matches the keys. */
+/* Browser-frame screenshot of a project. The hard shadow matches the keys. */
 .preview {
   display: block;
   align-self: start;
@@ -164,7 +164,7 @@
   transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
 }
 
-.preview:hover {
+a.preview:hover {
   transform: translateY(3px);
   box-shadow: 0 2px 0 var(--ink-key);
 }
