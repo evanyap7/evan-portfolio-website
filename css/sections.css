@@ -1,0 +1,192 @@
+/* Shared section layout --------------------------------------------- */
+.section {
+  padding: var(--section-space) var(--gutter);
+}
+
+.section + .section {
+  padding-top: 0;
+}
+
+.section__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  padding-bottom: clamp(1.25rem, 2.4vw, 2rem);
+  border-bottom: 2px solid var(--ink-key);
+}
+
+.section__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.6vw, 4rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.section__note {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Work -------------------------------------------------------------- */
+.project {
+  display: grid;
+  gap: 1.25rem;
+  padding-block: clamp(2rem, 4vw, 3.25rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.project__head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+  align-items: start;
+}
+
+/* A small keycap carrying the project number, in a key colour. */
+.project__cap {
+  display: grid;
+  place-items: center;
+  grid-row: span 2;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-top: 0.15rem;
+  border: 2px solid var(--ink-key);
+  border-radius: 0.8rem;
+  background: var(--cap);
+  color: var(--ink-key);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 900;
+  box-shadow: 0 3px 0 var(--ink-key);
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+.project:hover .project__cap {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink-key);
+}
+
+.project__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.6vw, 2.125rem);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.project__meta {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.project__award {
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+
+.project__body {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.project__summary {
+  max-width: 40rem;
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 1.25rem 1.5rem;
+  max-width: 44rem;
+}
+
+.figure {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.figure dt {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.figure dd {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.project__stack {
+  max-width: 44rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.project__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+.project__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+@media (min-width: 900px) {
+  .project {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 3rem;
+  }
+}
+
+/* Also built -------------------------------------------------------- */
+.also {
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.also__list {
+  display: grid;
+  gap: 1.5rem 3rem;
+  margin-top: 1.25rem;
+}
+
+.also__title {
+  font-family: var(--font-display);
+  font-size: 1.3125rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.also__meta {
+  margin-bottom: 0.5rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+@media (min-width: 760px) {
+  .also__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

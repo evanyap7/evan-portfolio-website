@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="css/hero.css">
   <link rel="stylesheet" href="css/keyboard.css">
   <link rel="stylesheet" href="css/marquee.css">
+  <link rel="stylesheet" href="css/sections.css">
 
   <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -108,6 +109,125 @@
             <span class="marquee__item">Data, automation, AI. · I build agents and tools that take hours out of real work. · Pick a key.</span>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="section" id="work" aria-labelledby="work-title">
+      <header class="section__head">
+        <h2 class="section__title" id="work-title">Selected work</h2>
+        <p class="section__note">Five projects, 2026</p>
+      </header>
+
+      <ol class="projects">
+        <li class="project" data-reveal>
+          <div class="project__head">
+            <span class="project__cap" style="--cap:#ffb7d5" aria-hidden="true">1</span>
+            <h3 class="project__title">Univers Website Revamp Challenge</h3>
+            <p class="project__meta"><span class="project__award">Top 5</span> · Frontend developer · Sept 2026</p>
+          </div>
+          <div class="project__body">
+            <p class="project__summary">A nine-page interactive redesign of the website for Univers’ EnOS™ Physical AI platform, built with no framework and no build step. It reached the Top 5 against senior solution architects from around the world, and I pitched it live to Univers’ CEO and senior executives.</p>
+            <dl class="figures">
+              <div class="figure"><dt>Interactive pages</dt><dd>9</dd></div>
+              <div class="figure"><dt>Languages, via a custom i18n engine</dt><dd>7</dd></div>
+              <div class="figure"><dt>Frameworks or build steps</dt><dd>0</dd></div>
+            </dl>
+            <p class="project__stack">Vanilla JavaScript, Three.js (WebGL), CSS, Web Audio API, Vercel serverless functions</p>
+            <p class="project__links">
+              <a class="text-link" href="https://univers-homepage-revamp.vercel.app/" target="_blank" rel="noopener">Live site <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://github.com/evanyap7/univers-homepage-revamp" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>
+            </p>
+          </div>
+        </li>
+
+        <li class="project" data-reveal>
+          <div class="project__head">
+            <span class="project__cap" style="--cap:#c8b6ff" aria-hidden="true">2</span>
+            <h3 class="project__title">Personal Assistant Bot</h3>
+            <p class="project__meta">Full-stack developer · Aug – Sept 2026</p>
+          </div>
+          <div class="project__body">
+            <p class="project__summary">A serverless Telegram assistant that takes text, voice notes or photos and handles calendars, expense tracking, bill splitting and email. A three-tier model router sends each request to the cheapest model that can answer it.</p>
+            <dl class="figures">
+              <div class="figure"><dt>Natural-language commands, at 100% eval accuracy</dt><dd>24</dd></div>
+              <div class="figure"><dt>Lower cost per call</dt><dd>~65%</dd></div>
+              <div class="figure"><dt>Faster payment sync</dt><dd>~77%</dd></div>
+            </dl>
+            <p class="project__stack">Next.js, TypeScript, Vercel AI SDK, Gemini, Perplexity Sonar, Google Cloud Pub/Sub, Gmail, Sheets and Calendar APIs, Zod</p>
+            <p class="project__links">
+              <a class="text-link" href="https://github.com/evanyap7/telegram-personal-assistant" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>
+            </p>
+          </div>
+        </li>
+
+        <li class="project" data-reveal>
+          <div class="project__head">
+            <span class="project__cap" style="--cap:#b9f2df" aria-hidden="true">3</span>
+            <h3 class="project__title">Autonomous Trading Agent</h3>
+            <p class="project__meta">Developer · Sept 2026</p>
+          </div>
+          <div class="project__body">
+            <p class="project__summary">A swing-trading agent for Webull Singapore cash accounts. A fast model screens the market, a stronger one writes the trade thesis, and a deterministic risk engine has the final say before any order is placed.</p>
+            <dl class="figures">
+              <div class="figure"><dt>Minimum reward-to-risk per trade</dt><dd>2:1</dd></div>
+              <div class="figure"><dt>Daily loss circuit breaker</dt><dd>1%</dd></div>
+              <div class="figure"><dt>Integration tests, all passing</dt><dd>60</dd></div>
+            </dl>
+            <p class="project__stack">Python 3.12, Claude API, Webull OpenAPI SDK, Telegram Bot API, SQLite, Pydantic, pytest</p>
+            <p class="project__links">
+              <a class="text-link" href="https://github.com/evanyap7/evans-trading-agent" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>
+            </p>
+          </div>
+        </li>
+
+        <li class="project" data-reveal>
+          <div class="project__head">
+            <span class="project__cap" style="--cap:#ffd98e" aria-hidden="true">4</span>
+            <h3 class="project__title">AI Research Agent</h3>
+            <p class="project__meta">Full-stack developer · Aug 2026</p>
+          </div>
+          <div class="project__body">
+            <p class="project__summary">A research agent that answers only from an approved set of webpages. Every answer comes back as structured notes with source-level citations, confidence-tagged findings and a plain statement of what the evidence does not cover.</p>
+            <p class="project__stack">Next.js, React, TypeScript, Tailwind CSS, Vercel AI SDK, Google Gemini API, Zod, Cheerio</p>
+            <p class="project__links">
+              <a class="text-link" href="https://approved-research-agent.vercel.app" target="_blank" rel="noopener">Live site <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="https://github.com/evanyap7/approved-research-agent" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>
+            </p>
+          </div>
+        </li>
+
+        <li class="project" data-reveal>
+          <div class="project__head">
+            <span class="project__cap" style="--cap:#a9ddff" aria-hidden="true">5</span>
+            <h3 class="project__title">Project V-Bây</h3>
+            <p class="project__meta"><span class="project__award">2nd place</span> · Strategy and market research lead · May 2026</p>
+          </div>
+          <div class="project__body">
+            <p class="project__summary">An AI-driven telecommunications honeypot and DaaS platform designed to intercept and expose voice-phishing networks, built for the Entrepreneurial Solutions to Vietnam’s Grand Challenge Hackathon. I sized the market, built the three-year financial model and pitched it to a panel of four investors.</p>
+            <dl class="figures">
+              <div class="figure"><dt>Total addressable market by 2027</dt><dd>$350M</dd></div>
+              <div class="figure"><dt>Serviceable obtainable market</dt><dd>$7.5M</dd></div>
+              <div class="figure"><dt>Months to projected break-even</dt><dd>24–36</dd></div>
+            </dl>
+            <p class="project__stack">Market sizing, stakeholder interviews, financial modelling in Excel, B2G and B2B go-to-market</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="also" id="also-built">
+        <h3 class="eyebrow">Also built</h3>
+        <ul class="also__list">
+          <li data-reveal>
+            <h4 class="also__title">Dragon Tiles</h4>
+            <p class="also__meta">Lead design engineer · Dec 2025 – Mar 2026 · Nominated for Best Storytelling and Execution</p>
+            <p>An oversized interactive outdoor piano sculpture installed at Sports@Buona Vista, taken from CAD model to physical prototype with Grasshopper, Python and Blender.</p>
+          </li>
+          <li data-reveal>
+            <h4 class="also__title">SleepWise</h4>
+            <p class="also__meta">Software engineer · SUTD What the Hack 2025</p>
+            <p>A React Native app that reads your Google Calendar, works out when you need to wind down, and nudges you to bed on time. Backend in Node.js, Express and TypeScript.</p>
+          </li>
+        </ul>
       </div>
     </section>
   </main>
