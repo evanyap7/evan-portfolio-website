@@ -11,6 +11,22 @@ function applyContactEmail() {
   });
 }
 
+// The backdrop is decorative, so it only loads when the contact section is
+// close and the visitor has not asked for reduced motion.
+function initShader() {
+  const canvas = document.querySelector('[data-shader]');
+  if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const observer = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) return;
+    observer.disconnect();
+    import('./shader.js').then(({ startShader }) => startShader(canvas));
+  }, { rootMargin: '400px' });
+
+  observer.observe(canvas);
+}
+
 applyContactEmail();
 initKeyboard();
 initMarquee();
+initShader();
