@@ -1,6 +1,7 @@
 import { CONTACT_EMAIL } from './config.js';
 import { initKeyboard } from './keyboard.js';
 import { initMarquee } from './marquee.js';
+import { initReveal } from './reveal.js';
 
 function applyContactEmail() {
   document.querySelectorAll('[data-contact-link]').forEach((link) => {
@@ -29,4 +30,5 @@ function initShader() {
 applyContactEmail();
 initKeyboard();
 initMarquee();
+initReveal();
 initShader();

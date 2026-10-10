@@ -3,7 +3,7 @@
    scaled as one unit to the width of its container. */
 .hero__keys {
   position: relative;
-  padding: 0.5rem var(--gutter) clamp(2rem, 4vw, 3.25rem);
+  padding: 0.5rem var(--gutter) clamp(1.75rem, 2.6vw, 2.25rem);
   container-type: inline-size;
 }
 
