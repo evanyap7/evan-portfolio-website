@@ -47,7 +47,19 @@
           <span class="hero__line">I build <em>practical tools</em></span>
           <span class="hero__line">with data and AI.</span>
         </h1>
-        <p class="hero__lede">Engineering student at SUTD and AI business consultant intern at Univers. Pick a key to look around.</p>
+        <div class="hero__aside">
+          <p class="hero__lede">Engineering student at SUTD and AI business consultant intern at Univers. Pick a key to look around.</p>
+          <ul class="affiliations" aria-label="Affiliations">
+            <li class="affiliations__item">
+              <span class="affiliations__label">Working at</span>
+              <img class="affiliations__logo" src="img/logos/univers.svg" alt="Univers" width="123" height="26">
+            </li>
+            <li class="affiliations__item">
+              <span class="affiliations__label">Studying at</span>
+              <img class="affiliations__logo affiliations__logo--sutd" src="img/logos/sutd.svg" alt="Singapore University of Technology and Design" width="97" height="38">
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div class="hero__keys">
@@ -248,6 +260,7 @@
 
           <div class="education" id="education">
             <h3 class="eyebrow">Education</h3>
+            <img class="education__logo" src="img/logos/sutd.svg" alt="" width="103" height="40">
             <p class="education__school">Singapore University of Technology and Design</p>
             <p>Bachelor of Engineering (Engineering Systems and Design) and Master of Science in Technology Entrepreneurship, expected May 2030.</p>
             <p class="education__detail">One of six recipients of the SUTD Technology Entrepreneurship Programme Scholarship. Coursework in algorithms and object-oriented programming, machine learning, and data modelling and visualisation.</p>
@@ -265,7 +278,7 @@
       <ol>
         <li class="role" data-reveal>
           <div>
-            <h3 class="role__title">Univers</h3>
+            <h3 class="role__title"><img class="role__logo" src="img/logos/univers.svg" alt="Univers" width="142" height="30"></h3>
             <p class="role__meta">Intern, AI Business Consultant (Aviation, Transportation, Logistics) · Aug 2026 – present</p>
           </div>
           <ul class="role__points">
@@ -298,19 +311,63 @@
       <dl class="toolkit">
         <div class="toolkit__group" data-reveal>
           <dt class="eyebrow">Languages</dt>
-          <dd>Python, TypeScript, JavaScript, C++, C, SQL, HTML and CSS</dd>
+          <dd>
+            <ul class="chips">
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#python"/></svg>Python</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#typescript"/></svg>TypeScript</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#javascript"/></svg>JavaScript</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#cplusplus"/></svg>C++</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#c"/></svg>C</li>
+            <li class="chip">SQL</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#html5"/></svg>HTML</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#css3"/></svg>CSS</li>
+            </ul>
+          </dd>
         </div>
         <div class="toolkit__group" data-reveal>
           <dt class="eyebrow">Frameworks</dt>
-          <dd>Next.js, React, Node.js, Vercel AI SDK, Zod, REST APIs, webhooks, OAuth 2.0, Telegram Bot API</dd>
+          <dd>
+            <ul class="chips">
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#nextdotjs"/></svg>Next.js</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#react"/></svg>React</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#nodedotjs"/></svg>Node.js</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#tailwindcss"/></svg>Tailwind CSS</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#threedotjs"/></svg>Three.js</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#vercel"/></svg>Vercel AI SDK</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#zod"/></svg>Zod</li>
+            <li class="chip">REST APIs</li>
+            <li class="chip">OAuth 2.0</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#telegram"/></svg>Telegram Bot API</li>
+            </ul>
+          </dd>
         </div>
         <div class="toolkit__group" data-reveal>
           <dt class="eyebrow">AI and data</dt>
-          <dd>LLM applications and agents, Google Gemini, Perplexity Sonar, prompt engineering, data analysis in Sheets and Excel</dd>
+          <dd>
+            <ul class="chips">
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#anthropic"/></svg>Claude API</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlegemini"/></svg>Google Gemini</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#perplexity"/></svg>Perplexity Sonar</li>
+            <li class="chip">LLM agents</li>
+            <li class="chip">Prompt engineering</li>
+            <li class="chip">Data analysis</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlesheets"/></svg>Excel and Sheets</li>
+            </ul>
+          </dd>
         </div>
         <div class="toolkit__group" data-reveal>
           <dt class="eyebrow">Cloud and tools</dt>
-          <dd>Vercel, Git and GitHub, Google Cloud, Gmail, Calendar and Sheets APIs</dd>
+          <dd>
+            <ul class="chips">
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#vercel"/></svg>Vercel</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#git"/></svg>Git</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#github"/></svg>GitHub</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlecloud"/></svg>Google Cloud</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#gmail"/></svg>Gmail API</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlecalendar"/></svg>Calendar API</li>
+            <li class="chip"><svg class="chip__icon" aria-hidden="true"><use href="img/icons.svg#googlesheets"/></svg>Sheets API</li>
+            </ul>
+          </dd>
         </div>
       </dl>
     </section>

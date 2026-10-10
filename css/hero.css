@@ -103,7 +103,7 @@
     align-items: end;
   }
 
-  .hero__lede {
+  .hero__aside {
     padding-bottom: 0.9rem;
   }
 }
@@ -133,4 +133,38 @@
   max-width: 34rem;
   color: var(--muted);
   font-size: clamp(1rem, 1.3vw, 1.1875rem);
+}
+
+.hero__aside {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* Affiliations ------------------------------------------------------ */
+.affiliations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+}
+
+.affiliations__item {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.affiliations__label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.affiliations__logo {
+  width: auto;
+  height: 26px;
+}
+
+.affiliations__logo--sutd {
+  height: 38px;
 }
