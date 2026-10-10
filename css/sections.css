@@ -358,7 +358,7 @@
 /* Framed like the project previews: hard outline and key-style shadow. */
 .about__photo {
   width: 100%;
-  max-width: 24rem;
+  max-width: 14rem;
   overflow: hidden;
   border: 2px solid var(--ink-key);
   border-radius: 1.5rem;
@@ -366,7 +366,16 @@
   box-shadow: 0 5px 0 var(--ink-key);
 }
 
+@media (min-width: 600px) {
+  .about__photo { max-width: 18rem; }
+}
+
+@media (min-width: 900px) {
+  .about__photo { max-width: 24rem; }
+}
+
 .about__photo img {
+  display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 4 / 5;
