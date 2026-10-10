@@ -242,6 +242,7 @@
 }
 
 .also__title {
+  margin-bottom: 0.25rem;
   font-family: var(--font-display);
   font-size: 1.3125rem;
   font-weight: 900;

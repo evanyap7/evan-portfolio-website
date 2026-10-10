@@ -8,7 +8,9 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.875rem var(--gutter);
-  background: rgba(255, 249, 252, 0.94);
+  background: rgba(255, 249, 252, 0.98);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--rule);
 }
 
@@ -46,6 +48,47 @@
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-decoration-color: var(--accent);
+}
+
+/* GitHub and LinkedIn: icon plus label on desktop, icon alone below
+   900px, and Work/About give way below 560px so the row always fits. */
+.site-nav .site-nav__social {
+  gap: 0.4rem;
+}
+
+.site-nav .site-nav__social:hover {
+  color: var(--accent-deep);
+  text-decoration: none;
+}
+
+.site-nav__icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (max-width: 899px) {
+  .site-nav .site-nav__social {
+    justify-content: center;
+    min-width: 2.75rem;
+    padding-inline: 0;
+  }
+
+  .site-nav__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 559px) {
+  .site-nav .site-nav__text {
+    display: none;
+  }
 }
 
 .site-nav .site-nav__cta {
