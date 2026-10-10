@@ -190,3 +190,60 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* About ------------------------------------------------------------- */
+.about {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+  padding-top: clamp(2rem, 4vw, 3.25rem);
+}
+
+.about__statement {
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 3.2vw, 2.625rem);
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.03em;
+}
+
+.about__statement em {
+  color: var(--accent);
+  font-family: var(--font-serif);
+  font-size: 1.08em;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.about__body {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 38rem;
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+}
+
+.education {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-size: 1rem;
+}
+
+.education__school {
+  margin-top: 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.3125rem;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.education__detail {
+  color: var(--muted);
+}
+
+@media (min-width: 900px) {
+  .about {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 3rem;
+  }
+}
