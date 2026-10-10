@@ -247,3 +247,79 @@
     gap: 3rem;
   }
 }
+
+/* Experience -------------------------------------------------------- */
+.role {
+  display: grid;
+  gap: 0.75rem 3rem;
+  padding-block: clamp(2rem, 4vw, 3.25rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.role__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.6vw, 2.125rem);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.role__meta {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.role__points {
+  display: grid;
+  gap: 0.9rem;
+  max-width: 44rem;
+}
+
+.role__points li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.role__points li::before {
+  content: "";
+  position: absolute;
+  top: 0.62em;
+  left: 0;
+  width: 0.7rem;
+  height: 2px;
+  background: var(--accent);
+}
+
+@media (min-width: 900px) {
+  .role {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+}
+
+/* Toolkit ----------------------------------------------------------- */
+.toolkit {
+  display: grid;
+  gap: 1.75rem 3rem;
+  padding-top: clamp(2rem, 4vw, 3.25rem);
+}
+
+.toolkit__group dt {
+  margin-bottom: 0.5rem;
+}
+
+.toolkit__group dd {
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+}
+
+@media (min-width: 760px) {
+  .toolkit {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .toolkit {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
