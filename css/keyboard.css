@@ -1,18 +1,26 @@
 /* Keyboard ---------------------------------------------------------- */
 /* The composition is drawn at 900 x 317 (312 plus the 5px shadow) and
-   scaled as one unit to the width of its container. */
+   scaled as one unit to the width of its container. keyboard.js sets
+   --scale to min(1, available width / 900); the values below only
+   cover the moment before it runs. */
 .hero__keys {
   position: relative;
   padding: 0.5rem var(--gutter) clamp(1.75rem, 2.6vw, 2.25rem);
-  container-type: inline-size;
 }
 
 .keyboard {
-  /* tan(atan2(a, b)) divides two lengths into a plain number. */
-  --scale: min(1, tan(atan2(100cqw, 900px)));
+  --scale: 0.36;
   width: calc(900px * var(--scale));
   height: calc(317px * var(--scale));
   margin-inline: auto;
+}
+
+@media (min-width: 600px) {
+  .keyboard { --scale: 0.55; }
+}
+
+@media (min-width: 1000px) {
+  .keyboard { --scale: 1; }
 }
 
 .keyboard__stage {
@@ -137,16 +145,15 @@
   pointer-events: none;
 }
 
+/* Rotated rather than vertical writing-mode: Safari lacks
+   text-orientation: sideways and stands the apostrophe up. */
 .key--enter .key__caption {
   position: absolute;
-  top: 0;
-  right: 13px;
-  bottom: 0;
+  top: 50%;
+  left: calc(100% - 22px);
   font-size: 11px;
   letter-spacing: 0.16em;
-  text-align: center;
-  writing-mode: vertical-rl;
-  text-orientation: sideways;
+  transform: translate(-50%, -50%) rotate(90deg);
 }
 
 /* Press states ------------------------------------------------------ */

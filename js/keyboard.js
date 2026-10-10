@@ -5,9 +5,28 @@ const STEP_MS = 340;
 const HOLD_MS = 210;
 const REST_MS = 1500;
 
+const DESIGN_WIDTH = 900;
+
+// Scales the whole composition to the space the hero gives it, never above 1.
+function fitToContainer(stage) {
+  const keyboard = stage.parentElement;
+  const container = keyboard.parentElement;
+
+  const fit = () => {
+    const style = getComputedStyle(container);
+    const available = container.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    keyboard.style.setProperty('--scale', Math.min(1, available / DESIGN_WIDTH).toFixed(4));
+  };
+
+  new ResizeObserver(fit).observe(container);
+  fit();
+}
+
 export function initKeyboard() {
   const stage = document.querySelector('[data-keyboard]');
   if (!stage) return;
+
+  fitToContainer(stage);
 
   const keys = [...stage.querySelectorAll('.key')];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
