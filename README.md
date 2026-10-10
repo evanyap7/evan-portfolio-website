@@ -1,4 +1,4 @@
-# Evan Yap — portfolio
+# My portfolio
 
 My personal site: a one-page portfolio built around a keyboard that spells PORTFOLIO. Each key takes you somewhere.
 
