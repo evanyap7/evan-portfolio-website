@@ -1,0 +1,182 @@
+/* Keyboard ---------------------------------------------------------- */
+/* The composition is drawn at 900 x 317 (312 plus the 5px shadow) and
+   scaled as one unit to the width of its container. */
+.hero__keys {
+  position: relative;
+  padding: 0.5rem var(--gutter) clamp(2rem, 4vw, 3.25rem);
+  container-type: inline-size;
+}
+
+.keyboard {
+  /* tan(atan2(a, b)) divides two lengths into a plain number. */
+  --scale: min(1, tan(atan2(100cqw, 900px)));
+  width: calc(900px * var(--scale));
+  height: calc(317px * var(--scale));
+  margin-inline: auto;
+}
+
+.keyboard__stage {
+  position: relative;
+  width: 900px;
+  height: 317px;
+  transform: scale(var(--scale));
+  transform-origin: 0 0;
+}
+
+.key {
+  position: absolute;
+  /* Keys span 0-875px, so 12px centres them in the 900px stage. */
+  left: calc(var(--x) + 12px);
+  top: var(--y);
+  z-index: 1;
+  width: 146px;
+  height: 161px;
+  border-radius: 38px;
+  color: var(--ink-key);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key--lower {
+  z-index: 2;
+}
+
+.key--enter {
+  width: 218px;
+  height: 300px;
+}
+
+.key:focus-visible {
+  z-index: 3;
+  outline: 4px solid var(--ink-key);
+  outline-offset: 5px;
+  border-radius: 38px;
+}
+
+.key__base,
+.key__face {
+  position: absolute;
+  border: 2px solid var(--ink-key);
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+.key__base {
+  inset: 0;
+  border-radius: 38px;
+  background: linear-gradient(180deg, var(--base) 55%, color-mix(in srgb, var(--base), #000 14%));
+  box-shadow: 0 5px 0 var(--ink-key);
+}
+
+/* Angled seams where the face meets the side wall. */
+.key__base::before,
+.key__base::after {
+  content: "";
+  position: absolute;
+  bottom: 7px;
+  width: 2px;
+  height: 27px;
+  border-radius: 1px;
+  background: var(--ink-key);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.key__base::before {
+  left: 12px;
+  transform: rotate(24deg);
+}
+
+.key__base::after {
+  right: 12px;
+  transform: rotate(-24deg);
+}
+
+.key__face {
+  top: 4px;
+  right: 10px;
+  bottom: 33px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 29px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--face), #fff 34%), var(--face) 58%);
+}
+
+.key__letter {
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.key__caption {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Enter: the lower-left of the face sits under the final O, so the
+   arrow and caption stay in the exposed top and right. */
+.key--enter .key__face {
+  display: block;
+}
+
+.key__return {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  width: 104px;
+  height: auto;
+  pointer-events: none;
+}
+
+.key--enter .key__caption {
+  position: absolute;
+  top: 0;
+  right: 13px;
+  bottom: 0;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-align: center;
+  writing-mode: vertical-rl;
+}
+
+/* Press states ------------------------------------------------------ */
+@media (hover: hover) {
+  .key:hover .key__face {
+    transform: translateY(8px);
+  }
+}
+
+.key:focus-visible .key__face {
+  transform: translateY(8px);
+}
+
+.key.is-pressed .key__face,
+.key:active .key__face {
+  transform: translateY(13px);
+}
+
+.key.is-pressed .key__base {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--ink-key);
+}
+
+.key:active .key__base {
+  transform: translateY(5px);
+  box-shadow: 0 0 0 var(--ink-key);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .key__base,
+  .key__face {
+    transition-duration: 1ms;
+  }
+}
