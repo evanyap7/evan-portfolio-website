@@ -286,3 +286,32 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* On phones, keep the proof points to one compact line each so the
+   keyboard stays near the top of the page. */
+@media (max-width: 759px) {
+  .proof {
+    gap: 0;
+  }
+
+  .proof__item {
+    display: block;
+    padding-block: 0.6rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .proof__item:first-child {
+    border-top: 2px solid var(--ink-key);
+  }
+
+  .proof__item strong {
+    display: inline;
+    margin-right: 0.4rem;
+    font-size: 1.0625rem;
+  }
+
+  .proof__item span {
+    display: inline;
+    font-size: 0.875rem;
+  }
+}
