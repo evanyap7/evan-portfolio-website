@@ -192,15 +192,17 @@
             </summary>
             <div class="project__panel">
         <div class="project__body">
-        <p class="project__summary">A serverless Telegram assistant that takes text, voice notes or photos and handles calendars, expense tracking, bill splitting and email. A three-tier model router sends each request to the cheapest model that can answer it.</p>
+        <p class="project__summary">A serverless Telegram assistant that takes text, voice notes or photos and handles calendars, expense tracking, bill splitting and email. A three-model chain tries the cheapest model first and fails over to the next.</p>
         <dl class="figures">
-        <div class="figure"><dt>Natural-language commands, at 100% eval accuracy</dt><dd>24</dd></div>
-        <div class="figure"><dt>Lower cost per call</dt><dd>~65%</dd></div>
-        <div class="figure"><dt>Faster payment sync</dt><dd>~77%</dd></div>
+        <div class="figure"><dt>Intents, each validated by a Zod schema</dt><dd>24</dd></div>
+        <div class="figure"><dt>Test commands routed correctly (my own set, so a smoke test)</dt><dd>31/31</dd></div>
+        <div class="figure"><dt>Lower cost per call across the model chain (21-message benchmark)</dt><dd>~65%</dd></div>
+        <div class="figure"><dt>Lower batch latency than sequential parsing (7 sample receipts)</dt><dd>~77%</dd></div>
         </dl>
         <p class="project__stack">Next.js, TypeScript, Vercel AI SDK, Gemini, Perplexity Sonar, Google Cloud Pub/Sub, Gmail, Sheets and Calendar APIs, Zod</p>
         <p class="project__links">
         <a class="text-link" href="https://github.com/evanyap7/telegram-personal-assistant" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span></a>
+        <a class="text-link" href="https://github.com/evanyap7/telegram-personal-assistant/tree/main/scripts" target="_blank" rel="noopener">Benchmarks and tests <span aria-hidden="true">↗</span></a>
         </p>
         </div>
             </div>
