@@ -29,18 +29,30 @@ The header's "Let's talk" button, the Enter key and the link in the contact sect
 | Path | What it holds |
 | --- | --- |
 | `index.html` | All content: projects, about, experience, toolkit |
+| `case-studies/` | Long-form write-ups, one page per project |
+| `resume/` | The downloadable resume PDF |
 | `css/base.css` | Colour and type tokens, reset, shared utilities |
 | `css/hero.css` | Header and hero headline |
 | `css/keyboard.css` | The keyboard and its press states |
 | `css/marquee.css` | The scrolling strip under the keyboard |
-| `css/sections.css` | Work, about, experience and toolkit |
+| `css/sections.css` | Work, about, experience, toolkit and tabs |
+| `css/case-study.css` | Case study pages |
 | `css/contact.css` | Contact section and footer |
 | `js/keyboard.js` | Automatic key-press sequence |
 | `js/marquee.js` | Fills the strip and sets its speed |
 | `js/reveal.js` | Fade-in on scroll |
+| `js/tabs.js` | The Experience, Story and Toolkit tabs, including deep links |
 | `js/shader.js` | WebGL backdrop behind the contact section, loaded on demand |
 
 To add a project, copy one `<li class="project">` block in `index.html` and edit it.
+
+## Update the resume
+
+Replace `resume/Evan-Yap-Resume.pdf`. The public copy leaves out the phone number, so remove it from any new version before committing. Check by searching the PDF for the number: covering it with a box is not enough, because the text stays in the file.
+
+## Share image
+
+`img/og.jpg` (1200 × 630) is the preview shown when the site is pasted into LinkedIn, Slack or iMessage. Recapture it from the hero if the headline or keyboard changes.
 
 ## Deploy
 
