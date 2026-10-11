@@ -88,7 +88,7 @@
               <span class="key__base" aria-hidden="true"></span>
               <span class="key__face" aria-hidden="true"><span class="key__letter">P</span><span class="key__caption">Selected Work</span></span>
             </a>
-            <a class="key" href="#about" aria-label="About Me" style="--x:219px;--y:0px;--face:#c8b6ff;--base:#7153c7">
+            <a class="key" href="#story" aria-label="About Me" style="--x:219px;--y:0px;--face:#c8b6ff;--base:#7153c7">
               <span class="key__base" aria-hidden="true"></span>
               <span class="key__face" aria-hidden="true"><span class="key__letter">O</span><span class="key__caption">About Me</span></span>
             </a>
@@ -104,9 +104,9 @@
               <span class="key__base" aria-hidden="true"></span>
               <span class="key__face" aria-hidden="true"><span class="key__letter">F</span><span class="key__caption">GitHub ↗</span></span>
             </a>
-            <a class="key key--lower" href="#also-built" aria-label="Also Built" style="--x:146px;--y:139px;--face:#f4b8ff;--base:#a34cbf">
+            <a class="key key--lower" href="#also-built" aria-label="More Projects" style="--x:146px;--y:139px;--face:#f4b8ff;--base:#a34cbf">
               <span class="key__base" aria-hidden="true"></span>
-              <span class="key__face" aria-hidden="true"><span class="key__letter">O</span><span class="key__caption">Also Built</span></span>
+              <span class="key__face" aria-hidden="true"><span class="key__letter">O</span><span class="key__caption">More Projects</span></span>
             </a>
             <a class="key key--lower" href="https://www.linkedin.com/in/evanyapzhikai/" target="_blank" rel="noopener" aria-label="LinkedIn (opens in a new tab)" style="--x:292px;--y:139px;--face:#ffc3a0;--base:#d96c44">
               <span class="key__base" aria-hidden="true"></span>
@@ -290,7 +290,7 @@
       </ol>
 
       <div class="also" id="also-built">
-        <h3 class="eyebrow">Also built</h3>
+        <h3 class="eyebrow">More projects</h3>
         <ul class="also__list">
           <li data-reveal>
             <h4 class="also__title">Dragon Tiles</h4>
@@ -314,9 +314,38 @@
 
       <div class="tabs" data-tabs>
         <div class="tabs__list" role="tablist" aria-label="About me" hidden>
-          <button class="tab" role="tab" type="button" id="tab-story" aria-controls="story" aria-selected="true">Story</button>
-          <button class="tab" role="tab" type="button" id="tab-experience" aria-controls="experience" aria-selected="false" tabindex="-1">Experience</button>
+          <button class="tab" role="tab" type="button" id="tab-experience" aria-controls="experience" aria-selected="true">Experience</button>
+          <button class="tab" role="tab" type="button" id="tab-story" aria-controls="story" aria-selected="false" tabindex="-1">Story</button>
           <button class="tab" role="tab" type="button" id="tab-toolkit" aria-controls="toolkit" aria-selected="false" tabindex="-1">Toolkit</button>
+        </div>
+
+        <div class="tabs__panel" role="tabpanel" id="experience" aria-labelledby="tab-experience" tabindex="0">
+          <h3 class="visually-hidden">Experience</h3>
+          <ol class="roles">
+            <li class="role" data-reveal>
+              <div>
+                <h3 class="role__title"><img class="role__logo" src="img/logos/univers.svg" alt="Univers" width="142" height="30"></h3>
+                <p class="role__meta">Intern, AI Business Consultant (Aviation, Transportation, Logistics) · Aug 2026 – present</p>
+              </div>
+              <ul class="role__points">
+                <li>Built and deployed an AI decarbonisation and audit agent with Next.js, the Vercel AI SDK and Groq inference. It automates ESG disclosure ingestion and client claim verification, cutting manual research by about three hours per facility audit.</li>
+                <li>Developed and calibrated an HVAC energy-consumption regression model that lands within 2–3 percentage points of observed consumption, used to validate client energy assumptions and find efficiency opportunities.</li>
+                <li>Prioritised AI and energy-management use cases by expected impact, telemetry availability, feasibility and effort, and turned the analysis into business cases and roadmaps for the Senior Director, Global Lead and senior client stakeholders.</li>
+              </ul>
+            </li>
+
+            <li class="role" data-reveal>
+              <div>
+                <h3 class="role__title">EvanYapFitness</h3>
+                <p class="role__meta">Founder · Sept 2024 – Jan 2026</p>
+              </div>
+              <ul class="role__points">
+                <li>Founded and grew an online coaching brand to 2.2k followers and 10k average views per post by iterating on content analytics and A/B-tested messaging.</li>
+                <li>Designed a structured intake pipeline in Google Forms and Excel covering training history, lifestyle constraints and nutrition habits for more than 20 clients.</li>
+                <li>Set up an AI-assisted workflow with Perplexity to draft training and meal templates from client profiles, which I then refined by hand. It halved the average programming time per client.</li>
+              </ul>
+            </li>
+          </ol>
         </div>
 
         <div class="tabs__panel" role="tabpanel" id="story" aria-labelledby="tab-story" tabindex="0">
@@ -364,35 +393,6 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="tabs__panel" role="tabpanel" id="experience" aria-labelledby="tab-experience" tabindex="0">
-          <h3 class="visually-hidden">Experience</h3>
-          <ol class="roles">
-            <li class="role" data-reveal>
-              <div>
-                <h3 class="role__title"><img class="role__logo" src="img/logos/univers.svg" alt="Univers" width="142" height="30"></h3>
-                <p class="role__meta">Intern, AI Business Consultant (Aviation, Transportation, Logistics) · Aug 2026 – present</p>
-              </div>
-              <ul class="role__points">
-                <li>Built and deployed an AI decarbonisation and audit agent with Next.js, the Vercel AI SDK and Groq inference. It automates ESG disclosure ingestion and client claim verification, cutting manual research by about three hours per facility audit.</li>
-                <li>Developed and calibrated an HVAC energy-consumption regression model that lands within 2–3 percentage points of observed consumption, used to validate client energy assumptions and find efficiency opportunities.</li>
-                <li>Prioritised AI and energy-management use cases by expected impact, telemetry availability, feasibility and effort, and turned the analysis into business cases and roadmaps for the Senior Director, Global Lead and senior client stakeholders.</li>
-              </ul>
-            </li>
-
-            <li class="role" data-reveal>
-              <div>
-                <h3 class="role__title">EvanYapFitness</h3>
-                <p class="role__meta">Founder · Sept 2024 – Jan 2026</p>
-              </div>
-              <ul class="role__points">
-                <li>Founded and grew an online coaching brand to 2.2k followers and 10k average views per post by iterating on content analytics and A/B-tested messaging.</li>
-                <li>Designed a structured intake pipeline in Google Forms and Excel covering training history, lifestyle constraints and nutrition habits for more than 20 clients.</li>
-                <li>Set up an AI-assisted workflow with Perplexity to draft training and meal templates from client profiles, which I then refined by hand. It halved the average programming time per client.</li>
-              </ul>
-            </li>
-          </ol>
         </div>
 
         <div class="tabs__panel" role="tabpanel" id="toolkit" aria-labelledby="tab-toolkit" tabindex="0">
