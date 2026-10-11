@@ -211,3 +211,36 @@
 .affiliations__logo--sutd {
   height: 38px;
 }
+
+/* Buttons ----------------------------------------------------------- */
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  min-height: 2.75rem;
+  padding-inline: 1.25rem;
+  border: 2px solid var(--ink-key);
+  border-radius: 999px;
+  background: #ffe446;
+  color: var(--ink-key);
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 3px 0 var(--ink-key);
+  transition: transform 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
+}
+
+.button:hover {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink-key);
+}
+
+.button:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 var(--ink-key);
+}
