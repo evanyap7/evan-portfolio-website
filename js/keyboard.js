@@ -78,4 +78,94 @@ export function initKeyboard() {
   reducedMotion.addEventListener('change', sync);
 
   sync();
+
+  initTyping(stage, keys, initSound(stage));
+}
+
+// A short filtered noise burst, close enough to a keycap bottoming out.
+// Off until the visitor turns it on; the choice is remembered.
+function initSound(stage) {
+  const toggle = document.querySelector('[data-keyboard-sound]');
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!toggle || !AudioContext) return () => {};
+
+  let context;
+  let buffer;
+  let enabled = false;
+  try { enabled = localStorage.getItem('key-sounds') === 'on'; } catch { /* storage blocked */ }
+
+  const play = () => {
+    if (!enabled) return;
+    context ??= new AudioContext();
+    if (!buffer) {
+      const length = Math.round(context.sampleRate * 0.045);
+      buffer = context.createBuffer(1, length, context.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i += 1) data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 3;
+    }
+    const source = context.createBufferSource();
+    const filter = context.createBiquadFilter();
+    const gain = context.createGain();
+    source.buffer = buffer;
+    source.playbackRate.value = 0.9 + Math.random() * 0.2;
+    filter.type = 'bandpass';
+    filter.frequency.value = 1700;
+    filter.Q.value = 0.9;
+    gain.gain.value = 0.5;
+    source.connect(filter).connect(gain).connect(context.destination);
+    source.start();
+  };
+
+  const render = () => toggle.setAttribute('aria-pressed', String(enabled));
+  toggle.hidden = false;
+  render();
+  toggle.addEventListener('click', () => {
+    enabled = !enabled;
+    try { localStorage.setItem('key-sounds', enabled ? 'on' : 'off'); } catch { /* storage blocked */ }
+    render();
+    play();
+  });
+
+  stage.addEventListener('pointerdown', (event) => {
+    if (event.target.closest('.key')) play();
+  });
+
+  return play;
+}
+
+// Typing a letter that is on a key presses that key and moves focus to it,
+// so Enter then follows it like any other link. Only while the keyboard is
+// on screen and the visitor is not typing somewhere else.
+function initTyping(stage, keys, playSound) {
+  const byName = new Map();
+  keys.forEach((key) => {
+    const letter = key.querySelector('.key__letter')?.textContent.trim().toLowerCase();
+    const name = letter || 'enter';
+    byName.set(name, [...(byName.get(name) ?? []), key]);
+  });
+
+  let onScreen = false;
+  new IntersectionObserver(([entry]) => { onScreen = entry.isIntersecting; }, { threshold: 0.5 })
+    .observe(stage);
+
+  document.addEventListener('keydown', (event) => {
+    if (!onScreen || event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+
+    const active = document.activeElement;
+    const insideStage = stage.contains(active);
+    if (active && active !== document.body && !insideStage) return;
+
+    const name = event.key.toLowerCase();
+    const matches = byName.get(name);
+    if (!matches) return;
+    // Enter on a focused key is the link's own activation.
+    if (name === 'enter' && insideStage) return;
+
+    // Repeated letters (the three Os) cycle through their keys.
+    const key = matches[(matches.indexOf(active) + 1) % matches.length];
+    key.focus({ preventScroll: true });
+    key.classList.add('is-pressed');
+    setTimeout(() => key.classList.remove('is-pressed'), HOLD_MS);
+    playSound();
+  });
 }

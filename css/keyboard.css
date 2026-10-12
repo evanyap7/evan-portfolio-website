@@ -182,6 +182,70 @@
   box-shadow: 0 0 0 var(--ink-key);
 }
 
+/* Hint and sound toggle --------------------------------------------- */
+/* Both depend on keyboard.js, so they stay out of the way without it. */
+.keyboard__hint {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.js .keyboard__hint {
+  display: flex;
+}
+
+/* Typing needs a real keyboard, so the tip is for pointer devices only. */
+.keyboard__tip {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .keyboard__tip { display: inline; }
+}
+
+.keyboard__sound {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  border: 2px solid var(--ink-key);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink-key);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--ink-key);
+  transition: transform 140ms var(--ease-out), box-shadow 140ms var(--ease-out), background-color 140ms ease;
+}
+
+.keyboard__sound[hidden] {
+  display: none;
+}
+
+.keyboard__sound::after {
+  content: "off";
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.keyboard__sound[aria-pressed="true"] {
+  background: #ffe446;
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink-key);
+}
+
+.keyboard__sound[aria-pressed="true"]::after {
+  content: "on";
+  color: var(--ink-key);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .key__base,
   .key__face {
