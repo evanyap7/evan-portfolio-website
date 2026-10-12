@@ -441,6 +441,11 @@ a.preview:hover {
   letter-spacing: -0.02em;
 }
 
+.education__school--earlier {
+  margin-top: 1.25rem;
+  font-size: 1.125rem;
+}
+
 .education__detail {
   color: var(--muted);
 }
