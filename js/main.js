@@ -2,6 +2,7 @@ import { CONTACT_EMAIL } from './config.js';
 import { initKeyboard } from './keyboard.js';
 import { initMarquee } from './marquee.js';
 import { initReveal } from './reveal.js';
+import { initScrollspy } from './scrollspy.js';
 import { initTabs } from './tabs.js';
 
 function applyContactEmail() {
@@ -33,4 +34,5 @@ initKeyboard();
 initMarquee();
 initTabs();
 initReveal();
+initScrollspy();
 initShader();

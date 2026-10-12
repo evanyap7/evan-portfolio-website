@@ -59,6 +59,12 @@
   gap: 0.4rem;
 }
 
+.site-nav a[aria-current] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--accent);
+}
+
 .site-nav .site-nav__social:hover {
   color: var(--accent-deep);
   text-decoration: none;
