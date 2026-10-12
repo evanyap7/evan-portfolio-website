@@ -39,19 +39,140 @@
 }
 
 /* Work -------------------------------------------------------------- */
-.project {
-  border-bottom: 1px solid var(--rule);
+/* A grid of cards in each project's key colour. Each card is a native
+   <details>: closed it leads with one number, open it spans the row. */
+.projects {
+  --card-pad: clamp(1.25rem, 2.4vw, 1.75rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  padding-top: clamp(1.5rem, 3vw, 2.25rem);
 }
 
-/* Each project is a native <details>: the row is the summary. */
+.project {
+  display: grid;
+}
+
+.project__details {
+  border: 2px solid var(--ink-key);
+  border-radius: 1.5rem;
+  background: color-mix(in srgb, var(--cap) 30%, var(--paper));
+  box-shadow: 0 5px 0 var(--ink-key);
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+.project__details[open] {
+  background: color-mix(in srgb, var(--cap) 12%, var(--paper));
+}
+
+@media (hover: hover) {
+  .project__details:not([open]):hover {
+    transform: translateY(2px);
+    box-shadow: 0 3px 0 var(--ink-key);
+  }
+}
+
+.project__details:not([open]):active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--ink-key);
+}
+
+@media (min-width: 760px) {
+  .projects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: dense;
+  }
+
+  .project:has(> .project__details[open]),
+  .projects:not(:has(.project__details[open])) > .project:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
 .project__row {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.15rem 1rem;
   align-items: center;
-  padding-block: clamp(1.25rem, 2.4vw, 1.75rem);
+  padding: var(--card-pad);
+  border-radius: calc(1.5rem - 2px);
   list-style: none;
   cursor: pointer;
+}
+
+/* A soft light that follows the cursor; projects.js sets --mx and --my. */
+.project__row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(15rem circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.85), transparent 70%);
+  opacity: 0;
+  transition: opacity 240ms ease;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .project__row:hover::after {
+    opacity: 1;
+  }
+}
+
+.project__row > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* The one number a closed card leads with. Hidden once the card is open,
+   where the full figures take over. */
+.project__stat {
+  display: none;
+}
+
+.project__details:not([open]) > .project__row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr auto auto;
+  align-items: start;
+  gap: 0.3rem 1rem;
+  height: 100%;
+}
+
+.project__details:not([open]) .project__cap {
+  grid-area: 1 / 1;
+}
+
+.project__details:not([open]) .project__toggle {
+  grid-area: 1 / 2;
+  background: var(--paper);
+}
+
+.project__details:not([open]) .project__stat {
+  display: grid;
+  grid-area: 2 / 1 / auto / -1;
+  align-self: end;
+  gap: 0.2rem;
+  margin-top: clamp(1.25rem, 3vw, 2.25rem);
+  margin-bottom: 0.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.project__stat strong {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 6vw, 4.25rem);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+}
+
+.project__details:not([open]) .project__title {
+  grid-area: 3 / 1 / auto / -1;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+.project__details:not([open]) .project__meta {
+  grid-area: 4 / 1 / auto / -1;
 }
 
 .project__row::-webkit-details-marker {
@@ -92,14 +213,10 @@
   transition: color 160ms ease;
 }
 
-.project__row:hover .project__title,
-.project__row:active .project__title {
-  color: var(--accent-deep);
-}
 
 .project__meta {
   grid-column: 2;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.9375rem;
 }
 
@@ -278,7 +395,7 @@ a.preview:hover {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
-  padding-bottom: clamp(2rem, 4vw, 3rem);
+  padding: 0.25rem var(--card-pad) clamp(1.5rem, 3vw, 2.25rem);
 }
 
 .project__panel > .project__body {

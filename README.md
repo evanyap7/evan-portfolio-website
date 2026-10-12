@@ -42,6 +42,9 @@ The header's "Let's talk" button, the Enter key and the link in the contact sect
 | `js/marquee.js` | Fills the strip and sets its speed |
 | `js/reveal.js` | Fade-in on scroll |
 | `js/tabs.js` | The Experience, Story and Toolkit tabs, including deep links |
+| `js/projects.js` | Project cards: the cursor highlight, and keeping an opened card on screen |
+| `js/countup.js` | Rolls the larger figures up to their value when first seen |
+| `js/scrollspy.js` | Marks the current section in the header nav |
 | `js/shader.js` | WebGL backdrop behind the contact section, loaded on demand |
 
 To add a project, copy one `<li class="project">` block in `index.html` and edit it.
