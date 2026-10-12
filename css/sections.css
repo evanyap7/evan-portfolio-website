@@ -503,6 +503,25 @@ a.preview:hover {
   }
 }
 
+/* Earlier roles: the same rows, quieter, so the current work leads. */
+.roles__label {
+  padding-top: clamp(1.75rem, 3.5vw, 2.5rem);
+}
+
+.roles--earlier .role {
+  padding-block: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.roles--earlier .role__title {
+  font-size: clamp(1.25rem, 1.9vw, 1.5rem);
+  letter-spacing: -0.02em;
+}
+
+.roles--earlier .role__points {
+  gap: 0.6rem;
+  font-size: 1rem;
+}
+
 /* Toolkit ----------------------------------------------------------- */
 .toolkit {
   display: grid;
