@@ -76,7 +76,8 @@
   transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
 }
 
-.project__row:hover .project__cap {
+.project__row:hover .project__cap,
+.project__row:active .project__cap {
   transform: translateY(2px);
   box-shadow: 0 1px 0 var(--ink-key);
 }
@@ -91,7 +92,8 @@
   transition: color 160ms ease;
 }
 
-.project__row:hover .project__title {
+.project__row:hover .project__title,
+.project__row:active .project__title {
   color: var(--accent-deep);
 }
 
@@ -133,7 +135,8 @@
   transition: transform 180ms var(--ease-out);
 }
 
-.project__row:hover .project__toggle {
+.project__row:hover .project__toggle,
+.project__row:active .project__toggle {
   background: var(--cap);
 }
 
