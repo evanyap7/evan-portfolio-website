@@ -236,7 +236,7 @@
 }
 
 .keyboard__sound[aria-pressed="true"] {
-  background: #ffe446;
+  background: var(--tint-lilac);
   transform: translateY(2px);
   box-shadow: 0 1px 0 var(--ink-key);
 }
