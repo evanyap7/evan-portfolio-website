@@ -231,35 +231,6 @@
   font-size: clamp(1.0625rem, 1.5vw, 1.3125rem);
 }
 
-/* Affiliations ------------------------------------------------------ */
-.affiliations {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 2rem;
-}
-
-.affiliations__item {
-  display: grid;
-  gap: 0.4rem;
-}
-
-.affiliations__label {
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.affiliations__logo {
-  width: auto;
-  height: 26px;
-}
-
-.affiliations__logo--sutd {
-  height: 38px;
-}
-
 /* Buttons ----------------------------------------------------------- */
 .hero__actions {
   display: flex;
@@ -295,67 +266,57 @@
   box-shadow: 0 0 0 var(--ink-key);
 }
 
-/* Proof ------------------------------------------------------------- */
-.proof {
-  display: grid;
-  grid-column: 1 / -1;
-  gap: 0.75rem 2rem;
-  margin-top: 0.25rem;
-}
-
-.proof__item {
-  display: grid;
-  align-content: start;
-  gap: 0.15rem;
-  padding-top: 0.75rem;
-  border-top: 2px solid var(--ink-key);
-}
-
-.proof__item strong {
-  font-family: var(--font-display);
-  font-size: clamp(1.25rem, 2vw, 1.625rem);
-  font-weight: 900;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-}
-
-.proof__item span {
+/* Credentials -------------------------------------------------------- */
+/* One quiet line under the action: where I work and study, and what backs
+   the headline up. It supports the message without competing with it. */
+.credentials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-self: stretch;
+  gap: 0.5rem 1.75rem;
+  margin-top: clamp(0.25rem, 1vw, 0.75rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
   color: var(--muted);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   line-height: 1.4;
 }
 
+.credentials strong {
+  margin-right: 0.3rem;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.credentials__logo {
+  flex: none;
+}
+
+/* From tablets up the line stays on one row, each highlight a label over
+   its detail. On phones each one is a single compact line. */
 @media (min-width: 760px) {
-  .proof {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .credentials {
+    flex-wrap: nowrap;
+  }
+
+  .credentials__item strong {
+    display: block;
   }
 }
 
-/* On phones, keep the proof points to one compact line each so the
-   keyboard stays near the top of the page. */
 @media (max-width: 759px) {
-  .proof {
-    gap: 0;
+  .credentials__item {
+    flex: 1 1 100%;
   }
+}
 
-  .proof__item {
-    display: block;
-    padding-block: 0.6rem;
-    border-top: 1px solid var(--rule);
-  }
+.credentials__logo img {
+  display: block;
+  width: auto;
+  height: 1.25rem;
+}
 
-  .proof__item:first-child {
-    border-top: 2px solid var(--ink-key);
-  }
-
-  .proof__item strong {
-    display: inline;
-    margin-right: 0.4rem;
-    font-size: 1.0625rem;
-  }
-
-  .proof__item span {
-    display: inline;
-    font-size: 0.875rem;
-  }
+.credentials__logo--sutd img {
+  height: 1.875rem;
 }
