@@ -38,11 +38,12 @@ The header's "Let's talk" button, the Enter key and the link in the contact sect
 | `css/sections.css` | Work, about, experience, toolkit and tabs |
 | `css/case-study.css` | Case study pages |
 | `css/contact.css` | Contact section and footer |
-| `css/motion.css` | Kinetic type, the Toolkit chip stagger, and the frame and parts of the project diagrams |
+| `css/motion.css` | Kinetic type, the Toolkit chip stagger, the hero cartoon, and the frame and parts of the project diagrams |
 | `js/keyboard.js` | Automatic key-press sequence, typing on the keys, key sounds and the phone readout |
 | `js/marquee.js` | Fills the strip and sets its speed |
 | `js/reveal.js` | Fade-in on scroll, and the trigger for kinetic type |
 | `js/kinetic.js` | Splits titles into words or letters so they can come in one at a time |
+| `js/wave.js` | Replays the hero cartoon's wave on hover or tap |
 | `js/reel.js` | Plays the looping project diagrams, loaded on demand |
 | `js/scenes.js` | The timeline for each diagram |
 | `js/tabs.js` | The Experience, Story and Toolkit tabs, including deep links |
@@ -57,6 +58,7 @@ To add a project, copy one `<li class="project">` block in `index.html` and edit
 
 The hero is built to be read in one order: the headline, one sentence, one button, then a quiet line of logos and highlights, then the keyboard.
 
+- From 1000px wide, a cartoon of me sits beside the headline. It is inline SVG in `index.html`, styled and animated in `css/motion.css`. It waves once as "Hi, I'm Evan." lands, then only blinks, so it greets with the headline instead of pulling against it. Hovering or tapping it waves again.
 - Yellow means the resume. It is on the hero button and the Resume key, and nowhere else in the hero.
 - The keys rest in a paler wash of their colour so their labels lead, and take the full colour when hovered, focused or pressed.
 - Below 720px the keys are too small for labels, so a readout under the keyboard names each key as the sequence presses it, at a slower pace. With reduced motion there is no sequence, so the small labels stay on the keys.
