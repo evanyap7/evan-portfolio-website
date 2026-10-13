@@ -271,7 +271,49 @@
               <span class="project__stat"><strong>112</strong> <span>symbols backtested before I removed the LLM layer</span></span>
               <span class="project__toggle" aria-hidden="true"></span>
             </summary>
-            <div class="project__panel">
+            <div class="project__panel project__panel--preview">
+        <figure class="reel" data-reel="ledger">
+        <figcaption class="reel__bar">
+        <span class="reel__name">Idea to ledger</span>
+        <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
+        <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
+        </figcaption>
+        <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. The LLM step is struck out for showing no measurable edge and replaced by a plain rule. Each idea is then verified, sized and risk-checked, and every step is written to a hash-chained ledger.">
+        <path class="reel__corner" d="M10 20V10H20M460 10H470V20M470 300V310H460M20 310H10V300"/>
+        <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
+        <g data-a="stage">
+        <path class="reel__wire reel__wire--dashed" data-a="drops" d="M72 98V172M180 98V172M288 98V172M396 98V172"/>
+        <path class="reel__wire" data-a="arrow1" d="M123 67l5 5-5 5"/>
+        <path class="reel__wire" data-a="arrow2" d="M231 67l5 5-5 5"/>
+        <path class="reel__wire" data-a="arrow3" d="M339 67l5 5-5 5"/>
+        <text class="reel__text reel__text--note reel__text--start reel__text--pink" data-a="noedge" x="26" y="40" opacity="0">no measurable edge</text>
+        <g data-a="llm" opacity="0">
+        <rect class="reel__box" x="26" y="52" width="92" height="40" rx="12"/>
+        <text class="reel__text" x="72" y="77.5">LLM</text>
+        <path class="reel__fill reel__draw" data-a="strike" pathLength="1" stroke="#ff8fb1" stroke-width="4" d="M32 86L112 58"/>
+        </g>
+        <g data-a="rule"><rect x="26" y="52" width="92" height="40" rx="12" fill="#b9f2df"/><text class="reel__text reel__text--dark" x="72" y="77.5">Rule</text></g>
+        <g data-a="verify"><rect class="reel__box reel__box--ok" data-a="verifybox" x="134" y="52" width="92" height="40" rx="12"/><text class="reel__text" x="180" y="77.5">Verify</text></g>
+        <g data-a="size"><rect class="reel__box reel__box--ok" data-a="sizebox" x="242" y="52" width="92" height="40" rx="12"/><text class="reel__text" x="288" y="77.5">Size</text></g>
+        <g data-a="risk"><rect class="reel__box reel__box--ok" data-a="riskbox" x="350" y="52" width="92" height="40" rx="12"/><text class="reel__text" x="396" y="77.5">Risk</text></g>
+        <g data-a="verifyok"><circle cx="222" cy="54" r="10" fill="#b9f2df"/><path class="reel__glyph" d="M217.5 54.5l3 3 6-6.5"/></g>
+        <g data-a="sizeok"><circle cx="330" cy="54" r="10" fill="#b9f2df"/><path class="reel__glyph" d="M325.5 54.5l3 3 6-6.5"/></g>
+        <g data-a="riskok"><circle cx="438" cy="54" r="10" fill="#b9f2df"/><path class="reel__glyph" d="M433.5 54.5l3 3 6-6.5"/></g>
+        <path class="reel__fill reel__draw" data-a="link1" pathLength="1" stroke="#b9f2df" stroke-width="3" d="M114 204H138"/>
+        <path class="reel__fill reel__draw" data-a="link2" pathLength="1" stroke="#b9f2df" stroke-width="3" d="M222 204H246"/>
+        <path class="reel__fill reel__draw" data-a="link3" pathLength="1" stroke="#b9f2df" stroke-width="3" d="M330 204H354"/>
+        <g data-a="block1"><rect class="reel__box" x="30" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="72" y="209">a3f1</text></g>
+        <g data-a="block2"><rect class="reel__box" x="138" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="180" y="209">9c0e</text></g>
+        <g data-a="block3"><rect class="reel__box" x="246" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="288" y="209">51bd</text></g>
+        <g data-a="block4"><rect class="reel__box" x="354" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="396" y="209">e7a2</text></g>
+        <rect data-a="stamp1" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5" fill="#ffe446"/>
+        <rect data-a="stamp2" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5" fill="#ffe446"/>
+        <rect data-a="stamp3" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5" fill="#ffe446"/>
+        <rect data-a="stamp4" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5" fill="#ffe446"/>
+        <text class="reel__text reel__text--note" data-a="ledgernote" x="240" y="268">every step lands in a hash-chained ledger</text>
+        </g>
+        </svg>
+        </figure>
         <div class="project__body">
         <p class="project__summary">A swing-trading agent for a Webull Singapore cash account, built so that no model can size or place an order. Deterministic code verifies, sizes and risk-checks every idea, and a hash-chained ledger records each step. I first built it around Claude agents, backtested them against a plain momentum rule on 2024 data, found no measurable edge for about $27 a year, and removed the LLM layer.</p>
         <dl class="figures">

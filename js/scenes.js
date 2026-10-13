@@ -51,4 +51,41 @@ function chain({ track, pop, fade, draw, travel, jolt, count, ease }) {
   count('saving', 5900, 1200, 65, (value) => `~${value}% lower`);
 }
 
-export const SCENES = { chain };
+// Trading agent: the LLM step is struck out and dropped for a plain rule,
+// then each stage stamps a block into the ledger as the idea passes it.
+function ledger({ track, pop, fade, draw, travel, ease }) {
+  pop('llm', 250, { exit: [2300, 2700] });
+  track('llm', [
+    [2000, { translate: '0px 0px', rotate: '0deg' }],
+    [2700, { translate: '0px 220px', rotate: '16deg' }, ease.fall],
+  ]);
+  draw('strike', 1300, 350);
+  track('noedge', [[1500, { opacity: 0 }], [1750, { opacity: 1 }], [2600, { opacity: 1 }], [2900, { opacity: 0 }]]);
+  pop('rule', 2750);
+  fade('drops', 900);
+
+  ['verify', 'size', 'risk'].forEach((name, i) => {
+    const on = 3700 + i * 650;
+    pop(name, 370 + i * 120, { pulse: [on] });
+    pop(`${name}ok`, on);
+    track(`${name}box`, [[on, { stroke: LINE }], [on + 150, { stroke: OK }]]);
+    track(`arrow${i + 1}`, [
+      [800, { opacity: 0, stroke: LINE }],
+      [1100, { opacity: 1, stroke: LINE }],
+      [on - 150, { opacity: 1, stroke: LINE }],
+      [on, { opacity: 1, stroke: OK }],
+    ]);
+  });
+
+  [0, 1, 2, 3].forEach((i) => {
+    const x = 72 + i * 108;
+    const start = 3150 + i * 650;
+    travel(`stamp${i + 1}`, [[start, x, 98], [start + 350, x, 172]]);
+    pop(`block${i + 1}`, start + 350, { pulse: [6200 + i * 90] });
+    if (i) draw(`link${i}`, start + 350, 200);
+  });
+
+  fade('ledgernote', 5800);
+}
+
+export const SCENES = { chain, ledger };
