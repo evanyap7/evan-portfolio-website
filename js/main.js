@@ -7,6 +7,7 @@ import { initProjects } from './projects.js';
 import { initReveal } from './reveal.js';
 import { initScrollspy } from './scrollspy.js';
 import { initTabs } from './tabs.js';
+import { initWave } from './wave.js';
 
 function applyContactEmail() {
   document.querySelectorAll('[data-contact-link]').forEach((link) => {
@@ -52,6 +53,7 @@ function initReels() {
 
 applyContactEmail();
 initKeyboard();
+initWave();
 initMarquee();
 initTabs();
 initKinetic();
