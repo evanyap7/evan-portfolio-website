@@ -115,6 +115,17 @@
   transition: transform 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
 }
 
+/* The narrowest phones need a tighter row to keep the button on screen. */
+@media (max-width: 359px) {
+  .site-header {
+    gap: 0.5rem;
+  }
+
+  .site-nav .site-nav__cta {
+    padding-inline: 0.75rem;
+  }
+}
+
 .site-nav .site-nav__cta:hover {
   text-decoration: none;
   transform: translateY(2px);
