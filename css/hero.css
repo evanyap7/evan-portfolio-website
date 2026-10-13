@@ -153,14 +153,44 @@
   pointer-events: none;
 }
 
-/* One column, read top to bottom: the headline, one sentence, one action,
-   then a quiet line of context. Nothing sits beside the headline. */
+/* Read top to bottom: the headline, one sentence, one action, then a quiet
+   line of context. On wide screens the cartoon waves from the space beside
+   them; on narrow ones the headline keeps the full width. */
 .hero__intro {
   position: relative;
   display: grid;
   justify-items: start;
   gap: clamp(1rem, 1.8vw, 1.5rem);
   padding: clamp(2rem, 3.6vw, 3.25rem) var(--gutter) clamp(1.75rem, 2.6vw, 2.25rem);
+}
+
+.wave {
+  display: none;
+}
+
+@media (min-width: 1000px) {
+  .hero__intro {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 2rem;
+  }
+
+  .hero__title,
+  .hero__lede,
+  .hero__actions {
+    grid-column: 1;
+  }
+
+  .wave {
+    display: block;
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+    width: clamp(18rem, 30vw, 28rem);
+  }
+
+  .credentials {
+    grid-column: 1 / -1;
+  }
 }
 
 .hero__title {
