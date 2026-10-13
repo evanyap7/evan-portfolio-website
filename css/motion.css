@@ -42,6 +42,22 @@
     animation: kinetic-light 500ms ease backwards;
     animation-delay: calc(var(--i) * 70ms + 150ms);
   }
+
+  /* Toolkit chips pop in after their group has faded up. */
+  .toolkit__group.is-visible .chip {
+    animation: chip-pop 450ms var(--ease-spring) backwards;
+    animation-delay: calc(var(--i, 0) * 40ms + 100ms);
+  }
+
+  .chip:nth-child(2) { --i: 1; }
+  .chip:nth-child(3) { --i: 2; }
+  .chip:nth-child(4) { --i: 3; }
+  .chip:nth-child(5) { --i: 4; }
+  .chip:nth-child(6) { --i: 5; }
+  .chip:nth-child(7) { --i: 6; }
+  .chip:nth-child(8) { --i: 7; }
+  .chip:nth-child(9) { --i: 8; }
+  .chip:nth-child(10) { --i: 9; }
 }
 
 @keyframes kinetic-rise {
@@ -50,4 +66,11 @@
 
 @keyframes kinetic-light {
   from { opacity: 0.18; }
+}
+
+@keyframes chip-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
 }
