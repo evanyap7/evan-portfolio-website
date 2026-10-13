@@ -4,6 +4,8 @@
 const STEP_MS = 340;
 const HOLD_MS = 210;
 const REST_MS = 1500;
+// The first press waits for the headline and the lines under it to arrive.
+const START_MS = 1800;
 // On phones each key is named in the readout, so the pace drops to one a
 // reader can follow.
 const READ_STEP_MS = 1100;
@@ -39,6 +41,7 @@ export function initKeyboard() {
   const announce = initReadout();
 
   let index = 0;
+  let started = false;
   let stepTimer = 0;
   let releaseTimer = 0;
   let pointerInside = false;
@@ -72,7 +75,8 @@ export function initKeyboard() {
     if (!shouldRun) {
       stop();
     } else if (!stepTimer) {
-      stepTimer = setTimeout(step, STEP_MS);
+      stepTimer = setTimeout(step, started ? STEP_MS : START_MS);
+      started = true;
     }
   };
 

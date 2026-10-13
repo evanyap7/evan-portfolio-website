@@ -219,6 +219,25 @@
   .hero__stroke path {
     animation: hero-stroke 650ms 1000ms var(--ease-out) both;
   }
+
+  /* The rest follows the headline in reading order: sentence, action,
+     context. keyboard.js holds the first key press until they have landed. */
+  .hero__lede,
+  .hero__actions,
+  .credentials {
+    animation: hero-follow 600ms var(--ease-out) backwards;
+  }
+
+  .hero__lede { animation-delay: 550ms; }
+  .hero__actions { animation-delay: 680ms; }
+  .credentials { animation-delay: 810ms; }
+}
+
+@keyframes hero-follow {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
 }
 
 @keyframes hero-stroke {
