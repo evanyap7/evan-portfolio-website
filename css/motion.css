@@ -27,8 +27,27 @@
   [data-kinetic="letters"] {
     --kinetic-step: 26ms;
   }
+
+  /* The Story statement stays in place and lights up word by word. */
+  [data-kinetic="highlight"] .kinetic__word {
+    clip-path: none;
+  }
+
+  [data-kinetic="highlight"]:not(.is-visible) .kinetic__word > span {
+    opacity: 0.18;
+    transform: none;
+  }
+
+  [data-kinetic="highlight"].is-visible .kinetic__word > span {
+    animation: kinetic-light 500ms ease backwards;
+    animation-delay: calc(var(--i) * 70ms + 150ms);
+  }
 }
 
 @keyframes kinetic-rise {
   from { transform: translateY(130%) rotate(6deg); }
+}
+
+@keyframes kinetic-light {
+  from { opacity: 0.18; }
 }
