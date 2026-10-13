@@ -204,7 +204,46 @@
               <span class="project__stat"><strong>~65%</strong> <span>lower cost per call across a three-model chain</span></span>
               <span class="project__toggle" aria-hidden="true"></span>
             </summary>
-            <div class="project__panel">
+            <div class="project__panel project__panel--preview">
+        <figure class="reel" data-reel="chain">
+        <figcaption class="reel__bar">
+        <span class="reel__name">Model chain</span>
+        <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
+        <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
+        </figcaption>
+        <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. Text, voice and photo messages go to the cheapest of three models first. When that model fails, the next one takes over, and the cost per call ends about 65% lower.">
+        <path class="reel__corner" d="M10 20V10H20M460 10H470V20M470 300V310H460M20 310H10V300"/>
+        <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
+        <g data-a="stage">
+        <path class="reel__wire" data-a="wires" d="M92 68V128M240 68V98H92M388 68V98H240"/>
+        <path class="reel__wire" data-a="hops" d="M152 158H180M300 158H328"/>
+        <g data-a="in1"><rect x="44" y="34" width="96" height="34" rx="17" fill="#ffb7d5"/><text class="reel__text reel__text--dark" x="92" y="56.5">text</text></g>
+        <g data-a="in2"><rect x="192" y="34" width="96" height="34" rx="17" fill="#ffd98e"/><text class="reel__text reel__text--dark" x="240" y="56.5">voice</text></g>
+        <g data-a="in3"><rect x="340" y="34" width="96" height="34" rx="17" fill="#a9ddff"/><text class="reel__text reel__text--dark" x="388" y="56.5">photo</text></g>
+        <g data-a="m1"><rect class="reel__box" data-a="m1box" x="32" y="128" width="120" height="60" rx="14"/><text class="reel__text" x="92" y="164">Model 1</text></g>
+        <g data-a="m2"><rect class="reel__box reel__box--ok" data-a="m2box" x="180" y="128" width="120" height="60" rx="14"/><text class="reel__text" x="240" y="164">Model 2</text></g>
+        <g data-a="m3"><rect class="reel__box" x="328" y="128" width="120" height="60" rx="14"/><text class="reel__text" x="388" y="164">Model 3</text></g>
+        <g data-a="notes">
+        <text class="reel__text reel__text--note" x="92" y="212">cheapest</text>
+        <text class="reel__text reel__text--note" x="240" y="212">next</text>
+        <text class="reel__text reel__text--note" x="388" y="212">last resort</text>
+        </g>
+        <g data-a="ok1" opacity="0"><circle cx="146" cy="132" r="11" fill="#b9f2df"/><path class="reel__glyph" d="M141.5 132.5l3 3 6-6.5"/></g>
+        <g data-a="no1" opacity="0"><circle cx="146" cy="132" r="11" fill="#ff8fb1"/><path class="reel__glyph" d="M142 128l8 8M150 128l-8 8"/></g>
+        <g data-a="ok2"><circle cx="294" cy="132" r="11" fill="#b9f2df"/><path class="reel__glyph" d="M289.5 132.5l3 3 6-6.5"/></g>
+        <g data-a="dot1" opacity="0"><circle r="13" fill="#ffe446" opacity="0.25"/><circle r="6.5" fill="#ffe446"/></g>
+        <g data-a="dot2" opacity="0"><circle r="13" fill="#ffe446" opacity="0.25"/><circle r="6.5" fill="#ffe446"/></g>
+        <g data-a="dot3" opacity="0"><circle r="13" fill="#ffe446" opacity="0.25"/><circle r="6.5" fill="#ffe446"/></g>
+        <g data-a="dot4" opacity="0"><circle r="13" fill="#ffe446" opacity="0.25"/><circle r="6.5" fill="#ffe446"/></g>
+        <g data-a="meter">
+        <text class="reel__text reel__text--note reel__text--start" x="32" y="248">Cost per call</text>
+        <path class="reel__track" stroke-width="20" d="M42 270H438"/>
+        <path class="reel__fill reel__draw" data-a="cost" pathLength="1" stroke="#ffd98e" stroke-width="20" stroke-dashoffset="0.65" d="M42 270H438"/>
+        </g>
+        <text class="reel__text reel__text--num reel__text--end reel__text--yellow" data-a="saving" x="448" y="250">~65% lower</text>
+        </g>
+        </svg>
+        </figure>
         <div class="project__body">
         <p class="project__summary">A serverless Telegram assistant that takes text, voice notes or photos and handles calendars, expense tracking, bill splitting and email. A three-model chain tries the cheapest model first and fails over to the next.</p>
         <dl class="figures">
