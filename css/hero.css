@@ -153,27 +153,19 @@
   pointer-events: none;
 }
 
+/* One column, read top to bottom: the headline, one sentence, one action,
+   then a quiet line of context. Nothing sits beside the headline. */
 .hero__intro {
   position: relative;
   display: grid;
-  gap: clamp(1rem, 1.8vw, 1.5rem) 2rem;
-  padding: clamp(2rem, 3.2vw, 2.75rem) var(--gutter) clamp(1.75rem, 2.6vw, 2.25rem);
-}
-
-@media (min-width: 1100px) {
-  .hero__intro {
-    grid-template-columns: 1fr minmax(18rem, 26rem);
-    align-items: end;
-  }
-
-  .hero__aside {
-    padding-bottom: 0.9rem;
-  }
+  justify-items: start;
+  gap: clamp(1rem, 1.8vw, 1.5rem);
+  padding: clamp(2rem, 3.6vw, 3.25rem) var(--gutter) clamp(1.75rem, 2.6vw, 2.25rem);
 }
 
 .hero__title {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 5.6vw, 6rem);
+  font-size: clamp(2.5rem, 6.6vw, 7rem);
   font-weight: 900;
   line-height: 1.04;
   letter-spacing: -0.045em;
@@ -234,21 +226,9 @@
 }
 
 .hero__lede {
-  max-width: 34rem;
+  max-width: 40rem;
   color: var(--muted);
-  font-size: clamp(1rem, 1.3vw, 1.1875rem);
-}
-
-.hero__aside {
-  display: grid;
-  gap: 1.25rem;
-}
-
-.hero__row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 1.75rem;
+  font-size: clamp(1.0625rem, 1.5vw, 1.3125rem);
 }
 
 /* Affiliations ------------------------------------------------------ */
@@ -287,12 +267,14 @@
   gap: 0.75rem;
 }
 
+/* The one filled button in the hero: yellow is kept for this action. */
 .button {
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
-  min-height: 2.75rem;
-  padding-inline: 1.25rem;
+  min-height: 3.25rem;
+  padding-inline: 1.6rem;
+  font-size: 1.0625rem;
   border: 2px solid var(--ink-key);
   border-radius: 999px;
   background: #ffe446;
