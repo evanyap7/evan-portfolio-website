@@ -38,9 +38,13 @@ The header's "Let's talk" button, the Enter key and the link in the contact sect
 | `css/sections.css` | Work, about, experience, toolkit and tabs |
 | `css/case-study.css` | Case study pages |
 | `css/contact.css` | Contact section and footer |
+| `css/motion.css` | Kinetic type, the Toolkit chip stagger, and the frame and parts of the project diagrams |
 | `js/keyboard.js` | Automatic key-press sequence |
 | `js/marquee.js` | Fills the strip and sets its speed |
-| `js/reveal.js` | Fade-in on scroll |
+| `js/reveal.js` | Fade-in on scroll, and the trigger for kinetic type |
+| `js/kinetic.js` | Splits titles into words or letters so they can come in one at a time |
+| `js/reel.js` | Plays the looping project diagrams, loaded on demand |
+| `js/scenes.js` | The timeline for each diagram |
 | `js/tabs.js` | The Experience, Story and Toolkit tabs, including deep links |
 | `js/projects.js` | Project cards: the cursor highlight, and keeping an opened card on screen |
 | `js/countup.js` | Rolls the larger figures up to their value when first seen |
@@ -48,6 +52,14 @@ The header's "Let's talk" button, the Enter key and the link in the contact sect
 | `js/shader.js` | WebGL backdrop behind the contact section, loaded on demand |
 
 To add a project, copy one `<li class="project">` block in `index.html` and edit it.
+
+## Project diagrams
+
+Four project cards carry a looping diagram of how the project works. Each one is inline SVG inside a `<figure class="reel" data-reel="…">`, drawn in its finished state, so it reads correctly as a still.
+
+To change one, edit its SVG in `index.html` and its timeline in `js/scenes.js`. The timeline finds parts by their `data-a` name and gives times in milliseconds into a nine-second loop. To add one, copy a `<figure class="reel">`, give it a new `data-reel` name, and add a function of that name to `SCENES`.
+
+Anything hidden in the still, such as a moving dot, has `opacity="0"` in the SVG. The timeline overrides it while playing.
 
 ## Update the resume
 
@@ -64,5 +76,7 @@ The site is static, so Vercel serves the repository root as it is. Every push to
 ## Accessibility notes
 
 - Every key is a real link with its own accessible name, reachable by keyboard.
-- With `prefers-reduced-motion`, the key sequence, marquee, scroll fades and WebGL backdrop are all switched off, and the marquee text is shown as a static line.
+- With `prefers-reduced-motion`, the key sequence, marquee, scroll fades, kinetic type and WebGL backdrop are all switched off, the marquee text is shown as a static line, and the project diagrams are shown as stills.
+- Each project diagram has a pause button and a text description for screen readers. It only plays while its card is open and on screen.
+- Titles that animate word by word are read out as the original sentence; the animated copy is hidden from screen readers.
 - The marquee sentence is exposed to screen readers once; the moving copies are hidden from them.
