@@ -32,6 +32,22 @@ function initShader() {
   observer.observe(canvas);
 }
 
+// The project diagrams are drawn finished in the HTML, so the player is only
+// fetched once one is on screen in an open card, and never with reduced motion.
+function initReels() {
+  const reels = document.querySelectorAll('[data-reel]');
+  if (!reels.length || !('animate' in Element.prototype)) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    observer.disconnect();
+    import('./reel.js').then(({ startReels }) => startReels(reels));
+  }, { rootMargin: '200px' });
+
+  reels.forEach((reel) => observer.observe(reel));
+}
+
 applyContactEmail();
 initKeyboard();
 initMarquee();
@@ -42,3 +58,4 @@ initScrollspy();
 initProjects();
 initCountup();
 initShader();
+initReels();
