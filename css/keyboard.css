@@ -31,7 +31,19 @@
   transform-origin: 0 0;
 }
 
+/* Keys rest in a paler wash of their colour so the labels lead, and take
+   their full colour when hovered, focused or pressed. Registering --wash
+   lets it ease; without that it simply switches. */
+@property --wash {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+
 .key {
+  --wash: 48%;
+  --face-now: color-mix(in srgb, var(--face), #fff var(--wash));
+  --base-now: color-mix(in srgb, var(--base), #fff var(--wash));
   position: absolute;
   /* Keys span 0-875px, so 12px centres them in the 900px stage. */
   left: calc(var(--x) + 12px);
@@ -43,6 +55,19 @@
   color: var(--ink-key);
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
+  transition: --wash 220ms var(--ease-out);
+}
+
+.key:focus-visible,
+.key.is-pressed,
+.key:active {
+  --wash: 0%;
+}
+
+@media (hover: hover) {
+  .key:hover {
+    --wash: 0%;
+  }
 }
 
 .key--lower {
@@ -71,7 +96,7 @@
 .key__base {
   inset: 0;
   border-radius: 38px;
-  background: linear-gradient(180deg, var(--base) 55%, color-mix(in srgb, var(--base), #000 14%));
+  background: linear-gradient(180deg, var(--base-now) 55%, color-mix(in srgb, var(--base-now), #000 14%));
   box-shadow: 0 5px 0 var(--ink-key);
 }
 
@@ -110,7 +135,7 @@
   justify-content: center;
   gap: 5px;
   border-radius: 29px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--face), #fff 34%), var(--face) 58%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--face-now), #fff 34%), var(--face-now) 58%);
 }
 
 .key__letter {
