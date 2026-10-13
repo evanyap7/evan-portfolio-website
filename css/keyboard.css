@@ -115,18 +115,18 @@
 
 .key__letter {
   font-family: var(--font-display);
-  font-size: 72px;
+  font-size: 64px;
   font-weight: 900;
   line-height: 0.9;
   letter-spacing: -0.05em;
 }
 
+/* The label says where the key goes, so it is set large enough to read at
+   a glance rather than as fine print under the letter. */
 .key__caption {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   line-height: 1.2;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -150,9 +150,9 @@
 .key--enter .key__caption {
   position: absolute;
   top: 50%;
-  left: calc(100% - 22px);
-  font-size: 11px;
-  letter-spacing: 0.16em;
+  left: calc(100% - 24px);
+  font-size: 16px;
+  letter-spacing: 0.02em;
   transform: translate(-50%, -50%) rotate(90deg);
 }
 
