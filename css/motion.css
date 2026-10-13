@@ -144,8 +144,10 @@
   transition: background-color 160ms ease;
 }
 
-.reel__toggle:hover {
-  background: rgba(255, 255, 255, 0.14);
+@media (hover: hover) {
+  .reel__toggle:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
 }
 
 .reel__toggle::before {
