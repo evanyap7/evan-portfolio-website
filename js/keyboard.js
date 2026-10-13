@@ -4,6 +4,10 @@
 const STEP_MS = 340;
 const HOLD_MS = 210;
 const REST_MS = 1500;
+// On phones each key is named in the readout, so the pace drops to one a
+// reader can follow.
+const READ_STEP_MS = 1100;
+const READ_HOLD_MS = 650;
 
 const DESIGN_WIDTH = 900;
 
@@ -30,6 +34,9 @@ export function initKeyboard() {
 
   const keys = [...stage.querySelectorAll('.key')];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const compact = window.matchMedia('(max-width: 719px)');
+  const frame = stage.closest('.hero__keys');
+  const announce = initReadout();
 
   let index = 0;
   let stepTimer = 0;
@@ -48,15 +55,19 @@ export function initKeyboard() {
 
   const step = () => {
     const key = keys[index];
+    const [stepMs, holdMs] = compact.matches ? [READ_STEP_MS, READ_HOLD_MS] : [STEP_MS, HOLD_MS];
     key.classList.add('is-pressed');
-    releaseTimer = setTimeout(() => key.classList.remove('is-pressed'), HOLD_MS);
+    announce(key);
+    releaseTimer = setTimeout(() => key.classList.remove('is-pressed'), holdMs);
 
     const isLast = index === keys.length - 1;
     index = isLast ? 0 : index + 1;
-    stepTimer = setTimeout(step, isLast ? STEP_MS + REST_MS : STEP_MS);
+    stepTimer = setTimeout(step, isLast ? stepMs + REST_MS : stepMs);
   };
 
   const sync = () => {
+    // The readout depends on the sequence, so it goes when the sequence does.
+    frame.classList.toggle('has-readout', !reducedMotion.matches);
     const shouldRun = !reducedMotion.matches && !pointerInside && !focusInside && !document.hidden;
     if (!shouldRun) {
       stop();
@@ -65,6 +76,10 @@ export function initKeyboard() {
     }
   };
 
+  stage.addEventListener('pointerdown', (event) => {
+    const key = event.target.closest('.key');
+    if (key) announce(key);
+  });
   stage.addEventListener('pointerenter', () => { pointerInside = true; sync(); });
   stage.addEventListener('pointerleave', () => { pointerInside = false; sync(); });
   // Touch never fires pointerleave on scroll, so release the pause explicitly.
@@ -80,6 +95,19 @@ export function initKeyboard() {
   sync();
 
   initTyping(stage, keys, initSound(stage));
+}
+
+// Names a key in the line under the keyboard, which CSS shows on phones only.
+function initReadout() {
+  const readout = document.querySelector('[data-keyboard-readout]');
+  if (!readout) return () => {};
+
+  const [chip, label] = readout.children;
+  return (key) => {
+    chip.textContent = key.querySelector('.key__letter')?.textContent ?? '↵';
+    label.textContent = key.querySelector('.key__caption').textContent;
+    readout.style.setProperty('--face', key.style.getPropertyValue('--face'));
+  };
 }
 
 // A short filtered noise burst, close enough to a keycap bottoming out.

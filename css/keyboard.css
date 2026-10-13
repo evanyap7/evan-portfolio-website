@@ -207,6 +207,50 @@
   box-shadow: 0 0 0 var(--ink-key);
 }
 
+/* Readout ----------------------------------------------------------- */
+/* On phones a key is too small to carry a readable label, so one line
+   under the keyboard names each key as it is pressed instead. keyboard.js
+   turns this on; without it the small labels stay on the keys. */
+.keyboard__readout {
+  display: none;
+}
+
+.keyboard__readout-key {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 2px solid var(--ink-key);
+  border-radius: 0.6rem;
+  background: var(--face, #ffb7d5);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 3px 0 var(--ink-key);
+}
+
+@media (max-width: 719px) {
+  .has-readout .key__caption {
+    display: none;
+  }
+
+  .has-readout .key__letter {
+    font-size: 88px;
+  }
+
+  .has-readout .keyboard__readout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 1.1rem;
+    color: var(--ink-key);
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+}
+
 /* Hint and sound toggle --------------------------------------------- */
 /* Both depend on keyboard.js, so they stay out of the way without it. */
 .keyboard__hint {
