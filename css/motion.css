@@ -347,15 +347,15 @@
 
 /* The forearm swings from the elbow and the hand from the wrist. */
 .wave__forearm {
-  transform-origin: 392px 348px;
+  transform-origin: 402px 350px;
 }
 
 .wave__hand {
-  transform-origin: 406px 268px;
+  transform-origin: 416px 270px;
 }
 
 .wave__head {
-  transform-origin: 200px 280px;
+  transform-origin: 200px 285px;
 }
 
 .wave__eye {
