@@ -341,7 +341,44 @@
               <span class="project__stat"><strong>0–100</strong> <span>truth rating on every claim, from retrieved sources only</span></span>
               <span class="project__toggle" aria-hidden="true"></span>
             </summary>
-            <div class="project__panel">
+            <div class="project__panel project__panel--preview">
+        <figure class="reel" data-reel="rating">
+        <figcaption class="reel__bar">
+        <span class="reel__name">Claim check</span>
+        <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
+        <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
+        </figcaption>
+        <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram with example values. A claim is typed in and three sources are retrieved. A fourth source that was never retrieved is dropped. A truth rating then sweeps to 72 out of 100, beside bars for the evidence for and against.">
+        <path class="reel__corner" d="M10 20V10H20M460 10H470V20M470 300V310H460M20 310H10V300"/>
+        <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
+        <g data-a="stage">
+        <rect class="reel__box" x="28" y="36" width="424" height="44" rx="12"/>
+        <text class="reel__text reel__text--mono reel__text--start" x="46" y="63.5" textLength="160">Net zero by 2030</text>
+        <rect class="reel__cover" data-a="cover" opacity="0" x="45" y="44" width="162" height="28"/>
+        <rect data-a="caret" opacity="0" x="46" y="47" width="2" height="22" fill="#ffe446"/>
+        <text class="reel__text reel__text--note reel__text--end" x="436" y="63">claim</text>
+        <g data-a="doc1"><rect class="reel__box reel__box--ok" x="28" y="100" width="84" height="58" rx="10"/><path class="reel__fill" stroke="rgba(255,255,255,0.5)" stroke-width="5" d="M42 117H82M42 129H98M42 141H90"/><circle cx="106" cy="104" r="9" fill="#b9f2df"/><path class="reel__glyph" d="M102 104.5l2.6 2.6 5-5.6"/></g>
+        <g data-a="doc2"><rect class="reel__box reel__box--ok" x="124" y="100" width="84" height="58" rx="10"/><path class="reel__fill" stroke="rgba(255,255,255,0.5)" stroke-width="5" d="M138 117H178M138 129H194M138 141H186"/><circle cx="202" cy="104" r="9" fill="#b9f2df"/><path class="reel__glyph" d="M198 104.5l2.6 2.6 5-5.6"/></g>
+        <g data-a="doc3"><rect class="reel__box reel__box--ok" x="220" y="100" width="84" height="58" rx="10"/><path class="reel__fill" stroke="rgba(255,255,255,0.5)" stroke-width="5" d="M234 117H274M234 129H290M234 141H282"/><circle cx="298" cy="104" r="9" fill="#b9f2df"/><path class="reel__glyph" d="M294 104.5l2.6 2.6 5-5.6"/></g>
+        <g data-a="ghost" opacity="0">
+        <rect class="reel__box reel__box--missing" x="316" y="100" width="84" height="58" rx="10"/>
+        <text class="reel__text reel__text--num reel__text--pink" x="358" y="136">?</text>
+        <text class="reel__text reel__text--note reel__text--pink" x="358" y="178">not retrieved</text>
+        </g>
+        <text class="reel__text reel__text--note reel__text--start" data-a="grounded" x="28" y="186">answers only from what it retrieved</text>
+        <path class="reel__track" stroke-width="14" d="M58 280A70 70 0 0 1 198 280"/>
+        <path class="reel__fill reel__draw" data-a="gauge" pathLength="1" stroke="#ffd98e" stroke-width="14" stroke-dashoffset="0.28" d="M58 280A70 70 0 0 1 198 280"/>
+        <text class="reel__text reel__text--num reel__text--xl" data-a="score" x="128" y="272">72</text>
+        <text class="reel__text reel__text--note" x="128" y="294">truth rating</text>
+        <text class="reel__text reel__text--note reel__text--start" x="250" y="226">evidence for</text>
+        <path class="reel__track" stroke-width="12" d="M256 242H446"/>
+        <path class="reel__fill reel__draw" data-a="for" pathLength="1" stroke="#b9f2df" stroke-width="12" d="M256 242H400"/>
+        <text class="reel__text reel__text--note reel__text--start" x="250" y="270">evidence against</text>
+        <path class="reel__track" stroke-width="12" d="M256 286H446"/>
+        <path class="reel__fill reel__draw" data-a="against" pathLength="1" stroke="#ffb7d5" stroke-width="12" d="M256 286H306"/>
+        </g>
+        </svg>
+        </figure>
         <div class="project__body">
         <p class="project__summary">A research tool I built for a company’s energy engineers and decarbonisation consultants. Ask about a client facility, or paste in an ESG claim, and it retrieves the relevant public reports and PDFs, then answers only from what it retrieved: a cited research brief, or a verdict on the claim with the evidence on each side. Any finding that cites a source it did not retrieve is dropped, and it states what the evidence does not cover.</p>
         <dl class="figures">

@@ -88,4 +88,41 @@ function ledger({ track, pop, fade, draw, travel, ease }) {
   fade('ledgernote', 5800);
 }
 
-export const SCENES = { chain, ledger };
+// Research agent: a claim is typed, sources arrive, the one that was never
+// retrieved is dropped, and the truth rating sweeps to its score.
+function rating({ track, pop, fade, draw, jolt, count, ease }) {
+  // The claim is 16 characters, revealed one per step.
+  track('cover', [
+    [500, { opacity: 1, scale: '1 1' }],
+    [1700, { opacity: 1, scale: '0 1' }, 'steps(16)'],
+  ]);
+  track('caret', [
+    [400, { opacity: 0, translate: '0px 0px' }],
+    [500, { opacity: 1, translate: '0px 0px' }],
+    [1700, { opacity: 1, translate: '160px 0px' }, 'steps(16)'],
+    [1900, { opacity: 1, translate: '160px 0px' }],
+    [2100, { opacity: 0, translate: '160px 0px' }],
+  ]);
+
+  pop('doc1', 2000);
+  pop('doc2', 2150);
+  pop('doc3', 2300);
+  pop('ghost', 2450, { exit: [3700, 4000] });
+  track('ghost', [
+    ...jolt(3000),
+    [4000, { translate: '0px 200px', rotate: '-14deg' }, ease.fall],
+  ]);
+  fade('grounded', 4100);
+
+  // Overshoots a little before it settles on the score.
+  track('gauge', [
+    [4400, { strokeDashoffset: 1 }],
+    [5450, { strokeDashoffset: 0.24 }, ease.inOut],
+    [5800, { strokeDashoffset: 0.28 }],
+  ]);
+  count('score', 4400, 1200, 72, String);
+  draw('for', 5000, 700);
+  draw('against', 5300, 600);
+}
+
+export const SCENES = { chain, ledger, rating };
