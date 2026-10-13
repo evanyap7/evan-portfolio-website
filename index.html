@@ -404,7 +404,40 @@
               <span class="project__stat"><strong>$350M</strong> <span>addressable market sized for 2027</span></span>
               <span class="project__toggle" aria-hidden="true"></span>
             </summary>
-            <div class="project__panel">
+            <div class="project__panel project__panel--preview">
+        <figure class="reel" data-reel="market">
+        <figcaption class="reel__bar">
+        <span class="reel__name">Market sizing</span>
+        <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
+        <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
+        </figcaption>
+        <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. A $350M total addressable market for 2027 narrows to a $7.5M serviceable obtainable market, with the two circles drawn to scale. Beside it, a three-year cash line dips, then crosses break-even between months 24 and 36.">
+        <path class="reel__corner" d="M10 20V10H20M460 10H470V20M470 300V310H460M20 310H10V300"/>
+        <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
+        <g data-a="stage">
+        <g data-a="tam">
+        <circle class="reel__area" cx="128" cy="158" r="96"/>
+        <text class="reel__text reel__text--num reel__text--xl" data-a="tamvalue" x="128" y="120">$350M</text>
+        <text class="reel__text reel__text--note" x="128" y="142">TAM · 2027</text>
+        </g>
+        <circle class="reel__ring" data-a="ring" opacity="0" cx="128" cy="196" r="14"/>
+        <circle data-a="som" cx="128" cy="196" r="14" fill="#ffe446"/>
+        <text class="reel__text reel__text--yellow" data-a="somvalue" x="128" y="236">$7.5M SOM</text>
+        <text class="reel__text reel__text--note" data-a="toscale" x="128" y="282">circles drawn to scale</text>
+        <rect data-a="band" x="388" y="70" width="60" height="176" fill="rgba(255,228,70,0.14)"/>
+        <path class="reel__wire" data-a="axes" d="M268 70V246M268 160H448"/>
+        <g data-a="ticks">
+        <text class="reel__text reel__text--note reel__text--start" x="268" y="266">0</text>
+        <text class="reel__text reel__text--note" x="388" y="266">24</text>
+        <text class="reel__text reel__text--note reel__text--end" x="448" y="266">36</text>
+        </g>
+        <text class="reel__text reel__text--note reel__text--start" data-a="title" x="268" y="54">Break-even</text>
+        <text class="reel__text reel__text--note reel__text--end reel__text--yellow" data-a="window" x="448" y="54">24–36 months</text>
+        <path class="reel__fill reel__draw" data-a="curve" pathLength="1" stroke="#a9ddff" stroke-width="3.5" d="M268 160C310 274 390 234 448 104"/>
+        <g data-a="even"><circle cx="418" cy="160" r="12" fill="#ffe446" opacity="0.25"/><circle cx="418" cy="160" r="6" fill="#ffe446"/></g>
+        </g>
+        </svg>
+        </figure>
         <div class="project__body">
         <p class="project__summary">An AI-driven telecommunications honeypot and DaaS platform designed to intercept and expose voice-phishing networks, built for the Entrepreneurial Solutions to Vietnam’s Grand Challenge Hackathon. I sized the market, built the three-year financial model and pitched it to a panel of four investors.</p>
         <dl class="figures">

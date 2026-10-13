@@ -125,4 +125,33 @@ function rating({ track, pop, fade, draw, jolt, count, ease }) {
   draw('against', 5300, 600);
 }
 
-export const SCENES = { chain, ledger, rating };
+// Project V-Bẫy: the addressable market narrows to the obtainable one, drawn
+// to scale, then the cash line climbs back through break-even.
+function market({ track, pop, fade, draw, count, ease }) {
+  pop('tam', 300);
+  count('tamvalue', 450, 950, 350, (value) => `$${value}M`);
+
+  // A ring the size of the whole market shrinks onto the obtainable share.
+  const wide = { translate: '0px -38px', scale: 6.86 };
+  const tight = { translate: '0px 0px', scale: 1 };
+  track('ring', [
+    [1800, { opacity: 0, ...wide }],
+    [1950, { opacity: 1, ...wide }],
+    [2900, { opacity: 1, ...tight }, ease.inOut],
+    [3050, { opacity: 0, ...tight }],
+  ]);
+  pop('som', 2850);
+  fade('somvalue', 3050);
+  fade('toscale', 3300);
+
+  fade('axes', 3500);
+  fade('title', 3700);
+  fade('ticks', 3800);
+  fade('band', 4100);
+  fade('window', 4200);
+  draw('curve', 4500, 1600, { easing: 'linear' });
+  // The line crosses zero about three quarters of the way along.
+  pop('even', 5730);
+}
+
+export const SCENES = { chain, ledger, rating, market };
