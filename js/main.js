@@ -1,6 +1,7 @@
 import { CONTACT_EMAIL } from './config.js';
 import { initCountup } from './countup.js';
 import { initKeyboard } from './keyboard.js';
+import { initKinetic } from './kinetic.js';
 import { initMarquee } from './marquee.js';
 import { initProjects } from './projects.js';
 import { initReveal } from './reveal.js';
@@ -35,6 +36,7 @@ applyContactEmail();
 initKeyboard();
 initMarquee();
 initTabs();
+initKinetic();
 initReveal();
 initScrollspy();
 initProjects();

@@ -1,7 +1,7 @@
 /* Kinetic type ------------------------------------------------------ */
 /* Words rise from behind a mask, one after another. The hero's words are
-   wrapped in the HTML so they move on first paint. Each piece carries its
-   position in --i. */
+   wrapped in the HTML so they move on first paint; kinetic.js wraps the
+   rest. Each piece carries its position in --i. */
 @media (prefers-reduced-motion: no-preference) {
   .kinetic__word {
     display: inline-block;
@@ -14,9 +14,18 @@
     transform-origin: 0 100%;
   }
 
-  .hero__title .kinetic__word > span {
+  [data-kinetic]:not(.is-visible) .kinetic__word > span {
+    transform: translateY(130%) rotate(6deg);
+  }
+
+  .hero__title .kinetic__word > span,
+  [data-kinetic].is-visible .kinetic__word > span {
     animation: kinetic-rise 700ms var(--ease-spring) backwards;
     animation-delay: calc(var(--i) * var(--kinetic-step, 45ms));
+  }
+
+  [data-kinetic="letters"] {
+    --kinetic-step: 26ms;
   }
 }
 
