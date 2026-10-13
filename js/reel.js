@@ -93,8 +93,9 @@ function createTimeline(reel, scene) {
       offset: at / LOOP_MS,
       easing: steps[i + 1]?.[2] ?? EASE.out,
     }));
+    const last = frames[frames.length - 1];
     if (frames[0].offset > 0) frames.unshift({ ...frames[0], offset: 0 });
-    if (frames.at(-1).offset < 1) frames.push({ ...frames.at(-1), offset: 1 });
+    if (last.offset < 1) frames.push({ ...last, offset: 1 });
     animations.push(find(name).animate(frames, { duration: LOOP_MS, iterations: Infinity }));
   };
 
@@ -121,7 +122,7 @@ function createTimeline(reel, scene) {
   // Moves a dot through [time, x, y] points, fading it in and out at the ends.
   const travel = (name, points) => {
     const step = ([time, x, y], opacity) => [time, { opacity, translate: `${x}px ${y}px` }, 'linear'];
-    const [first, last] = [points[0], points.at(-1)];
+    const [first, last] = [points[0], points[points.length - 1]];
     track(name, [
       step([first[0] - 80, first[1], first[2]], 0),
       ...points.map((point) => step(point, 1)),

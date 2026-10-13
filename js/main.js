@@ -34,9 +34,11 @@ function initShader() {
 
 // The project diagrams are drawn finished in the HTML, so the player is only
 // fetched once one is on screen in an open card, and never with reduced motion.
+// Browsers that cannot animate `scale` and `translate` keep the still.
 function initReels() {
   const reels = document.querySelectorAll('[data-reel]');
   if (!reels.length || !('animate' in Element.prototype)) return;
+  if (!window.CSS?.supports('scale', '1')) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const observer = new IntersectionObserver((entries) => {
