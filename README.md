@@ -32,14 +32,14 @@ The header's "Let's talk" button, the Enter key and the link in the contact sect
 | `case-studies/` | Long-form write-ups, one page per project |
 | `resume/` | The downloadable resume PDF |
 | `css/base.css` | Colour and type tokens, reset, shared utilities |
-| `css/hero.css` | Header and hero headline |
-| `css/keyboard.css` | The keyboard and its press states |
+| `css/hero.css` | Header, hero headline, the one primary button and the credentials line |
+| `css/keyboard.css` | The keyboard, its press states and the phone readout |
 | `css/marquee.css` | The scrolling strip under the keyboard |
 | `css/sections.css` | Work, about, experience, toolkit and tabs |
 | `css/case-study.css` | Case study pages |
 | `css/contact.css` | Contact section and footer |
 | `css/motion.css` | Kinetic type, the Toolkit chip stagger, and the frame and parts of the project diagrams |
-| `js/keyboard.js` | Automatic key-press sequence |
+| `js/keyboard.js` | Automatic key-press sequence, typing on the keys, key sounds and the phone readout |
 | `js/marquee.js` | Fills the strip and sets its speed |
 | `js/reveal.js` | Fade-in on scroll, and the trigger for kinetic type |
 | `js/kinetic.js` | Splits titles into words or letters so they can come in one at a time |
@@ -52,6 +52,14 @@ The header's "Let's talk" button, the Enter key and the link in the contact sect
 | `js/shader.js` | WebGL backdrop behind the contact section, loaded on demand |
 
 To add a project, copy one `<li class="project">` block in `index.html` and edit it.
+
+## The hero's order of attention
+
+The hero is built to be read in one order: the headline, one sentence, one button, then a quiet line of logos and highlights, then the keyboard.
+
+- Yellow means the resume. It is on the hero button and the Resume key, and nowhere else in the hero.
+- The keys rest in a paler wash of their colour so their labels lead, and take the full colour when hovered, focused or pressed.
+- Below 720px the keys are too small for labels, so a readout under the keyboard names each key as the sequence presses it, at a slower pace. With reduced motion there is no sequence, so the small labels stay on the keys.
 
 ## Project diagrams
 
