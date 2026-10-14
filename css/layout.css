@@ -25,7 +25,7 @@
 }
 
 .bar__role {
-  color: var(--ink-3);
+  color: var(--ink-2);
   font-weight: 400;
 }
 
@@ -74,7 +74,7 @@
 }
 
 .bar__where {
-  color: var(--ink-3);
+  color: var(--ink-2);
   white-space: nowrap;
 }
 
@@ -99,7 +99,7 @@
 }
 
 .bar__clock {
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 @media (hover: hover) {
@@ -171,7 +171,7 @@
 
 .menu__sheets .mono {
   min-width: 2.5em;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 .menu__sheets a[aria-current="true"] .mono {
@@ -193,7 +193,7 @@
 
 .menu__clock {
   margin-top: 16px;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 /* Sheet ------------------------------------------------------------- */
@@ -279,6 +279,13 @@
   .sheet__next:hover { color: var(--accent); }
 }
 
+/* A thumb target on phones and tablets, in portrait or landscape. */
+@media (max-width: 1023px) {
+  .sheet__next {
+    min-height: 44px;
+  }
+}
+
 .titleblock {
   right: var(--frame);
 }
@@ -312,7 +319,6 @@
   }
 
   .sheet__next {
-    min-height: 44px;
     margin-top: 28px;
   }
 

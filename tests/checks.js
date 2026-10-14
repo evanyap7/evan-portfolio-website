@@ -4,7 +4,6 @@
 
 const FIT = { minWidth: 1280, minHeight: 650 };
 const WIDE = 1024;
-const PHONE = 720;
 const SHEETS = ['top', 'about', 'experience', 'work', 'toolkit', 'contact'];
 const OLD_COLOURS = /#(ffb7d5|ffd98e|a9ddff|b9f2df|ff8fb1|ffe446|cdf5e6|ff9fb6|3a4a86|9b3158)|rgba\(255,\s*228|rgba\(255,\s*255,\s*255,\s*0?\.5\)/i;
 
@@ -56,9 +55,9 @@ export function fonts(win) {
   ];
 }
 
-// On phones, every control a thumb needs is at least 44 × 44.
+// Below 1024px, every control a thumb needs is at least 44 × 44.
 export function targets(win) {
-  if (win.innerWidth >= PHONE) return [];
+  if (win.innerWidth >= WIDE) return [];
   const selector = '.bar a, .bar button, .project__row, .button, [data-copy], .sheet__next, .project__links a, .contact__spec a, .intro__actions a';
   const small = [...win.document.querySelectorAll(selector)].filter(shown).filter((el) => {
     const box = el.getBoundingClientRect();
