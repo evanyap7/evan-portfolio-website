@@ -1,73 +1,83 @@
 # My portfolio
 
-My personal site: a one-page portfolio built around a keyboard that spells PORTFOLIO. Each key takes you somewhere.
+My personal site, laid out as a set of six engineering drawing sheets: Intro, About, Experience, Selected work, Toolkit and credentials, and Contact. Each sheet is one screen on a laptop and grows to fit on a phone.
 
 Plain HTML, CSS and JavaScript. No framework, no build step, no dependencies.
 
 ## Run it locally
 
-The scripts are ES modules, so the page needs to be served over HTTP rather than opened as a file:
+The scripts are ES modules, so the page has to be served over HTTP. This server turns caching off:
 
 ```sh
-python3 -m http.server 4173
+python3 tests/serve.py 4173
 ```
 
-Then open <http://localhost:4173>.
+Then open <http://localhost:4173>. On a phone on the same Wi-Fi, use the Mac's address instead, from `ipconfig getifaddr en0`.
+
+## Check it
+
+Open <http://localhost:4173/tests/>. The page loads the site at 13 sizes, from a 320px phone to a 1920px desktop, and checks that:
+
+- each sheet fits one screen at 1280 × 650, 1440 × 800 and 1920 × 1080, even with fallback fonts
+- nothing scrolls sideways
+- phone tap targets are at least 44px
+- the smallest note in a project diagram renders at least 9px at 1280px wide and up, 8px from 1024px and 7px below
+- the project list, the menu, the sheet index and the copy button behave, and the page behind an open phone menu is inert, so it cannot be tabbed to or clicked
+
+The heading says `PASS` or `FAIL`, and the table lists every result. `docs/` and `tests/` are left out of deploys by `.vercelignore`.
 
 ## Change the email address
 
-The address lives in one place, `js/config.js`:
+It lives in one place, `js/config.js`:
 
 ```js
 export const CONTACT_EMAIL = 'evanyap7@gmail.com';
 ```
 
-The header's "Let's talk" button, the Enter key and the link in the contact section all read from it.
+Every email link, the address on the Contact sheet and the copy button read from it.
 
 ## Where things are
 
 | Path | What it holds |
 | --- | --- |
-| `index.html` | All content: projects, about, experience, toolkit |
-| `case-studies/` | Long-form write-ups, one page per project |
+| `index.html` | All six sheets |
+| `case-studies/` | Long-form write-ups, one sheet each |
 | `resume/` | The downloadable resume PDF |
-| `css/base.css` | Colour and type tokens, reset, shared utilities |
-| `css/hero.css` | Header, hero headline, the one primary button and the credentials line |
-| `css/keyboard.css` | The keyboard, its press states and the phone readout |
-| `css/sections.css` | Work, about, experience, toolkit and tabs |
+| `css/base.css` | Colour and type tokens, reset, utilities, the scroll fade |
+| `css/layout.css` | The bar, the phone menu, the sheet frame, title block, buttons, links and lists |
+| `css/sheets.css` | Each sheet's own layout |
+| `css/figures.css` | Project diagrams, the cartoon and all keyframes |
 | `css/case-study.css` | Case study pages |
-| `css/contact.css` | Contact section and footer |
-| `css/motion.css` | Kinetic type, the Toolkit chip stagger, the hero cartoon, and the frame and parts of the project diagrams |
-| `js/keyboard.js` | Automatic key-press sequence, typing on the keys, key sounds and the phone readout |
-| `js/reveal.js` | Fade-in on scroll, and the trigger for kinetic type |
-| `js/kinetic.js` | Splits titles into words or letters so they can come in one at a time |
-| `js/wave.js` | Replays the hero cartoon's wave on hover or tap |
-| `js/reel.js` | Plays the looping project diagrams, loaded on demand |
-| `js/scenes.js` | The timeline for each diagram |
-| `js/tabs.js` | The Experience, Story and Toolkit tabs, including deep links |
-| `js/projects.js` | Project cards: the cursor highlight, and keeping an opened card on screen |
-| `js/countup.js` | Rolls the larger figures up to their value when first seen |
-| `js/scrollspy.js` | Marks the current section in the header nav |
-| `js/shader.js` | WebGL backdrop behind the contact section, loaded on demand |
+| `js/main.js` | Starts everything |
+| `js/work.js` | The project list: tabs from 1024px, an accordion below, and `#work-…` links |
+| `js/index.js` | The sheet index in the bar and menu, and the Singapore clock |
+| `js/menu.js` | The menu below 1024px |
+| `js/contact.js` | The copy button |
+| `js/wave.js` | Replays the cartoon's wave on hover or tap |
+| `js/reel.js`, `js/scenes.js` | The project diagram player and each diagram's timeline |
+| `js/reveal.js` | The fade as content first scrolls into view |
+| `tests/` | The check page and the local server |
 
-To add a project, copy one `<li class="project">` block in `index.html` and edit it.
+## The design
 
-## The hero's order of attention
+- Paper sheets (`#fafaf7`) on a grey desk (`#e6e5e0`), one ink (`#111214`) and one blue accent (`#2541e6`).
+- Type is Switzer, with Fragment Mono for labels.
+- Each sheet ends with a link to the next one, so the page reads in order.
+- The bar shows which sheet you are on.
 
-The hero is built to be read in one order: the headline, one sentence, one button, then a quiet line of logos and highlights, then the keyboard.
-
-- A cartoon of me sits beside the headline from 1000px wide, and just above it on narrower screens. It is inline SVG in `index.html`, styled and animated in `css/motion.css`. It waves once as "Hi, I'm Evan." lands, then only blinks, so it greets with the headline instead of pulling against it. Hovering or tapping it waves again.
-- Yellow means the resume. It is on the hero button and the Resume key, and nowhere else in the hero.
-- The keys rest in a paler wash of their colour so their labels lead, and take the full colour when hovered, focused or pressed.
-- Below 720px the keys are too small for labels, so a readout under the keyboard names each key as the sequence presses it, at a slower pace. With reduced motion there is no sequence, so the small labels stay on the keys.
+To add a project, copy one `h3.project__head` and the `div.project__panel` after it in `index.html`, give both new ids (`work-…`, `row-…` and `panel-…`), and number it in `.project__n`.
 
 ## Project diagrams
 
-Four project cards carry a looping diagram of how the project works. Each one is inline SVG inside a `<figure class="reel" data-reel="…">`, drawn in its finished state, so it reads correctly as a still.
+Four projects have a looping diagram, inline SVG inside a `<figure class="reel" data-reel="…">`, drawn in its finished state so it reads as a still.
 
-To change one, edit its SVG in `index.html` and its timeline in `js/scenes.js`. The timeline finds parts by their `data-a` name and gives times in milliseconds into a nine-second loop. To add one, copy a `<figure class="reel">`, give it a new `data-reel` name, and add a function of that name to `SCENES`.
+To change one, edit its SVG in `index.html` and its timeline in `js/scenes.js`. The timeline finds parts by their `data-a` name and gives times in milliseconds into a nine-second loop. A diagram plays only while its project is open and on screen, and each has a pause button.
 
-Anything hidden in the still, such as a moving dot, has `opacity="0"` in the SVG. The timeline overrides it while playing.
+Each diagram is drawn in a 480 × 320 viewBox, with labels set at 16 units and notes at 13 in `css/figures.css`. On laptops 1280px wide and up and at most 799px tall, the open project's diagram sits beside its summary, so it stays readable while the sheet still fits one screen.
+
+## Motion
+
+The cartoon waves once on load and again on hover or tap, the headline's underline draws once, and the project diagrams loop. With Reduce Motion on, nothing moves: the diagrams show their finished state, and the cartoon's caption says it is still on purpose.
 
 ## Update the resume
 
@@ -75,15 +85,4 @@ Replace `resume/Evan-Yap-Resume.pdf`. The public copy leaves out the phone numbe
 
 ## Share image
 
-`img/og.jpg` (1200 × 630) is the preview shown when the site is pasted into LinkedIn, Slack or iMessage. Recapture it from the hero if the headline or keyboard changes.
-
-## Deploy
-
-The site is static, so Vercel serves the repository root as it is. Every push to `main` deploys.
-
-## Accessibility notes
-
-- Every key is a real link with its own accessible name, reachable by keyboard.
-- With `prefers-reduced-motion`, the key sequence, scroll fades, kinetic type and WebGL backdrop are all switched off, and the project diagrams are shown as stills.
-- Each project diagram has a pause button and a text description for screen readers. It only plays while its card is open and on screen.
-- Titles that animate word by word are read out as the original sentence; the animated copy is hidden from screen readers.
+`img/og.jpg` (1200 × 630) is the preview shown when the site is pasted into LinkedIn, Slack or iMessage. Recapture it from the Intro sheet if the headline or cartoon changes.
