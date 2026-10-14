@@ -1,34 +1,40 @@
 /* Tokens ------------------------------------------------------------ */
+/* The drawing set: paper sheets on a grey desk, one ink, one accent. */
 :root {
-  --ink: #241c32;
-  --ink-key: #111111;
-  --muted: #655d73;
-  --accent: #d96c9c;
-  --accent-deep: #a8406f;
+  --desk: #e6e5e0;
+  --sheet: #fafaf7;
   --paper: #ffffff;
-  --tint-pink: #fff7fb;
-  --tint-lilac: #f1f0ff;
-  --rule: rgba(36, 28, 50, 0.16);
-  --plum: #2f2542;
-  --gold: #ffdfa0;
-  --gold-ink: #8b4d20;
+  --ink: #111214;
+  --ink-2: #4f5156;
+  --ink-3: #6c6e72;
+  --rule: rgba(17, 18, 20, 0.1);
+  --rule-2: rgba(17, 18, 20, 0.22);
+  --accent: #2541e6;
 
-  --font-display: "Satoshi", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans: "Switzer", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Fragment Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --gutter: 24px;
-  --section-space: clamp(4.5rem, 10vw, 9rem);
+  --bar: 48px;   /* height of the desk bar */
+  --gap: 12px;   /* desk showing around each sheet */
+  --frame: 12px; /* inset of the frame drawn on each sheet */
+  --pad: 40px;   /* content inset inside the frame */
+  --ease: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
-  --ease-spring: cubic-bezier(0.3, 1.4, 0.5, 1);
 }
 
-@media (min-width: 600px) {
-  :root { --gutter: 32px; }
+@media (max-width: 1023px) {
+  :root {
+    --bar: 52px;
+    --pad: 28px;
+  }
 }
 
-@media (min-width: 1024px) {
-  :root { --gutter: 48px; }
+@media (max-width: 719px) {
+  :root {
+    --gap: 8px;
+    --frame: 8px;
+    --pad: 12px;
+  }
 }
 
 /* Reset ------------------------------------------------------------- */
@@ -40,21 +46,27 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  scroll-padding-top: 5.5rem;
+  text-size-adjust: 100%;
+  scroll-padding-top: var(--bar);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
 
+html.menu-open {
+  overflow: hidden;
+}
+
 body {
+  min-width: 320px;
   margin: 0;
-  background: var(--paper);
+  background: var(--desk);
   color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  line-height: 1.6;
+  font: 400 15px/1.55 var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
   overflow-x: clip;
 }
 
@@ -69,16 +81,42 @@ ul, ol {
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
-canvas, svg {
+button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+img, svg {
   display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+strong, b {
+  font-weight: 500;
 }
 
 :focus-visible {
-  outline: 3px solid var(--ink-key);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 4px;
+}
+
+/* Long words break at hyphens on narrow screens instead of overflowing. */
+@media (max-width: 719px) {
+  p, li, dd {
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
 }
 
 /* Utilities --------------------------------------------------------- */
@@ -96,40 +134,41 @@ canvas, svg {
 
 .skip-link {
   position: absolute;
-  left: var(--gutter);
   top: 0;
+  left: 12px;
   z-index: 20;
-  padding: 0.6rem 1rem;
-  background: var(--ink-key);
-  color: #fff;
-  font-weight: 600;
-  text-decoration: none;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--sheet);
+  font-weight: 500;
   transform: translateY(-120%);
 }
 
 .skip-link:focus {
-  transform: translateY(0.5rem);
-  outline-color: var(--accent);
+  transform: translateY(8px);
 }
 
-.text-link {
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.22em;
-  transition: text-decoration-color 160ms ease;
+/* Labels, captions and the title block. */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.text-link:hover {
-  text-decoration-color: var(--accent);
+@media (min-width: 1440px) {
+  .mono { font-size: 11px; }
 }
 
 /* Scroll reveal ----------------------------------------------------- */
+/* The hidden state is scoped to .js, so nothing hides if scripts fail. */
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] {
     opacity: 0;
-    transform: translateY(18px);
-    transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+    transform: translateY(8px);
+    transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
   }
 
   .js [data-reveal].is-visible {

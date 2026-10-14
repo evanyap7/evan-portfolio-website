@@ -1,0 +1,442 @@
+/* Desk bar ---------------------------------------------------------- */
+/* Identity on the left, the sheet index in the middle, navigation on the
+   right. Below 1024px the index and navigation move into the menu. */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  height: var(--bar);
+  padding: 0 calc(var(--gap) + 12px);
+  background: var(--desk);
+}
+
+.bar__id {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.bar__role {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.bar__index {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ticks {
+  display: flex;
+  align-items: center;
+}
+
+/* Each tick is a 12 × 24px target around a 1px line. The current one is
+   drawn as an outlined box. */
+.ticks a {
+  display: grid;
+  place-items: center;
+  width: 12px;
+  height: 24px;
+}
+
+.ticks a::before {
+  content: "";
+  width: 1px;
+  height: 13px;
+  background: var(--ink-3);
+}
+
+.ticks a[aria-current="true"] {
+  width: 34px;
+}
+
+.ticks a[aria-current="true"]::before {
+  width: 22px;
+  border: 1px solid var(--ink);
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ticks a,
+  .ticks a::before {
+    transition: width 300ms var(--ease);
+  }
+}
+
+.bar__where {
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.bar__where b {
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.bar__nav {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+
+.bar__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.bar__clock {
+  color: var(--ink-3);
+}
+
+@media (hover: hover) {
+  .bar__nav a:hover { color: var(--ink); }
+}
+
+.bar__menu {
+  display: none;
+}
+
+@media (max-width: 1279px) {
+  .bar__role { display: none; }
+}
+
+@media (max-width: 1023px) {
+  .bar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .bar__index,
+  .bar__nav {
+    display: none;
+  }
+
+  .js .bar__menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+/* Menu -------------------------------------------------------------- */
+/* Below 1024px: the six sheets, the resume, email and the clock. */
+.menu {
+  position: fixed;
+  top: var(--bar);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px calc(var(--gap) + 12px) 32px;
+  background: var(--desk);
+}
+
+@media (min-width: 1024px) {
+  .menu { display: none; }
+}
+
+.menu__sheets {
+  border-top: 1px solid var(--rule-2);
+}
+
+.menu__sheets a {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.menu__sheets .mono {
+  min-width: 2.5em;
+  color: var(--ink-3);
+}
+
+.menu__sheets a[aria-current="true"] .mono {
+  color: var(--accent);
+}
+
+.menu__more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 24px;
+}
+
+.menu__more .link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.menu__clock {
+  margin-top: 16px;
+  color: var(--ink-3);
+}
+
+/* Sheet ------------------------------------------------------------- */
+/* One per section. From 1024 × 650 each fills exactly one screen below the
+   bar; elsewhere it grows with its content. */
+.sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0 var(--gap) var(--gap);
+  padding: calc(var(--frame) + 18px) calc(var(--frame) + var(--pad)) calc(var(--frame) + 56px);
+  background: var(--sheet);
+}
+
+.sheet::before {
+  content: "";
+  position: absolute;
+  inset: var(--frame);
+  border: 1px solid var(--rule);
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) and (min-height: 650px) {
+  .sheet {
+    min-height: calc(100vh - var(--bar) - var(--gap));
+    min-height: calc(100svh - var(--bar) - var(--gap));
+  }
+}
+
+.sheet__label {
+  display: flex;
+  gap: 14px;
+  color: var(--ink-3);
+}
+
+.sheet__label b {
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.sheet__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule-2);
+}
+
+.sheet__head .mono {
+  color: var(--ink-3);
+}
+
+.sheet__title {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+/* The "next sheet" link and the title block sit on the bottom edge of the
+   frame, mirroring each other. */
+.sheet__next,
+.titleblock {
+  position: absolute;
+  bottom: var(--frame);
+  display: flex;
+  align-items: center;
+  border-top: 1px solid var(--rule);
+  background: var(--sheet);
+  color: var(--ink-3);
+}
+
+.sheet__next {
+  left: var(--frame);
+  gap: 8px;
+  padding: 8px 12px 7px;
+  border-right: 1px solid var(--rule);
+}
+
+@media (hover: hover) {
+  .sheet__next:hover { color: var(--accent); }
+}
+
+.titleblock {
+  right: var(--frame);
+}
+
+.titleblock span {
+  padding: 8px 12px 7px;
+  border-left: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.titleblock b {
+  margin-left: 6px;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+@media (max-width: 719px) {
+  .sheet {
+    padding-bottom: calc(var(--frame) + 12px);
+  }
+
+  .sheet__title {
+    font-size: 32px;
+  }
+
+  .sheet__next,
+  .titleblock {
+    position: static;
+    align-self: flex-start;
+    border: 1px solid var(--rule);
+  }
+
+  .sheet__next {
+    min-height: 44px;
+    margin-top: 28px;
+  }
+
+  .titleblock {
+    margin-top: 10px;
+  }
+
+  .titleblock span:first-child {
+    border-left: 0;
+  }
+
+  .titleblock span:nth-child(2) {
+    display: none;
+  }
+}
+
+/* Controls ---------------------------------------------------------- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--sheet);
+  font-size: 14.5px;
+  font-weight: 500;
+  transition: background-color 200ms;
+}
+
+.link {
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: color 200ms;
+}
+
+@media (hover: hover) {
+  .button:hover { background: var(--accent); }
+  .link:hover { color: var(--accent); }
+}
+
+/* Lists of facts ---------------------------------------------------- */
+/* .spec: short label over value, in columns. .rows: label beside value. */
+.spec {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--rule-2);
+}
+
+.spec > div {
+  padding: 12px 20px 0 0;
+}
+
+.spec dt {
+  color: var(--ink-3);
+}
+
+.spec dd {
+  margin-top: 4px;
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+
+.rows {
+  border-top: 1px solid var(--rule-2);
+}
+
+.rows > div {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 2px 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.rows dt {
+  font-weight: 500;
+}
+
+.rows dt.mono {
+  padding-top: 3px;
+  color: var(--ink-3);
+}
+
+.rows dd {
+  color: var(--ink-2);
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.rows--stacked > div {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-3);
+}
+
+@media (max-width: 719px) {
+  .spec {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .spec > div {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .rows > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .caption {
+    flex-direction: column;
+    gap: 2px;
+  }
+}

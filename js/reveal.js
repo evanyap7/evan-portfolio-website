@@ -1,9 +1,8 @@
-// Fades content in as it scrolls into view, and starts the kinetic type the
-// same way. The hidden starting state is scoped to .js in CSS, so nothing is
-// hidden if this never runs.
+// Fades content in the first time it scrolls into view. The hidden starting
+// state is scoped to .js in CSS, so nothing is hidden if this never runs.
 
 export function initReveal() {
-  const targets = document.querySelectorAll('[data-reveal], [data-kinetic]');
+  const targets = document.querySelectorAll('[data-reveal]');
   const show = (target) => target.classList.add('is-visible');
 
   if (!('IntersectionObserver' in window)) {

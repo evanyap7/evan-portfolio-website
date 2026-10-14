@@ -1,11 +1,5 @@
 import { CONTACT_EMAIL } from './config.js';
-import { initCountup } from './countup.js';
-import { initKeyboard } from './keyboard.js';
-import { initKinetic } from './kinetic.js';
-import { initProjects } from './projects.js';
 import { initReveal } from './reveal.js';
-import { initScrollspy } from './scrollspy.js';
-import { initTabs } from './tabs.js';
 import { initWave } from './wave.js';
 
 function applyContactEmail() {
@@ -17,24 +11,9 @@ function applyContactEmail() {
   });
 }
 
-// The backdrop is decorative, so it only loads when the contact section is
-// close and the visitor has not asked for reduced motion.
-function initShader() {
-  const canvas = document.querySelector('[data-shader]');
-  if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  const observer = new IntersectionObserver(([entry]) => {
-    if (!entry.isIntersecting) return;
-    observer.disconnect();
-    import('./shader.js').then(({ startShader }) => startShader(canvas));
-  }, { rootMargin: '400px' });
-
-  observer.observe(canvas);
-}
-
 // The project diagrams are drawn finished in the HTML, so the player is only
-// fetched once one is on screen in an open card, and never with reduced motion.
-// Browsers that cannot animate `scale` and `translate` keep the still.
+// fetched once one is on screen in an open project, and never with reduced
+// motion. Browsers that cannot animate `scale` and `translate` keep the still.
 function initReels() {
   const reels = document.querySelectorAll('[data-reel]');
   if (!reels.length || !('animate' in Element.prototype)) return;
@@ -51,13 +30,6 @@ function initReels() {
 }
 
 applyContactEmail();
-initKeyboard();
 initWave();
-initTabs();
-initKinetic();
 initReveal();
-initScrollspy();
-initProjects();
-initCountup();
-initShader();
 initReels();
