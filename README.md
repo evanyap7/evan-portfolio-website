@@ -34,13 +34,11 @@ The header's "Let's talk" button, the Enter key and the link in the contact sect
 | `css/base.css` | Colour and type tokens, reset, shared utilities |
 | `css/hero.css` | Header, hero headline, the one primary button and the credentials line |
 | `css/keyboard.css` | The keyboard, its press states and the phone readout |
-| `css/marquee.css` | The scrolling strip under the keyboard |
 | `css/sections.css` | Work, about, experience, toolkit and tabs |
 | `css/case-study.css` | Case study pages |
 | `css/contact.css` | Contact section and footer |
 | `css/motion.css` | Kinetic type, the Toolkit chip stagger, the hero cartoon, and the frame and parts of the project diagrams |
 | `js/keyboard.js` | Automatic key-press sequence, typing on the keys, key sounds and the phone readout |
-| `js/marquee.js` | Fills the strip and sets its speed |
 | `js/reveal.js` | Fade-in on scroll, and the trigger for kinetic type |
 | `js/kinetic.js` | Splits titles into words or letters so they can come in one at a time |
 | `js/wave.js` | Replays the hero cartoon's wave on hover or tap |
@@ -86,7 +84,6 @@ The site is static, so Vercel serves the repository root as it is. Every push to
 ## Accessibility notes
 
 - Every key is a real link with its own accessible name, reachable by keyboard.
-- With `prefers-reduced-motion`, the key sequence, marquee, scroll fades, kinetic type and WebGL backdrop are all switched off, the marquee text is shown as a static line, and the project diagrams are shown as stills.
+- With `prefers-reduced-motion`, the key sequence, scroll fades, kinetic type and WebGL backdrop are all switched off, and the project diagrams are shown as stills.
 - Each project diagram has a pause button and a text description for screen readers. It only plays while its card is open and on screen.
 - Titles that animate word by word are read out as the original sentence; the animated copy is hidden from screen readers.
-- The marquee sentence is exposed to screen readers once; the moving copies are hidden from them.
