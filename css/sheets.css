@@ -590,7 +590,6 @@ ul.role__points li::before {
   .contact__spec .link {
     display: inline-flex;
     align-items: center;
-    align-self: flex-start;
     min-height: 44px;
   }
 }
@@ -613,6 +612,12 @@ ul.role__points li::before {
   .intro__actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .intro__actions .link,
+  .project__links .link,
+  .contact__spec .link {
+    align-self: flex-start;
   }
 
   .contact__invite {

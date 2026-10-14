@@ -223,18 +223,6 @@
   }
 }
 
-/* On short laptop screens the sheet gives up a little chrome so its content
-   still fits: a smaller heading and a shorter bottom margin. */
-@media (min-width: 1024px) and (max-height: 760px) {
-  .sheet__title {
-    font-size: 32px;
-  }
-
-  .sheet {
-    padding-bottom: calc(var(--frame) + 48px);
-  }
-}
-
 .sheet__label {
   display: flex;
   gap: 14px;
@@ -265,6 +253,18 @@
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.035em;
+}
+
+/* On short laptop screens the sheet gives up a little chrome so its content
+   still fits: a smaller heading and a shorter bottom margin. */
+@media (min-width: 1024px) and (max-height: 760px) {
+  .sheet__title {
+    font-size: 32px;
+  }
+
+  .sheet {
+    padding-bottom: calc(var(--frame) + 48px);
+  }
 }
 
 /* The "next sheet" link and the title block sit on the bottom edge of the
