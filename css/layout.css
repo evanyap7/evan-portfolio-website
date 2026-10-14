@@ -394,7 +394,7 @@
   display: grid;
   grid-template-columns: 8.5rem minmax(0, 1fr);
   gap: 2px 16px;
-  padding: 9px 0;
+  padding: 7px 0;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -409,7 +409,7 @@
 
 .rows dd {
   color: var(--ink-2);
-  font-size: 14.5px;
+  font-size: 14px;
   line-height: 1.45;
 }
 
