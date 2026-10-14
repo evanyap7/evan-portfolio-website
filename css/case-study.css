@@ -1,7 +1,8 @@
 /* Case study -------------------------------------------------------- */
 /* A long-form write-up on one sheet at its natural height. Text runs at a
-   readable measure; diagrams and tables may run wider. Paragraph styles
-   use :where() so the named blocks below can override them. */
+   readable measure; diagrams and tables may run wider. The paragraph rule
+   comes first and uses :where(), so every named block after it can
+   override it. */
 .bar--case {
   grid-template-columns: 1fr auto;
 }
@@ -23,6 +24,17 @@
 .case > .flow,
 .case > .case__table {
   max-width: 62rem;
+}
+
+/* Body text. It comes before the named blocks and matches them in weight, so
+   the lede, notes, footer and link row below can override it. The link row
+   keeps the size sheets.css gives .project__links. */
+.case :where(p:not(.mono, .project__links)),
+.case__list {
+  margin-top: 14px;
+  color: var(--ink-2);
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 .eyebrow {
@@ -60,14 +72,6 @@
   font-size: 24px;
   font-weight: 600;
   letter-spacing: -0.02em;
-}
-
-.case :where(p:not(.mono)),
-.case__list {
-  margin-top: 14px;
-  color: var(--ink-2);
-  font-size: 16px;
-  line-height: 1.6;
 }
 
 .case strong {
