@@ -404,8 +404,8 @@ ul.role__points li::before {
 
   /* The plate shortens with the screen so the longest project still fits
      at 1440 × 800, but never below 228px, which keeps the diagram notes at
-     9px or more. Short laptops from 1280px wide use the arrangement below
-     instead. */
+     9px or more. Screens from 1280px wide and under 800px tall use the
+     arrangement below instead. */
   .projects.is-ready .reel__scene {
     height: clamp(228px, calc(100vh - 570px), 360px);
     height: clamp(228px, calc(100svh - 570px), 360px);
@@ -413,13 +413,13 @@ ul.role__points li::before {
   }
 }
 
-/* Short laptops: a full-width plate short enough to fit would shrink the
-   diagram text below 9px, so the figure sits at a fixed, legible size on
-   the left with the summary, stack and links beside it, and the figures
-   run full width underneath. Narrower than 1280px there is no room for a
-   column of text beside it, so the plate stays full width and the sheet
-   grows instead. */
-@media (min-width: 1280px) and (max-height: 760px) {
+/* Laptops under 800px tall: a full-width plate short enough to fit would
+   shrink the diagram text below 9px, so the figure sits at a fixed, legible
+   size on the left with the summary, stack and links beside it, and the
+   figures run full width underneath. Narrower than 1280px there is no room
+   for a column of text beside it, so the plate stays full width and the
+   sheet grows instead. */
+@media (min-width: 1280px) and (max-height: 799px) {
   .projects.is-ready .project__panel:not([hidden]) {
     display: grid;
     grid-template-columns: minmax(0, 372px) minmax(0, 1fr);
