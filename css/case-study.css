@@ -1,82 +1,105 @@
-/* Case study page --------------------------------------------------- */
+/* Case study -------------------------------------------------------- */
+/* A long-form write-up on one sheet at its natural height. Text runs at a
+   readable measure; diagrams and tables may run wider. Paragraph styles
+   use :where() so the named blocks below can override them. */
+.bar--case {
+  grid-template-columns: 1fr auto;
+}
+
+.bar--case .bar__nav {
+  display: flex;
+  gap: 16px;
+}
+
 .case {
+  min-height: 0;
+  padding-bottom: calc(var(--frame) + 72px);
+}
+
+.case > * {
+  max-width: 46rem;
+}
+
+.case > .flow,
+.case > .case__table {
   max-width: 62rem;
-  margin: 0 auto;
-  padding: clamp(2rem, 5vw, 4rem) var(--gutter) var(--section-space);
+}
+
+.eyebrow {
+  margin-top: 8px;
+  color: var(--ink-3);
 }
 
 .case__title {
-  max-width: 26ch;
-  margin-top: 0.75rem;
-  font-family: var(--font-display);
-  font-size: clamp(2.25rem, 5.6vw, 4.5rem);
-  font-weight: 900;
-  line-height: 1.04;
-  letter-spacing: -0.045em;
+  margin-top: 16px;
+  font-size: clamp(34px, 5vw, 64px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
 }
 
 .case__title em {
   color: var(--accent);
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-style: normal;
 }
 
 .case__lede {
-  max-width: 42rem;
-  margin-top: 1.25rem;
-  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
-  line-height: 1.5;
+  margin-top: 20px;
+  color: var(--ink-2);
+  font-size: 18px;
 }
 
 .case__figures {
-  max-width: 44rem;
-  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  margin-top: 28px;
 }
 
 .case h2 {
-  margin-top: clamp(2.5rem, 6vw, 4.5rem);
-  padding-top: 1rem;
-  border-top: 2px solid var(--ink-key);
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: -0.035em;
+  margin-top: 48px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule-2);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
-.case p,
+.case :where(p:not(.mono)),
 .case__list {
-  max-width: 44rem;
-  margin-top: 0.9rem;
-  font-size: 1.0625rem;
+  margin-top: 14px;
+  color: var(--ink-2);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.case strong {
+  color: var(--ink);
 }
 
 .case code {
-  padding: 0.1em 0.35em;
-  border-radius: 0.3em;
-  background: var(--tint-lilac);
-  font-size: 0.9em;
+  padding: 1px 4px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.88em;
 }
 
 .case__list {
   display: grid;
-  gap: 0.75rem;
+  gap: 10px;
 }
 
 .case__list li {
   position: relative;
-  padding-left: 1.5rem;
+  padding-left: 18px;
 }
 
 .case__list li::before {
   content: "";
   position: absolute;
-  top: 0.7em;
+  top: 0.8em;
   left: 0;
-  width: 0.7rem;
-  height: 2px;
-  background: var(--accent);
+  width: 8px;
+  height: 1px;
+  background: var(--ink-3);
 }
 
 .case__list--numbered {
@@ -84,181 +107,145 @@
 }
 
 .case__list--numbered li {
+  padding-left: 30px;
   counter-increment: step;
-  padding-left: 2.25rem;
 }
 
 .case__list--numbered li::before {
-  content: counter(step);
-  top: 0;
-  width: 1.6rem;
-  height: 1.6rem;
-  border: 2px solid var(--ink-key);
-  border-radius: 0.5rem;
-  background: #ffd98e;
-  font-family: var(--font-display);
-  font-size: 0.8125rem;
-  font-weight: 900;
-  line-height: 1.35;
-  text-align: center;
+  content: counter(step, decimal-leading-zero);
+  top: 0.25em;
+  width: auto;
+  height: auto;
+  background: none;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
 
 .case__sub {
-  margin-top: 1.75rem;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
+  margin-top: 28px;
+  font-size: 17px;
+  font-weight: 600;
 }
 
 .case__note,
-.case__fine {
-  color: var(--muted);
-  font-size: 0.9375rem;
+.case__fine,
+.case__code {
+  color: var(--ink-3);
+  font-size: 14px;
 }
 
-/* Pipeline ---------------------------------------------------------- */
+/* Pipeline: three lanes of steps, the model step outlined in the accent. */
 .flow {
   display: grid;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .flow__lane {
-  display: grid;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem 1.25rem;
-  border: 2px solid var(--ink-key);
-  border-radius: 1rem;
+  padding: 14px 16px;
+  border: 1px solid var(--rule-2);
   background: var(--paper);
-  box-shadow: 0 4px 0 var(--ink-key);
 }
 
 .flow__label {
-  color: var(--muted);
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .flow__steps {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0;
+  gap: 8px 6px;
+  margin-top: 10px;
 }
 
 .flow__steps li {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  gap: 6px;
 }
 
 .flow__steps li:not(:last-child)::after {
   content: "→";
-  margin-inline: 0.5rem;
-  color: var(--muted);
+  color: var(--ink-3);
 }
 
 .flow__step {
-  padding: 0.35rem 0.8rem;
-  border: 1.5px solid var(--ink-key);
-  border-radius: 999px;
-  background: var(--tint-lilac);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1.3;
+  padding: 4px 10px;
+  border: 1px solid var(--ink);
+  font-size: 13.5px;
 }
 
 .flow__step--model {
-  background: #ffb7d5;
-  font-weight: 600;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
-/* Decisions --------------------------------------------------------- */
 .case__decisions {
   display: grid;
-  gap: 2rem;
-  margin-top: 1.5rem;
+  gap: 18px;
+  margin-top: 20px;
   counter-reset: decision;
 }
 
 .case__decisions > li {
-  counter-increment: decision;
   position: relative;
-  padding-left: 3.5rem;
+  padding-left: 44px;
+  counter-increment: decision;
 }
 
 .case__decisions > li::before {
-  content: counter(decision);
+  content: counter(decision, decimal-leading-zero);
   position: absolute;
-  top: 0.1rem;
+  top: 3px;
   left: 0;
-  display: grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 2px solid var(--ink-key);
-  border-radius: 0.8rem;
-  background: var(--cap, #b9f2df);
-  box-shadow: 0 3px 0 var(--ink-key);
-  font-family: var(--font-display);
-  font-size: 1.0625rem;
-  font-weight: 900;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
-
-.case__decisions > li:nth-child(1) { --cap: #ffb7d5; }
-.case__decisions > li:nth-child(2) { --cap: #c8b6ff; }
-.case__decisions > li:nth-child(3) { --cap: #b9f2df; }
-.case__decisions > li:nth-child(4) { --cap: #ffd98e; }
 
 .case__decisions h3 {
-  font-family: var(--font-display);
-  font-size: clamp(1.1875rem, 2vw, 1.5rem);
-  font-weight: 900;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
+  font-size: 17px;
+  font-weight: 600;
 }
 
-.case__code {
-  color: var(--muted);
-  font-size: 0.9375rem;
-}
-
-/* Tables ------------------------------------------------------------ */
 .case__table {
-  max-width: 44rem;
-  margin-top: 1.25rem;
+  margin-top: 20px;
   overflow-x: auto;
-  border: 2px solid var(--ink-key);
-  border-radius: 0.875rem;
-  box-shadow: 0 4px 0 var(--ink-key);
+  border: 1px solid var(--rule-2);
+  background: var(--paper);
 }
 
 .case__table table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9375rem;
-  font-variant-numeric: tabular-nums;
+  font-size: 14px;
 }
 
 .case__table th,
 .case__table td {
-  padding: 0.65rem 0.9rem;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--rule);
   text-align: left;
   vertical-align: top;
 }
 
 .case__table thead th {
-  background: var(--tint-lilac);
-  font-weight: 600;
-  white-space: nowrap;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .case__table tbody th {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .case__table tbody tr:last-child th,
@@ -266,53 +253,55 @@
   border-bottom: 0;
 }
 
-.case__table code {
-  white-space: nowrap;
-}
-
 .case__links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  margin-top: 2rem;
+  gap: 8px 24px;
+  margin-top: 40px;
 }
 
-.case__links a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-}
-
-/* Footer ------------------------------------------------------------ */
 .case__footer {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   justify-content: space-between;
-  gap: 0.5rem 2rem;
-  padding: 1.25rem var(--gutter);
+  gap: 8px 24px;
+  margin-top: 32px;
+  padding-top: 12px;
   border-top: 1px solid var(--rule);
-  background: var(--plum);
-  color: #d9cfe6;
-  font-size: 0.9375rem;
+  color: var(--ink-3);
+  font-size: 13px;
 }
 
-.case__footer .site-footer__links {
+.case__footer p {
+  margin: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.case__footer-links {
   display: flex;
-  gap: 0.5rem 1.5rem;
+  gap: 20px;
 }
 
-.case__footer a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
-  text-underline-offset: 0.3em;
+/* The footer's GitHub and LinkedIn links stand alone, so they get the same
+   44px touch target as the other link rows (sheets.css does this below 1024px). */
+@media (max-width: 1023px) {
+  .case__footer-links .link {
+    display: inline-flex;
+    align-items: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
-.case__footer a:hover {
-  color: #fff;
-}
+@media (max-width: 719px) {
+  .bar--case .bar__nav a:not(.link) {
+    display: none;
+  }
 
-.case__footer :focus-visible {
-  outline-color: #fff;
+  .case__links .link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
 }
