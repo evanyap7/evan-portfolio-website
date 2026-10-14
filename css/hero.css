@@ -155,7 +155,7 @@
 
 /* Read top to bottom: the headline, one sentence, one action, then a quiet
    line of context. On wide screens the cartoon waves from the space beside
-   them; on narrow ones the headline keeps the full width. */
+   them; on narrower ones it greets from just above the headline. */
 .hero__intro {
   position: relative;
   display: grid;
@@ -165,7 +165,9 @@
 }
 
 .wave {
-  display: none;
+  grid-row: 1;
+  width: clamp(9.5rem, 40vw, 14rem);
+  margin-bottom: -0.25rem;
 }
 
 @media (min-width: 1000px) {
@@ -181,11 +183,11 @@
   }
 
   .wave {
-    display: block;
     grid-column: 2;
     grid-row: 1 / span 3;
     align-self: center;
     width: clamp(18rem, 30vw, 28rem);
+    margin-bottom: 0;
   }
 
   .credentials {

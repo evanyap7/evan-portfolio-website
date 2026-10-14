@@ -58,7 +58,7 @@ To add a project, copy one `<li class="project">` block in `index.html` and edit
 
 The hero is built to be read in one order: the headline, one sentence, one button, then a quiet line of logos and highlights, then the keyboard.
 
-- From 1000px wide, a cartoon of me sits beside the headline. It is inline SVG in `index.html`, styled and animated in `css/motion.css`. It waves once as "Hi, I'm Evan." lands, then only blinks, so it greets with the headline instead of pulling against it. Hovering or tapping it waves again.
+- A cartoon of me sits beside the headline from 1000px wide, and just above it on narrower screens. It is inline SVG in `index.html`, styled and animated in `css/motion.css`. It waves once as "Hi, I'm Evan." lands, then only blinks, so it greets with the headline instead of pulling against it. Hovering or tapping it waves again.
 - Yellow means the resume. It is on the hero button and the Resume key, and nowhere else in the hero.
 - The keys rest in a paler wash of their colour so their labels lead, and take the full colour when hovered, focused or pressed.
 - Below 720px the keys are too small for labels, so a readout under the keyboard names each key as the sequence presses it, at a slower pace. With reduced motion there is no sequence, so the small labels stay on the keys.
