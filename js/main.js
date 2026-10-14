@@ -1,6 +1,7 @@
 import { CONTACT_EMAIL } from './config.js';
 import { initReveal } from './reveal.js';
 import { initWave } from './wave.js';
+import { initWork } from './work.js';
 
 function applyContactEmail() {
   document.querySelectorAll('[data-contact-link]').forEach((link) => {
@@ -31,5 +32,6 @@ function initReels() {
 
 applyContactEmail();
 initWave();
+initWork();
 initReveal();
 initReels();
