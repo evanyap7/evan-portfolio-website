@@ -146,6 +146,21 @@ export function work(win) {
   return out;
 }
 
+// Diagram text in an open project is large enough to read: the smallest note
+// renders at least 9px at the fit sizes, 8px from 1024px wide and 7px below.
+// Opens 4.2 (the first project with a diagram) to measure, then reopens 4.1.
+export function figureText(win) {
+  const doc = win.document;
+  const min = win.innerWidth >= 1280 ? 9 : win.innerWidth >= WIDE ? 8 : 7;
+  doc.getElementById('row-assistant-bot')?.click();
+  const notes = [...doc.querySelectorAll('.project__panel:not([hidden]) .reel__text--note')].filter(shown);
+  const sizes = notes.map((text) => parseFloat(win.getComputedStyle(text).fontSize) * text.ownerSVGElement.getScreenCTM().a);
+  doc.getElementById('row-website-revamp')?.click();
+  if (!sizes.length) return [result('diagram notes readable', false, 'no visible notes in 4.2')];
+  const smallest = Math.min(...sizes);
+  return [result(`diagram notes at least ${min}px`, smallest >= min - 0.05, `${smallest.toFixed(1)}px`)];
+}
+
 export function deepLink(win) {
   const id = win.location.hash.slice(1);
   const row = win.document.getElementById(id)?.querySelector('.project__row');
