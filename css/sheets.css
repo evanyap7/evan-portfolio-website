@@ -14,7 +14,7 @@
   grid-column: 1 / 9;
   grid-row: 1;
   align-self: end;
-  margin-top: 32px;
+  margin-top: 0;
   font-size: clamp(44px, min(6vw, 12vh), 104px);
   font-size: clamp(44px, min(6vw, 12svh), 104px);
   font-weight: 600;
@@ -49,7 +49,7 @@
 
 .intro__figure {
   grid-column: 9 / 13;
-  grid-row: 1 / 3;
+  grid-row: 1 / 4;
   align-self: end;
 }
 
@@ -59,7 +59,7 @@
 }
 
 .intro__lede {
-  grid-column: 1 / 7;
+  grid-column: 1 / 9;
   grid-row: 2;
   max-width: 36em;
   margin-top: 24px;
@@ -86,6 +86,24 @@
   grid-column: 1 / 10;
   grid-row: 4;
   margin-top: 28px;
+}
+
+/* From 1024px the figure is smaller and the spacing a little tighter, so the
+   sheet fits a short laptop screen. */
+@media (min-width: 1024px) {
+  .intro__figure .wave__art {
+    max-height: 36vh;
+    max-height: 36svh;
+  }
+
+  .intro__lede {
+    max-width: 42em;
+  }
+
+  .intro__actions,
+  .intro__spec {
+    margin-top: 20px;
+  }
 }
 
 /* 02 About ---------------------------------------------------------- */
@@ -197,6 +215,21 @@ ul.role__points li::before {
 
 .roles--earlier .role {
   padding: 10px 0;
+}
+
+@media (min-width: 1024px) {
+  .role {
+    padding: 10px 0;
+  }
+
+  .role__points {
+    gap: 4px;
+    line-height: 1.4;
+  }
+
+  .roles--earlier .role {
+    padding: 8px 0;
+  }
 }
 
 /* 04 Selected work -------------------------------------------------- */
@@ -387,26 +420,56 @@ ul.role__points li::before {
   margin-top: 20px;
 }
 
+/* From 1024px: three columns, toolkit, recognition, then education over
+   certifications. */
 .kit__tools {
-  grid-column: 1 / 6;
-  grid-row: 1 / 3;
+  grid-column: 1 / 5;
+  grid-row: 1 / -1;
 }
 
 .kit__recognition {
-  grid-column: 6 / 13;
+  grid-column: 5 / 9;
+  grid-row: 1 / -1;
 }
 
 .kit__education {
-  grid-column: 6 / 10;
+  grid-column: 9 / 13;
+  grid-row: 1;
 }
 
 .kit__certs {
-  grid-column: 10 / 13;
+  grid-column: 9 / 13;
+  grid-row: 2;
 }
 
 .kit__head {
   margin-bottom: 8px;
   color: var(--ink-3);
+}
+
+/* Each fact stacks its label over its value to suit the narrower columns. */
+@media (min-width: 1024px) {
+  .kit {
+    gap: 12px 24px;
+    margin-top: 12px;
+  }
+
+  .kit__head {
+    margin-bottom: 6px;
+  }
+
+  .kit .rows > div {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 6px 0;
+  }
+
+  .kit .rows dt.mono {
+    padding-top: 0;
+  }
+
+  .kit .rows dd {
+    line-height: 1.4;
+  }
 }
 
 /* 06 Contact -------------------------------------------------------- */
@@ -482,6 +545,7 @@ ul.role__points li::before {
 
   .intro__figure {
     order: -1;
+    align-self: flex-start;
     width: min(60%, 340px);
     margin-top: 16px;
   }
