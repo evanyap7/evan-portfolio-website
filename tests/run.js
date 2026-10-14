@@ -15,6 +15,9 @@ const ALL = ['structure', 'removed', 'overflow'];
 // One-off runs: a size, a URL and the checks to run there.
 const EXTRA = [];
 
+// A frame that has not loaded, and had its fonts settle, by then is a failure.
+const LOAD_TIMEOUT = 15000;
+
 const table = document.querySelector('[data-table]');
 const summary = document.querySelector('[data-summary]');
 const holder = document.querySelector('[data-frames]');
@@ -27,10 +30,18 @@ function load(width, height, src) {
   frame.src = `${path}?t=${Date.now()}${hash ? `#${hash}` : ''}`;
   holder.append(frame);
   return new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      frame.remove();
+      resolve(null);
+    }, LOAD_TIMEOUT);
     frame.addEventListener('load', async () => {
-      await frame.contentDocument.fonts.ready;
-      await new Promise((done) => { setTimeout(done, 400); });
-      resolve(frame);
+      try {
+        await frame.contentDocument.fonts.ready;
+        await new Promise((done) => { setTimeout(done, 400); });
+      } finally {
+        clearTimeout(timer);
+        resolve(frame);
+      }
     }, { once: true });
   });
 }
@@ -46,15 +57,26 @@ function row(cells, pass) {
   table.append(tr);
 }
 
+function record(size, result, results) {
+  results.push({ size, ...result });
+  row([result.pass ? 'PASS' : 'FAIL', size, result.name, result.detail], result.pass);
+}
+
 async function run({ width, height, src, names }, results) {
-  const frame = await load(width, height, src);
   const label = `${width}×${height}${src === '/' ? '' : ` ${src}`}`;
+  const frame = await load(width, height, src);
+  if (!frame) {
+    record(label, { name: 'load timed out', pass: false, detail: `after ${LOAD_TIMEOUT} ms` }, results);
+    return;
+  }
   for (const name of names) {
-    const found = await checks[name](frame.contentWindow, frame);
-    found.forEach((result) => {
-      results.push({ size: label, ...result });
-      row([result.pass ? 'PASS' : 'FAIL', label, result.name, result.detail], result.pass);
-    });
+    let found;
+    try {
+      found = await checks[name](frame.contentWindow, frame);
+    } catch (error) {
+      found = [{ name, pass: false, detail: String(error) }];
+    }
+    found.forEach((result) => record(label, result, results));
   }
   frame.remove();
 }
@@ -65,7 +87,13 @@ window.__done = (async () => {
     ...SIZES.map(([width, height]) => ({ width, height, src: '/', names: ALL })),
     ...EXTRA,
   ];
-  for (const each of runs) await run(each, results);
+  for (const each of runs) {
+    try {
+      await run(each, results);
+    } catch (error) {
+      record(`${each.width}×${each.height}`, { name: 'run failed', pass: false, detail: String(error) }, results);
+    }
+  }
   const failed = results.filter((result) => !result.pass);
   summary.textContent = failed.length ? `FAIL ${failed.length} of ${results.length}` : `PASS ${results.length}`;
   window.__results = results;

@@ -40,9 +40,12 @@ export function removed(win) {
   ];
 }
 
+// Measured against the visible width (no scrollbar), so a few px of sideways overflow still counts.
 export function overflow(win) {
-  const width = win.document.documentElement.scrollWidth;
-  return [result('no horizontal scroll', width <= win.innerWidth, `${width} vs ${win.innerWidth}`)];
+  const root = win.document.documentElement;
+  const width = root.scrollWidth;
+  const room = root.clientWidth;
+  return [result('no horizontal scroll', width <= room, `scroll ${width} vs client ${room}`)];
 }
 
 export function fonts(win) {
@@ -113,7 +116,11 @@ export function reducedMotionNote(win) {
     let rules = [];
     try { rules = [...sheet.cssRules]; } catch { return; }
     rules.forEach((rule) => {
-      if (rule.media && /reduce/.test(rule.media.mediaText) && /caption__still/.test(rule.cssText)) ruled = true;
+      if (!(rule instanceof win.CSSMediaRule) || !/prefers-reduced-motion:\s*reduce/.test(rule.media.mediaText)) return;
+      [...rule.cssRules].forEach((inner) => {
+        const display = inner.style?.display;
+        if (inner.selectorText?.includes('caption__still') && display && display !== 'none') ruled = true;
+      });
     });
   });
   return [result('reduced-motion note under the cartoon', doc.querySelector('#top .caption__still') && ruled)];
