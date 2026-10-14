@@ -4,12 +4,15 @@
 export function initMenu() {
   const button = document.querySelector('[data-menu-button]');
   const menu = document.getElementById('menu');
+  const main = document.getElementById('main');
   if (!button || !menu) return;
 
   const setOpen = (open) => {
     button.setAttribute('aria-expanded', String(open));
     button.textContent = open ? 'Close' : 'Menu';
     menu.hidden = !open;
+    // The menu covers the page, so keep focus and screen readers out of it.
+    if (main) main.inert = open;
     document.documentElement.classList.toggle('menu-open', open);
   };
 

@@ -214,9 +214,10 @@ export function menu(win) {
     result('menu starts closed', panel?.hidden),
   ];
   button.click();
-  out.push(result('menu opens', !panel.hidden && button.getAttribute('aria-expanded') === 'true'));
+  const main = doc.getElementById('main');
+  out.push(result('menu opens', !panel.hidden && button.getAttribute('aria-expanded') === 'true' && main.inert === true, `inert ${main.inert}`));
   doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-  out.push(result('Escape closes it', panel.hidden && button.getAttribute('aria-expanded') === 'false'));
+  out.push(result('Escape closes it', panel.hidden && button.getAttribute('aria-expanded') === 'false' && main.inert === false, `inert ${main.inert}`));
   return out;
 }
 
