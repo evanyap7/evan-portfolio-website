@@ -1,1 +1,278 @@
-/* Figures: the project diagrams and the cartoon. */
+/* Figures ----------------------------------------------------------- */
+/* Every diagram is a figure: a mono caption above a white plate with a
+   faint dot grid. Diagrams are inline SVG drawn finished, which is what
+   shows without JavaScript or with reduced motion; reel.js animates them. */
+.reel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.reel__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 28px;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.reel__name {
+  margin-right: auto;
+}
+
+.reel__name b {
+  margin-right: 10px;
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.reel__clock {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pause bars while playing, a play triangle once paused. */
+.reel__toggle {
+  position: relative;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--rule-2);
+  border-radius: 2px;
+  color: var(--ink);
+}
+
+@media (hover: hover) {
+  .reel__toggle:hover { border-color: var(--ink); }
+}
+
+.reel__toggle::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 9px;
+  border-inline: 2px solid currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.reel__toggle[aria-pressed="true"]::before {
+  width: 9px;
+  border: 0;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  transform: translate(-40%, -50%);
+}
+
+/* Widens the touch target to 44px without growing the button. */
+.reel__toggle::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+
+.reel__scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 480 / 320;
+  border: 1px solid var(--rule-2);
+  background: var(--paper) radial-gradient(rgba(17, 18, 20, 0.13) 0.8px, transparent 0.8px) 0 0 / 16px 16px;
+}
+
+.reel__scene--plate {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.reel__scene--plate img {
+  width: auto;
+  max-width: 88%;
+  max-height: 86%;
+  border: 1px solid var(--rule-2);
+}
+
+/* Diagram parts. Anything the timeline moves is tagged data-a and scales
+   or turns around its own centre. */
+.reel [data-a] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.reel .reel__cover {
+  fill: var(--paper);
+  transform-origin: 100% 50%;
+}
+
+.reel__corner,
+.reel__wire,
+.reel__track,
+.reel__fill,
+.reel__rail,
+.reel__glyph {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.reel__corner { stroke: var(--ink-3); stroke-width: 1; }
+.reel__rail { stroke: var(--accent); stroke-width: 2; }
+.reel:not(.is-live) .reel__rail { visibility: hidden; }
+.reel__wire { stroke: var(--ink); stroke-width: 1.25; }
+.reel__wire--dashed { stroke: var(--ink-3); stroke-dasharray: 3 4; }
+.reel__track { stroke: var(--rule-2); }
+.reel__glyph { stroke: var(--paper); stroke-width: 2; }
+
+/* Drawn by sliding the dash along a path whose length is set to 1. The gap
+   is longer than the path so no stray cap shows at either end. */
+.reel__draw { stroke-dasharray: 1 2; }
+
+.reel__box { fill: var(--paper); stroke: var(--ink); stroke-width: 1.25; }
+.reel__box--ok { stroke: var(--accent); stroke-width: 2; }
+.reel__box--missing { stroke: var(--ink-3); stroke-dasharray: 4 4; }
+.reel__pill { fill: var(--paper); stroke: var(--ink); stroke-width: 1.25; }
+.reel__area { fill: rgba(37, 65, 230, 0.06); stroke: var(--ink); stroke-width: 1.25; }
+.reel__ring { fill: none; stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+
+.reel__text {
+  fill: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  text-anchor: middle;
+}
+
+.reel__text--start { text-anchor: start; }
+.reel__text--end { text-anchor: end; }
+.reel__text--bad { fill: var(--ink); }
+.reel__text--key { fill: var(--accent); }
+
+.reel__text--note {
+  fill: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.reel__text--note.reel__text--bad { fill: var(--ink); }
+.reel__text--note.reel__text--key { fill: var(--accent); }
+
+.reel__text--mono {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.reel__text--num {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.reel__text--xl { font-size: 32px; }
+
+/* Cartoon ----------------------------------------------------------- */
+/* Flat colour inside an ink outline. Limbs are thick strokes laid over a
+   slightly thicker ink stroke, which gives them the same outline. */
+.wave__art {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.wave__ink {
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.wave__line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wave__line--flat { stroke-linecap: butt; }
+
+/* The forearm swings from the elbow and the hand from the wrist. Pixel
+   origins, because Safari ignores transform-box on some SVG groups. */
+.wave__forearm { transform-origin: 402px 350px; }
+.wave__hand { transform-origin: 416px 270px; }
+.wave__head { transform-origin: 200px 285px; }
+
+.wave__eye {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.wave__lines { opacity: 0; }
+
+/* Shown only when the visitor has asked for less motion, so a still
+   cartoon is not mistaken for a broken one. */
+.caption__still { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .caption__still { display: inline; }
+}
+
+/* Motion ------------------------------------------------------------ */
+/* The cartoon arrives, waves once and then only blinks; wave.js replays
+   the wave on hover or tap. The underline draws once after the headline.
+   `both` keeps the animations findable after they end. */
+@media (prefers-reduced-motion: no-preference) {
+  .wave { animation: wave-in 700ms 250ms cubic-bezier(0.3, 1.4, 0.5, 1) backwards; }
+  .wave__forearm { animation: wave-arm 1500ms 900ms ease-in-out both; }
+  .wave__hand { animation: wave-hand 1500ms 900ms ease-in-out both; }
+  .wave__head { animation: wave-head 1500ms 900ms ease-in-out both; }
+  .wave__lines { animation: wave-lines 1500ms 900ms ease-out both; }
+  .wave__eye { animation: wave-blink 5s 3s infinite; }
+  .mark__stroke path { animation: draw 900ms 700ms var(--ease) backwards; }
+}
+
+@keyframes wave-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.9);
+  }
+}
+
+@keyframes wave-arm {
+  0%, 100% { transform: rotate(0deg); }
+  14%, 54% { transform: rotate(15deg); }
+  34%, 74% { transform: rotate(-11deg); }
+}
+
+@keyframes wave-hand {
+  0%, 100% { transform: rotate(0deg); }
+  14%, 54% { transform: rotate(11deg); }
+  34%, 74% { transform: rotate(-9deg); }
+}
+
+@keyframes wave-head {
+  0%, 100% { transform: rotate(0deg); }
+  30%, 70% { transform: rotate(-3deg); }
+}
+
+@keyframes wave-lines {
+  0%, 100% { opacity: 0; }
+  18%, 76% { opacity: 1; }
+}
+
+@keyframes wave-blink {
+  0%, 95%, 100% { transform: scaleY(1); }
+  97.5% { transform: scaleY(0.1); }
+}
+
+@keyframes draw {
+  from { stroke-dashoffset: 1; }
+}

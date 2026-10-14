@@ -1,4 +1,4 @@
-// Plays the looping diagrams inside the project cards. Each one is inline
+// Plays the looping diagrams in the Selected work panels. Each one is inline
 // SVG in index.html, drawn in its finished state; this animates it from
 // empty and loops it. Loaded on demand by main.js.
 
@@ -16,13 +16,14 @@ export function startReels(reels) {
   reels.forEach(mount);
 }
 
-// A reel only runs while its card is open, it is on screen and the visitor
-// has not paused it.
+// A reel only runs while its project is open, it is on screen and the
+// visitor has not paused it. work.js fires `project-toggle` on the panel
+// whenever it opens or closes.
 function mount(reel) {
   const scene = SCENES[reel.dataset.reel];
   if (!scene) return;
 
-  const card = reel.closest('details');
+  const panel = reel.closest('.project__panel');
   const toggle = reel.querySelector('[data-reel-toggle]');
   const clock = reel.querySelector('[data-reel-clock]');
   let timeline = null;
@@ -39,7 +40,7 @@ function mount(reel) {
   };
 
   const sync = () => {
-    const playing = card.open && inView && !paused;
+    const playing = !panel.hidden && inView && !paused;
     if (playing && !timeline) {
       timeline = createTimeline(reel, scene);
       reel.classList.add('is-live');
@@ -63,9 +64,9 @@ function mount(reel) {
     sync();
   });
 
-  // Reopening a card starts its diagram again from the top.
-  card.addEventListener('toggle', () => {
-    if (card.open) {
+  // Opening a project again starts its diagram from the top.
+  panel.addEventListener('project-toggle', () => {
+    if (!panel.hidden) {
       setPaused(false);
       timeline?.restart();
     }
