@@ -86,8 +86,8 @@
   background: var(--paper) radial-gradient(rgba(17, 18, 20, 0.13) 0.8px, transparent 0.8px) 0 0 / 16px 16px;
 }
 
-/* A browser window onto the top of the page: the screenshot fills the plate
-   and crops at the bottom, never overflowing. */
+/* The whole screenshot always shows: it fills the plate's box and is
+   letterboxed on the dot grid, never cropped or overflowing. */
 .reel__scene--plate {
   display: grid;
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);
@@ -100,8 +100,8 @@
   height: 100%;
   max-width: none;
   max-height: none;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: contain;
+  object-position: center;
   border: 0;
 }
 
