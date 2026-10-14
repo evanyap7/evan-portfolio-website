@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Portfolio checks</title>
+  <style>
+    body { margin: 16px; font: 13px/1.45 ui-monospace, Menlo, monospace; }
+    table { border-collapse: collapse; }
+    td { padding: 2px 12px 2px 0; border-bottom: 1px solid #e5e5e5; vertical-align: top; }
+    .pass td:first-child { color: #1a7f37; }
+    .fail { color: #b00020; }
+    .frames { position: absolute; top: 0; left: -99999px; }
+  </style>
+</head>
+<body>
+  <h1 data-summary>Running…</h1>
+  <table data-table></table>
+  <div class="frames" data-frames></div>
+  <script type="module" src="run.js"></script>
+</body>
+</html>
