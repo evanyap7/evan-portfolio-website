@@ -144,7 +144,7 @@
 .reel__text {
   fill: var(--ink);
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
   text-anchor: middle;
 }
@@ -157,7 +157,7 @@
 .reel__text--note {
   fill: var(--ink-3);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 400;
   letter-spacing: 0.06em;
   text-transform: uppercase;
