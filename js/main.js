@@ -1,4 +1,7 @@
 import { CONTACT_EMAIL } from './config.js';
+import { initCopy } from './contact.js';
+import { initIndex } from './index.js';
+import { initMenu } from './menu.js';
 import { initReveal } from './reveal.js';
 import { initWave } from './wave.js';
 import { initWork } from './work.js';
@@ -31,7 +34,10 @@ function initReels() {
 }
 
 applyContactEmail();
+initMenu();
+initIndex();
 initWave();
 initWork();
+initCopy();
 initReveal();
 initReels();

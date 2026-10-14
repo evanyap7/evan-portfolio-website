@@ -193,7 +193,13 @@ export async function sheetIndex(win) {
   ];
 }
 
-export function hashSheet(win) {
+// The page scrolls to the hash smoothly, so wait for it to stop first.
+export async function hashSheet(win) {
+  let last = -1;
+  for (let i = 0; i < 40 && win.scrollY !== last; i += 1) {
+    last = win.scrollY;
+    await wait(150);
+  }
   const number = win.document.querySelector('[data-where-n]')?.textContent;
   return [result('arriving at #toolkit marks sheet 05', number === '05', number)];
 }
@@ -214,10 +220,13 @@ export function menu(win) {
   return out;
 }
 
-// In an unfocused iframe the clipboard refuses, so either outcome passes.
-export async function copy(win) {
+// In an unfocused iframe the clipboard refuses, so either outcome passes. The
+// menu check leaves its button focused, and a focused frame leaves the
+// clipboard waiting for a real click, so hand focus back to the page first.
+export async function copy(win, frame) {
   const button = win.document.querySelector('[data-copy]');
   if (!button || button.hidden) return [result('copy button shown', false, 'missing or hidden')];
+  frame.blur();
   button.click();
   await wait(150);
   return [result('copy button responds', /Copied|Selected/.test(button.textContent), button.textContent)];

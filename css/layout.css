@@ -73,8 +73,13 @@
   }
 }
 
+/* Wide enough for the longest label ("05 / 06 Toolkit and credentials", 31
+   characters of monospace plus letter-spacing) so the ticks stay put as the
+   name changes. */
 .bar__where {
+  min-width: calc(31 * (1ch + 0.06em));
   color: var(--ink-2);
+  text-align: left;
   white-space: nowrap;
 }
 
