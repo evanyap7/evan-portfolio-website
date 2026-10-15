@@ -1,31 +1,23 @@
-/* Desk bar ---------------------------------------------------------- */
-/* Identity on the left, the sheet index in the middle, navigation on the
-   right. Below 1024px the index and navigation move into the menu. */
-.bar {
+/* Nav --------------------------------------------------------------- */
+/* A floating pill: the wordmark on the left, the sections in the middle
+   and the resume on the right. Below 1024px the sections and the resume
+   move into the menu. */
+.nav {
   position: sticky;
-  top: 0;
+  top: var(--nav-top);
   z-index: 10;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 16px;
-  height: var(--bar);
-  padding: 0 calc(var(--gap) + 12px);
-  background: var(--desk);
-}
-
-/* How far down the page the reader is, as a hairline in the accent along
-   the bar's bottom edge. index.js sets its scale as the page scrolls. */
-.bar__progress {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  pointer-events: none;
+  width: calc(100% - 2 * var(--gutter));
+  max-width: 1120px;
+  height: var(--nav);
+  margin: var(--nav-top) auto 0;
+  padding: 0 10px 0 24px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
 }
 
 .wordmark {
@@ -34,7 +26,7 @@
   align-items: center;
   min-height: 44px;
   font-family: "Satoshi", var(--font-sans);
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.05em;
@@ -42,462 +34,286 @@
 }
 
 .wordmark__dot {
-  color: var(--accent);
+  color: var(--dim);
 }
 
-.bar__index {
+.nav__links {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 15px;
 }
 
-.ticks {
-  display: flex;
-  align-items: center;
-}
-
-/* Each tick is a 12 × 24px target around a 1px line. The current one is
-   drawn as an outlined box. */
-.ticks a {
-  display: grid;
-  place-items: center;
-  width: 12px;
-  height: 24px;
-}
-
-.ticks a::before {
-  content: "";
-  width: 1px;
-  height: 13px;
-  background: var(--ink-3);
-}
-
-.ticks a[aria-current="true"] {
-  width: 34px;
-}
-
-.ticks a[aria-current="true"]::before {
-  width: 22px;
-  border: 1px solid var(--ink);
-  background: transparent;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .ticks a,
-  .ticks a::before {
-    transition: width 300ms var(--ease);
-  }
-}
-
-/* Wide enough for the longest label ("05 / 06 Toolkit and credentials", 31
-   characters of monospace plus letter-spacing) so the ticks stay put as the
-   name changes. */
-.bar__where {
-  min-width: calc(31 * (1ch + 0.06em));
-  color: var(--ink-2);
-  text-align: left;
-  white-space: nowrap;
-}
-
-.bar__where b {
-  color: var(--ink);
-  font-weight: 400;
-}
-
-.bar__nav {
-  justify-self: end;
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  color: var(--ink-2);
-  font-size: var(--t-nav);
-}
-
-.bar__nav a {
+/* The section on screen is marked by a soft pill as well as by colour. */
+.nav__links a {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  transition: color 200ms, background-color 200ms;
+}
+
+.nav__links a[aria-current="true"] {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text);
 }
 
 @media (hover: hover) {
-  .bar__nav a:hover { color: var(--ink); }
+  .nav__links a:hover { color: var(--text); }
 }
 
-.bar__menu {
+.nav__end {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav .nav__menu {
   display: none;
 }
 
 @media (max-width: 1023px) {
-  .bar {
+  .nav {
     grid-template-columns: 1fr auto;
+    padding: 0 8px 0 20px;
   }
 
-  .bar__index,
-  .bar__nav {
+  .nav .nav__links,
+  .nav .nav__resume {
     display: none;
   }
 
-  .js .bar__menu {
+  .js .nav .nav__menu {
     display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 44px;
-    min-height: 44px;
-    font-size: 14px;
-    font-weight: 500;
   }
 }
 
+/* How far down the page the reader is: a thin line along the top of the
+   screen. index.js sets its scale as the page scrolls. */
+.progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 11;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
 /* Menu -------------------------------------------------------------- */
-/* Below 1024px: the six sheets, the resume and email. */
+/* Below 1024px: the full screen under the nav, with the sections, the
+   resume and the email. */
 .menu {
   position: fixed;
-  top: var(--bar);
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0;
   z-index: 9;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 8px calc(var(--gap) + 12px) 32px;
-  background: var(--desk);
+  padding: calc(var(--nav-top) + var(--nav) + 24px) var(--gutter) 40px;
+  background: var(--bg);
 }
 
 @media (min-width: 1024px) {
   .menu { display: none; }
 }
 
-.menu__sheets {
-  border-top: 1px solid var(--rule-2);
+.menu__links {
+  max-width: 1120px;
+  margin: 0 auto;
+  border-top: 1px solid var(--line);
 }
 
-.menu__sheets a {
+.menu__links a {
   display: flex;
-  align-items: baseline;
-  gap: 16px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--rule);
-  font-size: 24px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 30px;
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
-.menu__sheets .mono {
-  min-width: 2.8em; /* room for the current sheet's square, so titles stay aligned */
-  color: var(--ink-2);
+.menu__links a[aria-current="true"] {
+  color: var(--text);
 }
 
-/* The current sheet is marked by a square as well as by colour. The second
-   declaration gives it empty alt text so screen readers skip it. */
-.menu__sheets a[aria-current="true"] .mono {
-  color: var(--accent);
-}
-
-.menu__sheets a[aria-current="true"] .mono::before {
-  content: "■ ";
-  content: "■ " / "";
+/* The current section is marked by a dot as well as by colour. */
+.menu__links a[aria-current="true"]::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text);
 }
 
 .menu__more {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 24px;
-  margin-top: 24px;
+  gap: 12px;
+  max-width: 1120px;
+  margin: 28px auto 0;
 }
 
-.menu__more .link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
+/* Sections ---------------------------------------------------------- */
+.section {
+  width: calc(100% - 2 * var(--gutter));
+  max-width: calc(var(--wide) - 48px);
+  margin: 0 auto;
+  padding-top: var(--space);
 }
 
-/* Sheet ------------------------------------------------------------- */
-/* One per section. On landscape screens from 1024 × 650 each fills exactly
-   one screen below the bar; elsewhere, portrait tablets included, it grows
-   with its content. */
-.sheet {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  margin: 0 var(--gap) var(--gap);
-  padding: calc(var(--frame) + 18px) calc(var(--frame) + var(--pad)) calc(var(--frame) + 56px);
-  background: var(--sheet);
-}
-
-/* The frame is four hairlines, one per edge, so it can draw itself in
-   clockwise the first time the sheet comes into view (reveal.js adds
-   .is-drawn). Each edge's length is a registered custom property; a
-   browser without @property simply shows the whole frame. */
-@property --edge-1 { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
-@property --edge-2 { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
-@property --edge-3 { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
-@property --edge-4 { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
-
-.sheet::before {
-  --edge-1: 100%;
-  --edge-2: 100%;
-  --edge-3: 100%;
-  --edge-4: 100%;
-  content: "";
-  position: absolute;
-  inset: var(--frame);
-  background:
-    linear-gradient(var(--rule), var(--rule)) left top / var(--edge-1) 1px no-repeat,
-    linear-gradient(var(--rule), var(--rule)) right top / 1px var(--edge-2) no-repeat,
-    linear-gradient(var(--rule), var(--rule)) right bottom / var(--edge-3) 1px no-repeat,
-    linear-gradient(var(--rule), var(--rule)) left bottom / 1px var(--edge-4) no-repeat;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .sheet::before {
-    transition:
-      --edge-1 450ms var(--ease) 100ms,
-      --edge-2 300ms var(--ease) 550ms,
-      --edge-3 450ms var(--ease) 850ms,
-      --edge-4 300ms var(--ease) 1300ms;
-  }
-
-  .js .sheet:not(.is-drawn)::before {
-    --edge-1: 0%;
-    --edge-2: 0%;
-    --edge-3: 0%;
-    --edge-4: 0%;
-  }
-
-  /* The sheet label types itself in as the frame starts to draw. */
-  .sheet__label {
-    transition: clip-path 600ms steps(18, end) 150ms;
-  }
-
-  .js .sheet:not(.is-drawn) .sheet__label {
-    clip-path: inset(0 100% 0 0);
-  }
-}
-
-@media (min-width: 1024px) and (min-height: 650px) and (min-aspect-ratio: 1/1) {
-  .sheet {
-    min-height: calc(100vh - var(--bar) - var(--gap));
-    min-height: calc(100svh - var(--bar) - var(--gap));
-  }
-}
-
-.sheet__label {
-  display: flex;
-  gap: 14px;
-  color: var(--ink-3);
-}
-
-.sheet__label b {
-  color: var(--ink);
-  font-weight: 400;
-}
-
-.sheet__head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--rule-2);
-}
-
-.sheet__head .mono {
-  color: var(--ink-3);
-  white-space: nowrap;
-}
-
-/* On a phone the note drops under the title rather than squeezing it. */
-@media (max-width: 719px) {
-  .sheet__head {
-    flex-wrap: wrap;
-    align-items: baseline;
-    row-gap: 6px;
-  }
-}
-
-.sheet__title {
-  font-family: var(--font-serif);
+/* The huge section titles: one word in the italic serif. */
+.title {
   font-size: var(--t-title);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.015em;
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  text-align: center;
+  overflow-wrap: break-word;
 }
 
-/* On short laptop screens the sheet gives up a little chrome so its content
-   still fits: a smaller heading and a shorter bottom margin. */
-@media (min-width: 1024px) and (max-height: 760px) {
-  .sheet {
-    padding-bottom: calc(var(--frame) + 48px);
-  }
+.title .serif {
+  padding-right: 0.04em;
+  letter-spacing: -0.02em;
 }
 
-/* The "next sheet" link sits on the bottom edge of the frame. */
-.sheet__next {
-  position: absolute;
-  bottom: var(--frame);
-  display: flex;
-  align-items: center;
-  border-top: 1px solid var(--rule);
-  background: var(--sheet);
-  color: var(--ink-3);
+.title + * {
+  margin-top: clamp(48px, 6vw, 88px);
 }
 
-.sheet__next {
-  position: absolute;
-  bottom: var(--frame);
-  display: flex;
-  align-items: center;
-  border-top: 1px solid var(--rule);
-  background: var(--sheet);
-  color: var(--ink-3);
-  left: var(--frame);
-  gap: 8px;
-  padding: 8px 12px 7px;
-  border-right: 1px solid var(--rule);
-}
-
-@media (hover: hover) {
-  .sheet__next:hover { color: var(--accent); }
-}
-
-/* A thumb target on phones and tablets, in portrait or landscape. */
-@media (max-width: 1023px) {
-  .sheet__next {
-    min-height: 44px;
-  }
-}
-
-@media (max-width: 719px) {
-  .sheet {
-    padding-bottom: calc(var(--frame) + 12px);
-  }
-
-  .sheet__title {
-    font-size: 40px;
-  }
-
-  .sheet__next {
-    position: static;
-    align-self: flex-start;
-    border: 1px solid var(--rule);
-  }
-
-  .sheet__next {
-    margin-top: 28px;
-  }
-
-}
-
-/* Controls ---------------------------------------------------------- */
-.button {
+/* Pills ------------------------------------------------------------- */
+.pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   min-height: 44px;
-  padding: 0 18px;
-  border-radius: 2px;
-  background: var(--ink);
-  color: var(--sheet);
-  font-size: var(--t-link);
+  padding: 0 22px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 15px;
   font-weight: 500;
-  transition: background-color 200ms;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: border-color 200ms, background-color 200ms, color 200ms;
 }
 
-.link {
-  font-weight: 500;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.25em;
-  transition: color 200ms;
+.pill--solid {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+}
+
+.pill .icon {
+  width: 17px;
+  height: 17px;
 }
 
 @media (hover: hover) {
-  .button:hover { background: var(--accent); }
-  .link:hover { color: var(--accent); }
+  .pill:hover { border-color: var(--muted); }
+  .pill--solid:hover { border-color: #d4d4d4; background: #d4d4d4; }
 }
 
-/* Lists of facts ---------------------------------------------------- */
-/* .spec: short label over value, in columns. .rows: label beside value. */
-.spec {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-top: 1px solid var(--rule-2);
+/* The small pill with a round photo, above the headline. */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 0 16px 0 6px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 14px;
 }
 
-.spec > div {
-  padding: 12px 20px 0 0;
+.tag img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 22%;
 }
 
-.spec dt {
-  color: var(--ink-3);
-}
-
-.spec dd {
-  margin-top: 4px;
-  font-size: var(--t-text);
-  line-height: 1.4;
-}
-
-.rows {
-  border-top: 1px solid var(--rule-2);
-}
-
-.rows > div {
-  display: grid;
-  grid-template-columns: 8.5rem minmax(0, 1fr);
-  gap: 2px 16px;
-  padding: 7px 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-.rows dt {
+.tag b {
+  color: var(--text);
   font-weight: 500;
 }
 
+/* Cards ------------------------------------------------------------- */
+/* Quiet bordered panels with a faint glow along the top. */
+.card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 60%),
+    var(--card);
+  transition: border-color 200ms;
+}
+
+@media (hover: hover) {
+  a.card:hover { border-color: var(--line-2); }
+}
+
+/* Hairline rows ----------------------------------------------------- */
+/* A label column beside its value, one row per fact. */
+.rows {
+  border-top: 1px solid var(--line);
+}
+
+.rows > div,
+.rows > li {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: 8px 32px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+
 .rows dt.mono {
-  padding-top: 3px;
-  color: var(--ink-3);
+  padding-top: 4px;
+  color: var(--dim);
 }
 
 .rows dd {
-  color: var(--ink-2);
-  font-size: var(--t-text);
-  line-height: 1.45;
-}
-
-.rows--stacked > div {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.caption {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--rule);
-  color: var(--ink-3);
+  color: var(--muted);
 }
 
 @media (max-width: 719px) {
-  .spec {
+  .rows > div,
+  .rows > li {
     grid-template-columns: minmax(0, 1fr);
+    padding: 20px 0;
   }
+}
 
-  .spec > div {
-    padding: 12px 0;
-    border-bottom: 1px solid var(--rule);
-  }
+/* Footer ------------------------------------------------------------ */
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  width: calc(100% - 2 * var(--gutter));
+  max-width: calc(var(--wide) - 48px);
+  margin: var(--space) auto 0;
+  padding: 28px 0 36px;
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+}
 
-  .rows > div {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .caption {
-    flex-direction: column;
-    gap: 2px;
-  }
+.footer .wordmark {
+  min-height: 44px;
+  color: var(--muted);
+  font-size: 20px;
 }
