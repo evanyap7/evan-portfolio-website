@@ -254,54 +254,10 @@
 .cal__days { stroke: var(--dim); stroke-width: 3.5; }
 .cal__tick { stroke: var(--signal); stroke-width: 3; stroke-dasharray: 1 2; }
 
-/* Cartoon ----------------------------------------------------------- */
-/* Flat colour inside a dark outline. Limbs are thick strokes laid over a
-   slightly thicker outline stroke, which gives them the same outline. */
-.wave__art {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-
-.wave__ink {
-  stroke: #111;
-  stroke-width: 2.5;
-  stroke-linejoin: round;
-}
-
-.wave__line {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.wave__line--flat { stroke-linecap: butt; }
-
-/* The forearm swings from the elbow and the hand from the wrist. Pixel
-   origins, because Safari ignores transform-box on some SVG groups. */
-.wave__forearm { transform-origin: 402px 350px; }
-.wave__hand { transform-origin: 416px 270px; }
-.wave__head { transform-origin: 200px 285px; }
-
-.wave__eye {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.wave__lines { opacity: 0; }
-
 /* Motion ------------------------------------------------------------ */
-/* The cartoon waves once when About first comes into view (wave.js adds
-   .is-waving) and again on hover or tap. `both` keeps the animations
-   findable after they end, so wave.js can rewind them. */
+/* Others' two drawings play once the first time their plate is seen
+   (reveal.js adds .is-visible). */
 @media (prefers-reduced-motion: no-preference) {
-  .wave.is-waving .wave__forearm { animation: wave-arm 1500ms 250ms ease-in-out both; }
-  .wave.is-waving .wave__hand { animation: wave-hand 1500ms 250ms ease-in-out both; }
-  .wave.is-waving .wave__head { animation: wave-head 1500ms 250ms ease-in-out both; }
-  .wave.is-waving .wave__lines { animation: wave-lines 1500ms 250ms ease-out both; }
-  .wave__eye { animation: wave-blink 5s 3s infinite; }
-
   .is-visible .pair .keys__white rect { animation: key-press 600ms calc(300ms + var(--i) * 220ms) var(--ease-out) both; }
   .is-visible .pair .keys__waves { animation: draw 700ms 1900ms var(--ease) backwards; }
   .is-visible .pair .moon__glow { animation: moon-glow 1400ms 300ms ease-out 3 both; }
@@ -323,33 +279,6 @@
 @keyframes moon-glow {
   0% { opacity: 0.7; transform: scale(0.85); }
   100% { opacity: 0.35; transform: scale(1); }
-}
-
-@keyframes wave-arm {
-  0%, 100% { transform: rotate(0deg); }
-  14%, 54% { transform: rotate(15deg); }
-  34%, 74% { transform: rotate(-11deg); }
-}
-
-@keyframes wave-hand {
-  0%, 100% { transform: rotate(0deg); }
-  14%, 54% { transform: rotate(11deg); }
-  34%, 74% { transform: rotate(-9deg); }
-}
-
-@keyframes wave-head {
-  0%, 100% { transform: rotate(0deg); }
-  30%, 70% { transform: rotate(-3deg); }
-}
-
-@keyframes wave-lines {
-  0%, 100% { opacity: 0; }
-  18%, 76% { opacity: 1; }
-}
-
-@keyframes wave-blink {
-  0%, 95%, 100% { transform: scaleY(1); }
-  97.5% { transform: scaleY(0.1); }
 }
 
 @keyframes draw {

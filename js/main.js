@@ -5,7 +5,6 @@ import { initIndex } from './index.js';
 import { initMenu } from './menu.js';
 import { initReveal } from './reveal.js';
 import { initTabs } from './tabs.js';
-import { initWave } from './wave.js';
 
 // Every page loads this one script. Each part looks for its own markup and
 // does nothing on a page without it.
@@ -40,7 +39,6 @@ function initReels() {
 applyContactEmail();
 initMenu();
 initIndex();
-initWave();
 initCount();
 initTabs();
 initCopy();
