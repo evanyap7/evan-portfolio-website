@@ -5,194 +5,268 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>I built an LLM trading agent, then deleted the LLM | Evan Yap</title>
   <meta name="description" content="Case study: an autonomous trading agent whose models cannot place or size an order. I backtested Claude agents against a plain momentum baseline, found no edge for about $27 a year, and removed the LLM layer.">
-  <meta name="theme-color" content="#e6e5e0">
+  <meta name="theme-color" content="#000000">
   <meta property="og:title" content="I built an LLM trading agent, then deleted the LLM">
   <meta property="og:description" content="A case study in building a risk-bounded trading agent and measuring whether the LLM earned its place. It did not.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.evanyap.com/case-studies/trading-agent">
   <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://www.evanyap.com/case-studies/trading-agent">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23111214'/%3E%3Crect x='4.5' y='4.5' width='23' height='23' fill='none' stroke='%23fafaf7'/%3E%3Crect x='9' y='19' width='14' height='3' fill='%232541e6'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000'/%3E%3Crect x='8' y='20' width='16' height='3' rx='1.5' fill='%23fafafa'/%3E%3C/svg%3E">
 
-  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&f[]=satoshi@900&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&family=Instrument+Serif:ital@1&display=swap">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@900&display=swap">
 
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/layout.css">
-  <link rel="stylesheet" href="/css/sheets.css">
+  <link rel="stylesheet" href="/css/figures.css">
+  <link rel="stylesheet" href="/css/project.css">
   <link rel="stylesheet" href="/css/case-study.css">
+
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <span class="progress" aria-hidden="true" data-progress></span>
 
-  <header class="bar bar--case">
-    <a class="wordmark" href="/" aria-label="Evan Yap, back to top">evan<span class="wordmark__dot">.</span></a>
-    <nav class="bar__nav" aria-label="Primary">
-      <a href="/#work-trading-agent">← Back to work</a>
-      <a class="link" href="https://github.com/evanyap7/evans-trading-agent" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+  <header class="nav">
+    <a class="wordmark" href="/" aria-label="Evan Yap, home">evan<span class="wordmark__dot">.</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="/#about">About</a>
+      <a href="/#experience">Experience</a>
+      <a href="/#work">Work</a>
+      <a href="/#toolkit">Toolkit</a>
+      <a href="/#contact">Contact</a>
     </nav>
+    <div class="nav__end">
+      <a class="pill pill--solid nav__resume" href="/resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
+      <button class="pill nav__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-button>Menu</button>
+    </div>
   </header>
 
-  <main id="main" class="sheet case">
-    <p class="eyebrow mono">Case study · Autonomous Trading Agent · Python</p>
-    <h1 class="case__title">I built an LLM trading agent, measured it, and <em>deleted the LLM.</em></h1>
-    <p class="case__lede">The agent trades a small Webull Singapore account on its own, and no model can size or place an order. I tested whether Claude made it better than a plain momentum rule. It did not, so the LLM layer is gone.</p>
-
-    <dl class="figures case__figures">
-      <div class="figure"><dt>Automated tests, run in CI on every push</dt><dd>174</dd></div>
-      <div class="figure"><dt>Symbols in the 2024 backtest, replayed through the live agent code</dt><dd>112</dd></div>
-      <div class="figure"><dt>Yearly API cost of the LLM layer I removed</dt><dd>~$27</dd></div>
-    </dl>
-
-    <h2>The short version</h2>
-    <ul class="case__list">
-      <li><strong>What I built.</strong> An autonomous swing-trading agent where a model may only <em>propose</em>. Deterministic code verifies, sizes and risk-checks every idea, and an append-only ledger records each step.</li>
-      <li><strong>What I tested.</strong> Claude agents (Haiku 4.5 screening, Opus 5.5 proposing) against a free, rule-based momentum baseline, both run through identical verification, sizing, stops and kill switch.</li>
-      <li><strong>What I found.</strong> No measurable edge. The LLM cost about $27 a year on a $1,500 account and did not beat the baseline on the rule I had set. I removed it.</li>
-      <li><strong>The uncomfortable part.</strong> Neither strategy beat simply holding the S&amp;P 500 in 2024. I report that as the result.</li>
+  <nav class="menu" id="menu" aria-label="Menu" hidden data-menu>
+    <ul class="menu__links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#work">Selected work</a></li>
+      <li><a href="/#toolkit">Toolkit</a></li>
+      <li><a href="/#contact">Contact</a></li>
     </ul>
-
-    <h2>The problem</h2>
-    <p>I wanted a system that could run unattended without my having to trust a language model with money. Models are fluent and sometimes wrong, so the design question was not "how smart can the agent be" but "how bad can a failure get, and how fast can I see it."</p>
-
-    <h2>How it is built</h2>
-    <p>The only step that is not deterministic code is the one that proposes a trade. Everything before it is data, and everything after it is a gate.</p>
-
-    <div class="flow" role="group" aria-label="Pipeline, in three stages">
-      <section class="flow__lane">
-        <h3 class="flow__label">1 · Research, after the US close</h3>
-        <ol class="flow__steps">
-          <li><span class="flow__step">Evidence</span></li>
-          <li><span class="flow__step flow__step--model">Agent proposes</span></li>
-          <li><span class="flow__step">Verifier</span></li>
-          <li><span class="flow__step">Sizing</span></li>
-          <li><span class="flow__step">Risk engine</span></li>
-          <li><span class="flow__step">Queue</span></li>
-        </ol>
-      </section>
-      <section class="flow__lane">
-        <h3 class="flow__label">2 · Execute, 09:45 New York time</h3>
-        <ol class="flow__steps">
-          <li><span class="flow__step">Fresh quotes</span></li>
-          <li><span class="flow__step">Re-verify</span></li>
-          <li><span class="flow__step">Re-size</span></li>
-          <li><span class="flow__step">Full risk check</span></li>
-          <li><span class="flow__step">Broker preview</span></li>
-          <li><span class="flow__step">Place order</span></li>
-        </ol>
-      </section>
-      <section class="flow__lane">
-        <h3 class="flow__label">3 · Monitor, every 5 minutes</h3>
-        <ol class="flow__steps">
-          <li><span class="flow__step">Reconcile with broker</span></li>
-          <li><span class="flow__step">Circuit breakers</span></li>
-          <li><span class="flow__step">Stop, target and time exits</span></li>
-        </ol>
-      </section>
-    </div>
-    <p class="case__note">Blue marks the only step that was ever a model. After the experiment below, even that step is a rule.</p>
-
-    <h2>Four decisions that matter</h2>
-    <ol class="case__decisions">
-      <li>
-        <h3>The proposer cannot size or send an order</h3>
-        <p>An independent verifier recomputes what each proposal implies from my own data. It rejects anything ungrounded (every cited evidence ID must exist in this cycle, and the symbol's own price evidence must be cited), stale, priced outside a collar around the quote, with a stop too close or too far in ATRs, without enough reward for the risk, or without edge after costs.</p>
-        <p>Position size comes from quarter-Kelly on the stated edge, capped at 2% risk per trade and 6% of equity at risk across all positions. I used a quarter because a model's confidence figures are not calibrated.</p>
-        <p class="case__code"><code>verifier.py</code> · <code>portfolio.py</code> · <code>risk.py</code></p>
-      </li>
-      <li>
-        <h3>The risk limits are a file the agent cannot write</h3>
-        <p>Limits live in <code>config/risk_limits.yaml</code> and change only through a human git commit. The file's hash is recorded with every risk decision, so I can tell which limits applied to any trade. Examples: a 5% drawdown breaker, a 2% daily-loss check that blocks new entries, and at most five new trades a day.</p>
-      </li>
-      <li>
-        <h3>Execution is idempotent and never retries blindly</h3>
-        <p>Client order IDs are derived deterministically from the decision, so a repeated submit finds the existing order. Each order is previewed first, and a preview cost that differs from the intended cost is rejected. If the broker's answer is ambiguous, the order moves to a reconcile state and is resolved by asking the broker, not by sending it again. After a fill, a broker-side stop is placed and re-armed if it goes missing.</p>
-        <p class="case__code"><code>execution.py</code></p>
-      </li>
-      <li>
-        <h3>The audit trail is tamper-evident, and the kill switch is a file</h3>
-        <p>The <code>events</code> and <code>evidence</code> tables are insert-only, enforced by SQLite triggers that abort any update or delete. Each event stores the previous hash and its own, so an edit breaks the chain. Tables such as orders and trades are projections that can be rebuilt from the events plus broker history.</p>
-        <p>The kill switch needs no access to the running process: create <code>state/KILL</code> and new orders stop, and open entry orders are cancelled on the next pass. Real orders also need three separate switches to be on, so any one being off turns entries into rejections.</p>
-        <p class="case__code"><code>ledger.py</code> · <code>killswitch.py</code></p>
-      </li>
-    </ol>
-
-    <h2>The experiment: did Claude earn its place?</h2>
-    <p>I replayed 2024 (about 252 trading days) over the 100 most liquid US stocks plus an S&amp;P 500 ETF, starting from $1,500. Both agents ran through the same verifier, sizing, stops, slippage model and kill switch. Before the run I set the bar: the Claude agent had to beat the baseline on <strong>both</strong> Sharpe ratio and win rate.</p>
-
-    <div class="case__table" role="region" aria-label="Backtest results, scrollable" tabindex="0">
-      <table>
-        <caption class="visually-hidden">Backtest results for 2024: Claude agent, momentum baseline and SPY buy-and-hold</caption>
-        <thead>
-          <tr><th scope="col">2024</th><th scope="col">Claude agent</th><th scope="col">Momentum baseline</th><th scope="col">SPY buy-and-hold</th></tr>
-        </thead>
-        <tbody>
-          <tr><th scope="row">Net return</th><td>+20.32%</td><td>+24.71%</td><td>+25.59%</td></tr>
-          <tr><th scope="row">Sharpe ratio</th><td>1.39</td><td>1.36</td><td>1.89</td></tr>
-          <tr><th scope="row">Max drawdown</th><td>−6.36%</td><td>−12.36%</td><td>−8.41%</td></tr>
-          <tr><th scope="row">Win rate</th><td>43.9%</td><td>47.4%</td><td>n/a</td></tr>
-          <tr><th scope="row">Profit factor</th><td>1.42</td><td>1.64</td><td>n/a</td></tr>
-          <tr><th scope="row">Trades</th><td>107</td><td>133</td><td>n/a</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p><strong>Verdict: it failed my rule.</strong> The Claude agent's Sharpe lead was 0.03, which is noise, and its win rate was 3.5 points lower. Its one real advantage was roughly half the drawdown. A measured research cycle cost about $0.11, which is about $27 a year, or 1.8% of a $1,500 account, before any benefit.</p>
-    <p>So I removed the LLM layer, kept the baseline, and kept the harness that told me the truth.</p>
-
-    <h3 class="case__sub">What I would not claim from this</h3>
-    <ul class="case__list">
-      <li>It is one year, and 2024 was a strong bull market for the benchmark.</li>
-      <li>It is one run of a nondeterministic model, so a rerun would give different numbers. The Sharpe gap of 0.03 sits well inside that noise.</li>
-      <li>With a $1,500 account, whole-share rounding and fixed order costs affect both agents.</li>
-      <li>An early 49-call partial run showed a 65% win rate for Claude on a handful of trades. I discarded it as statistically meaningless once the full year existed.</li>
-    </ul>
-
-    <h2>What went wrong along the way</h2>
-    <ol class="case__list case__list--numbered">
-      <li><strong>My first comparison was invalid.</strong> The harness never loaded the API key, so every model call failed. The backtester swallowed the error as "no trade" and printed a fake 0% win rate for Claude. Now the harness loads its configuration, records the first error of each kind, and aborts if a model agent only produces errors.</li>
-      <li><strong>I killed healthy runs.</strong> I was watching the wrong cache directory, so a run waiting on the network looked hung. I stopped it after 40 minutes and stranded about $7.50 of work.</li>
-      <li><strong>The cache was fragile.</strong> Its key included account state that depended on earlier model decisions, so only an identical chain of decisions could reuse it.</li>
-      <li><strong>I had no visibility into spend.</strong> About $13 looked like nothing until I added a spend ledger with a hard cap, an abort after three failures in a row, and a request timeout.</li>
-    </ol>
-
-    <h2>Where it stands</h2>
-    <p>The baseline agent roughly matches SPY in 2024 and does not beat it. I would rather say that plainly than tune until a chart looks good. The system is built to go live one gate at a time: read-only against the broker's test environment, then shadow mode with orders recorded but not sent, then test-environment orders, then live. I will compare each stage against the backtest before adding size.</p>
-    <p>If I want an edge, the next step is testing other signals inside the same verifier and risk framework, not putting a model back in.</p>
-
-    <h2>Read the code</h2>
-    <div class="case__table" role="region" aria-label="Where things live, scrollable" tabindex="0">
-      <table>
-        <thead><tr><th scope="col">Concern</th><th scope="col">File</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Independent proposal checks</th><td><code>src/trading_agent/verifier.py</code></td></tr>
-          <tr><th scope="row">Sizing from edge</th><td><code>src/trading_agent/portfolio.py</code></td></tr>
-          <tr><th scope="row">Deterministic risk engine</th><td><code>src/trading_agent/risk.py</code></td></tr>
-          <tr><th scope="row">Idempotent execution</th><td><code>src/trading_agent/execution.py</code></td></tr>
-          <tr><th scope="row">Hash-chained ledger</th><td><code>src/trading_agent/ledger.py</code></td></tr>
-          <tr><th scope="row">Kill switch</th><td><code>src/trading_agent/killswitch.py</code></td></tr>
-          <tr><th scope="row">Backtester and harness</th><td><code>src/trading_agent/backtest.py</code>, <code>scripts/backtest_harness.py</code></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="project__links case__links">
-      <a class="link" href="https://github.com/evanyap7/evans-trading-agent" target="_blank" rel="noopener">Source on GitHub <span aria-hidden="true">↗</span></a>
-      <a class="link" href="https://github.com/evanyap7/evans-trading-agent/blob/HEAD/docs/backtest-llm-vs-baseline-2024.md" target="_blank" rel="noopener">Full backtest report <span aria-hidden="true">↗</span></a>
-      <a class="link" href="/#work">Back to all work</a>
+    <p class="menu__more">
+      <a class="pill pill--solid" href="/resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume (PDF) <span aria-hidden="true">↓</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      <a class="pill" href="/#contact" data-contact-link data-contact-text>Email</a>
     </p>
-    <footer class="case__footer">
-      <p>© 2026 Evan Yap</p>
-      <p class="case__footer-links"><a class="link" href="https://github.com/evanyap7" target="_blank" rel="noopener">GitHub</a> <a class="link" href="https://www.linkedin.com/in/evanyapzhikai/" target="_blank" rel="noopener">LinkedIn</a></p>
-    </footer>
-    <p class="case__fine">An engineering project, not investment advice. Backtest results do not predict live performance.</p>
-    <a class="sheet__next mono" href="/#work-trading-agent">Back to 04 Selected work <span aria-hidden="true">↩</span></a>
+  </nav>
+
+  <main id="main" class="project case">
+    <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
+    <header class="project__head">
+      <p class="mono label">Case study · Autonomous Trading Agent · Python</p>
+      <h1 class="project__title case__title">I built an LLM trading agent, measured it, and <span class="serif">deleted</span> the LLM.</h1>
+      <p class="project__lede">The agent trades a small Webull Singapore account on its own, and no model can size or place an order. I tested whether Claude made it better than a plain momentum rule. It did not, so the LLM layer is gone.</p>
+    </header>
+    <dl class="stats">
+      <div><dt>Automated tests, run in CI on every push</dt><dd><span data-count>174</span></dd></div>
+      <div><dt>Symbols in the 2024 backtest, replayed through the live agent code</dt><dd><span data-count>112</span></dd></div>
+      <div><dt>Yearly API cost of the LLM layer I removed</dt><dd><span data-count>~$27</span></dd></div>
+    </dl>
+    <figure class="card reel project__figure" data-reel="ledger">
+    <figcaption class="reel__bar">
+    <span class="reel__name">Idea to ledger</span>
+    <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
+    <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
+    </figcaption>
+    <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. The LLM step is struck out for showing no measurable edge and replaced by a plain rule. Each idea is then verified, sized and risk-checked, and every step is written to a hash-chained ledger.">
+    <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
+    <g data-a="stage">
+    <path class="reel__wire reel__wire--dashed" data-a="drops" d="M72 98V172M180 98V172M288 98V172M396 98V172"/>
+    <path class="reel__wire" data-a="arrow1" d="M123 67l5 5-5 5"/>
+    <path class="reel__wire" data-a="arrow2" d="M231 67l5 5-5 5"/>
+    <path class="reel__wire" data-a="arrow3" d="M339 67l5 5-5 5"/>
+    <text class="reel__text reel__text--note reel__text--start reel__text--bad" data-a="noedge" x="26" y="40" opacity="0">no measurable edge</text>
+    <g data-a="llm" opacity="0">
+    <rect class="reel__box" x="26" y="52" width="92" height="40" rx="12"/>
+    <text class="reel__text" x="72" y="77.5">LLM</text>
+    <path class="stroke-text reel__fill reel__draw" data-a="strike" pathLength="1" stroke-width="4" d="M32 86L112 58"/>
+    </g>
+    <g data-a="rule"><rect x="26" y="52" width="92" height="40" rx="12" class="reel__box reel__box--ok"/><text class="reel__text" x="72" y="77.5">Rule</text></g>
+    <g data-a="verify"><rect class="reel__box reel__box--ok" data-a="verifybox" x="134" y="52" width="92" height="40" rx="12"/><text class="reel__text" x="180" y="77.5">Verify</text></g>
+    <g data-a="size"><rect class="reel__box reel__box--ok" data-a="sizebox" x="242" y="52" width="92" height="40" rx="12"/><text class="reel__text" x="288" y="77.5">Size</text></g>
+    <g data-a="risk"><rect class="reel__box reel__box--ok" data-a="riskbox" x="350" y="52" width="92" height="40" rx="12"/><text class="reel__text" x="396" y="77.5">Risk</text></g>
+    <g data-a="verifyok"><circle class="is-signal" cx="222" cy="54" r="10"/><path class="reel__glyph" d="M217.5 54.5l3 3 6-6.5"/></g>
+    <g data-a="sizeok"><circle class="is-signal" cx="330" cy="54" r="10"/><path class="reel__glyph" d="M325.5 54.5l3 3 6-6.5"/></g>
+    <g data-a="riskok"><circle class="is-signal" cx="438" cy="54" r="10"/><path class="reel__glyph" d="M433.5 54.5l3 3 6-6.5"/></g>
+    <path class="stroke-signal reel__fill reel__draw" data-a="link1" pathLength="1" stroke-width="3" d="M114 204H138"/>
+    <path class="stroke-signal reel__fill reel__draw" data-a="link2" pathLength="1" stroke-width="3" d="M222 204H246"/>
+    <path class="stroke-signal reel__fill reel__draw" data-a="link3" pathLength="1" stroke-width="3" d="M330 204H354"/>
+    <g data-a="block1"><rect class="reel__box" x="30" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="72" y="209">a3f1</text></g>
+    <g data-a="block2"><rect class="reel__box" x="138" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="180" y="209">9c0e</text></g>
+    <g data-a="block3"><rect class="reel__box" x="246" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="288" y="209">51bd</text></g>
+    <g data-a="block4"><rect class="reel__box" x="354" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="396" y="209">e7a2</text></g>
+    <rect class="is-signal" data-a="stamp1" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5"/>
+    <rect class="is-signal" data-a="stamp2" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5"/>
+    <rect class="is-signal" data-a="stamp3" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5"/>
+    <rect class="is-signal" data-a="stamp4" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5"/>
+    <text class="reel__text reel__text--note" data-a="ledgernote" x="240" y="268">every step lands in a hash-chained ledger</text>
+    </g>
+    </svg>
+    </figure>
+    <article class="case__body">
+      <h2>The short version</h2>
+      <ul class="case__list">
+        <li><strong>What I built.</strong> An autonomous swing-trading agent where a model may only <em>propose</em>. Deterministic code verifies, sizes and risk-checks every idea, and an append-only ledger records each step.</li>
+        <li><strong>What I tested.</strong> Claude agents (Haiku 4.5 screening, Opus 5.5 proposing) against a free, rule-based momentum baseline, both run through identical verification, sizing, stops and kill switch.</li>
+        <li><strong>What I found.</strong> No measurable edge. The LLM cost about $27 a year on a $1,500 account and did not beat the baseline on the rule I had set. I removed it.</li>
+        <li><strong>The uncomfortable part.</strong> Neither strategy beat simply holding the S&amp;P 500 in 2024. I report that as the result.</li>
+      </ul>
+
+      <h2>The problem</h2>
+      <p>I wanted a system that could run unattended without my having to trust a language model with money. Models are fluent and sometimes wrong, so the design question was not "how smart can the agent be" but "how bad can a failure get, and how fast can I see it."</p>
+
+      <h2>How it is built</h2>
+      <p>The only step that is not deterministic code is the one that proposes a trade. Everything before it is data, and everything after it is a gate.</p>
+
+      <div class="flow" role="group" aria-label="Pipeline, in three stages">
+        <section class="flow__lane">
+          <h3 class="flow__label">1 · Research, after the US close</h3>
+          <ol class="flow__steps">
+            <li><span class="flow__step">Evidence</span></li>
+            <li><span class="flow__step flow__step--model">Agent proposes</span></li>
+            <li><span class="flow__step">Verifier</span></li>
+            <li><span class="flow__step">Sizing</span></li>
+            <li><span class="flow__step">Risk engine</span></li>
+            <li><span class="flow__step">Queue</span></li>
+          </ol>
+        </section>
+        <section class="flow__lane">
+          <h3 class="flow__label">2 · Execute, 09:45 New York time</h3>
+          <ol class="flow__steps">
+            <li><span class="flow__step">Fresh quotes</span></li>
+            <li><span class="flow__step">Re-verify</span></li>
+            <li><span class="flow__step">Re-size</span></li>
+            <li><span class="flow__step">Full risk check</span></li>
+            <li><span class="flow__step">Broker preview</span></li>
+            <li><span class="flow__step">Place order</span></li>
+          </ol>
+        </section>
+        <section class="flow__lane">
+          <h3 class="flow__label">3 · Monitor, every 5 minutes</h3>
+          <ol class="flow__steps">
+            <li><span class="flow__step">Reconcile with broker</span></li>
+            <li><span class="flow__step">Circuit breakers</span></li>
+            <li><span class="flow__step">Stop, target and time exits</span></li>
+          </ol>
+        </section>
+      </div>
+      <p class="case__note">Blue marks the only step that was ever a model. After the experiment below, even that step is a rule.</p>
+
+      <h2>Four decisions that matter</h2>
+      <ol class="case__decisions">
+        <li>
+          <h3>The proposer cannot size or send an order</h3>
+          <p>An independent verifier recomputes what each proposal implies from my own data. It rejects anything ungrounded (every cited evidence ID must exist in this cycle, and the symbol's own price evidence must be cited), stale, priced outside a collar around the quote, with a stop too close or too far in ATRs, without enough reward for the risk, or without edge after costs.</p>
+          <p>Position size comes from quarter-Kelly on the stated edge, capped at 2% risk per trade and 6% of equity at risk across all positions. I used a quarter because a model's confidence figures are not calibrated.</p>
+          <p class="case__code"><code>verifier.py</code> · <code>portfolio.py</code> · <code>risk.py</code></p>
+        </li>
+        <li>
+          <h3>The risk limits are a file the agent cannot write</h3>
+          <p>Limits live in <code>config/risk_limits.yaml</code> and change only through a human git commit. The file's hash is recorded with every risk decision, so I can tell which limits applied to any trade. Examples: a 5% drawdown breaker, a 2% daily-loss check that blocks new entries, and at most five new trades a day.</p>
+        </li>
+        <li>
+          <h3>Execution is idempotent and never retries blindly</h3>
+          <p>Client order IDs are derived deterministically from the decision, so a repeated submit finds the existing order. Each order is previewed first, and a preview cost that differs from the intended cost is rejected. If the broker's answer is ambiguous, the order moves to a reconcile state and is resolved by asking the broker, not by sending it again. After a fill, a broker-side stop is placed and re-armed if it goes missing.</p>
+          <p class="case__code"><code>execution.py</code></p>
+        </li>
+        <li>
+          <h3>The audit trail is tamper-evident, and the kill switch is a file</h3>
+          <p>The <code>events</code> and <code>evidence</code> tables are insert-only, enforced by SQLite triggers that abort any update or delete. Each event stores the previous hash and its own, so an edit breaks the chain. Tables such as orders and trades are projections that can be rebuilt from the events plus broker history.</p>
+          <p>The kill switch needs no access to the running process: create <code>state/KILL</code> and new orders stop, and open entry orders are cancelled on the next pass. Real orders also need three separate switches to be on, so any one being off turns entries into rejections.</p>
+          <p class="case__code"><code>ledger.py</code> · <code>killswitch.py</code></p>
+        </li>
+      </ol>
+
+      <h2>The experiment: did Claude earn its place?</h2>
+      <p>I replayed 2024 (about 252 trading days) over the 100 most liquid US stocks plus an S&amp;P 500 ETF, starting from $1,500. Both agents ran through the same verifier, sizing, stops, slippage model and kill switch. Before the run I set the bar: the Claude agent had to beat the baseline on <strong>both</strong> Sharpe ratio and win rate.</p>
+
+      <div class="case__table" role="region" aria-label="Backtest results, scrollable" tabindex="0">
+        <table>
+          <caption class="visually-hidden">Backtest results for 2024: Claude agent, momentum baseline and SPY buy-and-hold</caption>
+          <thead>
+            <tr><th scope="col">2024</th><th scope="col">Claude agent</th><th scope="col">Momentum baseline</th><th scope="col">SPY buy-and-hold</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Net return</th><td>+20.32%</td><td>+24.71%</td><td>+25.59%</td></tr>
+            <tr><th scope="row">Sharpe ratio</th><td>1.39</td><td>1.36</td><td>1.89</td></tr>
+            <tr><th scope="row">Max drawdown</th><td>−6.36%</td><td>−12.36%</td><td>−8.41%</td></tr>
+            <tr><th scope="row">Win rate</th><td>43.9%</td><td>47.4%</td><td>n/a</td></tr>
+            <tr><th scope="row">Profit factor</th><td>1.42</td><td>1.64</td><td>n/a</td></tr>
+            <tr><th scope="row">Trades</th><td>107</td><td>133</td><td>n/a</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Verdict: it failed my rule.</strong> The Claude agent's Sharpe lead was 0.03, which is noise, and its win rate was 3.5 points lower. Its one real advantage was roughly half the drawdown. A measured research cycle cost about $0.11, which is about $27 a year, or 1.8% of a $1,500 account, before any benefit.</p>
+      <p>So I removed the LLM layer, kept the baseline, and kept the harness that told me the truth.</p>
+
+      <h3 class="case__sub">What I would not claim from this</h3>
+      <ul class="case__list">
+        <li>It is one year, and 2024 was a strong bull market for the benchmark.</li>
+        <li>It is one run of a nondeterministic model, so a rerun would give different numbers. The Sharpe gap of 0.03 sits well inside that noise.</li>
+        <li>With a $1,500 account, whole-share rounding and fixed order costs affect both agents.</li>
+        <li>An early 49-call partial run showed a 65% win rate for Claude on a handful of trades. I discarded it as statistically meaningless once the full year existed.</li>
+      </ul>
+
+      <h2>What went wrong along the way</h2>
+      <ol class="case__list case__list--numbered">
+        <li><strong>My first comparison was invalid.</strong> The harness never loaded the API key, so every model call failed. The backtester swallowed the error as "no trade" and printed a fake 0% win rate for Claude. Now the harness loads its configuration, records the first error of each kind, and aborts if a model agent only produces errors.</li>
+        <li><strong>I killed healthy runs.</strong> I was watching the wrong cache directory, so a run waiting on the network looked hung. I stopped it after 40 minutes and stranded about $7.50 of work.</li>
+        <li><strong>The cache was fragile.</strong> Its key included account state that depended on earlier model decisions, so only an identical chain of decisions could reuse it.</li>
+        <li><strong>I had no visibility into spend.</strong> About $13 looked like nothing until I added a spend ledger with a hard cap, an abort after three failures in a row, and a request timeout.</li>
+      </ol>
+
+      <h2>Where it stands</h2>
+      <p>The baseline agent roughly matches SPY in 2024 and does not beat it. I would rather say that plainly than tune until a chart looks good. The system is built to go live one gate at a time: read-only against the broker's test environment, then shadow mode with orders recorded but not sent, then test-environment orders, then live. I will compare each stage against the backtest before adding size.</p>
+      <p>If I want an edge, the next step is testing other signals inside the same verifier and risk framework, not putting a model back in.</p>
+
+      <h2>Read the code</h2>
+      <div class="case__table" role="region" aria-label="Where things live, scrollable" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Concern</th><th scope="col">File</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Independent proposal checks</th><td><code>src/trading_agent/verifier.py</code></td></tr>
+            <tr><th scope="row">Sizing from edge</th><td><code>src/trading_agent/portfolio.py</code></td></tr>
+            <tr><th scope="row">Deterministic risk engine</th><td><code>src/trading_agent/risk.py</code></td></tr>
+            <tr><th scope="row">Idempotent execution</th><td><code>src/trading_agent/execution.py</code></td></tr>
+            <tr><th scope="row">Hash-chained ledger</th><td><code>src/trading_agent/ledger.py</code></td></tr>
+            <tr><th scope="row">Kill switch</th><td><code>src/trading_agent/killswitch.py</code></td></tr>
+            <tr><th scope="row">Backtester and harness</th><td><code>src/trading_agent/backtest.py</code>, <code>scripts/backtest_harness.py</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="links case__links">
+        <a class="pill" href="https://github.com/evanyap7/evans-trading-agent" target="_blank" rel="noopener">Source on GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a class="pill" href="https://github.com/evanyap7/evans-trading-agent/blob/HEAD/docs/backtest-llm-vs-baseline-2024.md" target="_blank" rel="noopener">Full backtest report <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      </p>
+  <p class="case__fine">An engineering project, not investment advice. Backtest results do not predict live performance.</p>
+    </article>
+    <a class="card next" href="/work/research-agent.html">
+      <span class="mono label">Next project</span>
+      <span class="next__title">Decarbonisation Research Agent <span aria-hidden="true">→</span></span>
+    </a>
   </main>
 
+  <footer class="footer">
+    <p class="mono">© 2026 Evan Yap</p>
+    <a class="wordmark" href="/" aria-label="Evan Yap, home">evan<span class="wordmark__dot">.</span></a>
+  </footer>
+
+  <script type="module" src="/js/main.js"></script>
 </body>
 </html>
