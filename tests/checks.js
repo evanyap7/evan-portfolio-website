@@ -114,8 +114,8 @@ export function palette(win) {
 
 export function figureCaptions(win) {
   const labels = [...win.document.querySelectorAll('.reel__name b')].map((b) => b.textContent.trim());
-  const want = ['Fig. 4.1', 'Fig. 4.2', 'Fig. 4.3', 'Fig. 4.4', 'Fig. 4.5'];
-  return [result('figures numbered 4.1 to 4.5', labels.join() === want.join(), labels.join())];
+  const want = ['Fig. 4.1', 'Fig. 4.2', 'Fig. 4.3', 'Fig. 4.4', 'Fig. 4.5', 'Fig. 4.6'];
+  return [result('figures numbered 4.1 to 4.6', labels.join() === want.join(), labels.join())];
 }
 
 export function cartoon(win) {
@@ -130,7 +130,7 @@ export function work(win) {
   const open = () => panels.filter((panel) => !panel.hidden).map((panel) => panel.id).join();
   const accordion = win.innerWidth < WIDE;
   const out = [
-    result('five projects', rows.length === 5 && panels.length === 5, `${rows.length} rows, ${panels.length} panels`),
+    result('six projects', rows.length === 6 && panels.length === 6, `${rows.length} rows, ${panels.length} panels`),
     result('4.1 open on load', open() === panels[0]?.id, open()),
   ];
   rows[2].click();

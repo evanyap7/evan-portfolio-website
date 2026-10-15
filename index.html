@@ -217,7 +217,7 @@
 
     <section class="sheet" id="work" aria-labelledby="work-title" data-sheet="04" data-sheet-name="Selected work">
       <p class="sheet__label mono"><b>04</b> Selected work</p>
-      <div class="sheet__head"><h2 class="sheet__title" id="work-title">Selected work</h2><p class="mono">Five projects · 2026</p></div>
+      <div class="sheet__head"><h2 class="sheet__title" id="work-title">Selected work</h2><p class="mono">Seven projects · 2025 – 2026</p></div>
       <div class="projects" data-projects>
         <h3 class="project__head" id="work-website-revamp">
           <button class="project__row" type="button" id="row-website-revamp" aria-controls="panel-website-revamp" aria-expanded="true">
@@ -487,7 +487,63 @@
           </div>
         </div>
 
-        <p class="also"><b>Also built</b> Dragon Tiles, an interactive outdoor piano sculpture (lead design engineer), and SleepWise, a bedtime-nudge app (idea, feature design and demo video).</p>
+        <h3 class="project__head" id="work-others">
+          <button class="project__row" type="button" id="row-others" aria-controls="panel-others" aria-expanded="true">
+            <span class="project__n mono">4.6</span>
+            <span class="project__title">Others</span>
+            <span class="project__meta mono">Dragon Tiles · SleepWise</span>
+            <span class="project__key">2 more</span>
+          </button>
+        </h3>
+        <div class="project__panel project__panel--others" id="panel-others" role="region" aria-labelledby="row-others">
+          <figure class="reel reel--plate">
+            <figcaption class="reel__bar"><span class="reel__name"><b>Fig. 4.6</b> Piano keys, and a bedtime nudge</span></figcaption>
+            <div class="reel__scene pair" role="img" aria-label="Two drawings. Left, for Dragon Tiles: a row of piano keys pressed one after another. Right, for SleepWise: a crescent moon with a glowing ring beside a calendar marked with a tick.">
+              <svg class="pair__art pair__keys" viewBox="0 0 240 120" aria-hidden="true">
+                <g class="keys__white">
+                  <rect style="--i:0" x="36" y="22" width="24" height="76"/>
+                  <rect style="--i:1" x="60" y="22" width="24" height="76"/>
+                  <rect style="--i:2" x="84" y="22" width="24" height="76"/>
+                  <rect style="--i:3" x="108" y="22" width="24" height="76"/>
+                  <rect style="--i:4" x="132" y="22" width="24" height="76"/>
+                  <rect style="--i:5" x="156" y="22" width="24" height="76"/>
+                  <rect style="--i:6" x="180" y="22" width="24" height="76"/>
+                </g>
+                <g class="keys__black">
+                  <rect x="53" y="22" width="14" height="44"/>
+                  <rect x="77" y="22" width="14" height="44"/>
+                  <rect x="125" y="22" width="14" height="44"/>
+                  <rect x="149" y="22" width="14" height="44"/>
+                  <rect x="173" y="22" width="14" height="44"/>
+                </g>
+                <path class="keys__waves" d="M212 40q8 6 8 18M218 30q14 10 14 28" pathLength="1"/>
+              </svg>
+              <svg class="pair__art pair__moon" viewBox="0 0 240 120" aria-hidden="true">
+                <defs><mask id="moon-cut"><rect width="240" height="120" fill="#fff"/><circle cx="84" cy="50" r="23" fill="#000"/></mask></defs>
+                <circle class="moon__glow" cx="72" cy="60" r="36"/>
+                <circle class="moon__body" cx="72" cy="60" r="27" mask="url(#moon-cut)"/>
+                <g class="cal">
+                  <rect class="cal__sheet" x="136" y="30" width="72" height="66" rx="3"/>
+                  <path class="cal__head" d="M136 46H208M152 24V36M192 24V36"/>
+                  <path class="cal__days" d="M150 60h0M166 60h0M182 60h0M198 60h0M150 74h0M166 74h0M182 74h0M150 86h0M166 86h0"/>
+                  <path class="cal__tick" d="M178 80l7 7 14-15" pathLength="1"/>
+                </g>
+              </svg>
+            </div>
+          </figure>
+          <ul class="others">
+            <li class="others__item">
+              <h4 class="others__title">Dragon Tiles</h4>
+              <p class="others__meta mono">Lead design engineer · Sept 2025 – Mar 2026 · <em>Nominated for Best Storytelling and Execution</em></p>
+              <p class="others__text">An oversized interactive outdoor piano sculpture installed at Sports@Buona Vista, taken from CAD model to physical prototype with Grasshopper, Python and Blender.</p>
+            </li>
+            <li class="others__item">
+              <h4 class="others__title">SleepWise</h4>
+              <p class="others__meta mono">Feature design and demo video · SUTD What the Hack 2025</p>
+              <p class="others__text">A React Native app that reads your Google Calendar, works out when you need to wind down, and nudges you to bed on time. My teammates led the engineering, on a Node.js and Express backend. I worked on the idea and feature design, and produced the demo video.</p>
+            </li>
+          </ul>
+        </div>
       </div>
       <a class="sheet__next mono" href="#toolkit">Next: 05 Toolkit and credentials <span aria-hidden="true">→</span></a>
     </section>
