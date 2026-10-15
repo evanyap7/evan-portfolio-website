@@ -642,7 +642,8 @@ ul.role__points li::before {
      tablets and landscape phones as well as portrait phones. */
   .intro__actions .link,
   .project__links .link,
-  .contact__spec .link {
+  .contact__spec .link,
+  .contact__address {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
