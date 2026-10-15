@@ -8,10 +8,33 @@
   justify-content: center;
   min-height: calc(100vh - var(--nav) - var(--nav-top));
   min-height: calc(100svh - var(--nav) - var(--nav-top));
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding: 72px var(--gutter) 64px;
-  /* A very soft grey glow behind the headline. */
-  background: radial-gradient(48% 42% at 50% 46%, rgba(255, 255, 255, 0.075), transparent 72%);
   text-align: center;
+}
+
+/* A very soft grey glow behind the headline. With motion allowed it
+   breathes and drifts a few percent over 16 seconds, and motion.js pauses
+   it while the hero is off screen. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(48% 42% at 50% 46%, rgba(255, 255, 255, 0.075), transparent 72%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero::before {
+    animation: glow 16s ease-in-out infinite alternate;
+  }
+
+  .hero.is-off::before {
+    animation-play-state: paused;
+  }
 }
 
 .hero__title {
@@ -80,16 +103,16 @@
   }
 }
 
-/* The hero rises in, one line after another, once on load. */
+/* The headline's words rise from behind a mask on load (motion.js); the
+   lines under it follow once the words have landed. */
 @media (prefers-reduced-motion: no-preference) {
-  .hero > * {
+  .hero > :not(.hero__title) {
     animation: rise 900ms var(--ease-out) backwards;
   }
 
-  .hero > :nth-child(2) { animation-delay: 80ms; }
-  .hero > :nth-child(3) { animation-delay: 160ms; }
-  .hero > :nth-child(4) { animation-delay: 240ms; }
-  .hero > :nth-child(5) { animation-delay: 320ms; }
+  .hero > :nth-child(2) { animation-delay: 520ms; }
+  .hero > :nth-child(3) { animation-delay: 600ms; }
+  .hero > :nth-child(4) { animation-delay: 680ms; }
 }
 
 /* About ------------------------------------------------------------- */
@@ -97,7 +120,16 @@
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   gap: 48px 72px;
-  align-items: center;
+  align-items: start;
+}
+
+/* On wide screens the photo stays in view while the longer text column
+   scrolls past it. */
+@media (min-width: 1024px) {
+  .about__photo {
+    position: sticky;
+    top: calc(var(--nav-top) + var(--nav) + 32px);
+  }
 }
 
 /* The photo, framed on the face, in the same card as the work. */
@@ -118,7 +150,77 @@
 }
 
 .about__text {
+  max-width: 38em; /* about 68 characters a line */
   color: var(--text-2);
+}
+
+/* Four figures from the paragraphs above, counted up once when seen. */
+.proof {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 24px;
+  margin-top: 48px;
+}
+
+.proof > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-2);
+}
+
+.proof dd {
+  order: -1;
+  color: var(--text);
+  font-size: clamp(32px, 3.2vw, 44px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+.proof [data-count] {
+  display: inline-block;
+}
+
+.proof small {
+  margin-left: 4px;
+  color: var(--dim);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.proof dt {
+  color: var(--dim);
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 719px) {
+  .proof {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 20px;
+  }
+}
+
+/* The photo is wiped in from the top the first time it is seen, rather
+   than faded like the rest. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .about__photo[data-reveal] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 100% 0 round var(--radius));
+    transition: clip-path 1100ms var(--ease);
+  }
+
+  .js .about__photo[data-reveal].is-visible {
+    clip-path: inset(0 0 0 0 round var(--radius));
+  }
 }
 
 .about__text p + p {
@@ -151,7 +253,70 @@
 }
 
 /* Experience -------------------------------------------------------- */
-/* A table of hairline rows: dates, who and what, then the points. */
+/* A table of hairline rows: dates, who and what, then the points. A thin
+   timeline runs down the left: a hairline track, a brighter line that
+   motion.js draws down as the section scrolls past (--p, 0 to 1; whole
+   when motion is reduced), and a node per role that lights as the role
+   comes into view. */
+.timeline {
+  position: relative;
+  padding-left: 40px;
+}
+
+.timeline::before,
+.timeline__fill {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background: var(--line-2);
+}
+
+.timeline__fill {
+  background: var(--muted);
+  transform: scaleY(var(--p, 1));
+  transform-origin: 50% 0;
+}
+
+.role {
+  position: relative;
+}
+
+.role::before {
+  content: "";
+  position: absolute;
+  top: 38px;
+  left: -40px;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  background: var(--band);
+  transition: background-color 400ms, border-color 400ms;
+}
+
+.role.is-visible::before {
+  border-color: var(--text);
+  background: var(--text);
+}
+
+.roles--earlier .role::before {
+  top: 28px;
+}
+
+@media (max-width: 719px) {
+  .timeline {
+    padding-left: 28px;
+  }
+
+  .role::before {
+    top: 33px;
+    left: -28px;
+  }
+}
+
 .roles {
   border-top: 1px solid var(--line);
 }
@@ -302,8 +467,15 @@ ul.role__points li + li {
   transition: color 200ms;
 }
 
+/* The arrow slides on hover; motion.js adds the spotlight and lift. */
+.work__arrow {
+  display: inline-block;
+  transition: transform 300ms var(--ease-out);
+}
+
 @media (hover: hover) {
   .work__card:hover .work__more { color: var(--text); }
+  .work__card:hover .work__arrow { transform: translateX(4px); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
