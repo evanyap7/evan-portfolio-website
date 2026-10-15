@@ -187,6 +187,14 @@ strong, b {
   transform: translateY(8px);
 }
 
+/* Icons from img/icons.svg, drawn in the text colour. */
+.icon {
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  fill: currentColor;
+}
+
 /* Labels and captions. */
 .mono {
   font-family: var(--font-mono);

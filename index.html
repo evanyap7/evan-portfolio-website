@@ -551,37 +551,82 @@
     <section class="sheet" id="toolkit" aria-labelledby="toolkit-title" data-sheet="05" data-sheet-name="Toolkit and credentials">
       <p class="sheet__label mono"><b>05</b> Toolkit and credentials</p>
       <div class="sheet__head"><h2 class="sheet__title" id="toolkit-title">Toolkit and credentials</h2><p class="mono">Updated Oct 2026</p></div>
-      <div class="kit">
-        <div class="kit__tools" data-reveal>
+      <div class="kit" data-kit data-reveal>
+        <div class="kit__tabs" role="tablist" aria-label="Toolkit and credentials" hidden>
+          <button class="kit__tab" type="button" role="tab" id="tab-tools" aria-controls="kit-tools" aria-selected="true">Toolkit</button>
+          <button class="kit__tab" type="button" role="tab" id="tab-recognition" aria-controls="recognition" aria-selected="false" tabindex="-1">Recognition</button>
+          <button class="kit__tab" type="button" role="tab" id="tab-education" aria-controls="education" aria-selected="false" tabindex="-1">Education</button>
+          <button class="kit__tab" type="button" role="tab" id="tab-certifications" aria-controls="certifications" aria-selected="false" tabindex="-1">Certifications</button>
+        </div>
+        <div class="kit__panel" id="kit-tools">
           <h3 class="kit__head mono">Toolkit</h3>
-          <dl class="rows">
-            <div><dt class="mono">Languages</dt><dd>Python · TypeScript · JavaScript · C++ · C · SQL · HTML · CSS</dd></div>
-            <div><dt class="mono">Frameworks</dt><dd>Next.js · React · Node.js · Tailwind CSS · Three.js · Vercel AI SDK · Zod · REST APIs · OAuth 2.0 · Telegram Bot API</dd></div>
-            <div><dt class="mono">AI and data</dt><dd>Claude API · Google Gemini · Perplexity Sonar · LLM agents · Prompt engineering · Data analysis · Excel and Sheets</dd></div>
-            <div><dt class="mono">Cloud and tools</dt><dd>Vercel · Git · GitHub · Google Cloud · Gmail, Calendar and Sheets APIs</dd></div>
-            <div><dt class="mono">Design and modelling</dt><dd>Grasshopper · Rhino 3D · Blender · CAD</dd></div>
+          <dl class="rows rows--kit">
+            <div><dt class="mono">Languages</dt><dd><ul class="tools">
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#python"/></svg>Python</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#typescript"/></svg>TypeScript</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#javascript"/></svg>JavaScript</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#cplusplus"/></svg>C++</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#c"/></svg>C</li>
+              <li>SQL</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#html5"/></svg>HTML</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#css3"/></svg>CSS</li>
+            </ul></dd></div>
+            <div><dt class="mono">Frameworks</dt><dd><ul class="tools">
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#nextdotjs"/></svg>Next.js</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#react"/></svg>React</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#nodedotjs"/></svg>Node.js</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#tailwindcss"/></svg>Tailwind CSS</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#threedotjs"/></svg>Three.js</li>
+              <li>Vercel AI SDK</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#zod"/></svg>Zod</li>
+              <li>REST APIs</li>
+              <li>OAuth 2.0</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#telegram"/></svg>Telegram Bot API</li>
+            </ul></dd></div>
+            <div><dt class="mono">AI and data</dt><dd><ul class="tools">
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#anthropic"/></svg>Claude API</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#googlegemini"/></svg>Google Gemini</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#perplexity"/></svg>Perplexity Sonar</li>
+              <li>LLM agents</li>
+              <li>Prompt engineering</li>
+              <li>Data analysis</li>
+              <li>Excel and Sheets</li>
+            </ul></dd></div>
+            <div><dt class="mono">Cloud and tools</dt><dd><ul class="tools">
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#vercel"/></svg>Vercel</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#git"/></svg>Git</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#github"/></svg>GitHub</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#googlecloud"/></svg>Google Cloud</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#gmail"/></svg><svg class="icon" aria-hidden="true"><use href="img/icons.svg#googlecalendar"/></svg><svg class="icon" aria-hidden="true"><use href="img/icons.svg#googlesheets"/></svg>Gmail, Calendar and Sheets APIs</li>
+            </ul></dd></div>
+            <div><dt class="mono">Design and modelling</dt><dd><ul class="tools">
+              <li>Grasshopper</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#rhinoceros"/></svg>Rhino 3D</li>
+              <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#blender"/></svg>Blender</li>
+              <li>CAD</li>
+            </ul></dd></div>
           </dl>
         </div>
-        <div class="kit__recognition" data-reveal>
+        <div class="kit__panel" id="recognition">
           <h3 class="kit__head mono">Recognition</h3>
-          <dl class="rows">
+          <dl class="rows rows--kit rows--honours">
             <div><dt>Top 5</dt><dd>Corporate Website Revamp Challenge, 2026. Finalist against senior solution architects worldwide; pitched live to the CEO.</dd></div>
             <div><dt>2nd place</dt><dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge Hackathon, 2026, with Project V-Bẫy.</dd></div>
             <div><dt>1 of 6</dt><dd>Recipients of the SUTD Technology Entrepreneurship Programme Scholarship.</dd></div>
             <div><dt>Nominated</dt><dd>Best Storytelling and Execution, 03.007 Innovating with Design and AI, for Dragon Tiles.</dd></div>
           </dl>
         </div>
-        <div class="kit__education" id="education" data-reveal>
+        <div class="kit__panel" id="education">
           <h3 class="kit__head mono">Education</h3>
-          <dl class="rows rows--stacked">
-            <div><dt>Singapore University of Technology and Design</dt><dd>B.Eng. Engineering Systems and Design and M.Sc. Technology Entrepreneurship, expected May 2030.</dd></div>
+          <dl class="rows rows--kit rows--named">
+            <div><dt><img class="kit__logo" src="img/logos/sutd.svg" alt="" width="200" height="78">Singapore University of Technology and Design</dt><dd>B.Eng. Engineering Systems and Design and M.Sc. Technology Entrepreneurship, expected May 2030.</dd></div>
             <div><dt>VinUniversity</dt><dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge course, May 2026.</dd></div>
             <div><dt>Victoria Junior College</dt><dd>GCE A-Levels, 2021–2022. Vice-captain, boys’ hockey; first runners-up, 2022 National School Games.</dd></div>
           </dl>
         </div>
-        <div class="kit__certs" id="certifications" data-reveal>
+        <div class="kit__panel" id="certifications">
           <h3 class="kit__head mono">Certifications</h3>
-          <dl class="rows rows--stacked">
+          <dl class="rows rows--kit rows--named">
             <div><dt>Prompt Design in Vertex AI, 2024</dt><dd>Google Cloud skill badge. <a class="link" href="https://www.credly.com/badges/3ff0ec8a-ee9e-4176-8f15-516fcbd9c2e9" target="_blank" rel="noopener">Credential <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></dd></div>
             <div><dt>Certified Personal Trainer, 2025</dt><dd>NCCPT-CPT, National Council on Strength and Fitness.</dd></div>
           </dl>

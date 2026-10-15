@@ -507,65 +507,183 @@ ul.role__points li::before {
 }
 
 /* 05 Toolkit and credentials ---------------------------------------- */
+/* Without tabs.js the four panels run one under another. With it, a tab
+   row picks one panel at a time (.kit.is-ready). */
 .kit {
   flex: 1;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-template-rows: auto 1fr;
-  align-content: start;
-  gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
   margin-top: 20px;
 }
 
-/* From 1024px: three columns, toolkit, recognition, then education over
-   certifications. */
-.kit__tools {
-  grid-column: 1 / 5;
-  grid-row: 1 / -1;
-}
-
-.kit__recognition {
-  grid-column: 5 / 9;
-  grid-row: 1 / -1;
-}
-
-.kit__education {
-  grid-column: 9 / 13;
-  grid-row: 1;
-}
-
-.kit__certs {
-  grid-column: 9 / 13;
-  grid-row: 2;
+.kit.is-ready {
+  gap: 0;
 }
 
 .kit__head {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   color: var(--ink-3);
 }
 
-/* Each fact stacks its label over its value to suit the narrower columns. */
-@media (min-width: 1024px) {
-  .kit {
-    gap: 12px 24px;
-    margin-top: 12px;
-  }
+/* The panel names the tab already, so its heading is kept for screen
+   readers and the outline but not shown twice. */
+.kit.is-ready .kit__head {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
-  .kit__head {
-    margin-bottom: 6px;
-  }
+/* One row, scrolling sideways on the narrowest phones rather than
+   clipping or wrapping a label. */
+.kit__tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--rule-2);
+  scrollbar-width: none;
+}
 
-  .kit .rows > div {
+.kit__tabs[hidden] {
+  display: none;
+}
+
+.kit__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.kit__tab {
+  position: relative;
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  color: var(--ink-3);
+  font-size: var(--t-link);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 200ms;
+}
+
+.kit__tab:first-child {
+  padding-left: 0;
+}
+
+.kit__tab[aria-selected="true"] {
+  color: var(--ink);
+}
+
+/* The chosen tab is underlined in the accent, so it is marked by more
+   than colour. */
+.kit__tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  bottom: -1px;
+  left: 16px;
+  height: 2px;
+  background: var(--accent);
+}
+
+.kit__tab:first-child[aria-selected="true"]::after {
+  left: 0;
+}
+
+.kit__tab:focus-visible {
+  outline-offset: -2px;
+}
+
+@media (hover: hover) {
+  .kit__tab:hover { color: var(--ink); }
+}
+
+.kit.is-ready .kit__panel {
+  padding-top: 8px;
+}
+
+.kit.is-ready .rows--kit {
+  border-top: 0;
+}
+
+.kit__panel:focus-visible {
+  outline-offset: 6px;
+}
+
+/* Rows inside a panel: a wide label column and roomier type than the
+   compact rows elsewhere. */
+.rows--kit > div {
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 4px 24px;
+  padding: 12px 0;
+}
+
+.rows--kit dd {
+  max-width: 46em;
+  font-size: var(--t-body);
+  line-height: 1.5;
+}
+
+.rows--kit dt.mono {
+  padding-top: 4px;
+}
+
+/* Recognition leads with the honour itself, set in the display serif. */
+.rows--honours > div {
+  align-items: baseline;
+  padding: 14px 0;
+}
+
+.rows--honours dt {
+  font-family: var(--font-serif);
+  font-size: calc(var(--t-org) * 1.5);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.rows--named dt {
+  font-size: var(--t-org);
+  line-height: 1.35;
+}
+
+.kit__logo {
+  width: auto;
+  height: 26px;
+  margin-bottom: 8px;
+}
+
+/* Each tool is its icon and name; tools without a mark are name only. */
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+}
+
+.tools li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+}
+
+.tools .icon {
+  color: var(--ink-2);
+}
+
+@media (max-width: 719px) {
+  .rows--kit > div {
     grid-template-columns: minmax(0, 1fr);
-    padding: 6px 0;
+    gap: 8px;
   }
 
-  .kit .rows dt.mono {
-    padding-top: 0;
+  .kit__tab {
+    padding: 0 12px;
   }
 
-  .kit .rows dd {
-    line-height: 1.4;
+  .kit__tab[aria-selected="true"]::after {
+    right: 12px;
+    left: 12px;
   }
 }
 
@@ -635,8 +753,7 @@ ul.role__points li::before {
 /* Narrower than 1024px: one column ------------------------------------ */
 @media (max-width: 1023px) {
   .intro,
-  .about,
-  .kit {
+  .about {
     display: flex;
     flex-direction: column;
   }

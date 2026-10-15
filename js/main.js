@@ -3,6 +3,7 @@ import { initCopy } from './contact.js';
 import { initIndex } from './index.js';
 import { initMenu } from './menu.js';
 import { initReveal } from './reveal.js';
+import { initTabs } from './tabs.js';
 import { initWave } from './wave.js';
 import { initWork } from './work.js';
 
@@ -38,6 +39,7 @@ initMenu();
 initIndex();
 initWave();
 initWork();
+initTabs();
 initCopy();
 initReveal();
 initReels();

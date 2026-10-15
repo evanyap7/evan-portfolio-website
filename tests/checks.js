@@ -88,6 +88,12 @@ export function fit(win) {
     out.push(measure(`work (4.${i + 1} open): fits one screen`, doc.getElementById('work')));
   });
   rows[0]?.click();
+  const tabs = [...doc.querySelectorAll('.kit [role="tab"]')];
+  tabs.forEach((tab) => {
+    tab.click();
+    out.push(measure(`toolkit (${tab.textContent.trim()} tab): fits one screen`, doc.getElementById('toolkit')));
+  });
+  tabs[0]?.click();
   return out;
 }
 
@@ -157,6 +163,52 @@ export function figureText(win) {
   if (!sizes.length) return [result('diagram notes readable', false, 'no visible notes in 4.2')];
   const smallest = Math.min(...sizes);
   return [result(`diagram notes at least ${min}px`, smallest >= min - 0.05, `${smallest.toFixed(1)}px`)];
+}
+
+// Sheet 05 is a WAI-ARIA tabs widget: each tab names its panel and the
+// panel names it back, one tab is selected and in the tab order, one panel
+// shows, and the arrow keys, Home and End move the selection.
+export function tabs(win) {
+  const doc = win.document;
+  const list = doc.querySelector('#toolkit [role="tablist"]');
+  const tabs = [...doc.querySelectorAll('#toolkit [role="tab"]')];
+  const panels = tabs.map((tab) => doc.getElementById(tab.getAttribute('aria-controls')));
+  const names = tabs.map((tab) => tab.textContent.trim()).join(',');
+  const selected = () => tabs.filter((tab) => tab.getAttribute('aria-selected') === 'true');
+  const visible = () => panels.filter((panel) => panel && !panel.hidden && shown(panel));
+  const wired = panels.every((panel, i) => panel?.getAttribute('role') === 'tabpanel' && panel.getAttribute('aria-labelledby') === tabs[i].id);
+  const roving = () => tabs.every((tab) => tab.tabIndex === (tab.getAttribute('aria-selected') === 'true' ? 0 : -1));
+  const out = [
+    result('toolkit tabs: four, in order', list && shown(list) && names === 'Toolkit,Recognition,Education,Certifications', names),
+    result('toolkit tabs: each tab and panel name each other', wired),
+    result('toolkit tabs: Toolkit selected on load, one panel shown', selected().length === 1 && selected()[0] === tabs[0] && visible().length === 1 && visible()[0] === panels[0] && roving(), visible().map((panel) => panel.id).join()),
+  ];
+  const press = (key) => doc.activeElement.dispatchEvent(new win.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+  tabs[0].focus();
+  press('ArrowRight');
+  const right = selected()[0] === tabs[1] && doc.activeElement === tabs[1] && visible()[0] === panels[1] && visible().length === 1;
+  press('End');
+  const end = selected()[0] === tabs[3] && doc.activeElement === tabs[3];
+  press('ArrowRight');
+  const wrap = selected()[0] === tabs[0];
+  press('ArrowLeft');
+  const back = selected()[0] === tabs[3];
+  press('Home');
+  const home = selected()[0] === tabs[0] && visible()[0] === panels[0];
+  out.push(result('toolkit tabs: arrows, Home and End move the selection', right && end && wrap && back && home && roving(), `${right} ${end} ${wrap} ${back} ${home}`));
+  tabs[2].click();
+  out.push(result('toolkit tabs: clicking a tab shows only its panel', visible().length === 1 && visible()[0] === panels[2]));
+  tabs[0].click();
+  doc.activeElement?.blur();
+  return out;
+}
+
+// Arriving at #education or #certifications opens that tab.
+export function tabLink(win) {
+  const id = win.location.hash.slice(1);
+  const panel = win.document.getElementById(id);
+  const tab = panel && win.document.getElementById(panel.getAttribute('aria-labelledby'));
+  return [result(`#${id} opens its tab`, panel && !panel.hidden && shown(panel) && tab?.getAttribute('aria-selected') === 'true')];
 }
 
 export function deepLink(win) {

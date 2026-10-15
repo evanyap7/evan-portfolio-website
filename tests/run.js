@@ -10,7 +10,7 @@ const SIZES = [
 ];
 
 // Checks run at every size, in this order. Later tasks add to it.
-const ALL = ['structure', 'removed', 'overflow', 'fonts', 'targets', 'fit', 'fitFallback', 'palette', 'figureCaptions', 'cartoon', 'work', 'figureText', 'sheetIndex', 'menu', 'copy'];
+const ALL = ['structure', 'removed', 'overflow', 'fonts', 'targets', 'fit', 'fitFallback', 'palette', 'figureCaptions', 'cartoon', 'work', 'tabs', 'figureText', 'sheetIndex', 'menu', 'copy'];
 
 // One-off runs: a size, a URL and the checks to run there.
 const EXTRA = [
@@ -19,6 +19,8 @@ const EXTRA = [
   { width: 1440, height: 800, src: '/#work-others', names: ['deepLink'] },
   { width: 393, height: 852, src: '/', names: ['crossToWide'] },
   { width: 1440, height: 800, src: '/#toolkit', names: ['hashSheet'] },
+  { width: 1440, height: 800, src: '/#education', names: ['tabLink'] },
+  { width: 393, height: 852, src: '/#certifications', names: ['tabLink'] },
 ];
 
 // A frame that has not loaded, and had its fonts settle, by then is a failure.
