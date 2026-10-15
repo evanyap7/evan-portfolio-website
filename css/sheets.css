@@ -110,30 +110,25 @@
 .about {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: 24px;
-  align-items: end;
+  grid-template-columns: minmax(0, 340px) minmax(0, 40em);
+  justify-content: start;
+  column-gap: clamp(40px, 6vw, 96px);
+  align-items: center;
   padding-top: 24px;
-}
-
-.about__photo {
-  grid-column: 1 / 6;
 }
 
 .about__photo img {
   width: 100%;
-  max-height: calc(100vh - 300px);
-  max-height: calc(100svh - 300px);
+  max-height: calc(100vh - 340px);
+  max-height: calc(100svh - 340px);
   aspect-ratio: 4 / 5;
   object-fit: cover;
   object-position: 50% 30%;
 }
 
 .about__text {
-  grid-column: 6 / 13;
   display: grid;
   gap: 14px;
-  max-width: 40em;
   color: var(--ink-2);
   font-size: 16px;
 }
@@ -624,7 +619,7 @@ ul.role__points li::before {
   }
 
   .about__photo {
-    width: min(100%, 420px);
+    width: min(100%, 320px);
   }
 
   .about__photo img {
