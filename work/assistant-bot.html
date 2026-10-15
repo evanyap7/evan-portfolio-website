@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="/css/figures.css">
   <link rel="stylesheet" href="/css/project.css">
 
-  <script>document.documentElement.classList.add('js');</script>
+  <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
 </head>
 <body>
 
@@ -69,7 +69,7 @@
     <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
     <header class="project__head">
       <p class="mono label">Full-stack developer · Aug – Sept 2026</p>
-      <h1 class="project__title">Personal Assistant <span class="serif">Bot</span></h1>
+      <h1 class="project__title vt-assistant-bot">Personal Assistant <span class="serif">Bot</span></h1>
     </header>
     <dl class="stats">
       <div><dt>Intents, each validated by a Zod schema</dt><dd><span data-count>24</span></dd></div>

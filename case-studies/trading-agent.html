@@ -30,7 +30,7 @@
   <link rel="stylesheet" href="/css/project.css">
   <link rel="stylesheet" href="/css/case-study.css">
 
-  <script>document.documentElement.classList.add('js');</script>
+  <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -69,7 +69,7 @@
     <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
     <header class="project__head">
       <p class="mono label">Case study · Autonomous Trading Agent · Python</p>
-      <h1 class="project__title case__title">I built an LLM trading agent, measured it, and <span class="serif">deleted</span> the LLM.</h1>
+      <h1 class="project__title vt-trading-agent case__title">I built an LLM trading agent, measured it, and <span class="serif">deleted</span> the LLM.</h1>
       <p class="project__lede">The agent trades a small Webull Singapore account on its own, and no model can size or place an order. I tested whether Claude made it better than a plain momentum rule. It did not, so the LLM layer is gone.</p>
     </header>
     <dl class="stats">
