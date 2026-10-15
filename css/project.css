@@ -180,6 +180,15 @@
 }
 
 @media (max-width: 719px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
+  }
+
+  .stats dd {
+    font-size: 40px;
+  }
+
   .next {
     padding: 28px 24px;
   }
