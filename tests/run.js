@@ -10,7 +10,7 @@ const SIZES = [
 ];
 
 // Checks run at every size, in this order. Later tasks add to it.
-const ALL = ['structure', 'removed', 'overflow', 'fonts', 'targets', 'fit', 'fitFallback', 'palette', 'figureCaptions', 'cartoon', 'reducedMotionNote', 'work', 'figureText', 'sheetIndex', 'menu', 'copy'];
+const ALL = ['structure', 'removed', 'overflow', 'fonts', 'targets', 'fit', 'fitFallback', 'palette', 'figureCaptions', 'cartoon', 'work', 'figureText', 'sheetIndex', 'menu', 'copy'];
 
 // One-off runs: a size, a URL and the checks to run there.
 const EXTRA = [

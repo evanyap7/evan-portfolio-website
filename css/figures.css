@@ -223,14 +223,6 @@
 
 .wave__lines { opacity: 0; }
 
-/* Shown only when the visitor has asked for less motion, so a still
-   cartoon is not mistaken for a broken one. */
-.caption__still { display: none; }
-
-@media (prefers-reduced-motion: reduce) {
-  .caption__still { display: inline; }
-}
-
 /* Motion ------------------------------------------------------------ */
 /* The cartoon arrives, waves once and then only blinks; wave.js replays
    the wave on hover or tap. The underline draws once after the headline.

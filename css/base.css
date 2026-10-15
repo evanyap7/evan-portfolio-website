@@ -147,7 +147,7 @@ strong, b {
   transform: translateY(8px);
 }
 
-/* Labels, captions and the title block. */
+/* Labels and captions. */
 .mono {
   font-family: var(--font-mono);
   font-size: 10.5px;

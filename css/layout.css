@@ -14,19 +14,21 @@
   background: var(--desk);
 }
 
-.bar__id {
+.wordmark {
   justify-self: start;
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  font-size: 14px;
-  font-weight: 500;
+  font-family: "Satoshi", var(--font-sans);
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.05em;
   white-space: nowrap;
 }
 
-.bar__role {
-  color: var(--ink-2);
-  font-weight: 400;
+.wordmark__dot {
+  color: var(--accent);
 }
 
 .bar__index {
@@ -103,21 +105,12 @@
   min-height: 44px;
 }
 
-.bar__clock {
-  color: var(--ink-2);
-  white-space: nowrap;
-}
-
 @media (hover: hover) {
   .bar__nav a:hover { color: var(--ink); }
 }
 
 .bar__menu {
   display: none;
-}
-
-@media (max-width: 1279px) {
-  .bar__role { display: none; }
 }
 
 @media (max-width: 1023px) {
@@ -142,7 +135,7 @@
 }
 
 /* Menu -------------------------------------------------------------- */
-/* Below 1024px: the six sheets, the resume, email and the clock. */
+/* Below 1024px: the six sheets, the resume and email. */
 .menu {
   position: fixed;
   top: var(--bar);
@@ -202,11 +195,6 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-}
-
-.menu__clock {
-  margin-top: 16px;
-  color: var(--ink-2);
 }
 
 /* Sheet ------------------------------------------------------------- */
@@ -281,10 +269,8 @@
   }
 }
 
-/* The "next sheet" link and the title block sit on the bottom edge of the
-   frame, mirroring each other. */
-.sheet__next,
-.titleblock {
+/* The "next sheet" link sits on the bottom edge of the frame. */
+.sheet__next {
   position: absolute;
   bottom: var(--frame);
   display: flex;
@@ -295,6 +281,13 @@
 }
 
 .sheet__next {
+  position: absolute;
+  bottom: var(--frame);
+  display: flex;
+  align-items: center;
+  border-top: 1px solid var(--rule);
+  background: var(--sheet);
+  color: var(--ink-3);
   left: var(--frame);
   gap: 8px;
   padding: 8px 12px 7px;
@@ -312,22 +305,6 @@
   }
 }
 
-.titleblock {
-  right: var(--frame);
-}
-
-.titleblock span {
-  padding: 8px 12px 7px;
-  border-left: 1px solid var(--rule);
-  white-space: nowrap;
-}
-
-.titleblock b {
-  margin-left: 6px;
-  color: var(--ink);
-  font-weight: 400;
-}
-
 @media (max-width: 719px) {
   .sheet {
     padding-bottom: calc(var(--frame) + 12px);
@@ -337,8 +314,7 @@
     font-size: 32px;
   }
 
-  .sheet__next,
-  .titleblock {
+  .sheet__next {
     position: static;
     align-self: flex-start;
     border: 1px solid var(--rule);
@@ -348,17 +324,6 @@
     margin-top: 28px;
   }
 
-  .titleblock {
-    margin-top: 10px;
-  }
-
-  .titleblock span:first-child {
-    border-left: 0;
-  }
-
-  .titleblock span:nth-child(2) {
-    display: none;
-  }
 }
 
 /* Controls ---------------------------------------------------------- */

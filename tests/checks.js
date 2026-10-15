@@ -14,7 +14,7 @@ const shown = (el) => {
   return box.width > 0 && box.height > 0;
 };
 
-// Six sheets in story order, each with a title block and a link to the next.
+// Six sheets in story order, each with a link to the next.
 export function structure(win) {
   const sheets = [...win.document.querySelectorAll('main > .sheet')];
   const ids = sheets.map((sheet) => sheet.id).join(',');
@@ -22,7 +22,6 @@ export function structure(win) {
   sheets.forEach((sheet, i) => {
     const want = `#${SHEETS[(i + 1) % SHEETS.length]}`;
     const href = sheet.querySelector('.sheet__next')?.getAttribute('href');
-    out.push(result(`${sheet.id}: title block`, sheet.querySelector('.titleblock')));
     out.push(result(`${sheet.id}: next link to ${want}`, href === want, href ?? 'none'));
   });
   return out;
@@ -121,24 +120,6 @@ export function cartoon(win) {
   return [result('cartoon waves in the intro, recoloured', art && art.querySelector('circle[fill="#2541e6"]') && !art.querySelector('[fill="#ff9fb6"]'))];
 }
 
-// The caption under the cartoon explains why it is still when Reduce Motion is on.
-export function reducedMotionNote(win) {
-  const doc = win.document;
-  let ruled = false;
-  [...doc.styleSheets].forEach((sheet) => {
-    let rules = [];
-    try { rules = [...sheet.cssRules]; } catch { return; }
-    rules.forEach((rule) => {
-      if (!(rule instanceof win.CSSMediaRule) || !/prefers-reduced-motion:\s*reduce/.test(rule.media.mediaText)) return;
-      [...rule.cssRules].forEach((inner) => {
-        const display = inner.style?.display;
-        if (inner.selectorText?.includes('caption__still') && display && display !== 'none') ruled = true;
-      });
-    });
-  });
-  return [result('reduced-motion note under the cartoon', doc.querySelector('#top .caption__still') && ruled)];
-}
-
 export function work(win) {
   const doc = win.document;
   const rows = [...doc.querySelectorAll('.project__row')];
@@ -200,10 +181,8 @@ export async function sheetIndex(win) {
   const current = doc.querySelector('.ticks a[aria-current="true"]')?.getAttribute('href');
   win.scrollTo({ top: 0, behavior: 'instant' });
   await wait(100);
-  const clock = doc.querySelector('[data-clock]')?.textContent ?? '';
   return [
     result('index follows the sheet on screen', number === '03' && current === '#experience', `${number} ${current}`),
-    result('clock shows Singapore time', /^SGT \d{2}:\d{2}$/.test(clock), clock),
   ];
 }
 

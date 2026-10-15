@@ -1,6 +1,6 @@
 // The sheet index in the bar and the menu. It marks the sheet under the
 // middle of the screen (or the last sheet once the page is scrolled to the
-// end), and keeps the Singapore clock current. Driven by scroll position
+// end),. Driven by scroll position
 // rather than IntersectionObserver so it also works inside iframes.
 
 export function initIndex() {
@@ -35,22 +35,5 @@ export function initIndex() {
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
   update();
-  startClock();
 }
 
-function startClock() {
-  const clocks = document.querySelectorAll('[data-clock]');
-  if (!clocks.length) return;
-  const format = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Asia/Singapore',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-  });
-  const tick = () => {
-    const text = `SGT ${format.format(new Date())}`;
-    clocks.forEach((clock) => { clock.textContent = text; });
-  };
-  tick();
-  setInterval(tick, 15000);
-}

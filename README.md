@@ -44,13 +44,13 @@ Every email link, the address on the Contact sheet and the copy button read from
 | `case-studies/` | Long-form write-ups, one sheet each |
 | `resume/` | The downloadable resume PDF |
 | `css/base.css` | Colour and type tokens, reset, utilities, the scroll fade |
-| `css/layout.css` | The bar, the menu below 1024px, the sheet frame, title block, buttons, links and lists |
+| `css/layout.css` | The bar, the menu below 1024px, the sheet frame, buttons, links and lists |
 | `css/sheets.css` | Each sheet's own layout |
 | `css/figures.css` | Project diagrams, the cartoon and all keyframes |
 | `css/case-study.css` | Case study pages |
 | `js/main.js` | Starts everything |
 | `js/work.js` | The project list: tabs from 1024px, an accordion below, and `#work-…` links |
-| `js/index.js` | The sheet index in the bar and menu, and the Singapore clock |
+| `js/index.js` | The sheet index in the bar and menu |
 | `js/menu.js` | The menu below 1024px |
 | `js/contact.js` | The copy button |
 | `js/wave.js` | Replays the cartoon's wave on hover or tap |
@@ -77,7 +77,7 @@ Each diagram is drawn in a 480 × 320 viewBox, with labels set at 16 units and n
 
 ## Motion
 
-The cartoon waves once on load and again on hover or tap, the headline's underline draws once, and the project diagrams loop. With Reduce Motion on, nothing moves: the diagrams show their finished state, and the cartoon's caption says it is still on purpose.
+The cartoon waves once on load and again on hover or tap, the headline's underline draws once, and the project diagrams loop. With Reduce Motion on, nothing moves: the diagrams show their finished state.
 
 ## Update the resume
 
