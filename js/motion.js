@@ -1,7 +1,6 @@
 // The small motions that sit on top of the layout: titles whose words rise
-// from behind a mask, the hero glow pausing off screen, the Experience
-// timeline drawing down, and (with a mouse or trackpad only) the card
-// spotlight and Contact's magnetic pills. With reduced motion none of it
+// from behind a mask, the Experience timeline drawing down, and (with a
+// mouse or trackpad only) the card spotlight and Contact's magnetic pills. With reduced motion none of it
 // runs and every element rests in its final state; the CSS for each part
 // is written inside prefers-reduced-motion: no-preference as well.
 
@@ -59,15 +58,6 @@ function initTitles() {
     });
   }, { rootMargin: '0px 0px -10% 0px' });
   titles.filter((title) => !hero.includes(title)).forEach((title) => observer.observe(title));
-}
-
-// The hero's glow loops slowly, so it stops while the hero is off screen.
-function initGlow() {
-  const hero = document.querySelector('.hero');
-  if (!hero) return;
-  new IntersectionObserver(([entry]) => {
-    hero.classList.toggle('is-off', !entry.isIntersecting);
-  }).observe(hero);
 }
 
 // Draws the timeline down as the Experience section scrolls past: --p is
@@ -151,7 +141,6 @@ function initMagnets() {
 export function initMotion() {
   if (REDUCE.matches || !('IntersectionObserver' in window)) return;
   initTitles();
-  initGlow();
   initTimeline();
   if (FINE.matches) {
     initSpotlight();

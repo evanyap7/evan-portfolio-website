@@ -7,7 +7,7 @@
   <title>Evan Yap | Software and AI engineering</title>
   <meta name="description"
     content="Evan Yap is an Engineering Systems and Design student at SUTD and an AI Business Consultant Intern at Univers. He builds AI systems and proves they work. Looking for software engineering, AI engineering and quant roles.">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#04070a">
   <meta property="og:title" content="Evan Yap | Software and AI engineering">
   <meta property="og:description"
     content="I build AI systems and check they work. Top 5 at the Corporate Website Revamp Challenge, 2nd place at a regional hackathon.">
@@ -27,6 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&family=Instrument+Serif:ital@1&display=swap">
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@900&display=swap">
@@ -35,8 +36,17 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/figures.css">
+  <link rel="stylesheet" href="css/reactor.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
 
-  <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
+  <script>document.documentElement.classList.add('js');try{var h=localStorage.getItem('reactor-hue');if(/^(205|172|258|40|350)$/.test(h))document.documentElement.style.setProperty('--h',h)}catch(e){}addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
 </head>
 
 <body>
@@ -77,7 +87,25 @@
 
   <main id="main">
     <section class="hero" id="top" aria-labelledby="hero-title">
-      <h1 class="hero__title" id="hero-title">I build AI <span class="serif">systems,</span><br class="hero__break"> and
+      <div class="hero__stage">
+        <p class="hero__name"><span>Evan</span> <span>Yap</span></p>
+        <div class="reactor" data-reactor>
+          <img class="reactor__poster" src="img/reactor.webp" alt="" width="720" height="720" decoding="async">
+          <button class="reactor__hit" type="button" data-reactor-hit
+            aria-label="Arc reactor. Hold to charge it, then let go to fire a pulse."></button>
+        </div>
+      </div>
+      <div class="reactor__panel">
+        <p class="reactor__status mono" data-reactor-status aria-hidden="true"></p>
+        <div class="cells" role="group" aria-label="Reactor colour">
+          <button class="cell" type="button" data-hue="205" style="--cell: 205" aria-pressed="true"><span class="visually-hidden">Arc blue</span></button>
+          <button class="cell" type="button" data-hue="172" style="--cell: 172" aria-pressed="false"><span class="visually-hidden">Teal</span></button>
+          <button class="cell" type="button" data-hue="258" style="--cell: 258" aria-pressed="false"><span class="visually-hidden">Violet</span></button>
+          <button class="cell" type="button" data-hue="40" style="--cell: 40" aria-pressed="false"><span class="visually-hidden">Gold</span></button>
+          <button class="cell" type="button" data-hue="350" style="--cell: 350" aria-pressed="false"><span class="visually-hidden">Crimson</span></button>
+        </div>
+      </div>
+      <h1 class="hero__title" id="hero-title">I build AI <span class="serif">systems,</span> and
         <span class="serif">check</span> they work.</h1>
       <p class="hero__lede">Engineering Systems and Design student at SUTD and AI Business Consultant Intern at Univers.
         Looking for software engineering and AI internships.</p>
@@ -86,11 +114,12 @@
           <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
         <a class="pill" href="#contact" data-contact-link data-contact-text>Email me</a>
       </p>
-      <ul class="hero__creds mono">
-        <li><b>Top 5</b> Corporate Website Revamp</li>
-        <li><b>2nd</b> Vietnam Grand Challenge</li>
-        <li><b>1 of 6</b> SUTD TEP scholars</li>
+      <ul class="hero__creds mono" data-callouts>
+        <li data-angle="-140"><b>Top 5</b> Corporate Website Revamp</li>
+        <li data-angle="-40"><b>2nd</b> Vietnam Grand Challenge</li>
+        <li data-angle="40"><b>1 of 6</b> SUTD TEP scholars</li>
       </ul>
+      <svg class="hero__lines" data-lines aria-hidden="true"></svg>
     </section>
 
     <section class="section band band--900" id="about" aria-labelledby="about-title">

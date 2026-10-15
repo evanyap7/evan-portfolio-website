@@ -1,7 +1,11 @@
 /* The main page, section by section. */
 
 /* Hero -------------------------------------------------------------- */
+/* The name, split around the arc reactor (reactor.css), then the
+   headline, the lede, the two pills and the credentials. --core is the
+   reactor's diameter; the name's two words sit either side of it. */
 .hero {
+  --core: clamp(240px, 30vw, 440px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,47 +15,55 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 72px var(--gutter) 64px;
+  padding: 32px var(--gutter) 64px;
   text-align: center;
 }
 
-/* A very soft grey glow behind the headline. With motion allowed it
-   breathes and drifts a few percent over 16 seconds, and motion.js pauses
-   it while the hero is off screen. */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(48% 42% at 50% 46%, rgba(255, 255, 255, 0.075), transparent 72%);
+.hero__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 1240px;
+  height: var(--core);
+}
+
+.hero__name {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: calc(var(--core) * 0.8);
+  align-items: center;
+  width: 100%;
+  font-size: clamp(64px, 12.4vw, 196px);
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .hero::before {
-    animation: glow 16s ease-in-out infinite alternate;
-  }
-
-  .hero.is-off::before {
-    animation-play-state: paused;
-  }
-}
+.hero__name span:first-child { justify-self: end; }
+.hero__name span:last-child { justify-self: start; }
 
 .hero__title {
-  font-size: clamp(40px, 7.4vw, 112px);
+  margin-top: 28px;
+  font-size: clamp(30px, 3.6vw, 54px);
   font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.045em;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
 }
 
 .hero__title .serif {
   font-size: 1.1em;
+  text-shadow: 0 0 0.6em var(--accent-glow);
 }
 
 .hero__lede {
   max-width: 36em;
   text-wrap: balance;
-  margin-top: 28px;
+  margin-top: 18px;
   color: var(--muted);
   font-size: var(--t-lede);
   line-height: 1.55;
@@ -62,7 +74,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: 36px;
+  margin-top: 30px;
 }
 
 .hero__creds {
@@ -70,7 +82,7 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px 36px;
-  margin-top: 72px;
+  margin-top: 48px;
   color: var(--dim);
 }
 
@@ -82,12 +94,26 @@
 
 @media (max-width: 719px) {
   .hero {
-    padding-top: 56px;
+    --core: min(280px, 72vw);
+    padding-top: 24px;
   }
 
-  /* On a phone the headline wraps where it needs to. */
-  .hero__break {
-    display: none;
+  /* On a phone the reactor comes first, then the name on one line. */
+  .hero__stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+  }
+
+  .hero__name {
+    display: block;
+    margin-top: 8px;
+    font-size: clamp(52px, 16vw, 84px);
+  }
+
+  .hero__title {
+    margin-top: 20px;
   }
 
   .hero__actions {
@@ -99,20 +125,27 @@
   .hero__creds {
     flex-direction: column;
     gap: 8px;
-    margin-top: 56px;
+    margin-top: 44px;
   }
 }
 
-/* The headline's words rise from behind a mask on load (motion.js); the
-   lines under it follow once the words have landed. */
+/* Load: the name rises either side of the reactor as it powers on, then
+   everything under it follows. */
 @media (prefers-reduced-motion: no-preference) {
-  .hero > :not(.hero__title) {
+  .hero__name span {
+    animation: rise 1s var(--ease-out) 200ms backwards;
+  }
+
+  .hero__name span:last-child { animation-delay: 300ms; }
+
+  .hero > :not(.hero__stage, .hero__title, .hero__lines) {
     animation: rise 900ms var(--ease-out) backwards;
   }
 
-  .hero > :nth-child(2) { animation-delay: 520ms; }
-  .hero > :nth-child(3) { animation-delay: 600ms; }
-  .hero > :nth-child(4) { animation-delay: 680ms; }
+  .hero > .reactor__panel { animation-delay: 700ms; }
+  .hero > .hero__lede { animation-delay: 620ms; }
+  .hero > .hero__actions { animation-delay: 700ms; }
+  .hero > .hero__creds { animation-delay: 780ms; }
 }
 
 /* About ------------------------------------------------------------- */
