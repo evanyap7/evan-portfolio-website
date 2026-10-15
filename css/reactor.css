@@ -253,14 +253,14 @@
   .hero--hud .hero__creds li:nth-child(2) { --n: 1; }
   .hero--hud .hero__creds li:nth-child(3) { --n: 2; }
 
-  .hero__lines path {
+  .hero__lines:not(.is-drawn) path {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
     animation: draw-line 800ms var(--ease) forwards;
     animation-delay: calc(1000ms + var(--i) * 150ms);
   }
 
-  .hero__lines rect {
+  .hero__lines:not(.is-drawn) rect {
     animation: fade 400ms ease backwards;
     animation-delay: calc(1000ms + var(--i) * 150ms);
   }

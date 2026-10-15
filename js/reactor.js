@@ -90,6 +90,9 @@ function initCallouts(hero, core) {
   layout();
   document.fonts?.ready.then(layout);
   new ResizeObserver(layout).observe(hero);
+  // The lines draw in once; a later relayout (a resize, a phone's address
+  // bar) redraws them in place without replaying that.
+  setTimeout(() => lines.classList.add('is-drawn'), 2400);
 }
 
 export function initReactor() {

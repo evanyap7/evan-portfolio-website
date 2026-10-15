@@ -46,6 +46,14 @@
 .hero__name span:first-child { justify-self: end; }
 .hero__name span:last-child { justify-self: start; }
 
+/* The reactor's canvas reaches past the stage; the text below sits over it. */
+.hero__title,
+.hero__lede,
+.hero__actions {
+  position: relative;
+  z-index: 2;
+}
+
 .hero__title {
   margin-top: 28px;
   font-size: clamp(30px, 3.6vw, 54px);
