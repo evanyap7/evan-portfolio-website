@@ -1,79 +1,48 @@
 /* Tokens ------------------------------------------------------------ */
-/* The drawing set: paper sheets on a grey desk, one ink, one accent. */
+/* Black, one card grey, two hairlines, three greys of text and one blue
+   that only diagrams and focus rings use. */
 :root {
-  --desk: #e6e5e0;
-  --sheet: #fafaf7;
-  --paper: #ffffff;
-  --ink: #111214;
-  --ink-2: #4f5156;
-  --ink-3: #6c6e72;
-  --rule: rgba(17, 18, 20, 0.1);
-  --rule-2: rgba(17, 18, 20, 0.22);
-  --accent: #2541e6;
+  color-scheme: dark;
 
-  --font-sans: "Switzer", "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Fragment Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --bg: #000;
+  --card: #0a0a0a;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-2: rgba(255, 255, 255, 0.18);
+  --text: #fafafa;
+  --muted: #a1a1a1;
+  --dim: #7b7b7b;     /* 4.9:1 on --bg, 4.7:1 on --card */
+  --signal: #6d86ff;  /* 6.5:1 on --bg: diagrams and focus only */
+
+  --font-sans: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
 
-  --bar: 48px;   /* height of the desk bar */
-  --gap: 12px;   /* desk showing around each sheet */
-  --frame: 12px; /* inset of the frame drawn on each sheet */
-  --pad: 40px;   /* content inset inside the frame */
-  --ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --nav: 64px;       /* the floating nav's height */
+  --nav-top: 16px;   /* its distance from the top of the screen */
+  --gutter: 24px;
+  --wide: 1200px;    /* page width, gutters included */
+  --space: clamp(88px, 11vw, 168px); /* between sections */
+  --radius: 18px;
   --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --ease: cubic-bezier(0.65, 0, 0.35, 1);
 
-  /* Type scale. Every size below is read from here, so the whole site
-     scales together. Short laptop screens use the compact set further
-     down, which is what lets each sheet still fit one screen there. */
-  --t-mono: 12px;        /* labels, meta, captions, the stack */
-  --t-body: 16.5px;      /* running text */
-  --t-text: 15.5px;      /* role points, rows, spec values */
-  --t-small: 14.5px;     /* role titles */
-  --t-lede: 19px;
-  --t-nav: 14.5px;
-  --t-link: 15.5px;      /* buttons and text links in panels */
-  --t-title: 50px;       /* sheet titles, in the serif */
-  --t-org: 18px;         /* employer names */
-  --t-row: 19.5px;       /* project row titles */
-  --t-key: 16px;         /* each row's key figure */
-  --t-summary: 16.5px;   /* project summaries */
-  --t-figure: 26px;      /* the numbers in a project's figures */
-  --t-figure-label: 13.5px;
-}
-
-/* Laptops under 760px tall keep the earlier, tighter scale: at 1280 × 650
-   the larger one cannot fit every sheet on one screen. */
-@media (min-width: 1024px) and (max-height: 760px) {
-  :root {
-    --t-mono: 10.5px;
-    --t-body: 15px;
-    --t-text: 14px;
-    --t-small: 13.5px;
-    --t-lede: 18px;
-    --t-nav: 13.5px;
-    --t-link: 14.5px;
-    --t-title: 36px;
-    --t-org: 17px;
-    --t-row: 16.5px;
-    --t-key: 15px;
-    --t-summary: 15px;
-    --t-figure: 24px;
-    --t-figure-label: 12.5px;
-  }
-}
-
-@media (max-width: 1023px) {
-  :root {
-    --bar: 52px;
-    --pad: 28px;
-  }
+  /* Type */
+  --t-body: 17px;
+  --t-lede: 20px;
+  --t-card: 20px;
+  --t-small: 15.5px;
+  --t-mono: 12.5px;
+  --t-title: clamp(60px, 12vw, 176px);
 }
 
 @media (max-width: 719px) {
   :root {
-    --gap: 8px;
-    --frame: 8px;
-    --pad: 12px;
+    --gutter: 20px;
+    --nav-top: 12px;
+    --nav: 60px;
+    --t-body: 16px;
+    --t-lede: 18px;
+    --t-mono: 12px;
   }
 }
 
@@ -87,7 +56,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-top: var(--bar);
+  scroll-padding-top: calc(var(--nav) + var(--nav-top) + 16px);
+  background: var(--bg);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -100,10 +70,11 @@ html.menu-open {
 
 body {
   margin: 0;
-  background: var(--desk);
-  color: var(--ink);
-  font: 400 var(--t-body)/1.55 var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 var(--t-body)/1.6 var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
   overflow-x: clip;
@@ -111,6 +82,10 @@ body {
 
 h1, h2, h3, h4, p, ul, ol, dl, dd, figure {
   margin: 0;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 600;
 }
 
 ul, ol {
@@ -145,9 +120,24 @@ strong, b {
   font-weight: 500;
 }
 
+::selection {
+  background: var(--text);
+  color: var(--bg);
+}
+
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--signal);
   outline-offset: 3px;
+}
+
+/* The accent words: one whole word in the italic serif, a touch larger so
+   it sits at the same optical size as the sans around it. */
+.serif {
+  font-family: var(--font-serif);
+  font-size: 1.08em;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
 /* Long words break at hyphens on narrow screens instead of overflowing. */
@@ -175,16 +165,17 @@ strong, b {
   position: absolute;
   top: 0;
   left: 12px;
-  z-index: 20;
-  padding: 10px 14px;
-  background: var(--ink);
-  color: var(--sheet);
+  z-index: 30;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
   font-weight: 500;
-  transform: translateY(-120%);
+  transform: translateY(-140%);
 }
 
 .skip-link:focus {
-  transform: translateY(8px);
+  transform: translateY(12px);
 }
 
 /* Icons from img/icons.svg, drawn in the text colour. */
@@ -195,14 +186,18 @@ strong, b {
   fill: currentColor;
 }
 
-/* Labels and captions. */
+/* Labels, dates and small print. */
 .mono {
   font-family: var(--font-mono);
   font-size: var(--t-mono);
   font-weight: 400;
-  line-height: 1.4;
-  letter-spacing: 0.06em;
+  line-height: 1.5;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.label {
+  color: var(--dim);
 }
 
 /* With Reduce Motion on, nothing moves, not even a colour fade: every
@@ -222,8 +217,8 @@ strong, b {
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] {
     opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+    transform: translateY(14px);
+    transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
   }
 
   .js [data-reveal].is-visible {
