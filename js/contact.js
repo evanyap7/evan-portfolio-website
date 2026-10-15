@@ -28,7 +28,7 @@ export function initCopy() {
       say('Copied', 'Email address copied');
     } catch {
       const range = document.createRange();
-      range.selectNodeContents(address);
+      range.selectNodeContents(address.querySelector('[data-contact-text]') ?? address);
       const selection = window.getSelection();
       selection.removeAllRanges();
       selection.addRange(range);
