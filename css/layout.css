@@ -166,8 +166,7 @@
 .section {
   width: calc(100% - 2 * var(--gutter));
   max-width: calc(var(--wide) - 48px);
-  margin: 0 auto;
-  padding-top: var(--space);
+  margin: var(--space) auto 0;
 }
 
 /* The huge section titles: one word in the italic serif. */
@@ -306,7 +305,7 @@
   gap: 8px 24px;
   width: calc(100% - 2 * var(--gutter));
   max-width: calc(var(--wide) - 48px);
-  margin: var(--space) auto 0;
+  margin: clamp(80px, 9vw, 128px) auto 0;
   padding: 28px 0 36px;
   border-top: 1px solid var(--line);
   color: var(--dim);
