@@ -1,12 +1,12 @@
 # My portfolio
 
-My personal site, laid out as a set of six engineering drawing sheets: Intro, About, Experience, Selected work, Toolkit and credentials, and Contact. Each sheet is one screen on a landscape laptop or desktop and grows to fit its content on phones and tablets.
+My personal site: one black page in six sections (Intro, About, Experience, Selected work, Toolkit and Contact), plus a page for each project. The sections flow one after another with generous space between them; nothing is pinned to one screen.
 
 Plain HTML, CSS and JavaScript. No framework, no build step, no dependencies.
 
 ## Run it locally
 
-The scripts are ES modules, so the page has to be served over HTTP. This server turns caching off:
+The scripts are ES modules, so the pages have to be served over HTTP. This server turns caching off:
 
 ```sh
 python3 tests/serve.py 4173
@@ -18,11 +18,17 @@ Then open <http://localhost:4173>. On a phone on the same Wi-Fi, use the Mac's a
 
 Open <http://localhost:4173/tests/>. The page loads the site at 13 sizes, from a 320px phone to a 1920px desktop, and checks that:
 
-- each sheet fits one screen at 1280 × 650, 1440 × 800 and 1920 × 1080, with each project open and each Toolkit tab chosen in turn, even with fallback fonts
-- nothing scrolls sideways
-- tap targets are at least 44px below 1024px wide
-- the smallest note in a project diagram renders at least 9px at 1280px wide and up, 8px from 1024px and 7px below
-- the project list, the Toolkit tabs (roles, arrow keys, Home and End, and the `#education` and `#certifications` links), the menu, the sheet index and the copy button behave, and the page behind the open menu (below 1024px) is inert, so it cannot be tabbed to or clicked
+- the six sections are in order (`top`, `about`, `experience`, `work`, `toolkit`, `contact`), each page has one `h1` and its headings never skip a level
+- the drawing set is gone: no sheets, ticks, title blocks, "Next:" links, underline stroke, dot grid, project tabs, Switzer, Fragment Mono, `lean.js`, `work.js` or `backdrop-filter`
+- nothing scrolls sideways, on the main page and on every project page and the case study
+- Geist, Geist Mono, Instrument Serif and Satoshi load
+- tap targets are at least 44px below 1024px wide (nav, menu, pills, cards, tabs, the copy button, the contact links, the way back and the next project)
+- no stylesheet or diagram uses an old colour, the page is black, and `--dim` passes 4.5:1 on both `--bg` and `--card` (computed from the tokens)
+- no em dash appears in the text, title or meta
+- the cartoon is in About, on a card
+- the six work cards are single links, named by their titles, with their `#work-…` ids, and each page they open exists
+- the Toolkit tabs (roles, arrow keys, Home and End, and the `#education` and `#certifications` links), the nav's current section, the progress line, the menu (the page and footer behind it are inert, and Escape closes it) and the copy button behave
+- each project page links back to all work and on to a next project that exists, and the smallest diagram note renders at least 9px from 1280px wide, 8px from 1024px and 7px below
 
 The heading says `PASS` or `FAIL`, and the table lists every result. `docs/` and `tests/` are left out of deploys by `.vercelignore`.
 
@@ -34,68 +40,66 @@ It lives in one place, `js/config.js`:
 export const CONTACT_EMAIL = 'evanyap7@gmail.com';
 ```
 
-Every email link, the address on the Contact sheet and the copy button read from it.
+Every email link, the address in Contact and the copy button read from it.
 
 ## Where things are
 
 | Path | What it holds |
 | --- | --- |
-| `index.html` | All six sheets |
-| `case-studies/` | Long-form write-ups, one sheet each |
+| `index.html` | The main page: Intro, About, Experience, Selected work, Toolkit and Contact |
+| `work/` | One page per project: `website-revamp`, `assistant-bot`, `research-agent`, `v-bay` and `others` |
+| `case-studies/trading-agent.html` | The trading agent's case study, on the same template |
 | `resume/` | The downloadable resume PDF |
-| `css/base.css` | Colour, font and type-scale tokens, reset, utilities, the scroll fade |
-| `css/layout.css` | The bar and its progress line, the menu below 1024px, the sheet frame, buttons, links and lists |
-| `css/sheets.css` | Each sheet's own layout |
-| `css/figures.css` | Project diagrams, the cartoon and all keyframes |
-| `css/case-study.css` | Case study pages |
-| `js/main.js` | Starts everything |
-| `js/work.js` | The project list: tabs from 1024px, an accordion below, and `#work-…` links |
-| `js/tabs.js` | Sheet 05's four tabs, and the `#education` and `#certifications` links |
-| `js/count.js` | Counts a project's figures up the first time it opens |
-| `js/lean.js` | Turns the cartoon's head toward the pointer |
-| `js/index.js` | The sheet index in the bar and menu, and the progress line |
+| `css/base.css` | Colour, font and type tokens, reset, the accent serif, utilities, the scroll reveal |
+| `css/layout.css` | The floating nav, the progress line, the menu, sections and their huge titles, pills, cards, hairline rows and the footer |
+| `css/home.css` | The main page's sections |
+| `css/project.css` | The project page template |
+| `css/case-study.css` | The case study's article: pipeline, decisions and tables |
+| `css/figures.css` | Project diagrams, the cartoon and the keyframes |
+| `js/main.js` | Starts everything; every page loads it, and each part does nothing on a page without its markup |
+| `js/index.js` | The nav's current section and the progress line |
 | `js/menu.js` | The menu below 1024px |
+| `js/tabs.js` | The Toolkit tabs, and the `#education` and `#certifications` links |
+| `js/count.js` | Counts each `[data-count]` figure up once, the first time it is seen |
+| `js/wave.js` | Starts the cartoon's wave when About comes into view, and replays it on hover or tap |
 | `js/contact.js` | The copy button |
-| `js/wave.js` | Replays the cartoon's wave on hover or tap |
+| `js/reveal.js` | The fade and rise as content first scrolls into view |
 | `js/reel.js`, `js/scenes.js` | The project diagram player and each diagram's timeline |
-| `js/reveal.js` | The fade as content first scrolls into view, and each sheet's frame drawing in |
 | `img/icons.svg` | Tool marks (Simple Icons), the GitHub and LinkedIn marks (Feather) and the document and envelope line icons, all drawn in `currentColor` |
-| `img/logos/` | Univers and SUTD logos |
+| `img/logos/` | Univers and SUTD logos, turned white in CSS |
 | `tests/` | The check page and the local server |
 
 ## The design
 
-- Paper sheets (`#fafaf7`) on a grey desk (`#e6e5e0`), one ink (`#111214`) and one blue accent (`#2541e6`).
-- Type is Switzer for reading, Fragment Mono for labels, Instrument Serif for sheet titles, the About statement, the Contact title and the italic "check they work.", and Satoshi 900 for the `evan.` wordmark. Sizes come from the `--t-…` tokens at the top of `css/base.css`; laptops under 760px tall get a compact set so every sheet still fits one screen.
-- Each sheet ends with a link to the next one, so the page reads in order.
-- The bar shows which sheet you are on.
+- Black (`--bg #000`), cards a step lighter (`--card #0a0a0a`), two hairlines (`--line` and `--line-2`, white at 10% and 18%), three text greys (`--text #fafafa`, `--muted #a1a1a1`, `--dim #7b7b7b`) and one blue, `--signal #6d86ff`, used only in the diagrams and the focus ring. The cartoon keeps its own illustration colours.
+- Type: Geist 400, 500 and 600 for reading, UI and headings; Geist Mono for labels and dates; Instrument Serif italic for one accent word at a time (`.serif`, about 1.08 times the sans around it); Satoshi 900 for the `evan.` wordmark only. Geist, Geist Mono and Instrument Serif come from Google Fonts and Satoshi from Fontshare, with fallback stacks in `--font-sans`, `--font-mono` and `--font-serif`.
+- Section titles are huge (`--t-title`, 60px to 176px), centred, with one whole word in the serif. In Selected work the cards are tucked over the bottom of the title.
+- The nav is a floating pill with a solid background. Below 1024px it holds the wordmark and a Menu pill that opens a full-screen menu.
+- Hover styles sit inside `@media (hover: hover)`.
 
-To add a project, copy one `h3.project__head` and the `div.project__panel` after it in `index.html`, give both new ids (`work-…`, `row-…` and `panel-…`), and number it in `.project__n`. The Selected work grid assumes six projects (`grid-template-rows: repeat(6, auto) 1fr` in `css/sheets.css`), and the check page asserts six projects captioned Fig. 4.1 to 4.6 (`work` and `figureCaptions` in `tests/checks.js`), so update those too. 4.6 Others gathers the smaller builds; a new major project goes before it.
+## Add a project
 
-The marks above each project's stack come from `img/icons.svg` (`<svg class="icon"><use href="img/icons.svg#python"/></svg>`). Only tools with a mark in the file get one; never draw a brand's logo by hand.
+1. Copy one of the pages in `work/`, change its `<title>`, description, canonical and `og:url`, its label, title, figures, diagram, overview, stack and links.
+2. Add a card to `ul.work__grid` in `index.html` with the id `work-<slug>`, and point the card before it and the page before it at the new page from their "Next project" links, so the six still run in a loop.
+3. Add the page to `PAGES` and its slug to `CARDS` in `tests/`.
 
 ## Project diagrams
 
-Four projects have a looping diagram, inline SVG inside a `<figure class="reel" data-reel="…">`, drawn in its finished state so it reads as a still.
+Four projects have a looping diagram: inline SVG inside a `<figure class="reel" data-reel="…">` on the project page, drawn in its finished state so it reads as a still. To change one, edit its SVG and its timeline in `js/scenes.js`. The timeline finds parts by their `data-a` name and gives times in milliseconds into a nine-second loop. A diagram plays only while it is on screen, and each has a pause button. Each is drawn in a 480 × 320 viewBox, with labels set at 16 units and notes at 13. Colours are named by role (`is-signal`, `stroke-text` and so on, in `css/figures.css`), and the timelines read the same tokens.
 
-To change one, edit its SVG in `index.html` and its timeline in `js/scenes.js`. The timeline finds parts by their `data-a` name and gives times in milliseconds into a nine-second loop. A diagram plays only while its project is open and on screen, and each has a pause button.
-
-Each diagram is drawn in a 480 × 320 viewBox, with labels set at 16 units and notes at 13 in `css/figures.css`. On laptops 1280px wide and up and at most 899px tall, the open project's diagram sits beside its summary, so it stays readable while the sheet still fits one screen.
-
-Fig. 4.6 (Others) is different: two small drawings, piano keys and a moon beside a calendar, animated with plain CSS keyframes in `css/figures.css`. They play once, for under five seconds, each time Others opens, so they need no pause button.
+Others has two small drawings instead, piano keys and a moon beside a calendar, animated with plain CSS keyframes. They play once, for under five seconds, the first time the plate is seen, so they need no pause button.
 
 ## Motion
 
-- The headline's two lines rise in on load, then the underline draws under "check they work."
-- The cartoon waves once on load and again on hover or tap, and with a mouse its head turns a few pixels toward the pointer.
-- The Intro has a faint dot grid with a slow lens that brightens the dots it passes, for about half a minute (wide screens only).
-- Each sheet's frame draws itself in clockwise, and its label types in, the first time the sheet comes into view.
-- A project's panel fades and rises in when it opens, and its figures (and its row's key figure) count up the first time.
-- The project diagrams loop while their project is open and on screen, with a pause button. Fig. 4.6 plays once.
-- The Toolkit tab's tools rise in, row by row, when the tab is shown.
-- A blue line under the bar shows how far down the page you are.
+- The hero rises in, one line after another, on load.
+- Content fades and rises in the first time it scrolls into view.
+- The cartoon waves once when About first comes into view, and again on hover or tap. It blinks now and then.
+- Each project's figures count up once, the first time they are seen.
+- A newly chosen Toolkit tab fades and rises in.
+- The project diagrams loop while on screen, with a pause button; Others plays once.
+- A thin grey line along the top of the screen shows how far down the page you are.
 
-With Reduce Motion on, nothing moves: no animation runs at all, figures and counters show their final values, the frames are drawn, and colour changes land at once.
+With Reduce Motion on, nothing moves: no animation runs at all, the figures show their final values and colour changes land at once.
 
 ## Update the resume
 
@@ -103,8 +107,8 @@ Replace `resume/Evan-Yap-Resume.pdf`. The public copy leaves out the phone numbe
 
 ## Share image
 
-`img/og.jpg` (1200 × 630) is the preview shown when the site is pasted into LinkedIn, Slack or iMessage. Recapture it from the Intro sheet if the headline or cartoon changes.
+`img/og.jpg` (1200 × 630) is the preview shown when the site is pasted into LinkedIn, Slack or iMessage. Recapture it from the hero if the headline changes.
 
 ## Deploy
 
-The site is static, so Vercel serves the repository root as it is. The default and production branch is `main-2`: every push to it deploys, and pushes to other branches get preview deployments.
+The site is static, so Vercel serves the repository root as it is, with `cleanUrls` on (so `/work/assistant-bot.html` is also `/work/assistant-bot`). The default and production branch is `main-2`: every push to it deploys, and pushes to other branches get preview deployments.
