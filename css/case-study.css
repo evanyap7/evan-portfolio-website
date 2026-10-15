@@ -1,100 +1,71 @@
 /* Case study -------------------------------------------------------- */
-/* A long-form write-up on one sheet at its natural height. Text runs at a
-   readable measure; diagrams and tables may run wider. The paragraph rule
-   comes first and uses :where(), so every named block after it can
-   override it. */
-.bar--case {
-  grid-template-columns: 1fr auto;
+/* The project template (project.css) with a long-form article after the
+   diagram. Text runs at a readable measure; the pipeline and tables may
+   run wider. */
+.case__title {
+  max-width: 15em;
+  font-size: clamp(40px, 6vw, 84px);
 }
 
-.bar--case .bar__nav {
-  display: flex;
-  gap: 16px;
+.case__body {
+  margin-top: clamp(56px, 7vw, 104px);
 }
 
-.case {
-  min-height: 0;
-  padding-bottom: calc(var(--frame) + 72px);
-}
-
-.case > * {
+.case__body > * {
   max-width: 46rem;
 }
 
-.case > .flow,
-.case > .case__table {
+.case__body > .flow,
+.case__body > .case__table {
   max-width: 62rem;
 }
 
-/* Body text. It comes before the named blocks and matches them in weight, so
-   the lede, notes, footer and link row below can override it. The link row
-   keeps the size sheets.css gives .project__links. */
-.case :where(p:not(.mono, .project__links)),
+.case__body :where(p:not(.mono, .links)),
 .case__list {
-  margin-top: 14px;
-  color: var(--ink-2);
-  font-size: var(--t-body);
-  line-height: 1.6;
-}
-
-.eyebrow {
-  margin-top: 8px;
-  color: var(--ink-3);
-}
-
-.case__title {
   margin-top: 16px;
-  font-family: var(--font-serif);
-  font-size: clamp(38px, 5.5vw, 72px);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.015em;
+  color: var(--muted);
 }
 
-.case__title em {
-  color: var(--accent);
+.case__body h2 {
+  margin-top: 64px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.case__body > h2:first-child {
+  margin-top: 0;
+}
+
+.case__body strong {
+  color: var(--text);
+}
+
+.case__body em {
   font-style: italic;
 }
 
-.case__lede {
-  margin-top: 20px;
-  color: var(--ink-2);
-  font-size: var(--t-lede);
-}
-
-.case__figures {
-  margin-top: 28px;
-}
-
-.case h2 {
-  margin-top: 48px;
-  padding-top: 12px;
-  border-top: 1px solid var(--rule-2);
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.case strong {
-  color: var(--ink);
-}
-
-.case code {
-  padding: 1px 4px;
-  border: 1px solid var(--rule);
-  background: var(--paper);
+.case__body code {
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text);
   font-family: var(--font-mono);
-  font-size: 0.88em;
+  font-size: 0.86em;
 }
 
 .case__list {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .case__list li {
   position: relative;
-  padding-left: 18px;
+  padding-left: 20px;
 }
 
 .case__list li::before {
@@ -104,7 +75,7 @@
   left: 0;
   width: 8px;
   height: 1px;
-  background: var(--ink-3);
+  background: var(--dim);
 }
 
 .case__list--numbered {
@@ -112,53 +83,58 @@
 }
 
 .case__list--numbered li {
-  padding-left: 30px;
+  padding-left: 34px;
   counter-increment: step;
 }
 
 .case__list--numbered li::before {
   content: counter(step, decimal-leading-zero);
-  top: 0.25em;
+  top: 0.3em;
   width: auto;
   height: auto;
   background: none;
-  color: var(--ink-3);
+  color: var(--dim);
   font-family: var(--font-mono);
   font-size: var(--t-mono);
 }
 
 .case__sub {
-  margin-top: 28px;
-  font-size: 17px;
-  font-weight: 600;
+  margin-top: 36px;
+  font-size: var(--t-card);
+  font-weight: 500;
 }
 
-.case__note,
-.case__fine,
-.case__code {
-  color: var(--ink-3);
-  font-size: var(--t-text);
+.case__body .case__note,
+.case__body .case__fine,
+.case__body .case__code {
+  color: var(--dim);
+  font-size: var(--t-small);
 }
 
-/* Pipeline: three lanes of steps, the model step outlined in the accent. */
+.case__fine {
+  padding-top: 40px;
+}
+
+/* Pipeline: three lanes of steps, the one model step in the signal blue. */
 .flow {
   display: grid;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 .flow__lane {
-  padding: 14px 16px;
-  border: 1px solid var(--rule-2);
-  background: var(--paper);
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
 }
 
 .flow__label {
-  color: var(--ink-3);
+  color: var(--dim);
   font-family: var(--font-mono);
   font-size: var(--t-mono);
   font-weight: 400;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -166,7 +142,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px 6px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .flow__steps li {
@@ -177,75 +153,83 @@
 
 .flow__steps li:not(:last-child)::after {
   content: "→";
-  color: var(--ink-3);
+  color: var(--dim);
 }
 
 .flow__step {
-  padding: 4px 10px;
-  border: 1px solid var(--ink);
+  padding: 4px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
   font-size: var(--t-small);
 }
 
 .flow__step--model {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--signal);
+  color: var(--signal);
 }
 
 .case__decisions {
   display: grid;
-  gap: 18px;
-  margin-top: 20px;
+  gap: 28px;
+  margin-top: 24px;
   counter-reset: decision;
 }
 
 .case__decisions > li {
   position: relative;
-  padding-left: 44px;
+  padding-left: 48px;
   counter-increment: decision;
 }
 
 .case__decisions > li::before {
   content: counter(decision, decimal-leading-zero);
   position: absolute;
-  top: 3px;
+  top: 4px;
   left: 0;
-  color: var(--accent);
+  color: var(--dim);
   font-family: var(--font-mono);
   font-size: var(--t-mono);
 }
 
 .case__decisions h3 {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: var(--t-card);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
 }
 
 .case__table {
-  margin-top: 20px;
+  margin-top: 24px;
   overflow-x: auto;
-  border: 1px solid var(--rule-2);
-  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
 }
 
 .case__table table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--t-text);
+  font-size: var(--t-small);
 }
 
 .case__table th,
 .case__table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--rule);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: top;
 }
 
+.case__table td {
+  color: var(--muted);
+}
+
 .case__table thead th {
-  color: var(--ink-3);
+  color: var(--dim);
   font-family: var(--font-mono);
   font-size: var(--t-mono);
   font-weight: 400;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -258,55 +242,17 @@
   border-bottom: 0;
 }
 
+.case__table:focus-visible {
+  outline-offset: 4px;
+}
+
 .case__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  margin-top: 40px;
-}
-
-.case__footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px 24px;
-  margin-top: 32px;
-  padding-top: 12px;
-  border-top: 1px solid var(--rule);
-  color: var(--ink-3);
-  font-size: var(--t-small);
-}
-
-.case__footer p {
-  margin: 0;
-  color: inherit;
-  font-size: inherit;
-}
-
-.case__footer-links {
-  display: flex;
-  gap: 20px;
-}
-
-/* The footer's GitHub and LinkedIn links stand alone, so they get the same
-   44px touch target as the other link rows (sheets.css does this below 1024px). */
-@media (max-width: 1023px) {
-  .case__footer-links .link {
-    display: inline-flex;
-    align-items: center;
-    min-width: 44px;
-    min-height: 44px;
-  }
+  margin-top: 48px;
 }
 
 @media (max-width: 719px) {
-  .bar--case .bar__nav a:not(.link) {
-    display: none;
-  }
-
-  .case__links .link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
+  .case__decisions > li {
+    padding-left: 0;
+    padding-top: 28px;
   }
 }
