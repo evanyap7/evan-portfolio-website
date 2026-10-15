@@ -25,7 +25,10 @@ Open <http://localhost:4173/tests/>. The page loads the site at 13 sizes, from a
 - tap targets are at least 44px below 1024px wide (nav, menu, pills, cards, tabs, the copy button, the contact links, the way back and the next project)
 - no stylesheet or diagram uses an old colour and the page is black; every text grey (`--text`, `--text-2`, `--muted`, `--dim`) passes 4.5:1 on black, on both band greys and on the head of a card, the light Contact band's greys and dark pills pass too, and the focus ring passes 3:1 on dark and on light (all computed from the tokens)
 - no em dash appears in the text, title or meta
-- About shows the photo, with alt text, and the Selected work cards sit at or below the title's baseline, so they never cover its letters
+- About shows the photo, with alt text, and its four-figure proof strip; the Selected work cards sit at or below the title's baseline, so they never cover its letters
+- the titles read exactly as written after the word reveal splits them (nothing in a heading is `aria-hidden`), and every word is in place once seen
+- the card spotlight and the magnetic pills are only set up for a fine pointer that can hover
+- the Experience timeline is whole once the section has scrolled past, and each role's node lights
 - the six work cards are single links, named by their titles, with their `#work-…` ids, and each page they open exists
 - the Toolkit tabs (roles, arrow keys, Home and End, and the `#education` and `#certifications` links), the nav's current section, the progress line, the menu (the page and footer behind it are inert, and Escape closes it) and the copy button behave
 - each project page links back to all work and on to a next project that exists, and the smallest diagram note renders at least 9px from 1280px wide, 8px from 1024px and 7px below
@@ -63,6 +66,7 @@ Every email link, the address in Contact and the copy button read from it.
 | `js/count.js` | Counts each `[data-count]` figure up once, the first time it is seen |
 | `js/contact.js` | The copy button |
 | `js/reveal.js` | The fade and rise as content first scrolls into view |
+| `js/motion.js` | The masked title reveals, the hero glow's pause, the Experience timeline, and (mouse and trackpad only) the card spotlight and Contact's magnetic pills |
 | `js/reel.js`, `js/scenes.js` | The project diagram player and each diagram's timeline |
 | `img/icons.svg` | Tool marks (Simple Icons), the GitHub and LinkedIn marks (Feather) and the document and envelope line icons, all drawn in `currentColor` |
 | `img/logos/` | Univers and SUTD logos, turned white in CSS |
@@ -92,11 +96,15 @@ Others has two small drawings instead, piano keys and a moon beside a calendar, 
 
 ## Motion
 
-- The hero rises in, one line after another, on load.
-- Content fades and rises in the first time it scrolls into view.
-- Each project's figures count up once, the first time they are seen.
+- Titles (the hero, every section title and the project page titles) reveal word by word from behind a mask, about 60ms apart, with the italic accent word arriving last and settling from a slight skew. The hero's runs on load, the rest when they come into view. The words are wrapped in spans, but the text is untouched, so headings read the same to screen readers.
+- The hero's soft glow breathes and drifts a few percent over 16 seconds, and pauses while the hero is off screen.
+- Content fades and rises in the first time it scrolls into view; the About photo is wiped in from the top instead.
+- Figures count up once, the first time they are seen: the work cards, About's proof strip and each project page's figures.
+- A thin timeline beside Experience draws down as the section scrolls past, and each role's node lights as the role comes into view.
+- With a mouse or trackpad, a soft spotlight and a brighter stretch of border follow the pointer over a card, the card lifts 3px and its arrow slides; Contact's pills lean up to 6px toward the pointer.
 - A newly chosen Toolkit tab fades and rises in.
 - The project diagrams loop while on screen, with a pause button; Others plays once.
+- Between the main page and the project pages, browsers with cross-document view transitions fade and slide the page, and a work card's title morphs into the project page's title. Other browsers simply navigate.
 - A thin grey line along the top of the screen shows how far down the page you are.
 
 With Reduce Motion on, nothing moves: no animation runs at all, the figures show their final values and colour changes land at once.
