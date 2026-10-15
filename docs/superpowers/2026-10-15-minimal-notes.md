@@ -377,3 +377,8 @@ New visitor-facing wording, for sign-off:
 Known limits:
 - three.js loads from jsDelivr (pinned to 0.170.0); if it cannot load, the still stays.
 - In headless Chromium (software WebGL) the check page runs much slower, and the console shows a GPU driver note about ReadPixels; real Chrome shows nothing.
+
+### Round 4b: logos, a labelled reactor, and idle motion
+- Education and Certifications now show logos above each name: SUTD, VinUniversity, the VJC crest, Google Cloud and NCSF (files in `img/logos/`; VinUniversity and SUTD drawn in white, the VJC crest and NCSF mark in their own colours). The VJC crest is cropped from a small flag image, so it is soft at large sizes; swap in the school's official file if you have one.
+- The status line now introduces the reactor: "Iron Man’s arc reactor · hold to charge, drag to spin" (touch: "Iron Man’s arc reactor · press and hold"; reduced motion: "Iron Man’s arc reactor"). It sits above the colour cells.
+- The reactor moves on its own: the coils and inner ring turn visibly, it sways and floats, and its glow has a slow heartbeat, so it is alive without a mouse. Left alone for about 9 seconds it fires a small pulse by itself (never while you are charging or dragging).

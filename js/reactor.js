@@ -115,7 +115,10 @@ export function initReactor() {
   });
   if ('ResizeObserver' in window) initCallouts(hero, hit);
 
-  if (reduce) hero.classList.add('reactor-still');
+  if (reduce) {
+    hero.classList.add('reactor-still');
+    status.textContent = 'Iron Man’s arc reactor';
+  }
   if (!webgl2() || !('ResizeObserver' in window)) return;
 
   const canvas = document.createElement('canvas');
@@ -159,7 +162,7 @@ export function initReactor() {
 
   // Input --------------------------------------------------------------
   function interact() {
-    const idle = fine ? 'Hold to charge · drag to spin' : 'Press and hold to charge';
+    const idle = fine ? 'Iron Man’s arc reactor · hold to charge, drag to spin' : 'Iron Man’s arc reactor · press and hold';
     let shown = '';
     let reset = 0;
     let said = 0;
@@ -176,6 +179,22 @@ export function initReactor() {
     };
     say(idle);
 
+    // Left alone it still gives itself a small pulse now and then, so the
+    // first-time visitor sees what it does without having to try.
+    let quiet = 0;
+    const nudge = () => {
+      if (document.hidden || state.charging || press || state.power > 0) return;
+      state.pulse = 0.45;
+      wave(0.25);
+    };
+    setInterval(() => {
+      quiet += 1;
+      if (quiet >= 3) {
+        quiet = 0;
+        nudge();
+      }
+    }, 3000);
+
     state.onTick = () => {
       if (!press) {
         state.dragX *= 0.94;
@@ -188,6 +207,7 @@ export function initReactor() {
     };
 
     const charge = () => {
+      quiet = -4;
       clearTimeout(reset);
       state.charging = true;
     };
