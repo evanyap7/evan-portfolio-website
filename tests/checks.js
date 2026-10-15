@@ -472,6 +472,8 @@ export async function reactor(win) {
   const pressed = () => cells.filter((cell) => cell.getAttribute('aria-pressed') === 'true').map((cell) => cell.dataset.hue);
   const out = [
     result('reactor still is decorative', poster && poster.getAttribute('alt') === '' && poster.complete && poster.naturalWidth > 0),
+    // The live canvas, once there, must paint above the still.
+    result('live reactor paints above the still', !root.querySelector('canvas') || Number(win.getComputedStyle(root.querySelector('canvas')).zIndex) > Number(win.getComputedStyle(poster).zIndex || 0), root.querySelector('canvas') ? win.getComputedStyle(root.querySelector('canvas')).zIndex : 'no canvas'),
     result('reactor is a labelled button', hit?.tagName === 'BUTTON' && /hold/i.test(hit.getAttribute('aria-label') || '')),
     result('five colour cells, arc blue pressed', cells.length === 5 && pressed().join() === '205' && hue() === '205', `${cells.length} cells, pressed ${pressed()}, --h ${hue()}`),
   ];

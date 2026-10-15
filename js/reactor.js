@@ -104,7 +104,7 @@ export function initReactor() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const state = {
-    hue: 205, charging: false, power: 0, pulse: 0, spin: 0, tx: 0, ty: 0, dragX: 0, dragY: 0, onTick: null,
+    hue: 205, charging: false, power: 0, pulse: 0, spin: 0, tx: 0, ty: 0, dragX: 0, dragY: 0, vx: 0, vy: 0, onTick: null,
   };
   let scene = null;
 
@@ -184,12 +184,12 @@ export function initReactor() {
     let quiet = 0;
     const nudge = () => {
       if (document.hidden || state.charging || press || state.power > 0) return;
-      state.pulse = 0.45;
-      wave(0.25);
+      state.pulse = 0.9;
+      wave(0.6);
     };
     setInterval(() => {
       quiet += 1;
-      if (quiet >= 3) {
+      if (quiet >= 2) {
         quiet = 0;
         nudge();
       }
@@ -197,8 +197,13 @@ export function initReactor() {
 
     state.onTick = () => {
       if (!press) {
-        state.dragX *= 0.94;
-        state.dragY *= 0.94;
+        // After a drag it keeps turning a moment, then eases home.
+        state.dragX += state.vx;
+        state.dragY += state.vy;
+        state.vx *= 0.95;
+        state.vy *= 0.95;
+        state.dragX *= 0.992;
+        state.dragY *= 0.992;
       }
       if (state.charging) {
         const pct = Math.round(state.power * 100);
@@ -255,9 +260,11 @@ export function initReactor() {
         say(idle);
       }
       if (!press.drag) return;
-      state.dragX = clamp(state.dragX + dx * 0.012, -1.3, 1.3);
-      state.dragY = clamp(state.dragY + dy * 0.012, -1, 1);
-      state.spin += dx * 0.0015;
+      state.dragX = clamp(state.dragX + dx * 0.014, -2.1, 2.1);
+      state.dragY = clamp(state.dragY + dy * 0.014, -1.2, 1.2);
+      state.vx = clamp(dx * 0.0035, -0.08, 0.08);
+      state.vy = clamp(dy * 0.0035, -0.08, 0.08);
+      state.spin += dx * 0.006;
     });
     const release = (cancelled) => {
       if (!press) return;

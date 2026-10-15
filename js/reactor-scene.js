@@ -236,6 +236,15 @@ export function createReactor(canvas, state) {
     head.rotation.z = a;
     inner.add(head);
   }
+  // One lit marker on each turning part: the reactor looks the same every
+  // 36 degrees, so without them a slow turn cannot be seen.
+  const dot = new THREE.CircleGeometry(0.03, 32);
+  const ringMark = new THREE.Mesh(dot, hot);
+  ringMark.position.set(0, 0.43, 0.102);
+  inner.add(ringMark);
+  const coilMark = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.02), hot);
+  coilMark.position.set(0, 0.66, 0.1);
+  coils.add(coilMark);
   const ring = new THREE.Mesh(new THREE.RingGeometry(0.285, 0.36, 128), band);
   ring.position.z = 0.055;
   reactor.add(ring);
@@ -297,7 +306,7 @@ export function createReactor(canvas, state) {
     // Powering on: a few hard flickers, then steady with a faint shimmer.
     const flick = boot < 1 ? (Math.sin(time * 61) > 0.2 - boot ? 1 : 0.25) * (0.35 + 0.65 * boot) : 1;
     const shimmer = 1 + 0.035 * Math.sin(time * 19.7) * Math.sin(time * 5.3)
-      + 0.1 * Math.max(0, Math.sin(time * 1.6)) ** 3; // a slow heartbeat
+      + 0.28 * Math.max(0, Math.sin(time * 1.6)) ** 3; // a slow heartbeat
     const level = flick * shimmer * (1 + s.power * 0.8 + s.pulse * 1.3);
 
     bed.color.copy(hue).multiplyScalar(1.7 * level);
@@ -310,19 +319,19 @@ export function createReactor(canvas, state) {
     bloom.strength = 0.45 + s.power * 0.4 + s.pulse * 0.7;
 
     // The coils turn slowly and spin up with charge; the inner ring counters.
-    coils.rotation.z += dt * (0.32 + s.power * 3.2) + s.spin;
-    inner.rotation.z -= dt * (0.55 + s.power * 1.4);
+    coils.rotation.z += dt * (0.55 + s.power * 3.2) + s.spin;
+    inner.rotation.z -= dt * (0.9 + s.power * 1.4);
     s.spin *= Math.exp(-dt * 3);
 
     // At rest it is turned a little, so the housing shows its depth; it
     // faces the pointer, plus however far it has been dragged.
     // It also drifts on its own, so it is alive with no pointer at all
     // (phones, keyboards): a slow sway and a gentle float.
-    const sway = Math.sin(time * 0.7);
-    const bob = Math.cos(time * 0.9);
+    const sway = Math.sin(time * 0.9);
+    const bob = Math.cos(time * 1.15);
     const ease = dt ? 1 - Math.exp(-dt * 6) : 1;
-    reactor.rotation.x += (-0.2 + bob * 0.09 - s.ty * 0.32 + s.dragY - reactor.rotation.x) * ease;
-    reactor.rotation.y += (0.26 + sway * 0.2 + s.tx * 0.42 + s.dragX - reactor.rotation.y) * ease;
+    reactor.rotation.x += (-0.2 + bob * 0.24 - s.ty * 0.32 + s.dragY - reactor.rotation.x) * ease;
+    reactor.rotation.y += (0.26 + sway * 0.42 + s.tx * 0.42 + s.dragX - reactor.rotation.y) * ease;
     const shake = s.power > 0.85 ? (s.power - 0.85) * 0.06 : 0;
     reactor.position.set((Math.random() - 0.5) * shake, Math.sin(time * 1.3) * 0.018 + (Math.random() - 0.5) * shake, 0);
     key.position.set(-2.2 + s.tx * 3.2, 2.8 - s.ty * 2.4, 4);

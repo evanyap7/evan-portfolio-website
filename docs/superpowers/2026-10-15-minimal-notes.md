@@ -382,3 +382,7 @@ Known limits:
 - Education and Certifications now show logos above each name: SUTD, VinUniversity, the VJC crest, Google Cloud and NCSF (files in `img/logos/`; VinUniversity and SUTD drawn in white, the VJC crest and NCSF mark in their own colours). The VJC crest is cropped from a small flag image, so it is soft at large sizes; swap in the school's official file if you have one.
 - The status line now introduces the reactor: "Iron Man’s arc reactor · hold to charge, drag to spin" (touch: "Iron Man’s arc reactor · press and hold"; reduced motion: "Iron Man’s arc reactor"). It sits above the colour cells.
 - The reactor moves on its own: the coils and inner ring turn visibly, it sways and floats, and its glow has a slow heartbeat, so it is alive without a mouse. Left alone for about 9 seconds it fires a small pulse by itself (never while you are charging or dragging).
+
+### Round 4c: the live reactor was hidden (fix)
+- Bug: the still image sat above the live 3D canvas, so visitors only ever saw the still: no motion, no drag. The canvas now paints above it, and a check guards it.
+- With the live reactor visible: a lit marker on the coil ring and on the inner ring so the turning can be seen, a wider sway and float, a stronger heartbeat, and an idle pulse every 6 seconds or so. Drag now swings it up to about 120 degrees with momentum, spins the coils, and eases home over a few seconds.
