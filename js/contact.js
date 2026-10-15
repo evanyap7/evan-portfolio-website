@@ -15,7 +15,10 @@ export function initCopy() {
     button.textContent = label;
     if (status) status.textContent = message;
     clearTimeout(timer);
-    timer = setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+    timer = setTimeout(() => {
+      button.textContent = 'Copy';
+      if (status) status.textContent = '';
+    }, 2000);
   };
 
   button.hidden = false;
