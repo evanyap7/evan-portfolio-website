@@ -121,6 +121,14 @@
   aspect-ratio: 480 / 120;
 }
 
+/* On a phone the plate is narrow, so it is taller to keep the drawings
+   a readable size. */
+@media (max-width: 719px) {
+  .pair {
+    aspect-ratio: 480 / 170;
+  }
+}
+
 @media (min-width: 1024px) and (max-height: 760px) {
   .projects.is-ready .reel__scene.pair {
     aspect-ratio: 480 / 100;
@@ -299,6 +307,14 @@
   .wave__eye { animation: wave-blink 5s 3s infinite; }
   .intro__line { animation: rise 800ms 100ms var(--ease-out) backwards; }
   .mark { animation: rise 800ms 280ms var(--ease-out) backwards; }
+}
+
+@media (max-width: 719px) and (prefers-reduced-motion: no-preference) {
+  .intro__title { animation: rise 800ms 100ms var(--ease-out) backwards; }
+  .intro__line, .mark { animation: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
   .mark__stroke path { animation: draw 900ms 950ms var(--ease) backwards; }
 
   /* The cartoon's head turns a few pixels toward the pointer (lean.js).

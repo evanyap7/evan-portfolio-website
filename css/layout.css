@@ -305,6 +305,16 @@
 
 .sheet__head .mono {
   color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* On a phone the note drops under the title rather than squeezing it. */
+@media (max-width: 719px) {
+  .sheet__head {
+    flex-wrap: wrap;
+    align-items: baseline;
+    row-gap: 6px;
+  }
 }
 
 .sheet__title {

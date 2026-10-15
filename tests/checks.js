@@ -58,7 +58,7 @@ export function fonts(win) {
 // Below 1024px, every control a thumb needs is at least 44 × 44.
 export function targets(win) {
   if (win.innerWidth >= WIDE) return [];
-  const selector = '.bar a, .bar button, .project__row, .button, [data-copy], .sheet__next, .project__links a, .contact__spec a, .contact__address, .intro__actions a';
+  const selector = '.bar a, .bar button, .project__row, .button, [data-copy], .sheet__next, .project__links a, .contact__spec a, .contact__address, .intro__actions a, .kit__tab';
   const small = [...win.document.querySelectorAll(selector)].filter(shown).filter((el) => {
     const box = el.getBoundingClientRect();
     return box.width < 44 || box.height < 44;

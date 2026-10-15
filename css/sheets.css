@@ -846,13 +846,29 @@ ul.role__points li::before {
     gap: 8px;
   }
 
+  /* The four labels share the row edge to edge, which fits from 375px
+     wide. Narrower, the row scrolls and fades at its right edge to show
+     there is more. */
+  .kit__tabs {
+    justify-content: space-between;
+    gap: 8px;
+  }
+
   .kit__tab {
-    padding: 0 12px;
+    padding: 0;
+    font-size: 15px;
   }
 
   .kit__tab[aria-selected="true"]::after {
-    right: 12px;
-    left: 12px;
+    right: 0;
+    left: 0;
+  }
+}
+
+@media (max-width: 359px) {
+  .kit__tabs {
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
   }
 }
 
@@ -1012,6 +1028,13 @@ ul.role__points li::before {
 
   .mark__stroke {
     display: none;
+  }
+
+  /* On a phone the headline wraps freely, so its lines are not boxes of
+     their own; the whole headline rises in instead. */
+  .intro__line,
+  .mark {
+    display: inline;
   }
 
   .intro__actions {
