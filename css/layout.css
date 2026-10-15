@@ -35,8 +35,10 @@
   white-space: nowrap;
 }
 
+/* The dot glows in the reactor's colour. */
 .wordmark__dot {
-  color: var(--dim);
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow);
 }
 
 .nav__links {
@@ -227,6 +229,7 @@
 .title .serif {
   padding-right: 0.04em;
   letter-spacing: -0.02em;
+  text-shadow: 0 0 0.3em var(--accent-glow);
 }
 
 .title + * {
