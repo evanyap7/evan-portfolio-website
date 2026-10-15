@@ -647,13 +647,38 @@ ul.role__points li + li {
   letter-spacing: -0.01em;
 }
 
+/* Logos of the schools and certificate providers, above each name. Most
+   are drawn in white, like the Univers logo; the VJC crest and the NCSF
+   mark keep their own colours. */
 .kit__logo {
+  display: block;
+  width: auto;
+  height: 32px;
+  margin-bottom: 14px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.kit__logo--sutd {
   width: 94px;
   height: 22px;
   margin-bottom: 12px;
   object-fit: cover;
   object-position: top;
   filter: brightness(0) invert(1);
+}
+
+.kit__logo--white {
+  height: 52px;
+  filter: brightness(0) invert(1);
+}
+
+.kit__logo--round {
+  height: 40px;
+}
+
+.kit__logo--wide {
+  height: 38px;
 }
 
 .text-link {
