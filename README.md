@@ -1,6 +1,6 @@
 # My portfolio
 
-My personal site, laid out as a set of six engineering drawing sheets: Intro, About, Experience, Selected work, Toolkit and credentials, and Contact. Each sheet is one screen on a laptop and grows to fit on a phone.
+My personal site, laid out as a set of six engineering drawing sheets: Intro, About, Experience, Selected work, Toolkit and credentials, and Contact. Each sheet is one screen on a landscape laptop or desktop and grows to fit its content on phones and tablets.
 
 Plain HTML, CSS and JavaScript. No framework, no build step, no dependencies.
 
@@ -20,9 +20,9 @@ Open <http://localhost:4173/tests/>. The page loads the site at 13 sizes, from a
 
 - each sheet fits one screen at 1280 × 650, 1440 × 800 and 1920 × 1080, even with fallback fonts
 - nothing scrolls sideways
-- phone tap targets are at least 44px
+- tap targets are at least 44px below 1024px wide
 - the smallest note in a project diagram renders at least 9px at 1280px wide and up, 8px from 1024px and 7px below
-- the project list, the menu, the sheet index and the copy button behave, and the page behind an open phone menu is inert, so it cannot be tabbed to or clicked
+- the project list, the menu, the sheet index and the copy button behave, and the page behind the open menu (below 1024px) is inert, so it cannot be tabbed to or clicked
 
 The heading says `PASS` or `FAIL`, and the table lists every result. `docs/` and `tests/` are left out of deploys by `.vercelignore`.
 
@@ -44,7 +44,7 @@ Every email link, the address on the Contact sheet and the copy button read from
 | `case-studies/` | Long-form write-ups, one sheet each |
 | `resume/` | The downloadable resume PDF |
 | `css/base.css` | Colour and type tokens, reset, utilities, the scroll fade |
-| `css/layout.css` | The bar, the phone menu, the sheet frame, title block, buttons, links and lists |
+| `css/layout.css` | The bar, the menu below 1024px, the sheet frame, title block, buttons, links and lists |
 | `css/sheets.css` | Each sheet's own layout |
 | `css/figures.css` | Project diagrams, the cartoon and all keyframes |
 | `css/case-study.css` | Case study pages |
@@ -65,7 +65,7 @@ Every email link, the address on the Contact sheet and the copy button read from
 - Each sheet ends with a link to the next one, so the page reads in order.
 - The bar shows which sheet you are on.
 
-To add a project, copy one `h3.project__head` and the `div.project__panel` after it in `index.html`, give both new ids (`work-…`, `row-…` and `panel-…`), and number it in `.project__n`.
+To add a project, copy one `h3.project__head` and the `div.project__panel` after it in `index.html`, give both new ids (`work-…`, `row-…` and `panel-…`), and number it in `.project__n`. The Selected work grid assumes five projects (`grid-template-rows: repeat(5, auto) 1fr` and `.also`'s `grid-row: 6` in `css/sheets.css`), and the check page asserts five projects captioned Fig. 4.1 to 4.5, so update those too.
 
 ## Project diagrams
 
@@ -86,3 +86,7 @@ Replace `resume/Evan-Yap-Resume.pdf`. The public copy leaves out the phone numbe
 ## Share image
 
 `img/og.jpg` (1200 × 630) is the preview shown when the site is pasted into LinkedIn, Slack or iMessage. Recapture it from the Intro sheet if the headline or cartoon changes.
+
+## Deploy
+
+The site is static, so Vercel serves the repository root as it is. Every push to `main` deploys.
