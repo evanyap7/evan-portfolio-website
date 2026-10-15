@@ -129,7 +129,10 @@ function turn() {
 export function createReactor(canvas, state) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  // Touch screens are mostly phones: 1.5x is sharp enough there and keeps
+  // the frame rate up.
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2));
 
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
