@@ -107,4 +107,4 @@ Replace `resume/Evan-Yap-Resume.pdf`. The public copy leaves out the phone numbe
 
 ## Deploy
 
-The site is static, so Vercel serves the repository root as it is. Every push to `main` deploys.
+The site is static, so Vercel serves the repository root as it is. The default and production branch is `main-2`: every push to it deploys, and pushes to other branches get preview deployments.
