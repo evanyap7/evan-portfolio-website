@@ -1,6 +1,6 @@
-// Plays the looping diagrams in the Selected work panels. Each one is inline
-// SVG in index.html, drawn in its finished state; this animates it from
-// empty and loops it. Loaded on demand by main.js.
+// Plays the looping diagrams on the project pages. Each one is inline SVG,
+// drawn in its finished state; this animates it from empty and loops it.
+// Loaded on demand by main.js.
 
 import { SCENES } from './scenes.js';
 
@@ -16,14 +16,11 @@ export function startReels(reels) {
   reels.forEach(mount);
 }
 
-// A reel only runs while its project is open, it is on screen and the
-// visitor has not paused it. work.js fires `project-toggle` on the panel
-// whenever it opens or closes.
+// A reel runs while it is on screen and the visitor has not paused it.
 function mount(reel) {
   const scene = SCENES[reel.dataset.reel];
   if (!scene) return;
 
-  const panel = reel.closest('.project__panel');
   const toggle = reel.querySelector('[data-reel-toggle]');
   const clock = reel.querySelector('[data-reel-clock]');
   let timeline = null;
@@ -35,12 +32,12 @@ function mount(reel) {
     const now = timeline.now();
     timeline.update(now);
     const time = `00:0${(now / 1000).toFixed(1)}`;
-    if (clock.textContent !== time) clock.textContent = time;
+    if (clock && clock.textContent !== time) clock.textContent = time;
     frame = requestAnimationFrame(tick);
   };
 
   const sync = () => {
-    const playing = !panel.hidden && inView && !paused;
+    const playing = inView && !paused;
     if (playing && !timeline) {
       timeline = createTimeline(reel, scene);
       reel.classList.add('is-live');
@@ -52,26 +49,15 @@ function mount(reel) {
     if (playing) tick();
   };
 
-  const setPaused = (value) => {
-    paused = value;
-    toggle.setAttribute('aria-pressed', String(paused));
-  };
-
-  toggle.hidden = false;
-  clock.hidden = false;
-  toggle.addEventListener('click', () => {
-    setPaused(!paused);
-    sync();
-  });
-
-  // Opening a project again starts its diagram from the top.
-  panel.addEventListener('project-toggle', () => {
-    if (!panel.hidden) {
-      setPaused(false);
-      timeline?.restart();
-    }
-    sync();
-  });
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener('click', () => {
+      paused = !paused;
+      toggle.setAttribute('aria-pressed', String(paused));
+      sync();
+    });
+  }
+  if (clock) clock.hidden = false;
 
   new IntersectionObserver(([entry]) => {
     inView = entry.isIntersecting;
@@ -159,9 +145,6 @@ function createTimeline(reel, scene) {
         const text = format(Math.round(to * (1 - (1 - progress) ** 3)));
         if (node.textContent !== text) node.textContent = text;
       });
-    },
-    restart() {
-      animations.forEach((animation) => { animation.currentTime = 0; });
     },
   };
 }

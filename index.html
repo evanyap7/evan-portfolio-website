@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Evan Yap | Software and AI engineering</title>
   <meta name="description" content="Evan Yap is an Engineering Systems and Design student at SUTD and an AI Business Consultant Intern at Univers. He builds AI systems and measures whether they work. Looking for software engineering and AI internships.">
-  <meta name="theme-color" content="#e6e5e0">
+  <meta name="theme-color" content="#000000">
   <meta property="og:title" content="Evan Yap | Software and AI engineering">
   <meta property="og:description" content="I build AI systems and check they work. Top 5 at the Corporate Website Revamp Challenge, 2nd place at a regional hackathon.">
   <meta property="og:type" content="website">
@@ -13,78 +13,78 @@
   <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Evan Yap's portfolio: the headline “I build AI systems, and check they work” beside a cartoon of Evan waving, on a paper drawing sheet.">
+  <meta property="og:image:alt" content="Evan Yap's portfolio: the headline “I build AI systems, and check they work” in white on black.">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://www.evanyap.com/">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23111214'/%3E%3Crect x='4.5' y='4.5' width='23' height='23' fill='none' stroke='%23fafaf7'/%3E%3Crect x='9' y='19' width='14' height='3' fill='%232541e6'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000'/%3E%3Crect x='8' y='20' width='16' height='3' rx='1.5' fill='%23fafafa'/%3E%3C/svg%3E">
 
-  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&f[]=satoshi@900&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&family=Instrument+Serif:ital@1&display=swap">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@900&display=swap">
 
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/sheets.css">
+  <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/figures.css">
 
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <span class="progress" aria-hidden="true" data-progress></span>
 
-  <header class="bar">
+  <header class="nav">
     <a class="wordmark" href="#top" aria-label="Evan Yap, back to top">evan<span class="wordmark__dot">.</span></a>
-
-    <nav class="bar__index" aria-label="Sheets">
-      <ol class="ticks">
-        <li><a href="#top" aria-current="true"><span class="visually-hidden">01 Intro</span></a></li>
-        <li><a href="#about"><span class="visually-hidden">02 About</span></a></li>
-        <li><a href="#experience"><span class="visually-hidden">03 Experience</span></a></li>
-        <li><a href="#work"><span class="visually-hidden">04 Selected work</span></a></li>
-        <li><a href="#toolkit"><span class="visually-hidden">05 Toolkit and credentials</span></a></li>
-        <li><a href="#contact"><span class="visually-hidden">06 Contact</span></a></li>
-      </ol>
-      <p class="bar__where mono" aria-hidden="true"><b data-where-n>01</b> / 06 <span data-where-name>Intro</span></p>
-    </nav>
-
-    <nav class="bar__nav" aria-label="Primary">
+    <nav class="nav__links" aria-label="Primary">
       <a href="#about">About</a>
       <a href="#experience">Experience</a>
       <a href="#work">Work</a>
       <a href="#toolkit">Toolkit</a>
       <a href="#contact">Contact</a>
-      <a class="link" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
     </nav>
-
-    <button class="bar__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-button>Menu</button>
-    <span class="bar__progress" aria-hidden="true" data-progress></span>
+    <div class="nav__end">
+      <a class="pill pill--solid nav__resume" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
+      <button class="pill nav__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-button>Menu</button>
+    </div>
   </header>
 
   <nav class="menu" id="menu" aria-label="Menu" hidden data-menu>
-    <ol class="menu__sheets">
-      <li><a href="#top" aria-current="true"><span class="mono">01</span>Intro</a></li>
-      <li><a href="#about"><span class="mono">02</span>About</a></li>
-      <li><a href="#experience"><span class="mono">03</span>Experience</a></li>
-      <li><a href="#work"><span class="mono">04</span>Selected work</a></li>
-      <li><a href="#toolkit"><span class="mono">05</span>Toolkit and credentials</a></li>
-      <li><a href="#contact"><span class="mono">06</span>Contact</a></li>
-    </ol>
+    <ul class="menu__links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#work">Selected work</a></li>
+      <li><a href="#toolkit">Toolkit</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
     <p class="menu__more">
-      <a class="link" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume (PDF) <span aria-hidden="true">↓</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-      <a class="link" href="#contact" data-contact-link data-contact-text>Email</a>
+      <a class="pill pill--solid" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume (PDF) <span aria-hidden="true">↓</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      <a class="pill" href="#contact" data-contact-link data-contact-text>Email</a>
     </p>
   </nav>
 
   <main id="main">
-    <section class="sheet" id="top" aria-labelledby="intro-title" data-sheet="01" data-sheet-name="Intro">
-      <div class="ambient" aria-hidden="true"><div class="ambient__lens"><div class="ambient__dots"></div></div></div>
-      <p class="sheet__label mono"><b>01</b> Intro</p>
-      <div class="intro">
-        <h1 class="intro__title" id="intro-title"><span class="intro__line">I build AI systems, and</span> <span class="mark">check they work.<svg class="mark__stroke" viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M4 13C52 4 96 17 150 9s98-4 146 2" pathLength="1"/></svg></span></h1>
-        <figure class="intro__figure">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <p class="tag"><img src="img/evan-120.jpg" width="120" height="160" alt=""><span><b>Evan Yap</b> · Open to internships</span></p>
+      <h1 class="hero__title" id="hero-title">I build AI <span class="serif">systems,</span><br class="hero__break"> and <span class="serif">check</span> they work.</h1>
+      <p class="hero__lede">Engineering Systems and Design student at SUTD and AI Business Consultant Intern at Univers. Looking for software engineering and AI internships.</p>
+      <p class="hero__actions">
+        <a class="pill pill--solid" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Download resume <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
+        <a class="pill" href="#contact" data-contact-link data-contact-text>Email me</a>
+      </p>
+      <ul class="hero__creds mono">
+        <li><b>Top 5</b> Corporate Website Revamp</li>
+        <li><b>2nd</b> Vietnam Grand Challenge</li>
+        <li><b>1 of 6</b> SUTD TEP scholars</li>
+      </ul>
+    </section>
+
+    <section class="section" id="about" aria-labelledby="about-title">
+      <h2 class="title" id="about-title">About <span class="serif">me</span></h2>
+      <div class="about">
+        <figure class="card about__art" data-reveal>
           <div class="wave" data-wave>
             <svg class="wave__art" viewBox="0 0 520 430" role="img" aria-label="A cartoon of Evan in a charcoal suit and burgundy tie, smiling and waving hello.">
             <defs><clipPath id="wave-badge"><circle cx="200" cy="240" r="158.75"/></clipPath></defs>
@@ -136,40 +136,17 @@
           </svg>
           </div>
         </figure>
-        <p class="intro__lede">I’m <strong>Evan Yap</strong>, an engineering student in Singapore. I build agents and tools with AI, measure whether they earn their place, and keep only what the numbers support. Looking for software engineering and AI internships.</p>
-        <p class="intro__actions">
-          <a class="button" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Download resume (PDF) <span aria-hidden="true">↓</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-          <a class="link" href="#contact" data-contact-link data-contact-text>Email me</a>
-        </p>
-        <dl class="spec intro__spec">
-          <div><dt class="mono">Now<img class="spec__logo" src="img/logos/univers.svg" alt="" width="104" height="22"></dt><dd>AI Business Consultant Intern, Univers</dd></div>
-          <div><dt class="mono">Studying<img class="spec__logo spec__logo--sutd" src="img/logos/sutd.svg" alt="" width="200" height="78"></dt><dd>Engineering Systems and Design, SUTD · 1 of 6 TEP scholars</dd></div>
-          <div><dt class="mono">Recognition</dt><dd>Top 5, Corporate Website Revamp · 2nd, Vietnam Grand Challenge</dd></div>
-        </dl>
-      </div>
-      <a class="sheet__next mono" href="#about">Next: 02 About <span aria-hidden="true">→</span></a>
-    </section>
-
-    <section class="sheet" id="about" aria-labelledby="about-title" data-sheet="02" data-sheet-name="About">
-      <p class="sheet__label mono"><b>02</b> About</p>
-      <div class="sheet__head"><h2 class="sheet__title" id="about-title">About</h2><p class="mono">Singapore</p></div>
-      <div class="about">
-        <figure class="about__photo" data-reveal>
-          <img src="img/evan.jpg" srcset="img/evan-600.jpg 600w, img/evan.jpg 1000w" sizes="(min-width: 1024px) 34vw, 90vw" width="1000" height="1339" loading="lazy" decoding="async" alt="Evan Yap smiling, in a navy suit and burgundy tie, standing in an office.">
-        </figure>
         <div class="about__text" data-reveal>
-          <p class="about__statement">I keep what the numbers support and delete what they don’t.</p>
+          <p class="about__statement">I keep what the numbers support and <span class="serif">delete</span> what they don’t.</p>
           <p>I’m studying Engineering Systems and Design at the Singapore University of Technology and Design, on a dual degree with a Master’s in Technology Entrepreneurship, as one of six recipients of its Technology Entrepreneurship Programme Scholarship.</p>
           <p>I work where data, automation and AI meet: agents that do the research, models that test the assumptions, and interfaces that make the answer easy to act on. Then I measure whether each one earned its place.</p>
           <p>Away from the keyboard I captain SUTD’s men’s floorball team and train as a HYROX athlete. I’ve played guitar in my church’s worship ministry since 2019, I’m in SUTD’s Google Developers Club, and I helped attendees debug at DevFest Singapore 2025. I also run on a lot of coffee.</p>
         </div>
       </div>
-      <a class="sheet__next mono" href="#experience">Next: 03 Experience <span aria-hidden="true">→</span></a>
     </section>
 
-    <section class="sheet" id="experience" aria-labelledby="experience-title" data-sheet="03" data-sheet-name="Experience">
-      <p class="sheet__label mono"><b>03</b> Experience</p>
-      <div class="sheet__head"><h2 class="sheet__title" id="experience-title">Experience</h2><p class="mono">2023 – now</p></div>
+    <section class="section" id="experience" aria-labelledby="experience-title">
+      <h2 class="title" id="experience-title">My <span class="serif">experience</span></h2>
       <ol class="roles">
         <li class="role" data-reveal>
           <p class="role__dates mono">Aug 2026 – now</p>
@@ -214,348 +191,59 @@
           <p class="role__points">Led a detachment of 12 in a unit awarded Best Combat Unit for 2023/24, and represented the SAF in the National Day Parade 2024 Colours Party.</p>
         </li>
       </ol>
-      <a class="sheet__next mono" href="#work">Next: 04 Selected work <span aria-hidden="true">→</span></a>
     </section>
 
-    <section class="sheet" id="work" aria-labelledby="work-title" data-sheet="04" data-sheet-name="Selected work">
-      <p class="sheet__label mono"><b>04</b> Selected work</p>
-      <div class="sheet__head"><h2 class="sheet__title" id="work-title">Selected work</h2><p class="mono">Seven projects · 2025 – 2026</p></div>
-      <div class="projects" data-projects>
-        <h3 class="project__head" id="work-website-revamp">
-          <button class="project__row" type="button" id="row-website-revamp" aria-controls="panel-website-revamp" aria-expanded="true">
-            <span class="project__n mono">4.1</span>
-            <span class="project__title">Corporate Website Revamp Challenge</span>
-            <span class="project__meta mono"><em>Top 5</em> · Frontend developer · Sept 2026</span>
-            <span class="project__key">9 pages</span>
-          </button>
-        </h3>
-        <div class="project__panel" id="panel-website-revamp" role="region" aria-labelledby="row-website-revamp">
-          <figure class="reel reel--plate">
-            <figcaption class="reel__bar"><span class="reel__name"><b>Fig. 4.1</b> Homepage, branding redacted</span></figcaption>
-            <div class="reel__scene reel__scene--plate"><img src="img/previews/website-revamp.webp" width="1440" height="900" loading="lazy" decoding="async" alt="A redesigned corporate homepage with a large headline beside a live operations dashboard. Company branding is redacted."></div>
-          </figure>
-          <p class="project__summary">A nine-page interactive redesign of a company’s website, built with no framework and no build step. It reached the Top 5 against senior solution architects worldwide, and I pitched it live to the CEO.</p>
-          <dl class="figures">
-            <div><dt>Finalist against senior solution architects worldwide</dt><dd>Top 5</dd></div>
-            <div><dt>Languages from one custom i18n engine</dt><dd>7</dd></div>
-            <div><dt>Executive tools: ROI modeler, ops simulator, live counters</dt><dd>3</dd></div>
-          </dl>
-          <div class="project__foot">
-            <p class="project__stack mono"><span class="project__icons" aria-hidden="true"><svg class="icon"><use href="img/icons.svg#javascript"/></svg><svg class="icon"><use href="img/icons.svg#threedotjs"/></svg><svg class="icon"><use href="img/icons.svg#css3"/></svg><svg class="icon"><use href="img/icons.svg#vercel"/></svg></span>Vanilla JavaScript · Three.js (WebGL) · CSS · Web Audio API · Vercel serverless functions</p>
-            <p class="project__links"><a class="link" href="https://github.com/evanyap7/univers-homepage-revamp" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></p>
-          </div>
-        </div>
-
-        <h3 class="project__head" id="work-assistant-bot">
-          <button class="project__row" type="button" id="row-assistant-bot" aria-controls="panel-assistant-bot" aria-expanded="true">
-            <span class="project__n mono">4.2</span>
-            <span class="project__title">Personal Assistant Bot</span>
-            <span class="project__meta mono">Full-stack developer · Aug – Sept 2026</span>
-            <span class="project__key">~65% cheaper</span>
-          </button>
-        </h3>
-        <div class="project__panel" id="panel-assistant-bot" role="region" aria-labelledby="row-assistant-bot">
-          <figure class="reel" data-reel="chain">
-        <figcaption class="reel__bar">
-        <span class="reel__name"><b>Fig. 4.2</b> Model chain, cheapest first</span>
-        <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
-        <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
-        </figcaption>
-        <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. Text, voice and photo messages go to the cheapest of three models first. When that model fails, the next one takes over, and the cost per call ends about 65% lower.">
-        <path class="reel__corner" d="M10 20V10H20M460 10H470V20M470 300V310H460M20 310H10V300"/>
-        <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
-        <g data-a="stage">
-        <path class="reel__wire" data-a="wires" d="M92 68V128M240 68V98H92M388 68V98H240"/>
-        <path class="reel__wire" data-a="hops" d="M152 158H180M300 158H328"/>
-        <g data-a="in1"><rect x="44" y="34" width="96" height="34" rx="17" class="reel__pill"/><text class="reel__text" x="92" y="56.5">text</text></g>
-        <g data-a="in2"><rect x="192" y="34" width="96" height="34" rx="17" class="reel__pill"/><text class="reel__text" x="240" y="56.5">voice</text></g>
-        <g data-a="in3"><rect x="340" y="34" width="96" height="34" rx="17" class="reel__pill"/><text class="reel__text" x="388" y="56.5">photo</text></g>
-        <g data-a="m1"><rect class="reel__box" data-a="m1box" x="32" y="128" width="120" height="60" rx="14"/><text class="reel__text" x="92" y="164">Model 1</text></g>
-        <g data-a="m2"><rect class="reel__box reel__box--ok" data-a="m2box" x="180" y="128" width="120" height="60" rx="14"/><text class="reel__text" x="240" y="164">Model 2</text></g>
-        <g data-a="m3"><rect class="reel__box" x="328" y="128" width="120" height="60" rx="14"/><text class="reel__text" x="388" y="164">Model 3</text></g>
-        <g data-a="notes">
-        <text class="reel__text reel__text--note" x="92" y="212">cheapest</text>
-        <text class="reel__text reel__text--note" x="240" y="212">next</text>
-        <text class="reel__text reel__text--note" x="388" y="212">last resort</text>
-        </g>
-        <g data-a="ok1" opacity="0"><circle cx="146" cy="132" r="11" fill="#2541e6"/><path class="reel__glyph" d="M141.5 132.5l3 3 6-6.5"/></g>
-        <g data-a="no1" opacity="0"><circle cx="146" cy="132" r="11" fill="#111214"/><path class="reel__glyph" d="M142 128l8 8M150 128l-8 8"/></g>
-        <g data-a="ok2"><circle cx="294" cy="132" r="11" fill="#2541e6"/><path class="reel__glyph" d="M289.5 132.5l3 3 6-6.5"/></g>
-        <g data-a="dot1" opacity="0"><circle r="13" fill="#2541e6" opacity="0.25"/><circle r="6.5" fill="#2541e6"/></g>
-        <g data-a="dot2" opacity="0"><circle r="13" fill="#2541e6" opacity="0.25"/><circle r="6.5" fill="#2541e6"/></g>
-        <g data-a="dot3" opacity="0"><circle r="13" fill="#2541e6" opacity="0.25"/><circle r="6.5" fill="#2541e6"/></g>
-        <g data-a="dot4" opacity="0"><circle r="13" fill="#2541e6" opacity="0.25"/><circle r="6.5" fill="#2541e6"/></g>
-        <g data-a="meter">
-        <text class="reel__text reel__text--note reel__text--start" x="32" y="248">Cost per call</text>
-        <path class="reel__track" stroke-width="20" d="M42 270H438"/>
-        <path class="reel__fill reel__draw" data-a="cost" pathLength="1" stroke="#2541e6" stroke-width="20" stroke-dashoffset="0.65" d="M42 270H438"/>
-        </g>
-        <text class="reel__text reel__text--num reel__text--end reel__text--key" data-a="saving" x="448" y="250">~65% lower</text>
-        </g>
-        </svg>
-        </figure>
-          <p class="project__summary">A serverless Telegram assistant that handles calendars, expenses, bill splitting and email from text, voice notes or photos. A three-model chain tries the cheapest model first and fails over to the next.</p>
-          <dl class="figures">
-            <div><dt>Intents, each validated by a Zod schema</dt><dd>24</dd></div>
-            <div><dt>Test commands routed correctly (my own set, so a smoke test)</dt><dd>31/31</dd></div>
-            <div><dt>Lower cost per call across the chain (21-message benchmark)</dt><dd>~65%</dd></div>
-            <div><dt>Lower batch latency than sequential parsing (7 receipts)</dt><dd>~77%</dd></div>
-          </dl>
-          <div class="project__foot">
-            <p class="project__stack mono"><span class="project__icons" aria-hidden="true"><svg class="icon"><use href="img/icons.svg#nextdotjs"/></svg><svg class="icon"><use href="img/icons.svg#typescript"/></svg><svg class="icon"><use href="img/icons.svg#googlegemini"/></svg><svg class="icon"><use href="img/icons.svg#perplexity"/></svg><svg class="icon"><use href="img/icons.svg#googlecloud"/></svg><svg class="icon"><use href="img/icons.svg#gmail"/></svg><svg class="icon"><use href="img/icons.svg#googlesheets"/></svg><svg class="icon"><use href="img/icons.svg#googlecalendar"/></svg><svg class="icon"><use href="img/icons.svg#zod"/></svg></span>Next.js · TypeScript · Vercel AI SDK · Gemini · Perplexity Sonar · Google Cloud Pub/Sub · Gmail, Sheets and Calendar APIs · Zod</p>
-            <p class="project__links">
-              <a class="link" href="https://github.com/evanyap7/telegram-personal-assistant" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-              <a class="link" href="https://github.com/evanyap7/telegram-personal-assistant/tree/main/scripts" target="_blank" rel="noopener">Benchmarks and tests <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-            </p>
-          </div>
-        </div>
-
-        <h3 class="project__head" id="work-trading-agent">
-          <button class="project__row" type="button" id="row-trading-agent" aria-controls="panel-trading-agent" aria-expanded="true">
-            <span class="project__n mono">4.3</span>
-            <span class="project__title">Autonomous Trading Agent</span>
-            <span class="project__meta mono">Developer · Sept 2026</span>
-            <span class="project__key">174 tests</span>
-          </button>
-        </h3>
-        <div class="project__panel" id="panel-trading-agent" role="region" aria-labelledby="row-trading-agent">
-          <figure class="reel" data-reel="ledger">
-        <figcaption class="reel__bar">
-        <span class="reel__name"><b>Fig. 4.3</b> Idea to ledger</span>
-        <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
-        <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
-        </figcaption>
-        <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. The LLM step is struck out for showing no measurable edge and replaced by a plain rule. Each idea is then verified, sized and risk-checked, and every step is written to a hash-chained ledger.">
-        <path class="reel__corner" d="M10 20V10H20M460 10H470V20M470 300V310H460M20 310H10V300"/>
-        <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
-        <g data-a="stage">
-        <path class="reel__wire reel__wire--dashed" data-a="drops" d="M72 98V172M180 98V172M288 98V172M396 98V172"/>
-        <path class="reel__wire" data-a="arrow1" d="M123 67l5 5-5 5"/>
-        <path class="reel__wire" data-a="arrow2" d="M231 67l5 5-5 5"/>
-        <path class="reel__wire" data-a="arrow3" d="M339 67l5 5-5 5"/>
-        <text class="reel__text reel__text--note reel__text--start reel__text--bad" data-a="noedge" x="26" y="40" opacity="0">no measurable edge</text>
-        <g data-a="llm" opacity="0">
-        <rect class="reel__box" x="26" y="52" width="92" height="40" rx="12"/>
-        <text class="reel__text" x="72" y="77.5">LLM</text>
-        <path class="reel__fill reel__draw" data-a="strike" pathLength="1" stroke="#111214" stroke-width="4" d="M32 86L112 58"/>
-        </g>
-        <g data-a="rule"><rect x="26" y="52" width="92" height="40" rx="12" class="reel__box reel__box--ok"/><text class="reel__text" x="72" y="77.5">Rule</text></g>
-        <g data-a="verify"><rect class="reel__box reel__box--ok" data-a="verifybox" x="134" y="52" width="92" height="40" rx="12"/><text class="reel__text" x="180" y="77.5">Verify</text></g>
-        <g data-a="size"><rect class="reel__box reel__box--ok" data-a="sizebox" x="242" y="52" width="92" height="40" rx="12"/><text class="reel__text" x="288" y="77.5">Size</text></g>
-        <g data-a="risk"><rect class="reel__box reel__box--ok" data-a="riskbox" x="350" y="52" width="92" height="40" rx="12"/><text class="reel__text" x="396" y="77.5">Risk</text></g>
-        <g data-a="verifyok"><circle cx="222" cy="54" r="10" fill="#2541e6"/><path class="reel__glyph" d="M217.5 54.5l3 3 6-6.5"/></g>
-        <g data-a="sizeok"><circle cx="330" cy="54" r="10" fill="#2541e6"/><path class="reel__glyph" d="M325.5 54.5l3 3 6-6.5"/></g>
-        <g data-a="riskok"><circle cx="438" cy="54" r="10" fill="#2541e6"/><path class="reel__glyph" d="M433.5 54.5l3 3 6-6.5"/></g>
-        <path class="reel__fill reel__draw" data-a="link1" pathLength="1" stroke="#2541e6" stroke-width="3" d="M114 204H138"/>
-        <path class="reel__fill reel__draw" data-a="link2" pathLength="1" stroke="#2541e6" stroke-width="3" d="M222 204H246"/>
-        <path class="reel__fill reel__draw" data-a="link3" pathLength="1" stroke="#2541e6" stroke-width="3" d="M330 204H354"/>
-        <g data-a="block1"><rect class="reel__box" x="30" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="72" y="209">a3f1</text></g>
-        <g data-a="block2"><rect class="reel__box" x="138" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="180" y="209">9c0e</text></g>
-        <g data-a="block3"><rect class="reel__box" x="246" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="288" y="209">51bd</text></g>
-        <g data-a="block4"><rect class="reel__box" x="354" y="176" width="84" height="56" rx="10"/><text class="reel__text reel__text--mono" x="396" y="209">e7a2</text></g>
-        <rect data-a="stamp1" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5" fill="#2541e6"/>
-        <rect data-a="stamp2" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5" fill="#2541e6"/>
-        <rect data-a="stamp3" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5" fill="#2541e6"/>
-        <rect data-a="stamp4" opacity="0" x="-5" y="-5" width="10" height="10" rx="2.5" fill="#2541e6"/>
-        <text class="reel__text reel__text--note" data-a="ledgernote" x="240" y="268">every step lands in a hash-chained ledger</text>
-        </g>
-        </svg>
-        </figure>
-          <p class="project__summary">A swing-trading agent for a Webull Singapore cash account where no model can size or place an order. I backtested the Claude agents against a plain momentum rule on 2024 data, found no measurable edge for about $27 a year, and removed the LLM layer.</p>
-          <dl class="figures">
-            <div><dt>Automated tests, run in CI on every push</dt><dd>174</dd></div>
-            <div><dt>Symbols in the 2024 backtest</dt><dd>112</dd></div>
-            <div><dt>Yearly API cost of the LLM layer I measured, then removed</dt><dd>~$27</dd></div>
-          </dl>
-          <div class="project__foot">
-            <p class="project__stack mono"><span class="project__icons" aria-hidden="true"><svg class="icon"><use href="img/icons.svg#python"/></svg><svg class="icon"><use href="img/icons.svg#sqlite"/></svg><svg class="icon"><use href="img/icons.svg#telegram"/></svg></span>Python · Pydantic · SQLite · pytest · Webull OpenAPI SDK · Databento · Telegram Bot API</p>
-            <p class="project__links">
-              <a class="link" href="case-studies/trading-agent.html">Read the case study <span aria-hidden="true">→</span></a>
-              <a class="link" href="https://github.com/evanyap7/evans-trading-agent" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-              <a class="link" href="https://github.com/evanyap7/evans-trading-agent/blob/HEAD/docs/backtest-llm-vs-baseline-2024.md" target="_blank" rel="noopener">Backtest report <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-            </p>
-          </div>
-        </div>
-
-        <h3 class="project__head" id="work-research-agent">
-          <button class="project__row" type="button" id="row-research-agent" aria-controls="panel-research-agent" aria-expanded="true">
-            <span class="project__n mono">4.4</span>
-            <span class="project__title">Decarbonisation Research Agent</span>
-            <span class="project__meta mono">Full-stack developer · Aug 2026</span>
-            <span class="project__key">0–100 rating</span>
-          </button>
-        </h3>
-        <div class="project__panel" id="panel-research-agent" role="region" aria-labelledby="row-research-agent">
-          <figure class="reel" data-reel="rating">
-        <figcaption class="reel__bar">
-        <span class="reel__name"><b>Fig. 4.4</b> Claim check</span>
-        <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
-        <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
-        </figcaption>
-        <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram with example values. A claim is typed in and three sources are retrieved. A fourth source that was never retrieved is dropped. A truth rating then sweeps to 72 out of 100, beside bars for the evidence for and against.">
-        <path class="reel__corner" d="M10 20V10H20M460 10H470V20M470 300V310H460M20 310H10V300"/>
-        <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
-        <g data-a="stage">
-        <rect class="reel__box" x="28" y="36" width="424" height="44" rx="12"/>
-        <text class="reel__text reel__text--mono reel__text--start" x="46" y="63.5" textLength="160">Net zero by 2030</text>
-        <rect class="reel__cover" data-a="cover" opacity="0" x="45" y="44" width="162" height="28"/>
-        <rect data-a="caret" opacity="0" x="46" y="47" width="2" height="22" fill="#2541e6"/>
-        <text class="reel__text reel__text--note reel__text--end" x="436" y="63">claim</text>
-        <g data-a="doc1"><rect class="reel__box reel__box--ok" x="28" y="100" width="84" height="58" rx="10"/><path class="reel__fill" stroke="rgba(17,18,20,0.25)" stroke-width="5" d="M42 117H82M42 129H98M42 141H90"/><circle cx="106" cy="104" r="9" fill="#2541e6"/><path class="reel__glyph" d="M102 104.5l2.6 2.6 5-5.6"/></g>
-        <g data-a="doc2"><rect class="reel__box reel__box--ok" x="124" y="100" width="84" height="58" rx="10"/><path class="reel__fill" stroke="rgba(17,18,20,0.25)" stroke-width="5" d="M138 117H178M138 129H194M138 141H186"/><circle cx="202" cy="104" r="9" fill="#2541e6"/><path class="reel__glyph" d="M198 104.5l2.6 2.6 5-5.6"/></g>
-        <g data-a="doc3"><rect class="reel__box reel__box--ok" x="220" y="100" width="84" height="58" rx="10"/><path class="reel__fill" stroke="rgba(17,18,20,0.25)" stroke-width="5" d="M234 117H274M234 129H290M234 141H282"/><circle cx="298" cy="104" r="9" fill="#2541e6"/><path class="reel__glyph" d="M294 104.5l2.6 2.6 5-5.6"/></g>
-        <g data-a="ghost" opacity="0">
-        <rect class="reel__box reel__box--missing" x="316" y="100" width="84" height="58" rx="10"/>
-        <text class="reel__text reel__text--num reel__text--bad" x="358" y="136">?</text>
-        <text class="reel__text reel__text--note reel__text--bad" x="358" y="178">not retrieved</text>
-        </g>
-        <text class="reel__text reel__text--note reel__text--start" data-a="grounded" x="28" y="186">answers only from what it retrieved</text>
-        <path class="reel__track" stroke-width="14" d="M58 280A70 70 0 0 1 198 280"/>
-        <path class="reel__fill reel__draw" data-a="gauge" pathLength="1" stroke="#2541e6" stroke-width="14" stroke-dashoffset="0.28" d="M58 280A70 70 0 0 1 198 280"/>
-        <text class="reel__text reel__text--num reel__text--xl" data-a="score" x="128" y="272">72</text>
-        <text class="reel__text reel__text--note" x="128" y="294">truth rating</text>
-        <text class="reel__text reel__text--note reel__text--start" x="250" y="226">evidence for</text>
-        <path class="reel__track" stroke-width="12" d="M256 242H446"/>
-        <path class="reel__fill reel__draw" data-a="for" pathLength="1" stroke="#2541e6" stroke-width="12" d="M256 242H400"/>
-        <text class="reel__text reel__text--note reel__text--start" x="250" y="270">evidence against</text>
-        <path class="reel__track" stroke-width="12" d="M256 286H446"/>
-        <path class="reel__fill reel__draw" data-a="against" pathLength="1" stroke="#6c6e72" stroke-width="12" d="M256 286H306"/>
-        </g>
-        </svg>
-        </figure>
-          <p class="project__summary">A research tool for a company’s energy engineers and decarbonisation consultants. It answers only from the reports and PDFs it retrieved, as a cited brief or a verdict on an ESG claim, and drops any finding that cites a source it never fetched.</p>
-          <dl class="figures">
-            <div><dt>Modes: research brief and claim verification</dt><dd>2</dd></div>
-            <div><dt>Verdicts, each with a 0–100 truth rating</dt><dd>3</dd></div>
-            <div><dt>Preset practice areas, from ports to renewables</dt><dd>5</dd></div>
-          </dl>
-          <div class="project__foot">
-            <p class="project__stack mono"><span class="project__icons" aria-hidden="true"><svg class="icon"><use href="img/icons.svg#nextdotjs"/></svg><svg class="icon"><use href="img/icons.svg#react"/></svg><svg class="icon"><use href="img/icons.svg#typescript"/></svg><svg class="icon"><use href="img/icons.svg#tailwindcss"/></svg><svg class="icon"><use href="img/icons.svg#googlegemini"/></svg><svg class="icon"><use href="img/icons.svg#zod"/></svg></span>Next.js · React · TypeScript · Tailwind CSS · Vercel AI SDK · Groq (gpt-oss-120b) with Gemini fallback · Zod · Cheerio · pdf-parse</p>
-            <p class="project__links"><a class="link" href="https://github.com/evanyap7/approved-research-agent" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></p>
-          </div>
-        </div>
-
-        <h3 class="project__head" id="work-v-bay">
-          <button class="project__row" type="button" id="row-v-bay" aria-controls="panel-v-bay" aria-expanded="true">
-            <span class="project__n mono">4.5</span>
-            <span class="project__title">Project V-Bẫy</span>
-            <span class="project__meta mono"><em>2nd place</em> · Strategy and research lead · May 2026</span>
-            <span class="project__key">$350M TAM</span>
-          </button>
-        </h3>
-        <div class="project__panel" id="panel-v-bay" role="region" aria-labelledby="row-v-bay">
-          <figure class="reel" data-reel="market">
-        <figcaption class="reel__bar">
-        <span class="reel__name"><b>Fig. 4.5</b> Market sizing, to scale</span>
-        <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
-        <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
-        </figcaption>
-        <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. A $350M total addressable market for 2027 narrows to a $7.5M serviceable obtainable market, with the two circles drawn to scale. Beside it, a three-year cash line dips, then crosses break-even between months 24 and 36.">
-        <path class="reel__corner" d="M10 20V10H20M460 10H470V20M470 300V310H460M20 310H10V300"/>
-        <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
-        <g data-a="stage">
-        <g data-a="tam">
-        <circle class="reel__area" cx="128" cy="158" r="96"/>
-        <text class="reel__text reel__text--num reel__text--xl" data-a="tamvalue" x="128" y="120">$350M</text>
-        <text class="reel__text reel__text--note" x="128" y="142">TAM · 2027</text>
-        </g>
-        <circle class="reel__ring" data-a="ring" opacity="0" cx="128" cy="196" r="14"/>
-        <circle data-a="som" cx="128" cy="196" r="14" fill="#2541e6"/>
-        <text class="reel__text reel__text--key" data-a="somvalue" x="128" y="236">$7.5M SOM</text>
-        <text class="reel__text reel__text--note" data-a="toscale" x="128" y="282">circles drawn to scale</text>
-        <rect data-a="band" x="388" y="70" width="60" height="176" fill="rgba(37,65,230,0.08)"/>
-        <path class="reel__wire" data-a="axes" d="M268 70V246M268 160H448"/>
-        <g data-a="ticks">
-        <text class="reel__text reel__text--note reel__text--start" x="268" y="266">0</text>
-        <text class="reel__text reel__text--note" x="388" y="266">24</text>
-        <text class="reel__text reel__text--note reel__text--end" x="448" y="266">36</text>
-        </g>
-        <text class="reel__text reel__text--note reel__text--start" data-a="title" x="268" y="36">Break-even</text>
-        <text class="reel__text reel__text--note reel__text--end reel__text--key" data-a="window" x="448" y="54">24–36 months</text>
-        <path class="reel__fill reel__draw" data-a="curve" pathLength="1" stroke="#111214" stroke-width="3.5" d="M268 160C310 274 390 234 448 104"/>
-        <g data-a="even"><circle cx="418" cy="160" r="12" fill="#2541e6" opacity="0.25"/><circle cx="418" cy="160" r="6" fill="#2541e6"/></g>
-        </g>
-        </svg>
-        </figure>
-          <p class="project__summary">An AI-driven telecom honeypot and DaaS platform to intercept and expose voice-phishing networks, built for the Entrepreneurial Solutions to Vietnam’s Grand Challenge Hackathon. I sized the market, built the three-year financial model and pitched it to four investors.</p>
-          <dl class="figures">
-            <div><dt>Total addressable market by 2027</dt><dd>$350M</dd></div>
-            <div><dt>Serviceable obtainable market</dt><dd>$7.5M</dd></div>
-            <div><dt>Months to projected break-even</dt><dd>24–36</dd></div>
-          </dl>
-          <div class="project__foot">
-            <p class="project__stack mono">Market sizing · Stakeholder interviews · Financial modelling in Excel · B2G and B2B go-to-market</p>
-            <p class="project__links"><a class="link" href="https://canva.link/ons4k8siiodipm9" target="_blank" rel="noopener">Pitch deck (Canva) <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></p>
-          </div>
-        </div>
-
-        <h3 class="project__head" id="work-others">
-          <button class="project__row" type="button" id="row-others" aria-controls="panel-others" aria-expanded="true">
-            <span class="project__n mono">4.6</span>
-            <span class="project__title">Others</span>
-            <span class="project__meta mono">Dragon Tiles · SleepWise</span>
-            <span class="project__key">2 more</span>
-          </button>
-        </h3>
-        <div class="project__panel project__panel--others" id="panel-others" role="region" aria-labelledby="row-others">
-          <figure class="reel reel--plate">
-            <figcaption class="reel__bar"><span class="reel__name"><b>Fig. 4.6</b> Piano keys, and a bedtime nudge</span></figcaption>
-            <div class="reel__scene pair" role="img" aria-label="Two drawings. Left, for Dragon Tiles: a row of piano keys pressed one after another. Right, for SleepWise: a crescent moon with a glowing ring beside a calendar marked with a tick.">
-              <svg class="pair__art pair__keys" viewBox="0 0 240 120" aria-hidden="true">
-                <g class="keys__white">
-                  <rect style="--i:0" x="36" y="22" width="24" height="76"/>
-                  <rect style="--i:1" x="60" y="22" width="24" height="76"/>
-                  <rect style="--i:2" x="84" y="22" width="24" height="76"/>
-                  <rect style="--i:3" x="108" y="22" width="24" height="76"/>
-                  <rect style="--i:4" x="132" y="22" width="24" height="76"/>
-                  <rect style="--i:5" x="156" y="22" width="24" height="76"/>
-                  <rect style="--i:6" x="180" y="22" width="24" height="76"/>
-                </g>
-                <g class="keys__black">
-                  <rect x="53" y="22" width="14" height="44"/>
-                  <rect x="77" y="22" width="14" height="44"/>
-                  <rect x="125" y="22" width="14" height="44"/>
-                  <rect x="149" y="22" width="14" height="44"/>
-                  <rect x="173" y="22" width="14" height="44"/>
-                </g>
-                <path class="keys__waves" d="M212 40q8 6 8 18M218 30q14 10 14 28" pathLength="1"/>
-              </svg>
-              <svg class="pair__art pair__moon" viewBox="0 0 240 120" aria-hidden="true">
-                <defs><mask id="moon-cut"><rect width="240" height="120" fill="#fff"/><circle cx="84" cy="50" r="23" fill="#000"/></mask></defs>
-                <circle class="moon__glow" cx="72" cy="60" r="36"/>
-                <circle class="moon__body" cx="72" cy="60" r="27" mask="url(#moon-cut)"/>
-                <g class="cal">
-                  <rect class="cal__sheet" x="136" y="30" width="72" height="66" rx="3"/>
-                  <path class="cal__head" d="M136 46H208M152 24V36M192 24V36"/>
-                  <path class="cal__days" d="M150 60h0M166 60h0M182 60h0M198 60h0M150 74h0M166 74h0M182 74h0M150 86h0M166 86h0"/>
-                  <path class="cal__tick" d="M178 80l7 7 14-15" pathLength="1"/>
-                </g>
-              </svg>
-            </div>
-          </figure>
-          <ul class="others">
-            <li class="others__item">
-              <h4 class="others__title">Dragon Tiles</h4>
-              <p class="others__meta mono">Lead design engineer · Sept 2025 – Mar 2026 · <em>Nominated for Best Storytelling and Execution</em></p>
-              <p class="others__text">An oversized interactive outdoor piano sculpture installed at Sports@Buona Vista, taken from CAD model to physical prototype with Grasshopper, Python and Blender.</p>
-              <p class="others__icons" aria-hidden="true"><svg class="icon"><use href="img/icons.svg#python"/></svg><svg class="icon"><use href="img/icons.svg#blender"/></svg></p>
-            </li>
-            <li class="others__item">
-              <h4 class="others__title">SleepWise</h4>
-              <p class="others__meta mono">Feature design and demo video · SUTD What the Hack 2025</p>
-              <p class="others__text">A React Native app that reads your Google Calendar, works out when you need to wind down, and nudges you to bed on time. My teammates led the engineering, on a Node.js and Express backend. I worked on the idea and feature design, and produced the demo video.</p>
-              <p class="others__icons" aria-hidden="true"><svg class="icon"><use href="img/icons.svg#react"/></svg><svg class="icon"><use href="img/icons.svg#googlecalendar"/></svg><svg class="icon"><use href="img/icons.svg#nodedotjs"/></svg></p>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <a class="sheet__next mono" href="#toolkit">Next: 05 Toolkit and credentials <span aria-hidden="true">→</span></a>
+    <section class="section work" id="work" aria-labelledby="work-title">
+      <h2 class="title work__title" id="work-title">Selected <span class="serif">work</span></h2>
+      <ul class="work__grid">
+        <li data-reveal><a class="card work__card" id="work-website-revamp" href="work/website-revamp.html" aria-labelledby="name-website-revamp more-website-revamp">
+          <span class="mono label">Top 5 · Frontend · 2026</span>
+          <span class="work__figure"><span data-count>9</span><small>pages</small></span>
+          <h3 class="work__name" id="name-website-revamp">Corporate Website Revamp Challenge</h3>
+          <p class="work__line">A nine-page interactive redesign, built with no framework. Pitched live to the CEO.</p>
+          <span class="work__more" id="more-website-revamp">Read more <span aria-hidden="true">→</span></span>
+        </a></li>
+        <li data-reveal><a class="card work__card" id="work-assistant-bot" href="work/assistant-bot.html" aria-labelledby="name-assistant-bot more-assistant-bot">
+          <span class="mono label">Full-stack · 2026</span>
+          <span class="work__figure"><span data-count>~65%</span><small>cheaper</small></span>
+          <h3 class="work__name" id="name-assistant-bot">Personal Assistant Bot</h3>
+          <p class="work__line">A Telegram assistant whose three-model chain tries the cheapest model first.</p>
+          <span class="work__more" id="more-assistant-bot">Read more <span aria-hidden="true">→</span></span>
+        </a></li>
+        <li data-reveal><a class="card work__card" id="work-trading-agent" href="case-studies/trading-agent.html" aria-labelledby="name-trading-agent more-trading-agent">
+          <span class="mono label">Developer · 2026</span>
+          <span class="work__figure"><span data-count>174</span><small>tests</small></span>
+          <h3 class="work__name" id="name-trading-agent">Autonomous Trading Agent</h3>
+          <p class="work__line">I backtested the LLM layer against a plain rule, found no measurable edge, and removed it.</p>
+          <span class="work__more" id="more-trading-agent">Read the case study <span aria-hidden="true">→</span></span>
+        </a></li>
+        <li data-reveal><a class="card work__card" id="work-research-agent" href="work/research-agent.html" aria-labelledby="name-research-agent more-research-agent">
+          <span class="mono label">Full-stack · 2026</span>
+          <span class="work__figure"><span data-count>0–100</span><small>rating</small></span>
+          <h3 class="work__name" id="name-research-agent">Decarbonisation Research Agent</h3>
+          <p class="work__line">Answers only from the sources it retrieved, as a cited brief or a rated verdict on an ESG claim.</p>
+          <span class="work__more" id="more-research-agent">Read more <span aria-hidden="true">→</span></span>
+        </a></li>
+        <li data-reveal><a class="card work__card" id="work-v-bay" href="work/v-bay.html" aria-labelledby="name-v-bay more-v-bay">
+          <span class="mono label">2nd place · Strategy · 2026</span>
+          <span class="work__figure"><span data-count>$350M</span><small>TAM</small></span>
+          <h3 class="work__name" id="name-v-bay">Project V-Bẫy</h3>
+          <p class="work__line">An AI-driven telecom honeypot against voice-phishing networks. I sized the market and built the financial model.</p>
+          <span class="work__more" id="more-v-bay">Read more <span aria-hidden="true">→</span></span>
+        </a></li>
+        <li data-reveal><a class="card work__card" id="work-others" href="work/others.html" aria-labelledby="name-others more-others">
+          <span class="mono label">Others · 2025–2026</span>
+          <span class="work__figure"><span data-count>2</span><small>more</small></span>
+          <h3 class="work__name" id="name-others">Dragon Tiles · SleepWise</h3>
+          <p class="work__line">An interactive outdoor piano sculpture, and an app that nudges you to bed on time.</p>
+          <span class="work__more" id="more-others">Read more <span aria-hidden="true">→</span></span>
+        </a></li>
+      </ul>
     </section>
 
-    <section class="sheet" id="toolkit" aria-labelledby="toolkit-title" data-sheet="05" data-sheet-name="Toolkit and credentials">
-      <p class="sheet__label mono"><b>05</b> Toolkit and credentials</p>
-      <div class="sheet__head"><h2 class="sheet__title" id="toolkit-title">Toolkit and credentials</h2><p class="mono">Updated Oct 2026</p></div>
-      <div class="kit" data-kit data-reveal>
+    <section class="section" id="toolkit" aria-labelledby="toolkit-title">
+      <h2 class="title" id="toolkit-title"><span class="serif">Toolkit</span></h2>
+      <div class="kit" data-kit>
         <div class="kit__tabs" role="tablist" aria-label="Toolkit and credentials" hidden>
           <button class="kit__tab" type="button" role="tab" id="tab-tools" aria-controls="kit-tools" aria-selected="true">Toolkit</button>
           <button class="kit__tab" type="button" role="tab" id="tab-recognition" aria-controls="recognition" aria-selected="false" tabindex="-1">Recognition</button>
@@ -564,7 +252,7 @@
         </div>
         <div class="kit__panel" id="kit-tools">
           <h3 class="kit__head mono">Toolkit</h3>
-          <dl class="rows rows--kit">
+          <dl class="rows">
             <div><dt class="mono">Languages</dt><dd><ul class="tools">
               <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#python"/></svg>Python</li>
               <li><svg class="icon" aria-hidden="true"><use href="img/icons.svg#typescript"/></svg>TypeScript</li>
@@ -613,7 +301,7 @@
         </div>
         <div class="kit__panel" id="recognition">
           <h3 class="kit__head mono">Recognition</h3>
-          <dl class="rows rows--kit rows--honours">
+          <dl class="rows rows--named">
             <div><dt>Top 5</dt><dd>Corporate Website Revamp Challenge, 2026. Finalist against senior solution architects worldwide; pitched live to the CEO.</dd></div>
             <div><dt>2nd place</dt><dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge Hackathon, 2026, with Project V-Bẫy.</dd></div>
             <div><dt>1 of 6</dt><dd>Recipients of the SUTD Technology Entrepreneurship Programme Scholarship.</dd></div>
@@ -622,7 +310,7 @@
         </div>
         <div class="kit__panel" id="education">
           <h3 class="kit__head mono">Education</h3>
-          <dl class="rows rows--kit rows--named">
+          <dl class="rows rows--named">
             <div><dt><img class="kit__logo" src="img/logos/sutd.svg" alt="" width="200" height="78">Singapore University of Technology and Design</dt><dd>B.Eng. Engineering Systems and Design and M.Sc. Technology Entrepreneurship, expected May 2030.</dd></div>
             <div><dt>VinUniversity</dt><dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge course, May 2026.</dd></div>
             <div><dt>Victoria Junior College</dt><dd>GCE A-Levels, 2021–2022. Vice-captain, boys’ hockey; first runners-up, 2022 National School Games.</dd></div>
@@ -630,35 +318,34 @@
         </div>
         <div class="kit__panel" id="certifications">
           <h3 class="kit__head mono">Certifications</h3>
-          <dl class="rows rows--kit rows--named">
-            <div><dt>Prompt Design in Vertex AI, 2024</dt><dd>Google Cloud skill badge. <a class="link" href="https://www.credly.com/badges/3ff0ec8a-ee9e-4176-8f15-516fcbd9c2e9" target="_blank" rel="noopener">Credential <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></dd></div>
+          <dl class="rows rows--named">
+            <div><dt>Prompt Design in Vertex AI, 2024</dt><dd>Google Cloud skill badge. <a class="text-link" href="https://www.credly.com/badges/3ff0ec8a-ee9e-4176-8f15-516fcbd9c2e9" target="_blank" rel="noopener">Credential <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></dd></div>
             <div><dt>Certified Personal Trainer, 2025</dt><dd>NCCPT-CPT, National Council on Strength and Fitness.</dd></div>
           </dl>
         </div>
       </div>
-      <a class="sheet__next mono" href="#contact">Next: 06 Contact <span aria-hidden="true">→</span></a>
     </section>
 
-    <section class="sheet" id="contact" aria-labelledby="contact-title" data-sheet="06" data-sheet-name="Contact">
-      <p class="sheet__label mono"><b>06</b> Contact</p>
-      <div class="contact">
-        <h2 class="contact__title" id="contact-title">Good work starts with hello.</h2>
-        <p class="contact__invite">Have a project in mind, a half-formed idea, or just want to say hi?</p>
-        <p class="contact__email">
-          <a class="contact__address" href="#contact" data-contact-link><svg class="icon" aria-hidden="true"><use href="img/icons.svg#line-mail"/></svg><span data-contact-text>Email me</span></a>
-          <button class="contact__copy mono" type="button" data-copy hidden>Copy</button>
-          <span class="visually-hidden" role="status" data-copy-status></span>
-        </p>
-        <dl class="spec contact__spec">
-          <div><dt class="mono">Resume</dt><dd><a class="link link--icon" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#line-document"/></svg>Download (PDF) <span aria-hidden="true">↓</span><span class="visually-hidden"> (opens in a new tab)</span></a></dd></div>
-          <div><dt class="mono">GitHub</dt><dd><a class="link link--icon" href="https://github.com/evanyap7" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#social-github"/></svg>github.com/evanyap7 <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></dd></div>
-          <div><dt class="mono">LinkedIn</dt><dd><a class="link link--icon" href="https://www.linkedin.com/in/evanyapzhikai/" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#social-linkedin"/></svg>in/evanyapzhikai <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></dd></div>
-        </dl>
-        <footer class="contact__footer mono"><p>© 2026 Evan Yap · Built by hand with HTML, CSS and JavaScript</p></footer>
-      </div>
-      <a class="sheet__next mono" href="#top">Back to 01 Intro <span aria-hidden="true">↑</span></a>
+    <section class="section contact" id="contact" aria-labelledby="contact-title">
+      <h2 class="title" id="contact-title">Let’s <span class="serif">talk</span></h2>
+      <p class="contact__invite">Have a project in mind, a half-formed idea, or just want to say hi?</p>
+      <p class="contact__email">
+        <a class="contact__address" href="#contact" data-contact-link><span data-contact-text>Email me</span></a>
+        <button class="pill contact__copy" type="button" data-copy hidden>Copy</button>
+        <span class="visually-hidden" role="status" data-copy-status></span>
+      </p>
+      <p class="contact__links">
+        <a class="pill" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#line-document"/></svg>Resume <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
+        <a class="pill" href="https://github.com/evanyap7" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#social-github"/></svg>GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a class="pill" href="https://www.linkedin.com/in/evanyapzhikai/" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="img/icons.svg#social-linkedin"/></svg>LinkedIn <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      </p>
     </section>
   </main>
+
+  <footer class="footer">
+    <p class="mono">© 2026 Evan Yap</p>
+    <a class="wordmark" href="#top" aria-label="Evan Yap, back to top">evan<span class="wordmark__dot">.</span></a>
+  </footer>
 
   <script type="module" src="js/main.js"></script>
 </body>

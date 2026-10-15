@@ -1,4 +1,4 @@
-// Sheet 05's four tabs: Toolkit, Recognition, Education and Certifications.
+// The Toolkit section's four tabs: Toolkit, Recognition, Education and Certifications.
 // Without this script the tab row stays hidden and every panel shows, one
 // under another. With it, one panel shows at a time, the arrow keys, Home and
 // End move between tabs (the WAI-ARIA tabs pattern, selecting as focus

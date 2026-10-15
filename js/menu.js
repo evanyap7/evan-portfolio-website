@@ -1,4 +1,4 @@
-// The menu that holds the sheet index and navigation below 1024px wide.
+// The full-screen menu that holds the navigation below 1024px wide.
 // A plain button toggling `hidden`, so it works in every supported browser.
 
 export function initMenu() {
@@ -18,7 +18,7 @@ export function initMenu() {
 
   button.addEventListener('click', () => setOpen(menu.hidden));
 
-  // Choosing a sheet closes the menu and lets the page scroll to it.
+  // Choosing a section closes the menu and lets the page scroll to it.
   menu.addEventListener('click', (event) => {
     if (event.target.closest('a')) setOpen(false);
   });

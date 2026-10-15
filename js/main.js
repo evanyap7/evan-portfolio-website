@@ -2,12 +2,13 @@ import { CONTACT_EMAIL } from './config.js';
 import { initCopy } from './contact.js';
 import { initCount } from './count.js';
 import { initIndex } from './index.js';
-import { initLean } from './lean.js';
 import { initMenu } from './menu.js';
 import { initReveal } from './reveal.js';
 import { initTabs } from './tabs.js';
 import { initWave } from './wave.js';
-import { initWork } from './work.js';
+
+// Every page loads this one script. Each part looks for its own markup and
+// does nothing on a page without it.
 
 function applyContactEmail() {
   document.querySelectorAll('[data-contact-link]').forEach((link) => {
@@ -19,8 +20,8 @@ function applyContactEmail() {
 }
 
 // The project diagrams are drawn finished in the HTML, so the player is only
-// fetched once one is on screen in an open project, and never with reduced
-// motion. Browsers that cannot animate `scale` and `translate` keep the still.
+// fetched once one is near the screen, and never with reduced motion.
+// Browsers that cannot animate `scale` and `translate` keep the still.
 function initReels() {
   const reels = document.querySelectorAll('[data-reel]');
   if (!reels.length || !('animate' in Element.prototype)) return;
@@ -40,8 +41,6 @@ applyContactEmail();
 initMenu();
 initIndex();
 initWave();
-initLean();
-initWork();
 initCount();
 initTabs();
 initCopy();

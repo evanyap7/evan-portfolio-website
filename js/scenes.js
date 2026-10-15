@@ -1,10 +1,13 @@
 // The project diagrams, as timelines. Times are milliseconds into the loop;
 // reel.js supplies the helpers and runs the result. Names refer to the
-// data-a attributes on each diagram's SVG in index.html.
+// data-a attributes on each diagram's SVG on its project page.
 
-const OK = '#2541e6';
-const BAD = '#111214';
-const LINE = '#111214';
+// Colours come from the tokens in base.css: the pass colour is the signal
+// blue, a failure flashes white, and boxes rest in the muted grey.
+const token = (name, fallback) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+const OK = token('--signal', '#6d86ff');
+const BAD = token('--text', '#fafafa');
+const LINE = token('--muted', '#a1a1a1');
 
 // Personal Assistant Bot: three messages try the cheapest model first. The
 // third fails there and is passed on, then the cost meter settles.

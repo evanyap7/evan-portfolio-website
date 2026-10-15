@@ -1,6 +1,6 @@
 import { CONTACT_EMAIL } from './config.js';
 
-// The copy button beside the address on the Contact sheet. When the
+// The copy button beside the address in Contact. When the
 // clipboard refuses (an older browser, or a page without focus) it selects
 // the address instead, so it can be copied by hand.
 

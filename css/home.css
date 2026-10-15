@@ -1,0 +1,513 @@
+/* The main page, section by section. */
+
+/* Hero -------------------------------------------------------------- */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--nav) - var(--nav-top));
+  min-height: calc(100svh - var(--nav) - var(--nav-top));
+  padding: 72px var(--gutter) 64px;
+  text-align: center;
+}
+
+.hero__title {
+  margin-top: 32px;
+  font-size: clamp(40px, 7.4vw, 112px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.hero__title .serif {
+  font-size: 1.1em;
+}
+
+.hero__lede {
+  max-width: 36em;
+  text-wrap: balance;
+  margin-top: 28px;
+  color: var(--muted);
+  font-size: var(--t-lede);
+  line-height: 1.55;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.hero__creds {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 36px;
+  margin-top: 72px;
+  color: var(--dim);
+}
+
+.hero__creds b {
+  margin-right: 0.4em;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+@media (max-width: 719px) {
+  .hero {
+    padding-top: 56px;
+  }
+
+  /* On a phone the headline wraps where it needs to. */
+  .hero__break {
+    display: none;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .hero__creds {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 56px;
+  }
+}
+
+/* The hero rises in, one line after another, once on load. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero > * {
+    animation: rise 900ms var(--ease-out) backwards;
+  }
+
+  .hero > :nth-child(2) { animation-delay: 80ms; }
+  .hero > :nth-child(3) { animation-delay: 160ms; }
+  .hero > :nth-child(4) { animation-delay: 240ms; }
+  .hero > :nth-child(5) { animation-delay: 320ms; }
+}
+
+/* About ------------------------------------------------------------- */
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 48px 72px;
+  align-items: center;
+}
+
+.about__art {
+  padding: 48px 40px 40px;
+}
+
+.about__art .wave {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.about__text {
+  color: var(--muted);
+}
+
+.about__text p + p {
+  margin-top: 18px;
+}
+
+.about__statement {
+  margin-bottom: 32px;
+  color: var(--text);
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+@media (max-width: 1023px) {
+  .about {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about__art {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 719px) {
+  .about__art {
+    padding: 32px 24px 24px;
+  }
+}
+
+/* Experience -------------------------------------------------------- */
+/* A table of hairline rows: dates, who and what, then the points. */
+.roles {
+  border-top: 1px solid var(--line);
+}
+
+.role {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 17rem) minmax(0, 1fr);
+  gap: 12px 40px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.role__dates {
+  padding-top: 5px;
+  color: var(--dim);
+}
+
+.role__org {
+  font-size: var(--t-card);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* The Univers logo, turned white. */
+.role__logo {
+  width: auto;
+  height: 22px;
+  margin-top: 3px;
+  filter: brightness(0) invert(1);
+}
+
+.role__title {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+
+.role__points {
+  color: var(--muted);
+}
+
+ul.role__points li + li {
+  margin-top: 12px;
+}
+
+.roles__earlier {
+  margin: 64px 0 16px;
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.roles--earlier .role {
+  padding: 22px 0;
+}
+
+.roles--earlier .role__org {
+  font-size: 17px;
+}
+
+@media (max-width: 1023px) {
+  .role {
+    grid-template-columns: 9.5rem minmax(0, 1fr);
+  }
+
+  .role__points {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 719px) {
+  .role {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 28px 0;
+  }
+
+  .role__points {
+    grid-column: 1;
+  }
+}
+
+/* Selected work ----------------------------------------------------- */
+/* The cards are tucked over the bottom of the huge title. */
+.work .work__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: calc(var(--t-title) * -0.32);
+}
+
+.work__grid > li {
+  display: flex;
+}
+
+.work__card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 340px;
+  padding: 32px;
+}
+
+.work__figure {
+  margin-top: 28px;
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+
+.work__figure [data-count] {
+  display: inline-block;
+}
+
+.work__figure small {
+  margin-left: 8px;
+  color: var(--dim);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.work__name {
+  margin-top: 28px;
+  font-size: var(--t-card);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.work__line {
+  margin: 8px 0 28px;
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.55;
+}
+
+.work__more {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 15px;
+  transition: color 200ms;
+}
+
+@media (hover: hover) {
+  .work__card:hover .work__more { color: var(--text); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .work__grid > li:nth-child(3n + 2) { transition-delay: 80ms; }
+  .work__grid > li:nth-child(3n) { transition-delay: 160ms; }
+}
+
+@media (max-width: 1023px) {
+  .work .work__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 719px) {
+  .work .work__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .work__card {
+    min-height: 0;
+    padding: 28px 24px 24px;
+  }
+
+  .work__figure {
+    font-size: 48px;
+  }
+}
+
+/* Toolkit ----------------------------------------------------------- */
+/* Four tabs as one segmented pill. Without tabs.js the row stays hidden
+   and every panel shows, one under another. */
+.kit__tabs {
+  display: flex;
+  gap: 4px;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto 56px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.kit__tabs[hidden] {
+  display: none;
+}
+
+.kit__tab {
+  flex: none;
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 200ms, background-color 200ms;
+}
+
+/* The chosen tab is filled, so it is marked by more than colour. */
+.kit__tab[aria-selected="true"] {
+  background: var(--text);
+  color: var(--bg);
+}
+
+@media (hover: hover) {
+  .kit__tab[aria-selected="false"]:hover { color: var(--text); }
+}
+
+.kit__panel + .kit__panel {
+  margin-top: 56px;
+}
+
+.kit.is-ready .kit__panel {
+  margin-top: 0;
+}
+
+.kit__panel:focus-visible {
+  outline-offset: 8px;
+}
+
+.kit__head {
+  margin-bottom: 16px;
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.kit.is-ready .kit__head {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Each tool is its mark and name; tools without a mark are name only. */
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}
+
+.tools li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.tools .icon {
+  color: var(--muted);
+}
+
+.rows--named dt {
+  color: var(--text);
+  font-size: var(--t-card);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.kit__logo {
+  width: 94px;
+  height: 22px;
+  margin-bottom: 12px;
+  object-fit: cover;
+  object-position: top;
+  filter: brightness(0) invert(1);
+}
+
+.text-link {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--line-2);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color 200ms;
+}
+
+@media (hover: hover) {
+  .text-link:hover { text-decoration-color: var(--text); }
+}
+
+/* A newly shown panel fades and rises a little. */
+@media (prefers-reduced-motion: no-preference) {
+  .kit.is-ready .kit__panel:not([hidden]) {
+    animation: rise 420ms var(--ease-out);
+  }
+}
+
+/* On a phone the four tabs sit two by two. */
+@media (max-width: 719px) {
+  .kit__tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    margin-bottom: 40px;
+    border-radius: 26px;
+  }
+
+  .kit__tab {
+    padding: 0 12px;
+  }
+}
+
+/* Contact ----------------------------------------------------------- */
+.contact {
+  text-align: center;
+}
+
+.contact .contact__invite {
+  margin-top: 36px;
+  color: var(--muted);
+  font-size: var(--t-lede);
+}
+
+.contact__email {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 20px;
+  margin-top: 40px;
+}
+
+.contact__address {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: clamp(26px, 4.4vw, 56px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  text-decoration: underline;
+  text-decoration-color: var(--line-2);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  overflow-wrap: anywhere;
+  transition: text-decoration-color 200ms;
+}
+
+@media (hover: hover) {
+  .contact__address:hover { text-decoration-color: var(--text); }
+}
+
+.contact__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 40px;
+}
