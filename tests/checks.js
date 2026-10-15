@@ -401,7 +401,7 @@ export async function titles(win) {
   }
   for (const head of heads) {
     head.scrollIntoView({ behavior: 'instant', block: 'center' });
-    await wait(60);
+    await wait(250); // long enough for an IntersectionObserver turn in every engine
   }
   await wait(1500);
   const hidden = [...doc.querySelectorAll('.word__in')].filter((word) => {
