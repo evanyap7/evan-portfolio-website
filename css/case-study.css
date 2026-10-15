@@ -33,7 +33,7 @@
 .case__list {
   margin-top: 14px;
   color: var(--ink-2);
-  font-size: 16px;
+  font-size: var(--t-body);
   line-height: 1.6;
 }
 
@@ -59,7 +59,7 @@
 .case__lede {
   margin-top: 20px;
   color: var(--ink-2);
-  font-size: 18px;
+  font-size: var(--t-lede);
 }
 
 .case__figures {
@@ -124,7 +124,7 @@
   background: none;
   color: var(--ink-3);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--t-mono);
 }
 
 .case__sub {
@@ -137,7 +137,7 @@
 .case__fine,
 .case__code {
   color: var(--ink-3);
-  font-size: 14px;
+  font-size: var(--t-text);
 }
 
 /* Pipeline: three lanes of steps, the model step outlined in the accent. */
@@ -156,7 +156,7 @@
 .flow__label {
   color: var(--ink-3);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--t-mono);
   font-weight: 400;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -183,7 +183,7 @@
 .flow__step {
   padding: 4px 10px;
   border: 1px solid var(--ink);
-  font-size: 13.5px;
+  font-size: var(--t-small);
 }
 
 .flow__step--model {
@@ -211,7 +211,7 @@
   left: 0;
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--t-mono);
 }
 
 .case__decisions h3 {
@@ -229,7 +229,7 @@
 .case__table table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--t-text);
 }
 
 .case__table th,
@@ -243,7 +243,7 @@
 .case__table thead th {
   color: var(--ink-3);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--t-mono);
   font-weight: 400;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -274,7 +274,7 @@
   padding-top: 12px;
   border-top: 1px solid var(--rule);
   color: var(--ink-3);
-  font-size: 13px;
+  font-size: var(--t-small);
 }
 
 .case__footer p {
