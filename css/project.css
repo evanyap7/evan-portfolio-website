@@ -30,11 +30,14 @@
 .project__title {
   max-width: 14em;
   margin-top: 20px;
-  font-size: clamp(44px, 7.4vw, 104px);
+  font-size: clamp(36px, 7.4vw, 104px);
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.045em;
   text-wrap: balance;
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .project__lede {

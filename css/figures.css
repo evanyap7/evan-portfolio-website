@@ -11,6 +11,15 @@
   padding: 20px;
 }
 
+/* On a phone the plate runs nearly to the card's edge, so the diagram
+   notes stay readable. */
+@media (max-width: 719px) {
+  .reel {
+    gap: 12px;
+    padding: 14px 8px 8px;
+  }
+}
+
 .reel__bar {
   display: flex;
   align-items: center;
