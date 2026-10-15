@@ -90,7 +90,7 @@ export function targets(win) {
 }
 
 // No paper, desk or pastel colour survives in a stylesheet or a diagram,
-// and the page is black.
+// and the page is near-black (tinted by the reactor's hue).
 export function palette(win) {
   const doc = win.document;
   let css = '';
@@ -108,7 +108,10 @@ export function palette(win) {
   return [
     result('stylesheets use only the new palette', !match, match?.[0] ?? ''),
     result('diagrams use only the new palette', stale.length === 0, `${stale.length} old colours`),
-    result('page background is black', win.getComputedStyle(doc.body).backgroundColor === 'rgb(0, 0, 0)', win.getComputedStyle(doc.body).backgroundColor),
+    result('page background is near-black', (() => {
+      const [r, g, b] = win.getComputedStyle(doc.body).backgroundColor.match(/[\d.]+/g).map(Number);
+      return Math.max(r, g, b) <= 16;
+    })(), win.getComputedStyle(doc.body).backgroundColor),
   ];
 }
 
@@ -160,7 +163,8 @@ export function contrast(win) {
     pair('light band solid pill text', light('--bg'), light('--text'), 4.5);
     pair('light band focus ring', light('--focus'), light('--band'), 3);
     const shownBg = win.getComputedStyle(band).borderImageSource;
-    out.push(result('Contact is the light band', band.id === 'contact' && /244, 244, 242/.test(shownBg), shownBg.slice(0, 60)));
+    const pale = (shownBg.match(/rgba?\([^)]*\)/g) || []).some((c) => c.match(/[\d.]+/g).slice(0, 3).every((v) => Number(v) >= 230));
+    out.push(result('Contact is the light band', band.id === 'contact' && pale, shownBg.slice(0, 60)));
   }
   return out;
 }
@@ -451,4 +455,61 @@ export async function timeline(win) {
 export function proof(win) {
   const items = [...win.document.querySelectorAll('#about .proof > div')];
   return [result('About proof strip: four counted figures with labels', items.length === 4 && items.every((item) => item.querySelector('dd [data-count]') && item.querySelector('dt')?.textContent.trim()))];
+}
+
+// The hero's arc reactor: its still is decorative, the reactor is one
+// labelled button, and the five colour cells retint the site through --h,
+// remember the choice, and mark exactly one cell pressed. The check puts
+// the colour back afterwards, so later frames start from arc blue.
+export async function reactor(win) {
+  const doc = win.document;
+  const root = doc.querySelector('[data-reactor]');
+  if (!root) return [result('reactor present', false)];
+  const poster = root.querySelector('.reactor__poster');
+  const hit = root.querySelector('[data-reactor-hit]');
+  const cells = [...doc.querySelectorAll('[data-hue]')];
+  const hue = () => win.getComputedStyle(doc.documentElement).getPropertyValue('--h').trim();
+  const pressed = () => cells.filter((cell) => cell.getAttribute('aria-pressed') === 'true').map((cell) => cell.dataset.hue);
+  const out = [
+    result('reactor still is decorative', poster && poster.getAttribute('alt') === '' && poster.complete && poster.naturalWidth > 0),
+    result('reactor is a labelled button', hit?.tagName === 'BUTTON' && /hold/i.test(hit.getAttribute('aria-label') || '')),
+    result('five colour cells, arc blue pressed', cells.length === 5 && pressed().join() === '205' && hue() === '205', `${cells.length} cells, pressed ${pressed()}, --h ${hue()}`),
+  ];
+  const gold = cells.find((cell) => cell.dataset.hue === '40');
+  gold?.click();
+  let stored = null;
+  try {
+    stored = win.localStorage.getItem('reactor-hue');
+  } catch {
+    stored = 'blocked';
+  }
+  out.push(result('a colour cell retints the site and is remembered', hue() === '40' && pressed().join() === '40' && (stored === '40' || stored === 'blocked'), `--h ${hue()}, stored ${stored}`));
+  cells.find((cell) => cell.dataset.hue === '205')?.click();
+  try {
+    win.localStorage.removeItem('reactor-hue');
+  } catch {
+    // Nothing was stored.
+  }
+  return out;
+}
+
+// On wide screens the credentials hang off the reactor as callouts: each
+// sits inside the hero, clear of the name and of the others.
+export function callouts(win) {
+  const doc = win.document;
+  const hero = doc.querySelector('.hero');
+  const items = [...doc.querySelectorAll('[data-callouts] li')];
+  const wide = win.innerWidth >= WIDE;
+  if (!wide) return [result('credentials are a plain list below 1024', !hero.classList.contains('hero--hud') && items.every((item) => win.getComputedStyle(item).position === 'static'))];
+  const box = hero.getBoundingClientRect();
+  const words = [...doc.querySelectorAll('.hero__name span')].map((span) => span.getBoundingClientRect());
+  const rects = items.map((item) => item.getBoundingClientRect());
+  const hit = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+  const inside = rects.every((r) => r.left >= box.left && r.right <= box.right && r.top >= box.top);
+  const clear = rects.every((r, i) => !words.some((w) => hit(r, w)) && !rects.some((o, j) => j !== i && hit(r, o)));
+  return [
+    result('credentials hang off the reactor on wide screens', hero.classList.contains('hero--hud') && doc.querySelectorAll('[data-lines] path').length === items.length),
+    result('callouts sit inside the hero', inside, rects.map((r) => `${Math.round(r.left)}-${Math.round(r.right)}`).join(' ')),
+    result('callouts clear of the name and each other', clear),
+  ];
 }
