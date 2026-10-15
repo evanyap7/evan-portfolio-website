@@ -314,10 +314,11 @@ export function menu(win) {
   ];
   button.click();
   const main = doc.getElementById('main');
-  out.push(result('menu opens over an inert page', !panel.hidden && shown(panel) && button.getAttribute('aria-expanded') === 'true' && main.inert === true, `inert ${main.inert}`));
+  const footer = doc.querySelector('body > .footer');
+  out.push(result('menu opens over an inert page and footer', !panel.hidden && shown(panel) && button.getAttribute('aria-expanded') === 'true' && main.inert === true && footer?.inert === true, `inert ${main.inert} ${footer?.inert}`));
   panel.querySelector('a').focus();
   doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-  out.push(result('Escape closes it and returns focus', panel.hidden && button.getAttribute('aria-expanded') === 'false' && main.inert === false && doc.activeElement === button, `inert ${main.inert}`));
+  out.push(result('Escape closes it and returns focus', panel.hidden && button.getAttribute('aria-expanded') === 'false' && main.inert === false && footer?.inert === false && doc.activeElement === button, `inert ${main.inert}`));
   button.blur();
   return out;
 }

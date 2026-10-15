@@ -4,7 +4,8 @@
 export function initMenu() {
   const button = document.querySelector('[data-menu-button]');
   const menu = document.getElementById('menu');
-  const main = document.getElementById('main');
+  // Everything the menu covers: the page and its footer.
+  const behind = [document.getElementById('main'), document.querySelector('body > .footer')].filter(Boolean);
   if (!button || !menu) return;
 
   const setOpen = (open) => {
@@ -12,7 +13,7 @@ export function initMenu() {
     button.textContent = open ? 'Close' : 'Menu';
     menu.hidden = !open;
     // The menu covers the page, so keep focus and screen readers out of it.
-    if (main) main.inert = open;
+    behind.forEach((node) => { node.inert = open; });
     document.documentElement.classList.toggle('menu-open', open);
   };
 
