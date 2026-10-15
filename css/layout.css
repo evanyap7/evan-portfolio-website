@@ -18,6 +18,8 @@
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--card);
+  /* A soft shadow keeps the pill distinct over the light Contact band. */
+  box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.6);
 }
 
 .wordmark {
@@ -100,7 +102,9 @@
   left: 0;
   z-index: 11;
   height: 2px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.55);
+  /* Grey on the dark bands, darker grey over the light one. */
+  mix-blend-mode: difference;
   transform: scaleX(0);
   transform-origin: 0 50%;
   pointer-events: none;
@@ -162,11 +166,47 @@
   margin: 28px auto 0;
 }
 
+/* Bands ------------------------------------------------------------- */
+/* Each section is a band of one grey from the ramp, painted edge to edge
+   (a filled border-image that reaches 100vw either side, which draws
+   outside the box without widening the page), with a faint hairline where
+   it meets the band above. It reaches 1px up, so no sub-pixel seam of the
+   page shows between two bands. */
+.band {
+  border-image: linear-gradient(var(--edge) 0 1px, var(--band) 1px) fill 0 / 0 / 1px 100vw 0;
+  color: var(--text);
+}
+
+.band--900 { --band: var(--grey-900); }
+.band--850 { --band: var(--grey-850); }
+
+/* The finale is inverted: off-white, near-black text and dark pills. Every
+   token is redefined, so everything inside follows. */
+.band--light {
+  color-scheme: light;
+  --band: var(--grey-100);
+  --bg: var(--grey-100);
+  --text: var(--grey-900);
+  --text-2: var(--grey-700);
+  --muted: var(--grey-650);
+  --dim: var(--grey-600);
+  --line: rgba(0, 0, 0, 0.1);
+  --line-2: rgba(0, 0, 0, 0.2);
+  --edge: rgba(0, 0, 0, 0.06);
+  --solid-hover: var(--grey-700);
+  --focus: var(--grey-900);
+}
+
 /* Sections ---------------------------------------------------------- */
+/* Space lives inside each band. A link to a section lands with its title
+   just under the nav rather than at the band's top edge. */
 .section {
+  --band-pad: clamp(64px, 8vw, 120px);
   width: calc(100% - 2 * var(--gutter));
   max-width: calc(var(--wide) - 48px);
-  margin: var(--space) auto 0;
+  margin: 0 auto;
+  padding-block: var(--band-pad);
+  scroll-margin-top: calc(-1 * var(--band-pad));
 }
 
 /* The huge section titles: one word in the italic serif. */
@@ -219,44 +259,31 @@
 
 @media (hover: hover) {
   .pill:hover { border-color: var(--muted); }
-  .pill--solid:hover { border-color: #d4d4d4; background: #d4d4d4; }
+  .pill--solid:hover { border-color: var(--solid-hover); background: var(--solid-hover); }
 }
 
-/* The small pill with a round photo, above the headline. */
+/* The quiet pill above the headline. */
 .tag {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 38px;
-  padding: 0 16px 0 6px;
+  min-height: 36px;
+  padding: 0 16px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
-  color: var(--muted);
+  color: var(--text-2);
   font-size: 14px;
 }
 
-.tag img {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: 50% 22%;
-}
-
-.tag b {
-  color: var(--text);
-  font-weight: 500;
-}
-
 /* Cards ------------------------------------------------------------- */
-/* Quiet bordered panels with a faint glow along the top. */
+/* Quiet panels: a gentle vertical gradient a step above the band, a
+   hairline border and a lighter top edge, as if lit from above. */
 .card {
   position: relative;
   border: 1px solid var(--line);
+  border-top-color: rgba(255, 255, 255, 0.16);
   border-radius: var(--radius);
-  background:
-    radial-gradient(120% 60% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 60%),
-    var(--card);
+  background: linear-gradient(180deg, var(--card-top), var(--card));
   transition: border-color 200ms;
 }
 
@@ -285,7 +312,7 @@
 }
 
 .rows dd {
-  color: var(--muted);
+  color: var(--text-2);
 }
 
 @media (max-width: 719px) {
@@ -315,4 +342,23 @@
   min-height: 44px;
   color: var(--muted);
   font-size: 20px;
+}
+
+/* On the main page the footer continues the light Contact band, with its
+   hairline kept to the content width. */
+.footer.band {
+  --edge: transparent;
+  position: relative;
+  margin-top: 0;
+  border-top: 0;
+}
+
+.footer.band::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--line);
 }
