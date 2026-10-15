@@ -56,6 +56,7 @@ export function initWork() {
     // Up and Down, Home and End move between projects; on wide screens
     // they also open the project, as tabs would.
     row.addEventListener('keydown', (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
       const to = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: rows.length - 1 }[event.key];
       if (to === undefined) return;
       event.preventDefault();
