@@ -1,3 +1,14 @@
+/* Arial, resized to Geist's metrics, stands in while Geist loads, so the
+   text does not reflow (and shift the page) when the web font arrives. */
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Arial");
+  ascent-override: 95.94%;
+  descent-override: 28.16%;
+  line-gap-override: 0%;
+  size-adjust: 104.76%;
+}
+
 /* Tokens ------------------------------------------------------------ */
 /* One greyscale ramp, from black to off-white. The site is built from it:
    black and near-black bands for rhythm, cards a step lighter, four greys
@@ -34,7 +45,7 @@
   --signal: #6d86ff;          /* 6.5:1 on --bg: diagrams only */
   --focus: var(--signal);
 
-  --font-sans: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Geist", "Geist Fallback", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
 
