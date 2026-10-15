@@ -39,5 +39,7 @@ export function initIndex() {
 
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
+  // A reload can restore the scroll position without a scroll event.
+  window.addEventListener('load', update);
   update();
 }
