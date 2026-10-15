@@ -1,17 +1,38 @@
 /* Tokens ------------------------------------------------------------ */
-/* Black, one card grey, two hairlines, three greys of text and one blue
-   that only diagrams and focus rings use. */
+/* One greyscale ramp, from black to off-white. The site is built from it:
+   black and near-black bands for rhythm, cards a step lighter, four greys
+   of text, and one light band for the finale. The only colour is the blue
+   signal, kept to the diagrams and the focus ring. */
 :root {
   color-scheme: dark;
 
-  --bg: #000;
-  --card: #0a0a0a;
+  --grey-950: #000;
+  --grey-900: #0b0b0b;
+  --grey-850: #111;
+  --grey-800: #141414;
+  --grey-700: #3d3d3d;
+  --grey-650: #595959;
+  --grey-600: #666;
+  --grey-500: #808080;
+  --grey-400: #a1a1a1;
+  --grey-200: #d4d4d4;
+  --grey-100: #f4f4f2;
+  --grey-50: #fafafa;
+
+  --bg: var(--grey-950);
+  --band: var(--grey-950);    /* each section's own background */
+  --card: var(--grey-900);    /* nav, plates, the foot of a card */
+  --card-top: var(--grey-800); /* the head of a card's gradient */
   --line: rgba(255, 255, 255, 0.1);
   --line-2: rgba(255, 255, 255, 0.18);
-  --text: #fafafa;
-  --muted: #a1a1a1;
-  --dim: #7b7b7b;     /* 4.9:1 on --bg, 4.7:1 on --card */
-  --signal: #6d86ff;  /* 6.5:1 on --bg: diagrams and focus only */
+  --edge: rgba(255, 255, 255, 0.07); /* the hairline where bands meet */
+  --text: var(--grey-50);     /* headings and figures */
+  --text-2: var(--grey-200);  /* reading text */
+  --muted: var(--grey-400);   /* secondary text */
+  --dim: var(--grey-500);     /* labels and dates: 4.6:1 on --card-top, 5.3:1 on --bg */
+  --solid-hover: var(--grey-200);
+  --signal: #6d86ff;          /* 6.5:1 on --bg: diagrams only */
+  --focus: var(--signal);
 
   --font-sans: "Geist", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -126,7 +147,7 @@ strong, b {
 }
 
 :focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
 
