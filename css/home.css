@@ -14,16 +14,7 @@
   text-align: center;
 }
 
-/* The tag pill above the headline: a small static dot and the text. */
-.tag__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--text-2);
-}
-
 .hero__title {
-  margin-top: 32px;
   font-size: clamp(40px, 7.4vw, 112px);
   font-weight: 600;
   line-height: 1;
@@ -245,15 +236,13 @@ ul.role__points li + li {
 }
 
 /* Selected work ----------------------------------------------------- */
-/* The cards are tucked up against the huge title. The title's line box
-   ends about 0.146em below its baseline, so pulling the cards up 0.12em
-   lets them meet the descender zone without touching the letters. */
+/* A clear gap separates the huge title from the cards below it. */
 .work .work__grid {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
-  margin-top: calc(var(--t-title) * -0.12);
+  margin-top: clamp(40px, 4.5vw, 72px);
 }
 
 .work__grid > li {
@@ -329,7 +318,7 @@ ul.role__points li + li {
 }
 
 @media (max-width: 719px) {
-  /* "Selected work" stays on one line, so the cards tuck under both words. */
+  /* "Selected work" stays on one line on phones. */
   .work .work__title {
     font-size: 13vw;
     white-space: nowrap;
@@ -338,7 +327,7 @@ ul.role__points li + li {
   .work .work__grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
-    margin-top: calc(13vw * -0.12);
+    margin-top: 32px;
   }
 
   .work__card {
