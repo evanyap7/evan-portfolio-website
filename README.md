@@ -23,9 +23,9 @@ Open <http://localhost:4173/tests/>. The page loads the site at 13 sizes, from a
 - nothing scrolls sideways, on the main page and on every project page and the case study
 - Geist, Geist Mono, Instrument Serif and Satoshi load
 - tap targets are at least 44px below 1024px wide (nav, menu, pills, cards, tabs, the copy button, the contact links, the way back and the next project)
-- no stylesheet or diagram uses an old colour, the page is black, and `--dim` passes 4.5:1 on both `--bg` and `--card` (computed from the tokens)
+- no stylesheet or diagram uses an old colour and the page is black; every text grey (`--text`, `--text-2`, `--muted`, `--dim`) passes 4.5:1 on black, on both band greys and on the head of a card, the light Contact band's greys and dark pills pass too, and the focus ring passes 3:1 on dark and on light (all computed from the tokens)
 - no em dash appears in the text, title or meta
-- the cartoon is in About, on a card
+- About shows the photo, with alt text, and the Selected work cards sit at or below the title's baseline, so they never cover its letters
 - the six work cards are single links, named by their titles, with their `#work-…` ids, and each page they open exists
 - the Toolkit tabs (roles, arrow keys, Home and End, and the `#education` and `#certifications` links), the nav's current section, the progress line, the menu (the page and footer behind it are inert, and Escape closes it) and the copy button behave
 - each project page links back to all work and on to a next project that exists, and the smallest diagram note renders at least 9px from 1280px wide, 8px from 1024px and 7px below
@@ -55,13 +55,12 @@ Every email link, the address in Contact and the copy button read from it.
 | `css/home.css` | The main page's sections |
 | `css/project.css` | The project page template |
 | `css/case-study.css` | The case study's article: pipeline, decisions and tables |
-| `css/figures.css` | Project diagrams, the cartoon and the keyframes |
+| `css/figures.css` | Project diagrams and the keyframes |
 | `js/main.js` | Starts everything; every page loads it, and each part does nothing on a page without its markup |
 | `js/index.js` | The nav's current section and the progress line |
 | `js/menu.js` | The menu below 1024px |
 | `js/tabs.js` | The Toolkit tabs, and the `#education` and `#certifications` links |
 | `js/count.js` | Counts each `[data-count]` figure up once, the first time it is seen |
-| `js/wave.js` | Starts the cartoon's wave when About comes into view, and replays it on hover or tap |
 | `js/contact.js` | The copy button |
 | `js/reveal.js` | The fade and rise as content first scrolls into view |
 | `js/reel.js`, `js/scenes.js` | The project diagram player and each diagram's timeline |
@@ -71,7 +70,9 @@ Every email link, the address in Contact and the copy button read from it.
 
 ## The design
 
-- Black (`--bg #000`), cards a step lighter (`--card #0a0a0a`), two hairlines (`--line` and `--line-2`, white at 10% and 18%), three text greys (`--text #fafafa`, `--muted #a1a1a1`, `--dim #7b7b7b`) and one blue, `--signal #6d86ff`, used only in the diagrams and the focus ring. The cartoon keeps its own illustration colours.
+- One greyscale ramp, `--grey-950` (`#000`) to `--grey-50` (`#fafafa`), at the top of `css/base.css`. Everything else is named from it: the bands (`#000`, `#0b0b0b`, `#111`), cards on a gradient from `--card-top` (`#141414`) to `--card` (`#0b0b0b`) with a lighter top edge, two hairlines (`--line`, `--line-2`) and four text greys (`--text #fafafa`, `--text-2 #d4d4d4`, `--muted #a1a1a1`, `--dim #808080`).
+- Sections are bands (`.band`, `.band--900`, `.band--850`) painted edge to edge with a faint hairline where they meet. Contact and the footer are the one light band (`.band--light`, `#f4f4f2`), which redefines the tokens so text turns near-black and the pills dark.
+- One blue, `--signal #6d86ff`, used only in the diagrams and as the focus ring on dark; on the light band the ring is near-black.
 - Type: Geist 400, 500 and 600 for reading, UI and headings; Geist Mono for labels and dates; Instrument Serif italic for one accent word at a time (`.serif`, about 1.08 times the sans around it); Satoshi 900 for the `evan.` wordmark only. Geist, Geist Mono and Instrument Serif come from Google Fonts and Satoshi from Fontshare, with fallback stacks in `--font-sans`, `--font-mono` and `--font-serif`.
 - Section titles are huge (`--t-title`, 60px to 176px), centred, with one whole word in the serif. In Selected work the cards are tucked over the bottom of the title.
 - The nav is a floating pill with a solid background. Below 1024px it holds the wordmark and a Menu pill that opens a full-screen menu.
@@ -93,7 +94,6 @@ Others has two small drawings instead, piano keys and a moon beside a calendar, 
 
 - The hero rises in, one line after another, on load.
 - Content fades and rises in the first time it scrolls into view.
-- The cartoon waves once when About first comes into view, and again on hover or tap. It blinks now and then.
 - Each project's figures count up once, the first time they are seen.
 - A newly chosen Toolkit tab fades and rises in.
 - The project diagrams loop while on screen, with a pause button; Others plays once.
