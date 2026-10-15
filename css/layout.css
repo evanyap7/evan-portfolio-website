@@ -203,8 +203,9 @@
 }
 
 /* Sheet ------------------------------------------------------------- */
-/* One per section. From 1024 × 650 each fills exactly one screen below the
-   bar; elsewhere it grows with its content. */
+/* One per section. On landscape screens from 1024 × 650 each fills exactly
+   one screen below the bar; elsewhere, portrait tablets included, it grows
+   with its content. */
 .sheet {
   position: relative;
   display: flex;
@@ -222,7 +223,7 @@
   pointer-events: none;
 }
 
-@media (min-width: 1024px) and (min-height: 650px) {
+@media (min-width: 1024px) and (min-height: 650px) and (min-aspect-ratio: 1/1) {
   .sheet {
     min-height: calc(100vh - var(--bar) - var(--gap));
     min-height: calc(100svh - var(--bar) - var(--gap));
