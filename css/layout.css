@@ -265,19 +265,6 @@
   .pill--solid:hover { border-color: var(--solid-hover); background: var(--solid-hover); }
 }
 
-/* The quiet pill above the headline. */
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 36px;
-  padding: 0 16px;
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  color: var(--text-2);
-  font-size: 14px;
-}
-
 /* Cards ------------------------------------------------------------- */
 /* Quiet panels: a gentle vertical gradient a step above the band, a
    hairline border and a lighter top edge, as if lit from above. */
