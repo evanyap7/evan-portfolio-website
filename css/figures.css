@@ -16,7 +16,7 @@
   min-height: 28px;
   color: var(--ink-3);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--t-mono);
   line-height: 1.4;
   letter-spacing: 0.06em;
   text-transform: uppercase;

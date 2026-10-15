@@ -20,6 +20,45 @@
   --pad: 40px;   /* content inset inside the frame */
   --ease: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  /* Type scale. Every size below is read from here, so the whole site
+     scales together. Short laptop screens use the compact set further
+     down, which is what lets each sheet still fit one screen there. */
+  --t-mono: 12px;        /* labels, meta, captions, the stack */
+  --t-body: 16.5px;      /* running text */
+  --t-text: 15.5px;      /* role points, rows, spec values */
+  --t-small: 14.5px;     /* role titles */
+  --t-lede: 19px;
+  --t-nav: 14.5px;
+  --t-link: 15.5px;      /* buttons and text links in panels */
+  --t-title: 44px;       /* sheet titles */
+  --t-org: 18px;         /* employer names */
+  --t-row: 19.5px;       /* project row titles */
+  --t-key: 16px;         /* each row's key figure */
+  --t-summary: 16.5px;   /* project summaries */
+  --t-figure: 26px;      /* the numbers in a project's figures */
+  --t-figure-label: 13.5px;
+}
+
+/* Laptops under 760px tall keep the earlier, tighter scale: at 1280 × 650
+   the larger one cannot fit every sheet on one screen. */
+@media (min-width: 1024px) and (max-height: 760px) {
+  :root {
+    --t-mono: 10.5px;
+    --t-body: 15px;
+    --t-text: 14px;
+    --t-small: 13.5px;
+    --t-lede: 18px;
+    --t-nav: 13.5px;
+    --t-link: 14.5px;
+    --t-title: 32px;
+    --t-org: 17px;
+    --t-row: 16.5px;
+    --t-key: 15px;
+    --t-summary: 15px;
+    --t-figure: 24px;
+    --t-figure-label: 12.5px;
+  }
 }
 
 @media (max-width: 1023px) {
@@ -62,7 +101,7 @@ body {
   margin: 0;
   background: var(--desk);
   color: var(--ink);
-  font: 400 15px/1.55 var(--font-sans);
+  font: 400 var(--t-body)/1.55 var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
@@ -150,15 +189,11 @@ strong, b {
 /* Labels and captions. */
 .mono {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--t-mono);
   font-weight: 400;
   line-height: 1.4;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-
-@media (min-width: 1440px) {
-  .mono { font-size: 11px; }
 }
 
 /* Scroll reveal ----------------------------------------------------- */
