@@ -176,12 +176,19 @@
 }
 
 .menu__sheets .mono {
-  min-width: 2.5em;
+  min-width: 2.8em; /* room for the current sheet's square, so titles stay aligned */
   color: var(--ink-2);
 }
 
+/* The current sheet is marked by a square as well as by colour. The second
+   declaration gives it empty alt text so screen readers skip it. */
 .menu__sheets a[aria-current="true"] .mono {
   color: var(--accent);
+}
+
+.menu__sheets a[aria-current="true"] .mono::before {
+  content: "■ ";
+  content: "■ " / "";
 }
 
 .menu__more {
