@@ -193,10 +193,12 @@
   --text-2: var(--grey-700);
   --muted: var(--grey-650);
   --dim: var(--grey-600);
-  --line: rgba(0, 0, 0, 0.1);
-  --line-2: rgba(0, 0, 0, 0.2);
-  --edge: rgba(0, 0, 0, 0.06);
+  --line: hsl(var(--h) 40% 10% / 0.1);
+  --line-2: hsl(var(--h) 40% 10% / 0.2);
+  --edge: hsl(var(--h) 40% 10% / 0.06);
   --solid-hover: var(--grey-700);
+  --accent: hsl(var(--h) 80% 36%);
+  --accent-glow: transparent;
   --focus: var(--grey-900);
 }
 

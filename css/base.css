@@ -10,40 +10,46 @@
 }
 
 /* Tokens ------------------------------------------------------------ */
-/* One greyscale ramp, from black to off-white. The site is built from it:
-   black and near-black bands for rhythm, cards a step lighter, four greys
-   of text, and one light band for the finale. The only colour is the blue
-   signal, kept to the diagrams and the focus ring. */
+/* One hue, --h, tints the whole site: a ramp of near-blacks and greys, all
+   leaning a little toward it, with the same lightness steps as a plain
+   greyscale ramp. The accent is the same hue at full strength, for the
+   italic serif words, focus rings and diagrams. The reactor's colour cells
+   (reactor.js) change --h, and the head script restores the visitor's last
+   choice before the first paint. Arc blue (205) is the default. */
 :root {
   color-scheme: dark;
 
-  --grey-950: #000;
-  --grey-900: #0b0b0b;
-  --grey-850: #111;
-  --grey-800: #141414;
-  --grey-700: #3d3d3d;
-  --grey-650: #595959;
-  --grey-600: #666;
-  --grey-500: #808080;
-  --grey-400: #a1a1a1;
-  --grey-200: #d4d4d4;
-  --grey-100: #f4f4f2;
-  --grey-50: #fafafa;
+  --h: 205;
+
+  --grey-950: hsl(var(--h) 45% 2.6%);
+  --grey-900: hsl(var(--h) 30% 5%);
+  --grey-850: hsl(var(--h) 26% 7.2%);
+  --grey-800: hsl(var(--h) 24% 8.6%);
+  --grey-700: hsl(var(--h) 12% 24%);
+  --grey-650: hsl(var(--h) 10% 34%);
+  --grey-600: hsl(var(--h) 9% 39%);
+  --grey-500: hsl(var(--h) 10% 55%);
+  --grey-400: hsl(var(--h) 13% 67%);
+  --grey-200: hsl(var(--h) 16% 85%);
+  --grey-100: hsl(var(--h) 22% 95%);
+  --grey-50: hsl(var(--h) 30% 97.5%);
+  --accent: hsl(var(--h) 95% 72%);
+  --accent-glow: hsl(var(--h) 100% 60% / 0.35);
 
   --bg: var(--grey-950);
   --band: var(--grey-950);    /* each section's own background */
   --card: var(--grey-900);    /* nav, plates, the foot of a card */
   --card-top: var(--grey-800); /* the head of a card's gradient */
-  --line: rgba(255, 255, 255, 0.1);
-  --line-2: rgba(255, 255, 255, 0.18);
-  --edge: rgba(255, 255, 255, 0.07); /* the hairline where bands meet */
+  --line: hsl(var(--h) 60% 85% / 0.1);
+  --line-2: hsl(var(--h) 60% 85% / 0.19);
+  --edge: hsl(var(--h) 60% 85% / 0.07); /* the hairline where bands meet */
   --text: var(--grey-50);     /* headings and figures */
   --text-2: var(--grey-200);  /* reading text */
   --muted: var(--grey-400);   /* secondary text */
-  --dim: var(--grey-500);     /* labels and dates: 4.6:1 on --card-top, 5.3:1 on --bg */
+  --dim: var(--grey-500);     /* labels and dates: at least 4.5:1 on every dark surface */
   --solid-hover: var(--grey-200);
-  --signal: #6d86ff;          /* 6.5:1 on --bg: diagrams only */
-  --focus: var(--signal);
+  --signal: var(--accent);    /* diagrams */
+  --focus: var(--accent);
 
   --font-sans: "Geist", "Geist Fallback", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -165,6 +171,7 @@ strong, b {
 /* The accent words: one whole word in the italic serif, a touch larger so
    it sits at the same optical size as the sans around it. */
 .serif {
+  color: var(--accent);
   font-family: var(--font-serif);
   font-size: 1.08em;
   font-style: italic;
