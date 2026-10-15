@@ -205,6 +205,18 @@ strong, b {
   text-transform: uppercase;
 }
 
+/* With Reduce Motion on, nothing moves, not even a colour fade: every
+   change lands at once. The animations themselves are all written inside
+   prefers-reduced-motion: no-preference; this catches the transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
+
 /* Scroll reveal ----------------------------------------------------- */
 /* The hidden state is scoped to .js, so nothing hides if scripts fail. */
 @media (prefers-reduced-motion: no-preference) {
