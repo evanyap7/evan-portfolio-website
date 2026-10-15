@@ -2,10 +2,11 @@
 // page loaded in an iframe of a set size, and the iframe itself, and returns
 // a list of { name, pass, detail }. run.js decides which checks run where.
 
-const FIT = { minWidth: 1280, minHeight: 650 };
 const WIDE = 1024;
-const SHEETS = ['top', 'about', 'experience', 'work', 'toolkit', 'contact'];
-const OLD_COLOURS = /#(ffb7d5|ffd98e|a9ddff|b9f2df|ff8fb1|ffe446|cdf5e6|ff9fb6|3a4a86|9b3158)|rgba\(255,\s*228|rgba\(255,\s*255,\s*255,\s*0?\.5\)/i;
+const SECTIONS = ['top', 'about', 'experience', 'work', 'toolkit', 'contact'];
+const CARDS = ['website-revamp', 'assistant-bot', 'trading-agent', 'research-agent', 'v-bay', 'others'];
+// The drawing-set palette (paper, desk, ink, accent) and the pastels before it.
+const OLD_COLOURS = /#(fafaf7|e6e5e0|111214|4f5156|6c6e72|2541e6|ffb7d5|ffd98e|a9ddff|b9f2df|ff8fb1|ffe446|cdf5e6|ff9fb6|3a4a86|9b3158)\b|rgba\(17,\s*18,\s*20|rgba\(37,\s*65,\s*230/i;
 
 const result = (name, pass, detail = '') => ({ name, pass: Boolean(pass), detail: String(detail) });
 const wait = (ms) => new Promise((done) => { setTimeout(done, ms); });
@@ -14,160 +15,201 @@ const shown = (el) => {
   return box.width > 0 && box.height > 0;
 };
 
-// Six sheets in story order, each with a link to the next.
+// Six sections in story order, one h1, and headings that never skip a level.
 export function structure(win) {
-  const sheets = [...win.document.querySelectorAll('main > .sheet')];
-  const ids = sheets.map((sheet) => sheet.id).join(',');
-  const out = [result('six sheets in story order', ids === SHEETS.join(','), ids)];
-  sheets.forEach((sheet, i) => {
-    const want = `#${SHEETS[(i + 1) % SHEETS.length]}`;
-    const href = sheet.querySelector('.sheet__next')?.getAttribute('href');
-    out.push(result(`${sheet.id}: next link to ${want}`, href === want, href ?? 'none'));
-  });
-  return out;
+  const ids = [...win.document.querySelectorAll('main > section')].map((section) => section.id).join(',');
+  return [result('six sections in story order', ids === SECTIONS.join(','), ids)];
 }
 
+export function headings(win) {
+  const levels = [...win.document.querySelectorAll('h1, h2, h3, h4, h5, h6')].map((h) => Number(h.tagName[1]));
+  const skips = levels.filter((level, i) => i > 0 && level > levels[i - 1] + 1);
+  return [
+    result('one h1', levels.filter((level) => level === 1).length === 1 && levels[0] === 1, levels.join('')),
+    result('headings never skip a level', skips.length === 0, levels.join('')),
+  ];
+}
+
+// The drawing set and the rounds before it are gone.
 export function removed(win) {
   const doc = win.document;
-  const gone = ['.keyboard', '.marquee', '[data-kinetic]', '[data-shader]', '[data-tabs]', '.chip', '.credentials'];
-  const files = ['keyboard.css', 'marquee.css', 'hero.css', 'sections.css', 'contact.css', 'motion.css'];
+  const gone = [
+    '.sheet', '.sheet__label', '.sheet__next', '.ticks', '.bar__index', '[data-where-n]', '.titleblock',
+    '.mark', '.mark__stroke', '.ambient', '.project__row', '.project__panel', '.project__icons', '.others__icons',
+    '.keyboard', '.marquee', '[data-kinetic]', '[data-shader]', '[data-tabs]', '.chip', '.credentials',
+  ];
+  const files = ['sheets.css', 'keyboard.css', 'marquee.css', 'hero.css', 'sections.css', 'contact.css', 'motion.css'];
   const hrefs = [...doc.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute('href'));
+  const scripts = win.performance.getEntriesByType('resource').map((entry) => entry.name).filter((name) => /\/(lean|work)\.js/.test(name));
+  const blurred = [...doc.querySelectorAll('body *')].filter((el) => {
+    const style = win.getComputedStyle(el);
+    return (style.backdropFilter && style.backdropFilter !== 'none') || (style.webkitBackdropFilter && style.webkitBackdropFilter !== 'none');
+  });
+  const fonts = [...doc.querySelectorAll('link[rel="stylesheet"]')].some((link) => /switzer|Fragment\+Mono/i.test(link.href));
   return [
     ...gone.map((selector) => result(`removed: ${selector}`, !doc.querySelector(selector))),
     result('removed: old stylesheets', !hrefs.some((href) => files.some((file) => href.endsWith(file))), hrefs.join(' ')),
+    result('removed: lean.js and work.js', scripts.length === 0, scripts.join(' ')),
+    result('removed: Switzer and Fragment Mono', !fonts),
+    result('no backdrop-filter', blurred.length === 0, `${blurred.length} elements`),
   ];
 }
 
 // Measured against the visible width (no scrollbar), so a few px of sideways overflow still counts.
 export function overflow(win) {
   const root = win.document.documentElement;
-  const width = root.scrollWidth;
-  const room = root.clientWidth;
-  return [result('no horizontal scroll', width <= room, `scroll ${width} vs client ${room}`)];
+  return [result('no horizontal scroll', root.scrollWidth <= root.clientWidth, `scroll ${root.scrollWidth} vs client ${root.clientWidth}`)];
 }
 
 export function fonts(win) {
   const loaded = [...win.document.fonts].filter((face) => face.status === 'loaded').map((face) => face.family.replace(/"/g, ''));
+  return ['Geist', 'Geist Mono', 'Instrument Serif', 'Satoshi']
+    .map((family) => result(`${family} loaded`, loaded.includes(family), [...new Set(loaded)].join(', ')));
+}
+
+// Below 1024px, every control a thumb needs is at least 44 × 44. The diagram
+// pause button is 32px drawn with a 48px hit area (a pseudo-element), so
+// it is measured by that area.
+export function targets(win) {
+  if (win.innerWidth >= WIDE) return [];
+  const selector = '.nav a, .nav button, .menu a, .pill, .work__card, .kit__tab, [data-copy], .contact__address, .back, .next, .footer a';
+  // Layout sizes, so a rise animation's transform mid-flight cannot round a
+  // 44px pill down to 43.99.
+  const small = [...win.document.querySelectorAll(selector)].filter(shown).filter((el) => el.offsetWidth < 44 || el.offsetHeight < 44);
+  const toggles = [...win.document.querySelectorAll('.reel__toggle')].filter(shown).filter((el) => {
+    const after = win.getComputedStyle(el, '::after');
+    const grow = -parseFloat(after.top) * 2;
+    const box = el.getBoundingClientRect();
+    return box.width + grow < 44 || box.height + grow < 44;
+  });
+  return [result('tap targets at least 44px', small.length + toggles.length === 0,
+    [...small, ...toggles].map((el) => {
+      return `${el.textContent.trim().slice(0, 24) || el.className} ${el.offsetWidth}×${el.offsetHeight}`;
+    }).join(' | '))];
+}
+
+// No paper, desk or pastel colour survives in a stylesheet or a diagram,
+// the page is black, and the cartoon keeps its own illustration colours.
+export function palette(win) {
+  const doc = win.document;
+  let css = '';
+  [...doc.styleSheets].forEach((sheet) => {
+    try {
+      if (sheet.href && !sheet.href.startsWith(win.location.origin)) return;
+      css += [...sheet.cssRules].map((rule) => rule.cssText).join('\n');
+    } catch {
+      // A cross-origin sheet (the fonts) cannot be read; it holds no colours.
+    }
+  });
+  const stale = [...doc.querySelectorAll('svg [fill], svg [stroke]')]
+    .filter((el) => !el.closest('.wave'))
+    .filter((el) => OLD_COLOURS.test(`${el.getAttribute('fill')} ${el.getAttribute('stroke')}`));
+  const match = css.match(OLD_COLOURS);
   return [
-    result('Switzer loaded', loaded.includes('Switzer'), loaded.join(', ')),
-    result('Fragment Mono loaded', loaded.includes('Fragment Mono'), loaded.join(', ')),
-    result('Instrument Serif loaded', loaded.includes('Instrument Serif'), loaded.join(', ')),
+    result('stylesheets use only the new palette', !match, match?.[0] ?? ''),
+    result('diagrams use only the new palette', stale.length === 0, `${stale.length} old colours`),
+    result('page background is black', win.getComputedStyle(doc.body).backgroundColor === 'rgb(0, 0, 0)', win.getComputedStyle(doc.body).backgroundColor),
   ];
 }
 
-// Below 1024px, every control a thumb needs is at least 44 × 44.
-export function targets(win) {
-  if (win.innerWidth >= WIDE) return [];
-  const selector = '.bar a, .bar button, .project__row, .button, [data-copy], .sheet__next, .project__links a, .contact__spec a, .contact__address, .intro__actions a, .kit__tab';
-  const small = [...win.document.querySelectorAll(selector)].filter(shown).filter((el) => {
-    const box = el.getBoundingClientRect();
-    return box.width < 44 || box.height < 44;
-  });
-  return [result('tap targets at least 44px', small.length === 0, small.map((el) => el.textContent.trim().slice(0, 30)).join(' | '))];
-}
-
-// At the fit sizes each sheet is exactly one screen below the bar. Selected
-// work is measured once per project, since each panel has a different length;
-// 4.1 is reopened at the end. The detail reads "height vs room", then the
-// slack: how much room is left over once the min-height is taken away.
-export function fit(win) {
-  if (win.innerWidth < FIT.minWidth || win.innerHeight < FIT.minHeight) return [];
-  const doc = win.document;
-  const room = win.innerHeight - doc.querySelector('.bar').getBoundingClientRect().height - 12;
-  const measure = (name, sheet) => {
-    const height = sheet.getBoundingClientRect().height;
-    sheet.style.minHeight = '0px';
-    const natural = sheet.getBoundingClientRect().height;
-    sheet.style.minHeight = '';
-    return result(name, Math.abs(height - room) <= 1, `${Math.round(height)} vs ${Math.round(room)}, slack ${Math.round(room - natural)}`);
+// --dim must pass 4.5:1 on the page and on a card, computed from the tokens.
+export function contrast(win) {
+  const root = win.getComputedStyle(win.document.documentElement);
+  const rgb = (value) => {
+    const probe = win.document.createElement('i');
+    probe.style.color = value;
+    win.document.body.append(probe);
+    const parts = win.getComputedStyle(probe).color.match(/[\d.]+/g).slice(0, 3).map(Number);
+    probe.remove();
+    return parts;
   };
-  const out = [...doc.querySelectorAll('main > .sheet')].map((sheet) => measure(`${sheet.id}: fits one screen`, sheet));
-  const rows = [...doc.querySelectorAll('.project__row')];
-  rows.forEach((row, i) => {
-    row.click();
-    out.push(measure(`work (4.${i + 1} open): fits one screen`, doc.getElementById('work')));
-  });
-  rows[0]?.click();
-  const tabs = [...doc.querySelectorAll('.kit [role="tab"]')];
-  tabs.forEach((tab) => {
-    tab.click();
-    out.push(measure(`toolkit (${tab.textContent.trim()} tab): fits one screen`, doc.getElementById('toolkit')));
-  });
-  tabs[0]?.click();
-  return out;
+  const luminance = ([r, g, b]) => [r, g, b]
+    .map((c) => c / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
+    .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+  const ratio = (a, b) => {
+    const [hi, lo] = [luminance(rgb(a)), luminance(rgb(b))].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+  };
+  const dim = root.getPropertyValue('--dim').trim();
+  const signal = root.getPropertyValue('--signal').trim();
+  const onBg = ratio(dim, root.getPropertyValue('--bg').trim());
+  const onCard = ratio(dim, root.getPropertyValue('--card').trim());
+  const signalOnCard = ratio(signal, root.getPropertyValue('--card').trim());
+  return [
+    result('--dim at least 4.5:1 on --bg', onBg >= 4.5, `${dim} ${onBg.toFixed(2)}:1`),
+    result('--dim at least 4.5:1 on --card', onCard >= 4.5, `${dim} ${onCard.toFixed(2)}:1`),
+    result('--signal at least 3:1 on --card', signalOnCard >= 3, `${signal} ${signalOnCard.toFixed(2)}:1`),
+  ];
 }
 
-// The same, with the wider fallback fonts a visitor gets if the web fonts fail.
-export async function fitFallback(win) {
-  if (win.innerWidth < FIT.minWidth || win.innerHeight < FIT.minHeight) return [];
-  const root = win.document.documentElement;
-  root.style.setProperty('--font-sans', 'Arial, sans-serif');
-  root.style.setProperty('--font-mono', 'Menlo, Consolas, monospace');
-  root.style.setProperty('--font-serif', 'Georgia, "Times New Roman", serif');
-  await wait(50);
-  const out = fit(win).map((each) => ({ ...each, name: `${each.name} (fallback fonts)` }));
-  root.style.removeProperty('--font-sans');
-  root.style.removeProperty('--font-mono');
-  root.style.removeProperty('--font-serif');
-  return out;
-}
-
-export function palette(win) {
-  const stale = [...win.document.querySelectorAll('svg [fill], svg [stroke]')]
-    .filter((el) => OLD_COLOURS.test(`${el.getAttribute('fill')} ${el.getAttribute('stroke')}`));
-  return [result('figures use only the new palette', stale.length === 0, `${stale.length} old colours`)];
-}
-
-export function figureCaptions(win) {
-  const labels = [...win.document.querySelectorAll('.reel__name b')].map((b) => b.textContent.trim());
-  const want = ['Fig. 4.1', 'Fig. 4.2', 'Fig. 4.3', 'Fig. 4.4', 'Fig. 4.5', 'Fig. 4.6'];
-  return [result('figures numbered 4.1 to 4.6', labels.join() === want.join(), labels.join())];
+// Visitor-facing text has no em dashes: the body, the title and the meta.
+export function emDash(win) {
+  const doc = win.document;
+  const meta = [...doc.querySelectorAll('meta[content]')].map((m) => m.content).join(' ');
+  const text = `${doc.title} ${meta} ${doc.body.textContent} ${[...doc.querySelectorAll('[aria-label], [alt]')].map((el) => el.getAttribute('aria-label') ?? el.getAttribute('alt')).join(' ')}`;
+  const found = text.match(/.{0,24}—.{0,24}/);
+  return [result('no em dashes', !found, found?.[0] ?? '')];
 }
 
 export function cartoon(win) {
-  const art = win.document.querySelector('#top [data-wave] svg[role="img"]');
-  return [result('cartoon waves in the intro, recoloured', art && art.querySelector('circle[fill="#2541e6"]') && !art.querySelector('[fill="#ff9fb6"]'))];
+  const art = win.document.querySelector('#about [data-wave] svg[role="img"]');
+  return [
+    result('cartoon waves in About', art && art.closest('.card') && !win.document.querySelector('#top [data-wave]')),
+  ];
 }
 
-export function work(win) {
+// Six cards, each one link to a page that exists, named by its title, and
+// keeping its #work-… id so old links land on it.
+export async function workCards(win) {
   const doc = win.document;
-  const rows = [...doc.querySelectorAll('.project__row')];
-  const panels = [...doc.querySelectorAll('.project__panel')];
-  const open = () => panels.filter((panel) => !panel.hidden).map((panel) => panel.id).join();
-  const accordion = win.innerWidth < WIDE;
+  const cards = [...doc.querySelectorAll('#work .work__card')];
+  const ids = cards.map((card) => card.id.replace('work-', '')).join(',');
   const out = [
-    result('six projects', rows.length === 6 && panels.length === 6, `${rows.length} rows, ${panels.length} panels`),
-    result('4.1 open on load', open() === panels[0]?.id, open()),
+    result('six work cards, in order', ids === CARDS.join(','), ids),
+    result('cards hold no nested links or buttons', cards.every((card) => !card.querySelector('a, button'))),
+    result('cards hold a counting figure', cards.every((card) => card.querySelector('.work__figure [data-count]'))),
   ];
-  rows[2].click();
-  out.push(result('choosing 4.3 opens only 4.3', open() === panels[2].id, open()));
-  out.push(result('rows report their state', rows[2].getAttribute('aria-expanded') === 'true' && rows[0].getAttribute('aria-expanded') === 'false'));
-  rows[2].click();
-  out.push(accordion
-    ? result('tapping the open row closes it', open() === '', open())
-    : result('clicking the open row keeps it open', open() === panels[2].id, open()));
-  rows[0].click();
+  const named = cards.every((card) => {
+    const title = card.querySelector('h3')?.textContent.trim();
+    const label = (card.getAttribute('aria-labelledby') ?? '').split(/\s+/).map((id) => doc.getElementById(id)?.textContent.trim()).join(' ');
+    return title && label.startsWith(title);
+  });
+  out.push(result('each card is named by its title', named));
+  const codes = await Promise.all(cards.map((card) => win.fetch(card.href, { cache: 'no-store' }).then((response) => response.status, () => 0)));
+  out.push(result('each card opens a page that exists', codes.every((code) => code === 200), codes.join(' ')));
   return out;
 }
 
-// Diagram text in an open project is large enough to read: the smallest note
-// renders at least 9px at the fit sizes, 8px from 1024px wide and 7px below.
-// Opens 4.2 (the first project with a diagram) to measure, then reopens 4.1.
+// The project pages and the case study: the way back and the next project,
+// which runs through all six and back to the start.
+export async function projectPage(win) {
+  const doc = win.document;
+  const back = doc.querySelector('main .back');
+  const next = doc.querySelector('main .next');
+  const code = next ? await win.fetch(next.href, { cache: 'no-store' }).then((response) => response.status, () => 0) : 0;
+  return [
+    result('page: link back to all work', back?.getAttribute('href') === '/#work'),
+    result('page: next project exists', code === 200, next?.getAttribute('href')),
+    result('page: big figures or none', [...doc.querySelectorAll('.stats dd')].every((dd) => dd.querySelector('[data-count]'))),
+  ];
+}
+
+// Diagram notes are large enough to read: the smallest renders at least 9px
+// from 1280px wide, 8px from 1024px and 7px below.
 export function figureText(win) {
   const doc = win.document;
   const min = win.innerWidth >= 1280 ? 9 : win.innerWidth >= WIDE ? 8 : 7;
-  doc.getElementById('row-assistant-bot')?.click();
-  const notes = [...doc.querySelectorAll('.project__panel:not([hidden]) .reel__text--note')].filter(shown);
+  const notes = [...doc.querySelectorAll('.reel__text--note')].filter((text) => text.getBBox().width > 0);
+  if (!notes.length) return [];
   const sizes = notes.map((text) => parseFloat(win.getComputedStyle(text).fontSize) * text.ownerSVGElement.getScreenCTM().a);
-  doc.getElementById('row-website-revamp')?.click();
-  if (!sizes.length) return [result('diagram notes readable', false, 'no visible notes in 4.2')];
   const smallest = Math.min(...sizes);
   return [result(`diagram notes at least ${min}px`, smallest >= min - 0.05, `${smallest.toFixed(1)}px`)];
 }
 
-// Sheet 05 is a WAI-ARIA tabs widget: each tab names its panel and the
-// panel names it back, one tab is selected and in the tab order, one panel
-// shows, and the arrow keys, Home and End move the selection.
+// The Toolkit section is a WAI-ARIA tabs widget: each tab names its panel and
+// the panel names it back, one tab is selected and in the tab order, one
+// panel shows, and the arrow keys, Home and End move the selection.
 export function tabs(win) {
   const doc = win.document;
   const list = doc.querySelector('#toolkit [role="tablist"]');
@@ -211,45 +253,54 @@ export function tabLink(win) {
   return [result(`#${id} opens its tab`, panel && !panel.hidden && shown(panel) && tab?.getAttribute('aria-selected') === 'true')];
 }
 
-export function deepLink(win) {
-  const id = win.location.hash.slice(1);
-  const row = win.document.getElementById(id)?.querySelector('.project__row');
-  const panel = row && win.document.getElementById(row.getAttribute('aria-controls'));
-  return [result(`#${id} opens that project`, panel && !panel.hidden)];
-}
-
-// Closes every project on a phone-width page, then widens it past 1024.
-export async function crossToWide(win, frame) {
-  win.document.querySelector('.project__row[aria-expanded="true"]')?.click();
-  frame.width = '1440';
-  frame.height = '800';
-  await wait(400);
-  const open = [...win.document.querySelectorAll('.project__panel')].filter((panel) => !panel.hidden);
-  return [result('widening past 1024px opens one project', open.length === 1, `${open.length} open`)];
-}
-
-export async function sheetIndex(win) {
-  const doc = win.document;
-  doc.getElementById('experience').scrollIntoView({ behavior: 'instant' });
-  await wait(300);
-  const number = doc.querySelector('[data-where-n]')?.textContent;
-  const current = doc.querySelector('.ticks a[aria-current="true"]')?.getAttribute('href');
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
-  return [
-    result('index follows the sheet on screen', number === '03' && current === '#experience', `${number} ${current}`),
-  ];
-}
-
-// The page scrolls to the hash smoothly, so wait for it to stop first.
-export async function hashSheet(win) {
+// An old project link such as #work-trading-agent lands on that card.
+export async function deepLink(win) {
   let last = -1;
   for (let i = 0; i < 40 && win.scrollY !== last; i += 1) {
     last = win.scrollY;
     await wait(150);
   }
-  const number = win.document.querySelector('[data-where-n]')?.textContent;
-  return [result('arriving at #toolkit marks sheet 05', number === '05', number)];
+  const id = win.location.hash.slice(1);
+  const card = win.document.getElementById(id);
+  const top = card?.getBoundingClientRect().top ?? -1;
+  return [result(`#${id} lands on its card`, card?.matches('.work__card') && top >= 0 && top < win.innerHeight / 2, `top ${Math.round(top)}`)];
+}
+
+// The nav marks the section on screen.
+export async function navIndex(win) {
+  const doc = win.document;
+  doc.getElementById('experience').scrollIntoView({ behavior: 'instant' });
+  await wait(300);
+  const current = [...doc.querySelectorAll('.nav__links a[aria-current="true"], .menu__links a[aria-current="true"]')].map((a) => a.getAttribute('href'));
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  const top = doc.querySelectorAll('[aria-current="true"]').length;
+  return [
+    result('nav marks the section on screen', current.length === 2 && current.every((href) => href === '#experience'), current.join(' ')),
+    result('nav marks nothing in the hero', top === 0, `${top} marked`),
+  ];
+}
+
+// The page scrolls to the hash smoothly, so wait for it to stop first.
+export async function hashSection(win) {
+  let last = -1;
+  for (let i = 0; i < 40 && win.scrollY !== last; i += 1) {
+    last = win.scrollY;
+    await wait(150);
+  }
+  const current = win.document.querySelector('.nav__links a[aria-current="true"]')?.getAttribute('href');
+  return [result('arriving at #toolkit marks Toolkit', current === '#toolkit', current)];
+}
+
+// The scroll progress line is decorative and follows the page.
+export async function progress(win) {
+  const line = win.document.querySelector('[data-progress]');
+  win.scrollTo({ top: win.document.documentElement.scrollHeight, behavior: 'instant' });
+  await wait(150);
+  const end = line?.style.transform ?? '';
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [result('progress line follows the scroll', line?.getAttribute('aria-hidden') === 'true' && parseFloat(end.replace('scaleX(', '')) > 0.999, end)];
 }
 
 export function menu(win) {
@@ -263,9 +314,11 @@ export function menu(win) {
   ];
   button.click();
   const main = doc.getElementById('main');
-  out.push(result('menu opens', !panel.hidden && button.getAttribute('aria-expanded') === 'true' && main.inert === true, `inert ${main.inert}`));
+  out.push(result('menu opens over an inert page', !panel.hidden && shown(panel) && button.getAttribute('aria-expanded') === 'true' && main.inert === true, `inert ${main.inert}`));
+  panel.querySelector('a').focus();
   doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-  out.push(result('Escape closes it', panel.hidden && button.getAttribute('aria-expanded') === 'false' && main.inert === false, `inert ${main.inert}`));
+  out.push(result('Escape closes it and returns focus', panel.hidden && button.getAttribute('aria-expanded') === 'false' && main.inert === false && doc.activeElement === button, `inert ${main.inert}`));
+  button.blur();
   return out;
 }
 

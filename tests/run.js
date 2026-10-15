@@ -9,16 +9,26 @@ const SIZES = [
   [852, 393], [640, 400],
 ];
 
-// Checks run at every size, in this order. Later tasks add to it.
-const ALL = ['structure', 'removed', 'overflow', 'fonts', 'targets', 'fit', 'fitFallback', 'palette', 'figureCaptions', 'cartoon', 'work', 'tabs', 'figureText', 'sheetIndex', 'menu', 'copy'];
+// Checks run on the main page at every size, in this order.
+const ALL = ['structure', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'contrast', 'emDash', 'cartoon', 'workCards', 'tabs', 'navIndex', 'progress', 'menu', 'copy'];
+
+// The project pages and the case study, each checked at every size too.
+const PAGES = [
+  '/work/website-revamp.html',
+  '/work/assistant-bot.html',
+  '/case-studies/trading-agent.html',
+  '/work/research-agent.html',
+  '/work/v-bay.html',
+  '/work/others.html',
+];
+const PAGE_CHECKS = ['headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'emDash', 'projectPage', 'figureText', 'menu'];
 
 // One-off runs: a size, a URL and the checks to run there.
 const EXTRA = [
+  ...PAGES.flatMap((src) => SIZES.map(([width, height]) => ({ width, height, src, names: PAGE_CHECKS }))),
   { width: 1440, height: 800, src: '/#work-trading-agent', names: ['deepLink'] },
-  { width: 393, height: 852, src: '/#work-trading-agent', names: ['deepLink'] },
-  { width: 1440, height: 800, src: '/#work-others', names: ['deepLink'] },
-  { width: 393, height: 852, src: '/', names: ['crossToWide'] },
-  { width: 1440, height: 800, src: '/#toolkit', names: ['hashSheet'] },
+  { width: 393, height: 852, src: '/#work-others', names: ['deepLink'] },
+  { width: 1440, height: 800, src: '/#toolkit', names: ['hashSection'] },
   { width: 1440, height: 800, src: '/#education', names: ['tabLink'] },
   { width: 393, height: 852, src: '/#certifications', names: ['tabLink'] },
 ];
