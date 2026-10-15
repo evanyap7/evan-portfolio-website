@@ -356,3 +356,24 @@ The check page's iframes now sit on screen at `opacity: 0` behind the results in
 - The trading agent card's title, "Autonomous Trading Agent", morphs into a different and much longer case-study title, so that transition reads as a scale and crossfade rather than a clean morph. The other five titles match their cards.
 - A title scrolled past very fast (a flick, or a jump link) reveals when it next enters view, not before. Its text is in the DOM throughout.
 - The hero glow loops for as long as the hero is on screen. It is decorative, its movement is under 3%, and it stops under Reduce Motion.
+
+## Round 4: the arc reactor and the one-hue palette (2026-10-16)
+
+What changed:
+- The hero's anchor is a 3D arc reactor (three.js, `js/reactor-scene.js`), modelled on the Mark I/II reactor: steel housing, ten copper coils wound turn by turn, chrome inner ring with bolts, glass-domed emitter, lit by its own core with bloom. No stats inside it.
+- Interactions (`js/reactor.js`): it powers on with a flicker; it faces the mouse; hold to charge (status line counts up, coils spin up, it shakes at full power), let go to fire a pulse across the hero; drag to spin; Space or Enter on it charges and fires too.
+- Five colour cells under it (arc blue, teal, violet, gold, crimson) retint the reactor and the whole site, and are remembered on every page.
+- The palette is one hue (`--h`) instead of pure greyscale: every grey leans slightly toward it, and `--accent` (the same hue at full strength) colours the italic serif words, the wordmark dot, focus rings, diagrams and the card spotlight. Arc blue is the default.
+- The hero keeps all its content: the headline, lede, both pills and the three credentials. The name now sits either side of the reactor; from 1024px the credentials hang off it on leader lines.
+- Reduced motion: the reactor is a still, fully powered; only the colour cells work.
+- New still `img/reactor.webp` (shown while the model loads, and wherever WebGL2 is missing); `img/og.jpg` recaptured.
+
+New visitor-facing wording, for sign-off:
+- Status line: "Hold to charge · drag to spin" (mouse), "Press and hold to charge" (touch), "Charging 64%", "Full power. Let go.", "Full power pulse.", and after a pulse one of "Pulse away.", "Repulsor fired.", "Systems nominal.", "Again?", "Nice one."
+- Reactor button label (screen readers): "Arc reactor. Hold to charge it, then let go to fire a pulse."
+- Colour cells (screen readers): "Reactor colour": Arc blue, Teal, Violet, Gold, Crimson.
+- Share image alt: "Evan Yap's portfolio: his name either side of a glowing arc reactor, over the headline “I build AI systems, and check they work”."
+
+Known limits:
+- three.js loads from jsDelivr (pinned to 0.170.0); if it cannot load, the still stays.
+- In headless Chromium (software WebGL) the check page runs much slower, and the console shows a GPU driver note about ReadPixels; real Chrome shows nothing.
