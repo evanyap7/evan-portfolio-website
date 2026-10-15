@@ -66,15 +66,29 @@ export function targets(win) {
   return [result('tap targets at least 44px', small.length === 0, small.map((el) => el.textContent.trim().slice(0, 30)).join(' | '))];
 }
 
-// At the fit sizes each sheet is exactly one screen below the bar.
+// At the fit sizes each sheet is exactly one screen below the bar. Selected
+// work is measured once per project, since each panel has a different length;
+// 4.1 is reopened at the end. The detail reads "height vs room", then the
+// slack: how much room is left over once the min-height is taken away.
 export function fit(win) {
   if (win.innerWidth < FIT.minWidth || win.innerHeight < FIT.minHeight) return [];
   const doc = win.document;
   const room = win.innerHeight - doc.querySelector('.bar').getBoundingClientRect().height - 12;
-  return [...doc.querySelectorAll('main > .sheet')].map((sheet) => {
+  const measure = (name, sheet) => {
     const height = sheet.getBoundingClientRect().height;
-    return result(`${sheet.id}: fits one screen`, Math.abs(height - room) <= 1, `${Math.round(height)} vs ${Math.round(room)}`);
+    sheet.style.minHeight = '0px';
+    const natural = sheet.getBoundingClientRect().height;
+    sheet.style.minHeight = '';
+    return result(name, Math.abs(height - room) <= 1, `${Math.round(height)} vs ${Math.round(room)}, slack ${Math.round(room - natural)}`);
+  };
+  const out = [...doc.querySelectorAll('main > .sheet')].map((sheet) => measure(`${sheet.id}: fits one screen`, sheet));
+  const rows = [...doc.querySelectorAll('.project__row')];
+  rows.forEach((row, i) => {
+    row.click();
+    out.push(measure(`work (4.${i + 1} open): fits one screen`, doc.getElementById('work')));
   });
+  rows[0]?.click();
+  return out;
 }
 
 // The same, with the wider fallback fonts a visitor gets if the web fonts fail.
