@@ -13,6 +13,7 @@
 
   --font-sans: "Switzer", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "Fragment Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
 
   --bar: 48px;   /* height of the desk bar */
   --gap: 12px;   /* desk showing around each sheet */
@@ -31,7 +32,7 @@
   --t-lede: 19px;
   --t-nav: 14.5px;
   --t-link: 15.5px;      /* buttons and text links in panels */
-  --t-title: 44px;       /* sheet titles */
+  --t-title: 50px;       /* sheet titles, in the serif */
   --t-org: 18px;         /* employer names */
   --t-row: 19.5px;       /* project row titles */
   --t-key: 16px;         /* each row's key figure */
@@ -51,7 +52,7 @@
     --t-lede: 18px;
     --t-nav: 13.5px;
     --t-link: 14.5px;
-    --t-title: 32px;
+    --t-title: 36px;
     --t-org: 17px;
     --t-row: 16.5px;
     --t-key: 15px;

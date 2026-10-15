@@ -51,6 +51,7 @@ export function fonts(win) {
   return [
     result('Switzer loaded', loaded.includes('Switzer'), loaded.join(', ')),
     result('Fragment Mono loaded', loaded.includes('Fragment Mono'), loaded.join(', ')),
+    result('Instrument Serif loaded', loaded.includes('Instrument Serif'), loaded.join(', ')),
   ];
 }
 
@@ -96,10 +97,12 @@ export async function fitFallback(win) {
   const root = win.document.documentElement;
   root.style.setProperty('--font-sans', 'Arial, sans-serif');
   root.style.setProperty('--font-mono', 'Menlo, Consolas, monospace');
+  root.style.setProperty('--font-serif', 'Georgia, "Times New Roman", serif');
   await wait(50);
   const out = fit(win).map((each) => ({ ...each, name: `${each.name} (fallback fonts)` }));
   root.style.removeProperty('--font-sans');
   root.style.removeProperty('--font-mono');
+  root.style.removeProperty('--font-serif');
   return out;
 }
 

@@ -44,15 +44,16 @@
 
 .case__title {
   margin-top: 16px;
-  font-size: clamp(34px, 5vw, 64px);
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: clamp(38px, 5.5vw, 72px);
+  font-weight: 400;
   line-height: 1;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.015em;
 }
 
 .case__title em {
   color: var(--accent);
-  font-style: normal;
+  font-style: italic;
 }
 
 .case__lede {

@@ -26,6 +26,11 @@
    Chrome cut the dash short. */
 .mark {
   position: relative;
+  font-family: var(--font-serif);
+  font-size: 1.1em;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   white-space: nowrap;
 }
 
@@ -136,10 +141,11 @@
 .about__statement {
   margin-bottom: 8px;
   color: var(--ink);
-  font-size: clamp(26px, 2.6vw, 36px);
-  font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 2.9vw, 40px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 /* 03 Experience ----------------------------------------------------- */
@@ -539,11 +545,12 @@ ul.role__points li::before {
 }
 
 .contact__title {
-  font-size: clamp(40px, min(6vw, 12vh), 96px);
-  font-size: clamp(40px, min(6vw, 12svh), 96px);
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: clamp(44px, min(6.6vw, 13vh), 106px);
+  font-size: clamp(44px, min(6.6vw, 13svh), 106px);
+  font-weight: 400;
   line-height: 0.95;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.02em;
 }
 
 .contact__invite {
