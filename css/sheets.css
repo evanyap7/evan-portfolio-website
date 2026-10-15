@@ -290,8 +290,12 @@ ul.role__points li::before {
   color: var(--accent);
 }
 
+/* A square marks the open project in more than colour. The second
+   declaration gives it empty alt text so screen readers skip it; browsers
+   that do not know that form keep the first. */
 .project__row[aria-expanded="true"] .project__n::before {
   content: "■ ";
+  content: "■ " / "";
 }
 
 @media (hover: hover) {
