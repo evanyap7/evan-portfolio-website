@@ -122,3 +122,126 @@ No facts or figures changed. Every line below is new or shorter than before.
 - With the floating nav, a 16px strip of page scrolls visibly above it. That is the Visuvate look, but it is visible on light content such as the Toolkit rows.
 - The case study's title runs three lines at 1440px wide; it is the longest title on the site.
 - `docs/superpowers/specs/2026-10-14-portfolio-revamp-design.md` and the round 2 notes describe the drawing set; I left them as history.
+
+## Round 2: plain tag pill, the photo in About, a readable work title and more shades
+
+### Result
+
+- Check page: **PASS 4714** in Chromium and in WebKit. It was 4129. The new checks are the About photo, the work title's baseline at all 13 sizes, the longer contrast list and the cartoon's removal.
+- Console: clean on all seven pages. Reduce Motion: no running animations after load, scrolling or switching tabs on any page, and counters show their final values.
+- Lighthouse (mobile) on `index.html`: 100 for accessibility, best practices and SEO. The first run scored 97: axe cannot see a border-image, so it read Contact's text against the black body. Each band now also has a real `background-color` in its own grey.
+- Screenshots checked at 1440 × 900 (hero, About, the work title with the first card row, Contact) and at 393 × 852 (the same four). Fixed along the way:
+  - A sub-pixel seam showed the black page as a dark line between the light Contact band and the footer. Bands now reach 1px up over the band above.
+  - The About photo filled the phone's width. It is now at most 280px wide on phones, 360px on tablets and 400px on desktops.
+  - After a reload at the bottom of the page, the nav marked Toolkit instead of Contact. `index.js` now also updates on `load`.
+
+### Changes
+
+1. **Tag pill**: only "Open to internships", after a 6px static dot. The photo and name are gone, and so is `img/evan-120.jpg`.
+2. **About**:
+   - Evan's photo in a card, using `img/evan-600.jpg` with `img/evan.jpg 1000w` in the `srcset`, lazy-loaded.
+   - The card has 8px of padding. The photo is cropped to 4:5 with rounded corners and `object-position: 50% 30%`, which frames the face.
+   - Alt text: "Evan Yap smiling, in a navy suit and burgundy tie, standing in an office." This is the alt the About photo had before round 1.
+   - The photo stays in colour. It is a photograph, not part of the palette, and a grey face read cold.
+3. **The cartoon is gone**: its SVG, `js/wave.js`, its CSS and its keyframes. The `cartoon` check is replaced by `aboutPhoto`, and the `removed` check now also bans `[data-wave]`, `.wave`, `.tag img` and `wave.js`. I found no reason to keep it once About had the photo.
+4. **Selected work title**:
+   - The title's line box ends 0.146em below its baseline (measured with Geist), so the cards now rise 0.12em instead of 0.32em (`13vw × 0.12` on phones). Their top edge sits 1 to 5px below the baseline.
+   - Measured by the new `workTitle` check: 1280 +4.2px, 1440 +4.6, 1920 +5.4, 1024 +3.3, 768 +2.5, 393 +1.3, 320 +1.7. It is positive at all 13 sizes.
+   - The check places a zero-size inline-block at the end of the title, which sits on the baseline.
+   - "Selected work" has no descenders, so the cards meet the bottom of the letters and cover none of them.
+5. **Shades**:
+   - **Ramp** (`css/base.css`):
+
+     | Token | Value |
+     | --- | --- |
+     | `--grey-950` | `#000` |
+     | `--grey-900` | `#0b0b0b` |
+     | `--grey-850` | `#111` |
+     | `--grey-800` | `#141414` |
+     | `--grey-700` | `#3d3d3d` |
+     | `--grey-650` | `#595959` |
+     | `--grey-600` | `#666` |
+     | `--grey-500` | `#808080` |
+     | `--grey-400` | `#a1a1a1` |
+     | `--grey-200` | `#d4d4d4` |
+     | `--grey-100` | `#f4f4f2` |
+     | `--grey-50` | `#fafafa` |
+
+     Every surface and text token is named from it.
+   - **Text, four greys on dark**: `--text #fafafa` for headings and figures, `--text-2 #d4d4d4` for reading text (About, the experience points, the Toolkit rows), `--muted #a1a1a1` for secondary text and `--dim #808080` for labels.
+   - **`--dim` changed from `#7b7b7b` to `#808080`**, so it passes 4.5:1 on the new card head (4.66:1 on `#141414`).
+   - **Bands**, edge to edge, each with a faint hairline where it meets the one above:
+
+     | Section | Band |
+     | --- | --- |
+     | Hero | `#000`, with a very soft radial grey glow behind the headline |
+     | About | `#0b0b0b` |
+     | Experience | `#000` |
+     | Selected work | `#0b0b0b` |
+     | Toolkit | `#111` |
+     | Contact and the footer | `#f4f4f2` |
+
+     Each band is a filled border-image reaching 100vw either side. It draws outside the box without widening the page, and the overflow check stays green at every size. Space now sits inside each band, and a negative `scroll-margin-top` still lands nav links with the title just under the nav.
+   - **Cards**: a vertical gradient from `#141414` to `#0b0b0b`, a hairline border and a lighter top edge (white at 16%). The old radial top glow is gone, because it pushed the label's background past what `--dim` can pass on.
+   - **Inverted finale**: Contact and the footer are the light band. Inside it every token is redefined:
+
+     | Token | Light value |
+     | --- | --- |
+     | `--text` | `#0b0b0b` |
+     | `--text-2` | `#3d3d3d` |
+     | `--muted` | `#595959` |
+     | `--dim` | `#666` |
+     | Hairlines | black at 10% and 20% |
+     | `--focus` | `#0b0b0b` |
+
+     The Resume, GitHub and LinkedIn pills are solid near-black; the Copy pill is outlined.
+   - **Why Contact, not Experience**: Contact is short and centred, and it ends the page with the footer, so the light band reads as a deliberate finale. Experience is long reading text, and a light band mid-page broke the black rhythm.
+   - **The floating nav** stays a solid dark pill and gains a soft shadow, so it reads over the light band. The progress line uses `mix-blend-mode: difference`, so it stays visible over light.
+   - **Contrast**, all computed by the `contrast` check:
+
+     | Pair | Ratio |
+     | --- | --- |
+     | Four dark greys on `#000`, `#0b0b0b`, `#111` and `#141414` | 4.66:1 lowest (`--dim` on `#141414`) to 20.12:1 |
+     | Light band greys on `#f4f4f2` | 5.21:1 to 17.87:1 |
+     | Solid pill text, dark | 20.12:1 |
+     | Solid pill text, light | 17.87:1 |
+     | Focus ring on `#000` | 6.50:1 |
+     | Focus ring on `#141414` | 5.71:1 |
+     | Focus ring on `#f4f4f2` | 17.87:1 |
+
+   - The only colour left is `--signal`, in the diagrams and as the focus ring on dark.
+6. **Meta description** (main page): "Evan Yap is an Engineering Systems and Design student at SUTD and an AI Business Consultant Intern at Univers. He builds AI systems and proves they work. Looking for software engineering, AI engineering and quant roles."
+7. **Share image** recaptured, with the plain pill and the glow.
+
+### New copy (as supplied, for the record)
+
+- Tag pill: "Open to internships".
+- About statement: "I’m a builder. I ship systems, then *prove* they work."
+- About paragraph 1: "I’m Evan, an Engineering Systems and Design student at SUTD on a dual degree with a Master’s in Technology Entrepreneurship, and one of six Technology Entrepreneurship Programme scholars. My coursework covers algorithms, object-oriented programming, machine learning and data modelling. I’m aiming for software engineering, AI engineering and quant roles."
+  - The coursework list is not on the site. It comes from `docs/superpowers/2026-10-14-content-signoff.md`, which reads "algorithms and object-oriented programming, machine learning, and data modelling and visualisation". Please confirm it.
+- About paragraph 2: "I build end to end. An autonomous trading agent in Python with 174 tests in CI, where deterministic code verifies, sizes and risk-checks every trade. A Telegram assistant whose three-model chain cut cost per call by about 65%. An internal AI research agent, built and deployed at Univers. A nine-page website, built with no framework, that reached the Top 5 against senior solution architects."
+- About paragraph 3: "I backtest before I believe. I tested an LLM trading layer against a plain momentum rule on 112 symbols, found no measurable edge, and deleted it. At Univers I calibrated an HVAC energy model to within 2–3 percentage points of observed use. Away from the desk I captain SUTD’s men’s floorball team and train for HYROX."
+- The meta description above.
+
+### Removed copy
+
+- Tag pill: "Evan Yap ·" and the photo.
+- About statement: "I keep what the numbers support and delete what they don’t."
+- About paragraphs:
+  - The scholarship sentence: "I’m studying Engineering Systems and Design at the Singapore University of Technology and Design, on a dual degree with a Master’s in Technology Entrepreneurship, as one of six recipients of its Technology Entrepreneurship Programme Scholarship."
+  - "I work where data, automation and AI meet: agents that do the research, models that test the assumptions, and interfaces that make the answer easy to act on. Then I measure whether each one earned its place."
+  - From the third paragraph:
+    - guitar in the church’s worship ministry since 2019
+    - SUTD’s Google Developers Club
+    - helping attendees debug at DevFest Singapore 2025
+    - "I also run on a lot of coffee."
+  - The floorball captaincy and HYROX stay.
+- The cartoon's alt text: "A cartoon of Evan in a charcoal suit and burgundy tie, smiling and waving hello."
+- Old meta description ending: "He builds AI systems and measures whether they work. Looking for software engineering and AI internships."
+
+### Known limitations
+
+- The hero lede still says "Looking for software engineering and AI internships", while About now says "software engineering, AI engineering and quant roles". The lede was approved in round 1, so I left it. Change it if quant should lead there too.
+- The project pages keep plain black backgrounds. The bands are only on the main page, but the project pages' cards use the new gradient.
+- The band hairlines (white at 7%) are deliberately faint and may not show on dim screens. The band greys carry the rhythm.
+- `img/evan-120.jpg` is deleted. `img/evan.jpg` and `img/evan-600.jpg` are in use again.
