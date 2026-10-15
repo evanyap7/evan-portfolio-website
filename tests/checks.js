@@ -373,3 +373,82 @@ export async function copy(win, frame) {
   await wait(150);
   return [result('copy button responds', /Copied|Selected/.test(button.textContent), button.textContent)];
 }
+
+// The masked title reveal splits each title into word spans, but the text a
+// screen reader gets must read exactly as written, nothing in a heading may
+// be aria-hidden, and once a title has been seen every word is in place.
+const TITLES = {
+  'hero-title': 'I build AI systems, and check they work.',
+  'about-title': 'About me',
+  'experience-title': 'My experience',
+  'work-title': 'Selected work',
+  'toolkit-title': 'Toolkit',
+  'contact-title': 'Let’s talk',
+};
+
+export async function titles(win) {
+  const doc = win.document;
+  const heads = [...doc.querySelectorAll('.hero__title, .title, .project__title')];
+  const read = (el) => el.textContent.replace(/\s+/g, ' ').trim();
+  const out = [
+    result('titles: nothing inside a title is aria-hidden', heads.every((head) => !head.querySelector('[aria-hidden]'))),
+  ];
+  const wrong = heads.filter((head) => TITLES[head.id] && read(head) !== TITLES[head.id]);
+  if (heads.some((head) => TITLES[head.id])) {
+    out.push(result('titles: text reads exactly as written', wrong.length === 0, wrong.map(read).join(' | ')));
+  } else {
+    out.push(result('titles: text has no doubled or missing spaces', heads.every((head) => !/\s{2}|\S /.test(head.textContent.replace(/\n\s*/g, ' ').replace(/\s+/g, ' ')) && read(head).length > 2), heads.map(read).join(' | ')));
+  }
+  for (const head of heads) {
+    head.scrollIntoView({ behavior: 'instant', block: 'center' });
+    await wait(60);
+  }
+  await wait(1500);
+  const hidden = [...doc.querySelectorAll('.word__in')].filter((word) => {
+    const matrix = new win.DOMMatrixReadOnly(win.getComputedStyle(word).transform);
+    return Math.abs(matrix.m42) > 0.5 || Math.abs(matrix.m21) > 0.01;
+  });
+  out.push(result('titles: every word ends in place once seen', hidden.length === 0, `${hidden.length} still moving or hidden`));
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(50);
+  return out;
+}
+
+// The spotlight and the magnetic pills only exist for a fine pointer that
+// can hover; on touch screens no listener is attached.
+export function pointerOnly(win) {
+  const fine = win.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const marked = win.document.querySelectorAll('[data-pointer]').length;
+  return [result('spotlight and magnets only with a fine pointer', fine ? marked > 0 : marked === 0, `fine ${fine}, ${marked} marked`)];
+}
+
+// The Experience timeline: a fill line that is whole once the section has
+// scrolled past, and a node per role that lights as the role is seen.
+export async function timeline(win) {
+  const doc = win.document;
+  const line = doc.querySelector('[data-timeline]');
+  const fill = line?.querySelector('.timeline__fill');
+  if (!fill) return [result('timeline present', false)];
+  // Scroll down through it as a reader would, then past it.
+  const top = win.scrollY + line.getBoundingClientRect().top;
+  const height = line.getBoundingClientRect().height;
+  for (let y = top - win.innerHeight; y <= top + height; y += win.innerHeight / 3) {
+    win.scrollTo({ top: y, behavior: 'instant' });
+    await wait(60);
+  }
+  await wait(300);
+  const matrix = new win.DOMMatrixReadOnly(win.getComputedStyle(fill).transform);
+  const lit = [...line.querySelectorAll('.role')].every((role) => role.classList.contains('is-visible'));
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(50);
+  return [
+    result('timeline is whole once Experience has scrolled past', matrix.d > 0.99, `scaleY ${matrix.d.toFixed(3)}`),
+    result('timeline nodes light as each role is seen', lit),
+  ];
+}
+
+// About's proof strip: four figures that count up, each with its label.
+export function proof(win) {
+  const items = [...win.document.querySelectorAll('#about .proof > div')];
+  return [result('About proof strip: four counted figures with labels', items.length === 4 && items.every((item) => item.querySelector('dd [data-count]') && item.querySelector('dt')?.textContent.trim()))];
+}

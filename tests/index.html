@@ -9,7 +9,10 @@
     td { padding: 2px 12px 2px 0; border-bottom: 1px solid #e5e5e5; vertical-align: top; }
     .pass td:first-child { color: #1a7f37; }
     .fail { color: #b00020; }
-    .frames { position: absolute; top: 0; left: -99999px; }
+    /* The frames sit on screen but invisible, so IntersectionObserver inside
+       them (reveals, counters, title reveals, the timeline) behaves as it
+       does for a visitor. */
+    .frames { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0; pointer-events: none; }
   </style>
 </head>
 <body>

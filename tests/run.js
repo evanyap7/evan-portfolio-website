@@ -10,7 +10,7 @@ const SIZES = [
 ];
 
 // Checks run on the main page at every size, in this order.
-const ALL = ['structure', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'contrast', 'emDash', 'aboutPhoto', 'workTitle', 'workCards', 'tabs', 'navIndex', 'progress', 'menu', 'copy'];
+const ALL = ['structure', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'contrast', 'emDash', 'aboutPhoto', 'proof', 'workTitle', 'workCards', 'titles', 'pointerOnly', 'timeline', 'tabs', 'navIndex', 'progress', 'menu', 'copy'];
 
 // The project pages and the case study, each checked at every size too.
 const PAGES = [
@@ -21,7 +21,7 @@ const PAGES = [
   '/work/v-bay.html',
   '/work/others.html',
 ];
-const PAGE_CHECKS = ['headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'emDash', 'projectPage', 'figureText', 'menu'];
+const PAGE_CHECKS = ['titles', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'emDash', 'projectPage', 'figureText', 'menu'];
 
 // One-off runs: a size, a URL and the checks to run there.
 const EXTRA = [
