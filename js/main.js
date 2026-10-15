@@ -1,6 +1,8 @@
 import { CONTACT_EMAIL } from './config.js';
 import { initCopy } from './contact.js';
+import { initCount } from './count.js';
 import { initIndex } from './index.js';
+import { initLean } from './lean.js';
 import { initMenu } from './menu.js';
 import { initReveal } from './reveal.js';
 import { initTabs } from './tabs.js';
@@ -38,7 +40,9 @@ applyContactEmail();
 initMenu();
 initIndex();
 initWave();
+initLean();
 initWork();
+initCount();
 initTabs();
 initCopy();
 initReveal();

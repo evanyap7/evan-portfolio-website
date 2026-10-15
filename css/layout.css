@@ -14,6 +14,20 @@
   background: var(--desk);
 }
 
+/* How far down the page the reader is, as a hairline in the accent along
+   the bar's bottom edge. index.js sets its scale as the page scrolls. */
+.bar__progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
 .wordmark {
   justify-self: start;
   display: inline-flex;
@@ -210,12 +224,55 @@
   background: var(--sheet);
 }
 
+/* The frame is four hairlines, one per edge, so it can draw itself in
+   clockwise the first time the sheet comes into view (reveal.js adds
+   .is-drawn). Each edge's length is a registered custom property; a
+   browser without @property simply shows the whole frame. */
+@property --edge-1 { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
+@property --edge-2 { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
+@property --edge-3 { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
+@property --edge-4 { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
+
 .sheet::before {
+  --edge-1: 100%;
+  --edge-2: 100%;
+  --edge-3: 100%;
+  --edge-4: 100%;
   content: "";
   position: absolute;
   inset: var(--frame);
-  border: 1px solid var(--rule);
+  background:
+    linear-gradient(var(--rule), var(--rule)) left top / var(--edge-1) 1px no-repeat,
+    linear-gradient(var(--rule), var(--rule)) right top / 1px var(--edge-2) no-repeat,
+    linear-gradient(var(--rule), var(--rule)) right bottom / var(--edge-3) 1px no-repeat,
+    linear-gradient(var(--rule), var(--rule)) left bottom / 1px var(--edge-4) no-repeat;
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sheet::before {
+    transition:
+      --edge-1 450ms var(--ease) 100ms,
+      --edge-2 300ms var(--ease) 550ms,
+      --edge-3 450ms var(--ease) 850ms,
+      --edge-4 300ms var(--ease) 1300ms;
+  }
+
+  .js .sheet:not(.is-drawn)::before {
+    --edge-1: 0%;
+    --edge-2: 0%;
+    --edge-3: 0%;
+    --edge-4: 0%;
+  }
+
+  /* The sheet label types itself in as the frame starts to draw. */
+  .sheet__label {
+    transition: clip-path 600ms steps(18, end) 150ms;
+  }
+
+  .js .sheet:not(.is-drawn) .sheet__label {
+    clip-path: inset(0 100% 0 0);
+  }
 }
 
 @media (min-width: 1024px) and (min-height: 650px) and (min-aspect-ratio: 1/1) {

@@ -297,7 +297,17 @@
   .wave__head { animation: wave-head 1500ms 900ms ease-in-out both; }
   .wave__lines { animation: wave-lines 1500ms 900ms ease-out both; }
   .wave__eye { animation: wave-blink 5s 3s infinite; }
-  .mark__stroke path { animation: draw 900ms 700ms var(--ease) backwards; }
+  .intro__line { animation: rise 800ms 100ms var(--ease-out) backwards; }
+  .mark { animation: rise 800ms 280ms var(--ease-out) backwards; }
+  .mark__stroke path { animation: draw 900ms 950ms var(--ease) backwards; }
+
+  /* The cartoon's head turns a few pixels toward the pointer (lean.js).
+     The disc stays put: the suit is clipped to it, so moving it would
+     show a sliver of blue under the shoulders. */
+  .wave__head {
+    translate: calc(var(--lean-x, 0) * 5px) calc(var(--lean-y, 0) * 3px);
+    transition: translate 400ms var(--ease-out);
+  }
 
   /* Fig. 4.6 plays once each time Others opens. */
   .pair .keys__white rect { animation: key-press 600ms calc(300ms + var(--i) * 220ms) var(--ease-out) both; }
@@ -352,4 +362,35 @@
 
 @keyframes draw {
   from { stroke-dashoffset: 1; }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.28em);
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes tool-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+
+@keyframes lens-drift {
+  from { transform: translate(48vw, 6vh); }
+  to { transform: translate(14vw, 34vh); }
+}
+
+@keyframes lens-hold {
+  from { transform: translate(-48vw, -6vh); }
+  to { transform: translate(-14vw, -34vh); }
 }

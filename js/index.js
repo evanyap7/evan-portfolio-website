@@ -1,6 +1,6 @@
-// The sheet index in the bar and the menu. It marks the sheet under the
-// middle of the screen (or the last sheet once the page is scrolled to the
-// end),. Driven by scroll position
+// The sheet index in the bar and the menu, and the progress line under the
+// bar. The index marks the sheet under the middle of the screen (or the last
+// sheet once the page is scrolled to the end). Driven by scroll position
 // rather than IntersectionObserver so it also works inside iframes.
 
 export function initIndex() {
@@ -19,7 +19,16 @@ export function initIndex() {
     return [...sheets].reverse().find((sheet) => sheet.getBoundingClientRect().top <= middle) ?? sheets[0];
   };
 
+  const progress = document.querySelector('[data-progress]');
+  const fill = () => {
+    if (!progress) return;
+    const room = document.documentElement.scrollHeight - window.innerHeight;
+    const done = room > 0 ? Math.min(1, Math.max(0, window.scrollY / room)) : 0;
+    progress.style.transform = `scaleX(${done.toFixed(4)})`;
+  };
+
   const update = () => {
+    fill();
     const sheet = pick();
     if (sheet === current) return;
     current = sheet;

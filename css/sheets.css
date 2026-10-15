@@ -22,6 +22,12 @@
   letter-spacing: -0.045em;
 }
 
+/* Each line of the headline is its own box, so it can rise in on load. */
+.intro__line,
+.mark {
+  display: inline-block;
+}
+
 /* The hand-drawn underline. Drawn without non-scaling-stroke, which makes
    Chrome cut the dash short. */
 .mark {
@@ -36,7 +42,7 @@
 
 .mark__stroke {
   position: absolute;
-  bottom: -0.1em;
+  bottom: -0.265em; /* clear of the descender in "they", measured from the line box */
   left: -1%;
   width: 102%;
   height: 12px;
@@ -135,6 +141,57 @@
   .intro__spec {
     margin-top: 20px;
   }
+}
+
+/* A faint dot grid behind the Intro, with a slow lens that brightens the
+   dots it passes over. The lens moves one way and the brighter dots inside
+   it move back the same distance, so the dots stay put and only the lens
+   travels; both are plain transforms. Wide screens only, and only with
+   motion allowed; it drifts for about half a minute and then rests. */
+.ambient {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  #top {
+    isolation: isolate;
+  }
+
+  .ambient {
+    display: block;
+    position: absolute;
+    inset: var(--frame);
+    z-index: -1;
+    overflow: hidden;
+    background: radial-gradient(rgba(17, 18, 20, 0.07) 0.9px, transparent 1px) 0 0 / 24px 24px;
+    pointer-events: none;
+  }
+
+  .ambient__lens {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 520px;
+    height: 520px;
+    -webkit-mask-image: radial-gradient(closest-side, #000, transparent);
+    mask-image: radial-gradient(closest-side, #000, transparent);
+    transform: translate(48vw, 6vh);
+  }
+
+  .ambient__dots {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(rgba(37, 65, 230, 0.4) 1px, transparent 1.2px) 0 0 / 24px 24px;
+    transform: translate(-48vw, -6vh);
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .ambient__lens { animation: lens-drift 12s ease-in-out 3 alternate both; }
+  .ambient__dots { animation: lens-hold 12s ease-in-out 3 alternate both; }
 }
 
 /* 02 About ---------------------------------------------------------- */
@@ -446,6 +503,34 @@ ul.role__points li::before {
   align-items: center;
   min-height: 32px;
 }
+
+/* A newly opened project fades and rises into place. Opacity and transform
+   only, so its size is final from the first frame. */
+@media (prefers-reduced-motion: no-preference) {
+  .projects.is-ready .project__panel:not([hidden]) {
+    animation: panel-in 240ms var(--ease-out);
+  }
+
+  /* Each tool rises in, row by row, when its tab is shown. */
+  .sheet.is-drawn .kit.is-ready .kit__panel:not([hidden]) .tools li {
+    animation: tool-in 360ms var(--ease-out) backwards;
+    animation-delay: calc(var(--row, 0) * 70ms + var(--n, 0) * 30ms + 80ms);
+  }
+}
+
+.rows--kit > div:nth-child(2) { --row: 1; }
+.rows--kit > div:nth-child(3) { --row: 2; }
+.rows--kit > div:nth-child(4) { --row: 3; }
+.rows--kit > div:nth-child(5) { --row: 4; }
+.tools li:nth-child(2) { --n: 1; }
+.tools li:nth-child(3) { --n: 2; }
+.tools li:nth-child(4) { --n: 3; }
+.tools li:nth-child(5) { --n: 4; }
+.tools li:nth-child(6) { --n: 5; }
+.tools li:nth-child(7) { --n: 6; }
+.tools li:nth-child(8) { --n: 7; }
+.tools li:nth-child(9) { --n: 8; }
+.tools li:nth-child(10) { --n: 9; }
 
 @media (min-width: 1024px) {
   .projects.is-ready {

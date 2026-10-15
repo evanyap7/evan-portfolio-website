@@ -1,9 +1,11 @@
-// Fades content in the first time it scrolls into view. The hidden starting
-// state is scoped to .js in CSS, so nothing is hidden if this never runs.
+// Fades content in the first time it scrolls into view, and marks each sheet
+// .is-drawn the first time it does, which draws its frame and types its
+// label. The hidden starting states are scoped to .js in CSS, so nothing is
+// hidden if this never runs.
 
 export function initReveal() {
-  const targets = document.querySelectorAll('[data-reveal]');
-  const show = (target) => target.classList.add('is-visible');
+  const targets = document.querySelectorAll('[data-reveal], main > .sheet');
+  const show = (target) => target.classList.add(target.matches('.sheet') ? 'is-drawn' : 'is-visible');
 
   if (!('IntersectionObserver' in window)) {
     targets.forEach(show);

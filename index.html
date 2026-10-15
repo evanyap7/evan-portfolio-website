@@ -60,6 +60,7 @@
     </nav>
 
     <button class="bar__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-button>Menu</button>
+    <span class="bar__progress" aria-hidden="true" data-progress></span>
   </header>
 
   <nav class="menu" id="menu" aria-label="Menu" hidden data-menu>
@@ -79,9 +80,10 @@
 
   <main id="main">
     <section class="sheet" id="top" aria-labelledby="intro-title" data-sheet="01" data-sheet-name="Intro">
+      <div class="ambient" aria-hidden="true"><div class="ambient__lens"><div class="ambient__dots"></div></div></div>
       <p class="sheet__label mono"><b>01</b> Intro</p>
       <div class="intro">
-        <h1 class="intro__title" id="intro-title">I build AI systems, and <span class="mark">check they work.<svg class="mark__stroke" viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M4 13C52 4 96 17 150 9s98-4 146 2" pathLength="1"/></svg></span></h1>
+        <h1 class="intro__title" id="intro-title"><span class="intro__line">I build AI systems, and</span> <span class="mark">check they work.<svg class="mark__stroke" viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M4 13C52 4 96 17 150 9s98-4 146 2" pathLength="1"/></svg></span></h1>
         <figure class="intro__figure">
           <div class="wave" data-wave>
             <svg class="wave__art" viewBox="0 0 520 430" role="img" aria-label="A cartoon of Evan in a charcoal suit and burgundy tie, smiling and waving hello.">
