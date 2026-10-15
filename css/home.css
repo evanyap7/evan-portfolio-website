@@ -311,9 +311,16 @@ ul.role__points li + li {
 }
 
 @media (max-width: 719px) {
+  /* "Selected work" stays on one line, so the cards tuck under both words. */
+  .work .work__title {
+    font-size: 13vw;
+    white-space: nowrap;
+  }
+
   .work .work__grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
+    margin-top: calc(13vw * -0.22);
   }
 
   .work__card {
