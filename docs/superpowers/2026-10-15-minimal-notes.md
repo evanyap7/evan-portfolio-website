@@ -245,3 +245,114 @@ No facts or figures changed. Every line below is new or shorter than before.
 - The project pages keep plain black backgrounds. The bands are only on the main page, but the project pages' cards use the new gradient.
 - The band hairlines (white at 7%) are deliberately faint and may not show on dim screens. The band greys carry the rhythm.
 - `img/evan-120.jpg` is deleted. `img/evan.jpg` and `img/evan-600.jpg` are in use again.
+
+## Round 3: About for recruiters, a proof strip, and precise motion
+
+Built on the controller's e1ef359 (a 40–72px gap above the work cards, 32px on phones) and bfdc3ab (the hero pill removed; About says powerlifting).
+
+An editor had reformatted `index.html` on disk, uncommitted: Prettier-style line wrapping, plus "and enjoy powerlifting". I committed that alone as adcbfe7, so later diffs stay readable. The About rewrite below then replaced the sentence with the supplied "train for powerlifting".
+
+### Result
+
+- **Check page**: **PASS 5039** in Chromium and WebKit; it was 4714. WebKit was run twice after the timing fix below.
+- **Consoles**: clean on all seven pages.
+- **Reduce Motion** (all seven pages):
+  - no running animations after load, scrolling, tab changes or hovering
+  - no titles split, and every title shown in full
+  - no spotlight or magnet set up
+  - the timeline drawn whole
+  - every counter at its final value
+- **Lighthouse (mobile) on `index.html`**: 100 for accessibility, best practices and SEO, with no failed audits. The first run flagged CLS 0.05 in the performance-only audit. See "Layout shift" below.
+- **Cross-document view transition** (Chromium 153): clicking the Personal Assistant Bot card sets `.vt` on arrival, the page morphs, and the title's words are in place at once. There were no errors.
+- **Screenshots checked**:
+  - 1440 × 900: About with the sticky photo and the proof strip; Experience mid-scroll, with the timeline 38% drawn and both nodes lit; the work cards with the pointer over Personal Assistant Bot (soft light, brighter border near the pointer, 3px lift, arrow nudged); Contact with the GitHub pill pulled about 5px toward the pointer.
+  - 393 × 852: About (text column, 2×2 proof strip) and Experience (timeline at the left edge, nodes beside each role).
+  - Nothing read as busy. I kept the spotlight faint: white at 5.5% inside and 45% on the border.
+
+### 1. About copy
+
+The statement is unchanged. The four paragraphs are the supplied text, word for word.
+
+The proof strip sits under them:
+
+| Figure | Label |
+| --- | --- |
+| 174 | tests in CI, trading agent |
+| ~65% | lower cost per call, LLM chain |
+| 2–3 pp | from observed use, HVAC model |
+| 12 | soldiers led, Detachment Commander |
+
+- It uses Geist numerals with mono labels and a hairline top, 4-up on wide screens and 2×2 on phones. The figures count up through the existing `count.js`.
+- The text column is capped at 38em (about 68 characters a line).
+- From 1024px the photo card is `position: sticky` beside the longer text.
+
+**Removed copy**:
+- The coursework sentence: "My coursework covers algorithms, object-oriented programming, machine learning and data modelling."
+- The project run-down: "I build end to end. An autonomous trading agent…", ending "…against senior solution architects."
+- "I backtest before I believe…", including "Away from the desk…".
+- The new paragraphs carry the same facts, except two: the website revamp's Top 5 (still on its card and in Recognition) and the coursework list.
+
+**New wording to confirm**:
+- "observed consumption" where Experience says "observed use".
+- "a unit named Best Combat Unit" where Experience says "awarded".
+- "soldiers led" in the proof label, where Experience says "a detachment of 12".
+
+### 2. Motion
+
+All of it lives in one new module, `js/motion.js` (about 6 KB unminified), plus CSS in `css/figures.css` and `css/home.css`.
+
+- **Every effect, under Reduce Motion**: `motion.js` returns before doing anything, and all its CSS sits inside `prefers-reduced-motion: no-preference`.
+- **Every effect, its properties**: only `transform`, `opacity` and `clip-path` animate.
+- **Every effect, scroll**: no scroll hijacking.
+- **Every effect, layout**: the title split measured identical heights before and after at 393px.
+
+Each effect:
+
+- **a. Titles**: each word is wrapped in a `clip-path` mask and an inner span. Words rise 140% from below the mask over 1s, `cubic-bezier(.16,1,.3,1)`, 60ms apart. The serif word gets the last slot and settles from `skewX(-10deg)`.
+  - Section titles reveal when they enter view (IntersectionObserver, then unobserved).
+  - The hero and project titles reveal on load.
+  - The text nodes and the spaces between words stay in place, so the heading reads the same and nothing is `aria-hidden`. The new `titles` check verifies the exact text of the six main-page titles.
+- **b. Hero**: the headline uses the same reveal. The lede, pills and credentials follow at 520, 600 and 680ms.
+  - The glow moved to `.hero::before` and breathes on a 16s alternate loop: ±2% drift, scale 1 to 1.08, opacity 0.8 to 1.
+  - It pauses (`.is-off`) while the hero is off screen.
+  - The hero is `overflow: hidden`, so the scaled glow cannot widen the page.
+- **c. Cards**: the work cards and the project pages' Next card get the spotlight, but only with `(hover: hover) and (pointer: fine)`.
+  - The spotlight is a radial light and a masked border ring at the pointer, set rAF-throttled through `--mx` and `--my`.
+  - The card lifts 3px and "Read more →"'s arrow slides 4px.
+  - On touch screens no listener is attached, which the `pointerOnly` check verifies.
+  - Toolkit rows were left alone. They are not cards, and a moving light on plain rows looked fussy.
+- **d. Experience timeline**: a hairline track and a brighter fill (`scaleY(--p)`) run down the left of both role lists, 40px in (28px on phones).
+  - `--p` is how far a reading line 60% down the screen has travelled through the section. A passive, rAF-throttled scroll listener sets it, attached only while the timeline is within 25% of the viewport.
+  - Each role's 9px node fills white when `reveal.js` marks the role visible.
+  - With Reduce Motion the line is whole.
+- **e. About**: the photo wipes in from the top (`clip-path`, 1.1s) instead of fading. The proof strip counts up.
+- **f. Contact**: "Let's talk" uses the title reveal. Its four pills (Resume, GitHub, LinkedIn, Copy) lean up to 6px toward a fine pointer, rAF-throttled, and settle on leave.
+- **g. Page transitions**: `@view-transition { navigation: auto; }` inside `no-preference`.
+  - The old page fades and lifts 8px out over 220ms; the new one rises 12px in over 380ms.
+  - Each work card title and its project page `h1` share a `view-transition-name` (`.vt-<slug>`), so the title morphs.
+  - A tiny inline head script listens for `pagereveal` and adds `.vt` when a view transition is running, which shows the arriving title's words at once.
+  - No router: browsers without support simply navigate.
+- **h. Unchanged**: the progress line, the diagrams, the tabs, the menu and focus. Everything new waits for IntersectionObserver or runs on the first screen only.
+
+### Layout shift
+
+Lighthouse's cold load showed CLS 0.05. A slow-network trace found the cause: Geist swapping in for Arial reflowed the hero headline from 3 lines to 2 on a 412px phone (0.14 on that trace). This predates round 3 and is not the motion.
+
+A metric-matched fallback (`"Geist Fallback"`: local Arial, `size-adjust: 104.76%`, ascent 95.94%, descent 28.16%) brings the phone trace to 0.04 and desktop to 0.03. Lighthouse now reports no failed audits.
+
+### Checks added
+
+| Check | What it verifies |
+| --- | --- |
+| `titles` | Exact text; no `aria-hidden` inside headings; every word in place once seen. On the main page and every project page. |
+| `pointerOnly` | The spotlight and magnets are set up only for a fine pointer that can hover. |
+| `timeline` | The line is whole after scrolling through, and every node is lit. |
+| `proof` | Four counted figures with labels. |
+
+The check page's iframes now sit on screen at `opacity: 0` behind the results instead of 99999px to the left. Off screen, IntersectionObserver never fired inside them, which hid the reveals from the checks.
+
+### Known limitations
+
+- The trading agent card's title, "Autonomous Trading Agent", morphs into a different and much longer case-study title, so that transition reads as a scale and crossfade rather than a clean morph. The other five titles match their cards.
+- A title scrolled past very fast (a flick, or a jump link) reveals when it next enters view, not before. Its text is in the DOM throughout.
+- The hero glow loops for as long as the hero is on screen. It is decorative, its movement is under 3%, and it stops under Reduce Motion.
