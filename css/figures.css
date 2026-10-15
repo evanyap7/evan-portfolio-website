@@ -323,13 +323,13 @@
   .spot::before {
     inset: 0;
     z-index: -1;
-    background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, 0.055), transparent 70%);
+    background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), hsl(var(--h) 100% 70% / 0.06), transparent 70%);
   }
 
   .spot::after {
     inset: -1px;
     padding: 1px;
-    background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, 0.45), transparent 70%);
+    background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 0%), hsl(var(--h) 95% 75% / 0.6), transparent 70%);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
@@ -392,18 +392,6 @@
   from {
     opacity: 0;
     transform: translateY(12px);
-  }
-}
-
-@keyframes glow {
-  from {
-    opacity: 0.8;
-    transform: translate(-2%, 1%) scale(1);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(2%, -2%) scale(1.08);
   }
 }
 
