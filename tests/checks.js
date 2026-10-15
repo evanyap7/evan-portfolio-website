@@ -37,10 +37,11 @@ export function removed(win) {
     '.sheet', '.sheet__label', '.sheet__next', '.ticks', '.bar__index', '[data-where-n]', '.titleblock',
     '.mark', '.mark__stroke', '.ambient', '.project__row', '.project__panel', '.project__icons', '.others__icons',
     '.keyboard', '.marquee', '[data-kinetic]', '[data-shader]', '[data-tabs]', '.chip', '.credentials',
+    '[data-wave]', '.wave', '.tag img',
   ];
   const files = ['sheets.css', 'keyboard.css', 'marquee.css', 'hero.css', 'sections.css', 'contact.css', 'motion.css'];
   const hrefs = [...doc.querySelectorAll('link[rel="stylesheet"]')].map((link) => link.getAttribute('href'));
-  const scripts = win.performance.getEntriesByType('resource').map((entry) => entry.name).filter((name) => /\/(lean|work)\.js/.test(name));
+  const scripts = win.performance.getEntriesByType('resource').map((entry) => entry.name).filter((name) => /\/(lean|work|wave)\.js/.test(name));
   const blurred = [...doc.querySelectorAll('body *')].filter((el) => {
     const style = win.getComputedStyle(el);
     return (style.backdropFilter && style.backdropFilter !== 'none') || (style.webkitBackdropFilter && style.webkitBackdropFilter !== 'none');
@@ -49,7 +50,7 @@ export function removed(win) {
   return [
     ...gone.map((selector) => result(`removed: ${selector}`, !doc.querySelector(selector))),
     result('removed: old stylesheets', !hrefs.some((href) => files.some((file) => href.endsWith(file))), hrefs.join(' ')),
-    result('removed: lean.js and work.js', scripts.length === 0, scripts.join(' ')),
+    result('removed: lean.js, work.js and wave.js', scripts.length === 0, scripts.join(' ')),
     result('removed: Switzer and Fragment Mono', !fonts),
     result('no backdrop-filter', blurred.length === 0, `${blurred.length} elements`),
   ];
@@ -89,7 +90,7 @@ export function targets(win) {
 }
 
 // No paper, desk or pastel colour survives in a stylesheet or a diagram,
-// the page is black, and the cartoon keeps its own illustration colours.
+// and the page is black.
 export function palette(win) {
   const doc = win.document;
   let css = '';
@@ -102,7 +103,6 @@ export function palette(win) {
     }
   });
   const stale = [...doc.querySelectorAll('svg [fill], svg [stroke]')]
-    .filter((el) => !el.closest('.wave'))
     .filter((el) => OLD_COLOURS.test(`${el.getAttribute('fill')} ${el.getAttribute('stroke')}`));
   const match = css.match(OLD_COLOURS);
   return [
@@ -112,13 +112,16 @@ export function palette(win) {
   ];
 }
 
-// --dim must pass 4.5:1 on the page and on a card, computed from the tokens.
+// Every text grey passes 4.5:1 on every surface it sits on, computed from
+// the tokens: the four dark-band greys on black, the two band greys and the
+// head of a card; the inverted Contact band's greys on off-white, and its
+// dark pills; and the focus ring at 3:1 on both.
 export function contrast(win) {
-  const root = win.getComputedStyle(win.document.documentElement);
+  const doc = win.document;
   const rgb = (value) => {
-    const probe = win.document.createElement('i');
+    const probe = doc.createElement('i');
     probe.style.color = value;
-    win.document.body.append(probe);
+    doc.body.append(probe);
     const parts = win.getComputedStyle(probe).color.match(/[\d.]+/g).slice(0, 3).map(Number);
     probe.remove();
     return parts;
@@ -131,16 +134,35 @@ export function contrast(win) {
     const [hi, lo] = [luminance(rgb(a)), luminance(rgb(b))].sort((x, y) => y - x);
     return (hi + 0.05) / (lo + 0.05);
   };
-  const dim = root.getPropertyValue('--dim').trim();
-  const signal = root.getPropertyValue('--signal').trim();
-  const onBg = ratio(dim, root.getPropertyValue('--bg').trim());
-  const onCard = ratio(dim, root.getPropertyValue('--card').trim());
-  const signalOnCard = ratio(signal, root.getPropertyValue('--card').trim());
-  return [
-    result('--dim at least 4.5:1 on --bg', onBg >= 4.5, `${dim} ${onBg.toFixed(2)}:1`),
-    result('--dim at least 4.5:1 on --card', onCard >= 4.5, `${dim} ${onCard.toFixed(2)}:1`),
-    result('--signal at least 3:1 on --card', signalOnCard >= 3, `${signal} ${signalOnCard.toFixed(2)}:1`),
-  ];
+  const tokens = (el) => {
+    const style = win.getComputedStyle(el);
+    return (name) => style.getPropertyValue(name).trim();
+  };
+  const out = [];
+  const pair = (label, fg, bg, min) => {
+    const value = ratio(fg, bg);
+    out.push(result(`${label} at least ${min}:1`, value >= min, `${fg} on ${bg}: ${value.toFixed(2)}:1`));
+  };
+
+  const dark = tokens(doc.documentElement);
+  const surfaces = ['--bg', '--grey-900', '--grey-850', '--card-top'];
+  ['--text', '--text-2', '--muted', '--dim'].forEach((fg) => {
+    surfaces.forEach((bg) => pair(`${fg} on ${bg}`, dark(fg), dark(bg), 4.5));
+  });
+  pair('focus ring on --bg', dark('--focus'), dark('--bg'), 3);
+  pair('focus ring on --card-top', dark('--focus'), dark('--card-top'), 3);
+  pair('solid pill text', dark('--bg'), dark('--text'), 4.5);
+
+  const band = doc.querySelector('.band--light');
+  if (band) {
+    const light = tokens(band);
+    ['--text', '--text-2', '--muted', '--dim'].forEach((fg) => pair(`light band ${fg}`, light(fg), light('--band'), 4.5));
+    pair('light band solid pill text', light('--bg'), light('--text'), 4.5);
+    pair('light band focus ring', light('--focus'), light('--band'), 3);
+    const shownBg = win.getComputedStyle(band).borderImageSource;
+    out.push(result('Contact is the light band', band.id === 'contact' && /244, 244, 242/.test(shownBg), shownBg.slice(0, 60)));
+  }
+  return out;
 }
 
 // Visitor-facing text has no em dashes: the body, the title and the meta.
@@ -152,11 +174,28 @@ export function emDash(win) {
   return [result('no em dashes', !found, found?.[0] ?? '')];
 }
 
-export function cartoon(win) {
-  const art = win.document.querySelector('#about [data-wave] svg[role="img"]');
+// About holds Evan's photo in a card; the cartoon is gone.
+export function aboutPhoto(win) {
+  const img = win.document.querySelector('#about .card img');
   return [
-    result('cartoon waves in About', art && art.closest('.card') && !win.document.querySelector('#top [data-wave]')),
+    result('About shows the photo, with alt text', img && /evan(-600)?\.jpg/.test(img.getAttribute('src')) && img.srcset.includes('evan.jpg 1000w') && img.alt.length > 20, img?.alt ?? 'missing'),
   ];
+}
+
+// The cards meet "Selected work" at its baseline at most: they may cover the
+// descender zone, never the letters. A zero-size inline-block at the end of
+// the title sits on its (last line's) baseline.
+export function workTitle(win) {
+  const title = win.document.getElementById('work-title');
+  const grid = win.document.querySelector('#work .work__grid');
+  if (!title || !grid) return [result('Selected work title readable', false, 'missing')];
+  const probe = win.document.createElement('span');
+  probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+  title.append(probe);
+  const baseline = probe.getBoundingClientRect().top;
+  probe.remove();
+  const top = grid.getBoundingClientRect().top;
+  return [result('cards sit at or below the title baseline', top >= baseline - 0.5, `cards ${top.toFixed(1)} vs baseline ${baseline.toFixed(1)}`)];
 }
 
 // Six cards, each one link to a page that exists, named by its title, and
