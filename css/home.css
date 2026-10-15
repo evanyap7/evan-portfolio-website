@@ -9,7 +9,17 @@
   min-height: calc(100vh - var(--nav) - var(--nav-top));
   min-height: calc(100svh - var(--nav) - var(--nav-top));
   padding: 72px var(--gutter) 64px;
+  /* A very soft grey glow behind the headline. */
+  background: radial-gradient(48% 42% at 50% 46%, rgba(255, 255, 255, 0.075), transparent 72%);
   text-align: center;
+}
+
+/* The tag pill above the headline: a small static dot and the text. */
+.tag__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-2);
 }
 
 .hero__title {
@@ -99,17 +109,25 @@
   align-items: center;
 }
 
-.about__art {
-  padding: 48px 40px 40px;
+/* The photo, framed on the face, in the same card as the work. */
+.about__photo {
+  justify-self: center;
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+  padding: 8px;
 }
 
-.about__art .wave {
-  max-width: 420px;
-  margin: 0 auto;
+.about__photo img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: calc(var(--radius) - 8px);
+  object-fit: cover;
+  object-position: 50% 30%;
 }
 
 .about__text {
-  color: var(--muted);
+  color: var(--text-2);
 }
 
 .about__text p + p {
@@ -130,16 +148,14 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .about__art {
-    width: 100%;
-    max-width: 480px;
-    margin: 0 auto;
+  .about__photo {
+    max-width: 360px;
   }
 }
 
 @media (max-width: 719px) {
-  .about__art {
-    padding: 32px 24px 24px;
+  .about__photo {
+    max-width: 280px;
   }
 }
 
@@ -185,7 +201,7 @@
 }
 
 .role__points {
-  color: var(--muted);
+  color: var(--text-2);
 }
 
 ul.role__points li + li {
@@ -229,13 +245,15 @@ ul.role__points li + li {
 }
 
 /* Selected work ----------------------------------------------------- */
-/* The cards are tucked over the bottom of the huge title. */
+/* The cards are tucked up against the huge title. The title's line box
+   ends about 0.146em below its baseline, so pulling the cards up 0.12em
+   lets them meet the descender zone without touching the letters. */
 .work .work__grid {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
-  margin-top: calc(var(--t-title) * -0.32);
+  margin-top: calc(var(--t-title) * -0.12);
 }
 
 .work__grid > li {
@@ -320,7 +338,7 @@ ul.role__points li + li {
   .work .work__grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
-    margin-top: calc(13vw * -0.22);
+    margin-top: calc(13vw * -0.12);
   }
 
   .work__card {
