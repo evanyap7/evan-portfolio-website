@@ -298,6 +298,8 @@ export function tabLink(win) {
 
 // An old project link such as #work-trading-agent lands on that card.
 export async function deepLink(win) {
+  // Give the browser time to start the jump before waiting for it to settle.
+  await wait(800);
   let last = -1;
   for (let i = 0; i < 40 && win.scrollY !== last; i += 1) {
     last = win.scrollY;
@@ -316,7 +318,7 @@ export async function navIndex(win) {
   await wait(300);
   const current = [...doc.querySelectorAll('.nav__links a[aria-current="true"], .menu__links a[aria-current="true"]')].map((a) => a.getAttribute('href'));
   win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
+  await wait(400); // an observer turn, even on a busy machine
   const top = doc.querySelectorAll('[aria-current="true"]').length;
   return [
     result('nav marks the section on screen', current.length === 2 && current.every((href) => href === '#experience'), current.join(' ')),
@@ -514,4 +516,46 @@ export function callouts(win) {
     result('callouts sit inside the hero', inside, rects.map((r) => `${Math.round(r.left)}-${Math.round(r.right)}`).join(' ')),
     result('callouts clear of the name and each other', clear),
   ];
+}
+
+// The gate: a first visit opens dark, with only the reactor and the way
+// in; the rest of the page is hidden and out of reach. Activate wakes it,
+// and the session remembers that.
+export async function gate(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  const button = doc.querySelector('[data-gate-activate]');
+  const mic = doc.querySelector('[data-gate-mic]');
+  const hidden = (el) => win.getComputedStyle(el).visibility === 'hidden';
+  const voice = Boolean(win.SpeechRecognition || win.webkitSpeechRecognition);
+  const out = [
+    result('gate: a first visit opens gated', root.classList.contains('gated')),
+    result('gate: Activate shown and at least 44px', button && shown(button) && button.offsetHeight >= 44, button ? `${button.offsetWidth}×${button.offsetHeight}` : 'missing'),
+    result('gate: the mic shows only where speech recognition exists', mic && mic.hidden === !voice, `voice ${voice}, hidden ${mic?.hidden}`),
+    result('gate: nav and sections hidden and inert', hidden(doc.querySelector('.nav')) && doc.querySelector('.nav').inert
+      && [...doc.querySelectorAll('main > section:not(.hero)')].every((section) => hidden(section) && section.inert)),
+    result('gate: the headline waits hidden', hidden(doc.querySelector('.hero__title'))),
+  ];
+  button?.click();
+  await wait(1200);
+  let stored = null;
+  try {
+    stored = win.sessionStorage.getItem('portfolio-on');
+  } catch {
+    stored = 'blocked';
+  }
+  out.push(
+    result('gate: Activate wakes the site', !root.classList.contains('gated') && !doc.querySelector('.nav').inert && !hidden(doc.querySelector('.hero__title'))),
+    result('gate: the session remembers it', stored === '1' || stored === 'blocked', String(stored)),
+  );
+  return out;
+}
+
+// Typing the wake word works too.
+export async function gateTyped(win) {
+  const doc = win.document;
+  const was = doc.documentElement.classList.contains('gated');
+  [...'xego'].forEach((key) => doc.dispatchEvent(new win.KeyboardEvent('keydown', { key, bubbles: true })));
+  await wait(1200);
+  return [result('gate: typing “ego” wakes the site', was && !doc.documentElement.classList.contains('gated'))];
 }
