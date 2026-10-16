@@ -1,6 +1,7 @@
 import { CONTACT_EMAIL } from './config.js';
 import { initCopy } from './contact.js';
 import { initCount } from './count.js';
+import { initGate } from './gate.js';
 import { initIndex } from './index.js';
 import { initMenu } from './menu.js';
 import { initMotion } from './motion.js';
@@ -38,6 +39,7 @@ function initReels() {
   reels.forEach((reel) => observer.observe(reel));
 }
 
+initGate();
 applyContactEmail();
 initMenu();
 initIndex();
