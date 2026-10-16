@@ -386,3 +386,10 @@ Known limits:
 ### Round 4c: the live reactor was hidden (fix)
 - Bug: the still image sat above the live 3D canvas, so visitors only ever saw the still: no motion, no drag. The canvas now paints above it, and a check guards it.
 - With the live reactor visible: a lit marker on the coil ring and on the inner ring so the turning can be seen, a wider sway and float, a stronger heartbeat, and an idle pulse every 6 seconds or so. Drag now swings it up to about 120 degrees with momentum, spins the coils, and eases home over a few seconds.
+
+### Round 5: the way in (EGO)
+- A first visit opens dark: only the unpowered reactor (a faint ember, no spin), "Systems offline", an Activate portfolio button and a Say “EGO” microphone button. Typing "ego" also works (hint shown with a keyboard: "or type “ego”").
+- Waking it: the reactor flickers on, fires a full pulse, says "Systems online.", and the name, nav and page build in around it.
+- Voice uses the browser's speech recognition (Chrome, Edge, Safari; the mic button is hidden in Firefox). In Chrome the audio is processed by Google's speech service. It listens for 10 seconds after a press. Messages: "Listening. Say “EGO”.", "Voice recognised.", "Didn’t catch that. Try again.", "Microphone blocked. Use Activate instead.", "Voice is unavailable here. Use Activate instead."
+- Not gated: links to a section (e.g. /#work, the project pages' "All work" link), the rest of a browser session once woken, browsers without module support. A five-second failsafe opens the page if the script fails.
+- Wording for sign-off: "Systems offline", "Activate portfolio", "Say “EGO”", "or type “ego”", "Systems online."

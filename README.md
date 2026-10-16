@@ -31,6 +31,7 @@ Open <http://localhost:4173/tests/>. The page loads the site at 13 sizes, from a
 - the Experience timeline is whole once the section has scrolled past, and each role's node lights
 - the six work cards are single links, named by their titles, with their `#work-…` ids, and each page they open exists
 - the Toolkit tabs (roles, arrow keys, Home and End, and the `#education` and `#certifications` links), the nav's current section, the progress line, the menu (the page and footer behind it are inert, and Escape closes it) and the copy button behave
+- the gate: a first visit opens gated with the page hidden and inert, Activate (44px) and the microphone (only with speech recognition) shown; Activate wakes the site and the session remembers it; typing “ego” wakes it too (the other runs start already woken)
 - the hero's arc reactor has a decorative still and is one labelled button; its five colour cells retint the site through `--h`, remember the choice and mark one cell pressed (the check resets to arc blue after); from 1024px the credentials hang off the reactor as callouts inside the hero, clear of the name and each other, and below that they are a plain list
 - each project page links back to all work and on to a next project that exists, and the smallest diagram note renders at least 9px from 1280px wide, 8px from 1024px and 7px below
 
@@ -68,6 +69,7 @@ Every email link, the address in Contact and the copy button read from it.
 | `js/count.js` | Counts each `[data-count]` figure up once, the first time it is seen |
 | `js/contact.js` | The copy button |
 | `js/reveal.js` | The fade and rise as content first scrolls into view |
+| `js/gate.js` | The way in: the dark first visit, and waking the site by the Activate button, the microphone (say “EGO”) or typing “ego” |
 | `js/reactor.js` | The reactor's page side: loading the model, charge and pulse, drag to spin, facing the pointer, the colour cells and placing the callouts |
 | `js/reactor-scene.js` | The reactor itself in three.js: the model, its materials and lights, bloom, and each frame |
 | `js/motion.js` | The masked title reveals, the Experience timeline, and (mouse and trackpad only) the card spotlight and Contact's magnetic pills |
@@ -85,6 +87,7 @@ Every email link, the address in Contact and the copy button read from it.
 - Type: Geist 400, 500 and 600 for reading, UI and headings; Geist Mono for labels and dates; Instrument Serif italic for one accent word at a time (`.serif`, about 1.08 times the sans around it); Satoshi 900 for the `evan.` wordmark only. Geist, Geist Mono and Instrument Serif come from Google Fonts and Satoshi from Fontshare, with fallback stacks in `--font-sans`, `--font-mono` and `--font-serif`.
 - Section titles are huge (`--t-title`, 60px to 176px), centred, with one whole word in the serif. In Selected work the cards are tucked over the bottom of the title.
 - The hero's anchor is an arc reactor, modelled in three.js (loaded from jsDelivr through the import map in `index.html`): a machined steel housing with rim screws, ten copper coils wound turn by turn, a chrome inner ring with hex bolts and a glass-domed emitter, lit by its own core, a studio environment and a key light that follows the pointer, with bloom on the brightest parts. The name sits either side of it. The canvas is cleared to the page colour and fades out at its edges, and it only renders while the hero is on screen.
+- The way in: a first visit to the main page opens dark, showing only the unpowered reactor, the line “Systems offline”, an **Activate portfolio** button and a **Say “EGO”** microphone button (shown only where the browser has speech recognition: Chrome, Edge, Safari). Typing “ego” works too. Waking it powers the reactor on with a pulse and builds the page in around it. The gate is decided in the head before the first paint (`gated` on `<html>`) and is skipped for a link to a section (any `#…`), for the rest of the browser session once woken (`sessionStorage`, `portfolio-on`) and where modules are unsupported; if `gate.js` has not taken over within five seconds, the page opens by itself.
 - The nav is a floating pill with a solid background. Below 1024px it holds the wordmark and a Menu pill that opens a full-screen menu.
 - Hover styles sit inside `@media (hover: hover)`.
 
