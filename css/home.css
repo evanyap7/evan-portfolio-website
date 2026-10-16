@@ -14,7 +14,10 @@
   min-height: calc(100svh - var(--nav) - var(--nav-top));
   position: relative;
   isolation: isolate;
+  /* Clipped at the sides only (the reactor's canvas overhangs on phones);
+     above and below its glow may spill, so it never ends in a hard line. */
   overflow: hidden;
+  overflow: clip visible;
   padding: 32px var(--gutter) 64px;
   text-align: center;
 }
@@ -137,16 +140,16 @@
   }
 }
 
-/* Load: the name rises either side of the reactor as it powers on, then
-   everything under it follows. */
+/* Load (or, behind the gate, waking): the name rises either side of the
+   reactor as it powers on, then everything under it follows. */
 @media (prefers-reduced-motion: no-preference) {
-  .hero__name span {
+  :root:not(.gated) .hero__name span {
     animation: rise 1s var(--ease-out) 200ms backwards;
   }
 
   .hero__name span:last-child { animation-delay: 300ms; }
 
-  .hero > :not(.hero__stage, .hero__title, .hero__lines) {
+  :root:not(.gated) .hero > :not(.hero__stage, .hero__title, .hero__lines) {
     animation: rise 900ms var(--ease-out) backwards;
   }
 

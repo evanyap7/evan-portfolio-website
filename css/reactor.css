@@ -239,7 +239,7 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .hero--hud .hero__creds li {
+  :root:not(.gated) .hero--hud .hero__creds li {
     animation: fade 700ms ease backwards;
     animation-delay: calc(1300ms + var(--n, 0) * 150ms);
   }
@@ -247,14 +247,14 @@
   .hero--hud .hero__creds li:nth-child(2) { --n: 1; }
   .hero--hud .hero__creds li:nth-child(3) { --n: 2; }
 
-  .hero__lines:not(.is-drawn) path {
+  :root:not(.gated) .hero__lines:not(.is-drawn) path {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
     animation: draw-line 800ms var(--ease) forwards;
     animation-delay: calc(1000ms + var(--i) * 150ms);
   }
 
-  .hero__lines:not(.is-drawn) rect {
+  :root:not(.gated) .hero__lines:not(.is-drawn) rect {
     animation: fade 400ms ease backwards;
     animation-delay: calc(1000ms + var(--i) * 150ms);
   }
@@ -266,4 +266,125 @@
 
 @keyframes draw-line {
   to { stroke-dashoffset: 0; }
+}
+
+/* The gate (gate.js) --------------------------------------------------- */
+/* Before the site wakes, the page is dark: everything is hidden but the
+   unpowered reactor and the gate's controls under it. The head script in
+   index.html adds `gated` before the first paint. */
+/* The scrollbar's space is kept while the page cannot scroll, so nothing
+   shifts sideways when it wakes. */
+html {
+  scrollbar-gutter: stable;
+}
+
+.gated body {
+  overflow: hidden;
+}
+
+.gated .skip-link,
+.gated .progress,
+.gated .nav,
+.gated main > section:not(.hero),
+.gated .footer,
+.gated .hero__name,
+.gated .hero > :not(.hero__stage) {
+  visibility: hidden;
+  opacity: 0;
+}
+
+/* Waking: once the reactor is up, the nav and the rest of the page fade in
+   (the hero's own parts rise, in home.css). */
+.waking .nav,
+.waking main > section:not(.hero),
+.waking .footer {
+  transition: opacity 900ms ease 500ms;
+}
+
+.gated .reactor__poster {
+  filter: hue-rotate(calc((var(--h) - 205) * 1deg)) brightness(0.16) saturate(0.4);
+}
+
+.reactor__poster {
+  transition: filter 1200ms ease;
+}
+
+.gate {
+  display: none;
+}
+
+.gated .gate {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--gutter));
+  translate: -50% 0;
+  transition: opacity 400ms ease;
+}
+
+.waking .gate {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gate__status {
+  color: var(--muted);
+}
+
+.gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.gate__icon {
+  width: 1.05em;
+  height: 1.05em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gate__mic[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 24px var(--accent-glow);
+}
+
+.gate__hint {
+  color: var(--dim);
+}
+
+/* On a phone the name sits under the reactor; while it is hidden it gives
+   up its space, so the gate's controls sit right under the reactor. */
+@media (max-width: 719px) {
+  .gated .hero__name { display: none; }
+}
+
+/* No keyboard to type on, as a rule, on a touch screen. */
+@media (pointer: coarse) {
+  .gate__hint { display: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gated:not(.waking) .gate {
+    animation: fade 900ms ease 400ms backwards;
+  }
+
+  .gate__mic[aria-pressed="true"] .gate__icon {
+    animation: listen 1.2s ease-in-out infinite;
+  }
+}
+
+@keyframes listen {
+  50% { opacity: 0.35; }
 }

@@ -47,6 +47,7 @@
   </script>
 
   <script>document.documentElement.classList.add('js');try{var h=localStorage.getItem('reactor-hue');if(/^(205|172|258|40|350)$/.test(h))document.documentElement.style.setProperty('--h',h)}catch(e){}addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
+  <script>try{if(!location.hash&&!sessionStorage.getItem('portfolio-on')&&'noModule' in HTMLScriptElement.prototype){var d=document.documentElement;d.classList.add('gated');setTimeout(function(){if(!d.classList.contains('gate-ready'))d.classList.remove('gated')},5000)}}catch(e){}</script>
 </head>
 
 <body>
@@ -93,6 +94,16 @@
           <img class="reactor__poster" src="img/reactor.webp" alt="" width="720" height="720" decoding="async">
           <button class="reactor__hit" type="button" data-reactor-hit
             aria-label="Arc reactor. Hold to charge it, then let go to fire a pulse."></button>
+        </div>
+        <div class="gate" data-gate>
+          <p class="gate__status mono" data-gate-status aria-live="polite">Systems offline</p>
+          <p class="gate__actions">
+            <button class="pill pill--solid" type="button" data-gate-activate>Activate portfolio</button>
+            <button class="pill gate__mic" type="button" data-gate-mic aria-pressed="false" hidden><svg class="gate__icon"
+                viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3M8 22h8" /></svg>Say “EGO”</button>
+          </p>
+          <p class="gate__hint mono">or type “ego”</p>
         </div>
       </div>
       <div class="reactor__panel">
