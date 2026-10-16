@@ -4,6 +4,8 @@
 // runs and every element rests in its final state; the CSS for each part
 // is written inside prefers-reduced-motion: no-preference as well.
 
+import { whenActive } from './gate.js';
+
 const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)');
 const FINE = window.matchMedia('(hover: hover) and (pointer: fine)');
 
@@ -45,10 +47,11 @@ function initTitles() {
   if (!titles.length) return;
   titles.forEach(split);
 
-  // The hero is on screen at load, so its words rise straight away.
+  // The hero is on screen at load, so its words rise straight away (or,
+  // behind the gate, as soon as the site wakes).
   const show = (title) => title.classList.add('is-in');
   const hero = titles.filter((title) => title.matches('.hero__title, .project__title'));
-  requestAnimationFrame(() => requestAnimationFrame(() => hero.forEach(show)));
+  whenActive(() => requestAnimationFrame(() => requestAnimationFrame(() => hero.forEach(show))));
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {

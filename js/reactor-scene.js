@@ -301,10 +301,14 @@ export function createReactor(canvas, state) {
     // Charge builds over 1.4 s while held and drains fast once let go.
     s.power = s.charging ? Math.min(1, s.power + dt / 1.4) : Math.max(0, s.power - dt * 2.2);
     s.pulse = Math.max(0, s.pulse - dt * 1.6);
-    boot = Math.min(1, boot + dt / 1.6);
-
-    // Powering on: a few hard flickers, then steady with a faint shimmer.
-    const flick = boot < 1 ? (Math.sin(time * 61) > 0.2 - boot ? 1 : 0.25) * (0.35 + 0.65 * boot) : 1;
+    // Asleep (behind the gate) it is dark but for a faint ember; once woken
+    // it powers on: a few hard flickers, then steady with a faint shimmer.
+    boot = s.awake ? Math.min(1, boot + dt / 1.6) : 0;
+    const flick = !s.awake ? 0.05 + 0.02 * Math.sin(time * 1.4)
+      : boot < 1 ? (Math.sin(time * 61) > 0.2 - boot ? 1 : 0.25) * (0.35 + 0.65 * boot) : 1;
+    scene.environmentIntensity = 0.07 + 0.15 * boot;
+    key.intensity = 0.35 + 0.75 * boot;
+    warm.intensity = 0.2 + 0.5 * boot;
     const shimmer = 1 + 0.035 * Math.sin(time * 19.7) * Math.sin(time * 5.3)
       + 0.28 * Math.max(0, Math.sin(time * 1.6)) ** 3; // a slow heartbeat
     const level = flick * shimmer * (1 + s.power * 0.8 + s.pulse * 1.3);
@@ -319,16 +323,16 @@ export function createReactor(canvas, state) {
     bloom.strength = 0.45 + s.power * 0.4 + s.pulse * 0.7;
 
     // The coils turn slowly and spin up with charge; the inner ring counters.
-    coils.rotation.z += dt * (0.55 + s.power * 3.2) + s.spin;
-    inner.rotation.z -= dt * (0.9 + s.power * 1.4);
+    coils.rotation.z += dt * (0.55 * boot + s.power * 3.2) + s.spin;
+    inner.rotation.z -= dt * (0.9 * boot + s.power * 1.4);
     s.spin *= Math.exp(-dt * 3);
 
     // At rest it is turned a little, so the housing shows its depth; it
     // faces the pointer, plus however far it has been dragged.
     // It also drifts on its own, so it is alive with no pointer at all
     // (phones, keyboards): a slow sway and a gentle float.
-    const sway = Math.sin(time * 0.9);
-    const bob = Math.cos(time * 1.15);
+    const sway = Math.sin(time * 0.9) * (0.25 + 0.75 * boot);
+    const bob = Math.cos(time * 1.15) * (0.25 + 0.75 * boot);
     const ease = dt ? 1 - Math.exp(-dt * 6) : 1;
     reactor.rotation.x += (-0.2 + bob * 0.24 - s.ty * 0.32 + s.dragY - reactor.rotation.x) * ease;
     reactor.rotation.y += (0.26 + sway * 0.42 + s.tx * 0.42 + s.dragX - reactor.rotation.y) * ease;
@@ -370,9 +374,10 @@ export function createReactor(canvas, state) {
       camera.updateProjectionMatrix();
       still();
     },
-    // Fully powered at once, with no flicker: for reduced motion.
+    // At once, with no flicker (reduced motion): dark while asleep, fully
+    // powered once awake.
     poweredOn() {
-      boot = 1;
+      boot = state.awake ? 1 : 0;
       still();
     },
     start() {

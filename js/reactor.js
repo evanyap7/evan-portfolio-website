@@ -9,6 +9,8 @@
 // On wide screens the hero's credentials hang off the reactor as callouts
 // on leader lines; narrower, they stay a plain list.
 
+import { whenActive } from './gate.js';
+
 const HUE_KEY = 'reactor-hue';
 const LINES = ['Pulse away.', 'Repulsor fired.', 'Systems nominal.', 'Again?', 'Nice one.'];
 const WIDE = 1024;
@@ -90,9 +92,9 @@ function initCallouts(hero, core) {
   layout();
   document.fonts?.ready.then(layout);
   new ResizeObserver(layout).observe(hero);
-  // The lines draw in once; a later relayout (a resize, a phone's address
-  // bar) redraws them in place without replaying that.
-  setTimeout(() => lines.classList.add('is-drawn'), 2400);
+  // The lines draw in once the site is awake; a later relayout (a resize,
+  // a phone's address bar) redraws them in place without replaying that.
+  whenActive(() => setTimeout(() => lines.classList.add('is-drawn'), 2400));
 }
 
 export function initReactor() {
@@ -105,8 +107,15 @@ export function initReactor() {
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const state = {
     hue: 205, charging: false, power: 0, pulse: 0, spin: 0, tx: 0, ty: 0, dragX: 0, dragY: 0, vx: 0, vy: 0, onTick: null,
+    // Behind the gate (gate.js) it sleeps, dark, until the visitor wakes it.
+    awake: !document.documentElement.classList.contains('gated'),
   };
   let scene = null;
+  document.addEventListener('portfolio:waking', () => {
+    state.awake = true;
+    state.pulse = 1;
+    if (reduce) scene?.poweredOn();
+  }, { once: true });
 
   state.hue = initCells((hue) => {
     state.hue = hue;
@@ -178,12 +187,20 @@ export function initReactor() {
       reset = setTimeout(() => say(idle), ms);
     };
     say(idle);
+    // Woken from the gate: a full pulse and a greeting.
+    document.addEventListener('portfolio:waking', () => {
+      quiet = -2;
+      window.setTimeout(() => {
+        wave(1);
+        sayFor('Systems online.', 2600);
+      }, 900);
+    }, { once: true });
 
     // Left alone it still gives itself a small pulse now and then, so the
     // first-time visitor sees what it does without having to try.
     let quiet = 0;
     const nudge = () => {
-      if (document.hidden || state.charging || press || state.power > 0) return;
+      if (!state.awake || document.hidden || state.charging || press || state.power > 0) return;
       state.pulse = 0.9;
       wave(0.6);
     };
