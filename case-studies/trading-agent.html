@@ -192,7 +192,33 @@
         </li>
       </ol>
 
-      <h2>The experiment: did Claude earn its place?</h2>
+      <h2>Four tests for an edge</h2>
+      <p>Each idea ran on liquid US stocks and ETFs, and each had to beat simply holding the index. None did.</p>
+
+      <div class="case__table" role="region" aria-label="Research results, scrollable" tabindex="0">
+        <table>
+          <caption class="visually-hidden">Four studies testing for an edge, and what each found</caption>
+          <thead>
+            <tr><th scope="col">Idea</th><th scope="col">Result</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Claude agent, against a free momentum rule</th><td>No edge. A Sharpe lead of 0.03 and a lower win rate, for about $27 a year. Removed.</td></tr>
+            <tr><th scope="row">Momentum, reversal, low volatility and trend following</th><td>No edge out of sample. Deflated Sharpe of 0.05 to 0.65, all below the bar. Trend following cut risk, not return.</td></tr>
+            <tr><th scope="row">Insider buying, from SEC Form 4 filings</th><td>No usable edge. A small raw effect, mostly survivorship and noise, gone once sizing and stops applied.</td></tr>
+            <tr><th scope="row">The momentum rule the system runs</th><td>Matches SPY and does not beat it: +66.8% against +70.1% from 2022 to 2026, at about half the drawdown.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="case__sub">How I kept a negative result trustworthy</h3>
+      <ul class="case__list">
+        <li><strong>No lookahead, and a test for it.</strong> The test rewrites the future of a price series and checks that no past signal moves.</li>
+        <li><strong>Walk-forward selection.</strong> Settings are chosen on two years of data, scored only on the next six months, then rolled forward.</li>
+        <li><strong>A correction for luck.</strong> The deflated Sharpe ratio counts every variant I tried, so each new grid raises the bar for the next.</li>
+        <li><strong>Stated biases.</strong> The universe is today's survivors, which flatters every absolute return, and each report lists that under its caveats.</li>
+      </ul>
+
+      <h2>The LLM study: did Claude earn its place?</h2>
       <p>I replayed 2024 (about 252 trading days) over the 100 most liquid US stocks plus an S&amp;P 500 ETF, starting from $1,500. Both agents ran through the same verifier, sizing, stops, slippage model and kill switch. Before the run I set the bar: the Claude agent had to beat the baseline on <strong>both</strong> Sharpe ratio and win rate.</p>
 
       <div class="case__table" role="region" aria-label="Backtest results, scrollable" tabindex="0">
