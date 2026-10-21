@@ -258,8 +258,8 @@
       </ol>
 
       <h2>Where it stands</h2>
-      <p>The baseline agent roughly matches SPY in 2024 and does not beat it. I would rather say that plainly than tune until a chart looks good. The system is built to go live one gate at a time: read-only against the broker's test environment, then shadow mode with orders recorded but not sent, then test-environment orders, then live. I will compare each stage against the backtest before adding size.</p>
-      <p>If I want an edge, the next step is testing other signals inside the same verifier and risk framework, not putting a model back in.</p>
+      <p>The system placed its first real orders on 23 September 2026: one share at a time, each with a broker-side stop. On 1 October I switched it off with the kill switch to run a longer backtest first, and the research since says to leave it off. I would rather say that plainly than tune until a chart looks good.</p>
+      <p>It now runs in shadow mode against live prices, and a paper account seeded from the real one is compared with SPY each week. If I want an edge, the next place to look is a universe where small capital can compete, such as liquid small caps, with a point-in-time list of constituents to remove survivorship bias. Putting a model back in is not the plan.</p>
 
       <h2>Read the code</h2>
       <div class="case__table" role="region" aria-label="Where things live, scrollable" tabindex="0">
@@ -273,12 +273,15 @@
             <tr><th scope="row">Hash-chained ledger</th><td><code>src/trading_agent/ledger.py</code></td></tr>
             <tr><th scope="row">Kill switch</th><td><code>src/trading_agent/killswitch.py</code></td></tr>
             <tr><th scope="row">Backtester and harness</th><td><code>src/trading_agent/backtest.py</code>, <code>scripts/backtest_harness.py</code></td></tr>
+            <tr><th scope="row">Walk-forward research and luck correction</th><td><code>src/trading_agent/quant/</code></td></tr>
+            <tr><th scope="row">Insider-buying study</th><td><code>src/trading_agent/insider.py</code>, <code>scripts/insider_study.py</code></td></tr>
           </tbody>
         </table>
       </div>
       <p class="links case__links">
         <a class="pill" href="https://github.com/evanyap7/evans-trading-agent" target="_blank" rel="noopener">Source on GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-        <a class="pill" href="https://github.com/evanyap7/evans-trading-agent/blob/HEAD/docs/backtest-llm-vs-baseline-2024.md" target="_blank" rel="noopener">Full backtest report <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a class="pill" href="https://github.com/evanyap7/evans-trading-agent/blob/HEAD/docs/backtest-llm-vs-baseline-2024.md" target="_blank" rel="noopener">LLM backtest report <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a class="pill" href="https://github.com/evanyap7/evans-trading-agent/blob/HEAD/docs/quant-research-report.md" target="_blank" rel="noopener">Quant research report <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
       </p>
   <p class="case__fine">An engineering project, not investment advice. Backtest results do not predict live performance.</p>
     </article>
