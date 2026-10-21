@@ -202,7 +202,7 @@
             <tr><th scope="col">Idea</th><th scope="col">Result</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Claude agent, against a free momentum rule</th><td>No edge. A Sharpe lead of 0.03 and a lower win rate, for about $27 a year. Removed.</td></tr>
+            <tr><th scope="row">Claude agent, against a free momentum rule</th><td>No edge. Sharpe of 1.39 against 1.36 for the baseline and 1.89 for SPY, a lower win rate, and about $27 a year. Removed.</td></tr>
             <tr><th scope="row">Momentum, reversal, low volatility and trend following</th><td>No edge out of sample. Deflated Sharpe of 0.05 to 0.65, all below the bar. Trend following cut risk, not return.</td></tr>
             <tr><th scope="row">Insider buying, from SEC Form 4 filings</th><td>No usable edge. A small raw effect, mostly survivorship and noise, gone once sizing and stops applied.</td></tr>
             <tr><th scope="row">The momentum rule the system runs</th><td>Matches SPY and does not beat it: +66.8% against +70.1% from 2022 to 2026, at about half the drawdown.</td></tr>
@@ -238,7 +238,7 @@
         </table>
       </div>
 
-      <p><strong>Verdict: it failed my rule.</strong> The Claude agent's Sharpe lead was 0.03, which is noise, and its win rate was 3.5 points lower. Its one real advantage was roughly half the drawdown. A measured research cycle cost about $0.11, which is about $27 a year, or 1.8% of a $1,500 account, before any benefit.</p>
+      <p><strong>Verdict: it failed my rule.</strong> Claude's Sharpe was 1.39 against 1.36 for the baseline, a lead of 0.03 that is noise. SPY's was 1.89. Claude's win rate was also 3.5 points lower. Its one real advantage was roughly half the drawdown. A measured research cycle cost about $0.11, which is about $27 a year, or 1.8% of a $1,500 account, before any benefit.</p>
       <p>So I removed the LLM layer, kept the baseline, and kept the harness that told me the truth.</p>
 
       <h3 class="case__sub">What I would not claim from this</h3>
