@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>I built an LLM trading agent, then deleted the LLM | Evan Yap</title>
-  <meta name="description" content="Case study: an autonomous trading agent whose models cannot place or size an order. I backtested Claude agents against a plain momentum baseline, found no edge for about $27 a year, and removed the LLM layer.">
+  <title>I built a trading system to find an edge. It found none. | Evan Yap</title>
+  <meta name="description" content="Case study: a trading system where no model can place or size an order. I tested four ideas for an edge, including a Claude agent, out of sample and corrected for luck. None beat holding the index.">
   <meta name="theme-color" content="#04070a">
-  <meta property="og:title" content="I built an LLM trading agent, then deleted the LLM">
-  <meta property="og:description" content="A case study in building a risk-bounded trading agent and measuring whether the LLM earned its place. It did not.">
+  <meta property="og:title" content="I built a trading system to find an edge. It found none.">
+  <meta property="og:description" content="A case study in building a risk-bounded trading system and testing honestly whether it has an edge. It does not.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.evanyap.com/case-studies/trading-agent">
   <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
@@ -68,14 +68,14 @@
   <main id="main" class="project case">
     <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
     <header class="project__head">
-      <p class="mono label">Case study · Autonomous Trading Agent · Python</p>
-      <h1 class="project__title vt-trading-agent case__title">I built an LLM trading agent, measured it, and <span class="serif">deleted</span> the LLM.</h1>
-      <p class="project__lede">The agent trades a small Webull Singapore account on its own, and no model can size or place an order. I tested whether Claude made it better than a plain momentum rule. It did not, so the LLM layer is gone.</p>
+      <p class="mono label">Case study · Systematic Trading System · Python</p>
+      <h1 class="project__title vt-trading-agent case__title">I built a trading system, tested four ideas for an edge, and found <span class="serif">none</span>.</h1>
+      <p class="project__lede">The system can trade a small Webull Singapore account on its own, and no model can size or place an order. I tested four ideas for an edge on it, including a Claude agent. None beat holding the S&amp;P 500, so it now runs in shadow mode: it decides what it would trade and records it, without sending orders.</p>
     </header>
     <dl class="stats">
-      <div><dt>Automated tests, run in CI on every push</dt><dd><span data-count>174</span></dd></div>
-      <div><dt>Symbols in the 2024 backtest, replayed through the live agent code</dt><dd><span data-count>112</span></dd></div>
-      <div><dt>Yearly API cost of the LLM layer I removed</dt><dd><span data-count>~$27</span></dd></div>
+      <div><dt>Automated tests, run in CI on every push</dt><dd><span data-count>191</span></dd></div>
+      <div><dt>Ideas tested for an edge, each against holding the index</dt><dd><span data-count>4</span></dd></div>
+      <div><dt>Best luck-adjusted (deflated) Sharpe ratio, against a bar of about 0.95</dt><dd><span data-count>0.65</span></dd></div>
     </dl>
     <figure class="card reel project__figure" data-reel="ledger">
     <figcaption class="reel__bar">
@@ -121,14 +121,14 @@
     <article class="case__body">
       <h2>The short version</h2>
       <ul class="case__list">
-        <li><strong>What I built.</strong> An autonomous swing-trading agent where a model may only <em>propose</em>. Deterministic code verifies, sizes and risk-checks every idea, and an append-only ledger records each step.</li>
-        <li><strong>What I tested.</strong> Claude agents (Haiku 4.5 screening, Opus 5.5 proposing) against a free, rule-based momentum baseline, both run through identical verification, sizing, stops and kill switch.</li>
-        <li><strong>What I found.</strong> No measurable edge. The LLM cost about $27 a year on a $1,500 account and did not beat the baseline on the rule I had set. I removed it.</li>
-        <li><strong>The uncomfortable part.</strong> Neither strategy beat simply holding the S&amp;P 500 in 2024. I report that as the result.</li>
+        <li><strong>What I built.</strong> A swing-trading system where the agent may only <em>propose</em>. Deterministic code verifies, sizes and risk-checks every idea, and an append-only ledger records each step. It placed its first real orders in September 2026, one share at a time.</li>
+        <li><strong>What I tested.</strong> Four ideas for an edge: a Claude agent, classic quant signals, insider buying from SEC filings, and the plain momentum rule the system runs now.</li>
+        <li><strong>What I found.</strong> No edge. Claude did not beat the free rule and cost about $27 a year, so I removed it. No classic signal survived out-of-sample testing and a correction for luck, and insider buying added nothing once sizing and stops applied.</li>
+        <li><strong>The uncomfortable part.</strong> The momentum rule roughly matches the S&amp;P 500 and does not beat it. I report that as the result, and the system stays in shadow mode.</li>
       </ul>
 
       <h2>The problem</h2>
-      <p>I wanted a system that could run unattended without my having to trust a language model with money. Models are fluent and sometimes wrong, so the design question was not "how smart can the agent be" but "how bad can a failure get, and how fast can I see it."</p>
+      <p>I wanted a system that could run unattended without my having to trust a language model with money, and I wanted to know whether it had an edge at all. Models are fluent and sometimes wrong, so the design question was not "how smart can the agent be" but "how bad can a failure get, and how fast can I see it."</p>
 
       <h2>How it is built</h2>
       <p>The only step that is not deterministic code is the one that proposes a trade. Everything before it is data, and everything after it is a gate.</p>
