@@ -1,8 +1,8 @@
 /* The hero's arc reactor (reactor.js, reactor-scene.js). The canvas is half
    as wide again as the reactor itself, so its glow has room; its edges fade
-   into the page through a radial mask, and it is cleared to the page's own
-   background, so there is no seam. Under it sits a still of the reactor,
-   shown until the 3D model has drawn, and kept where WebGL is missing. */
+   into the page through a radial mask, and it is cleared to nothing, so the
+   name can pass behind it. Under it sits a still of the reactor, shown
+   until the 3D model has drawn, and kept where WebGL is missing. */
 .reactor {
   position: absolute;
   top: 50%;
@@ -34,6 +34,21 @@
 
 .reactor.is-live .reactor__canvas {
   opacity: 1;
+}
+
+/* The canvas lets the page through, so the still goes once the model is up. */
+.reactor.is-live .reactor__poster {
+  opacity: 0;
+  transition: opacity 500ms;
+}
+
+/* Beside the reactor, the name tucks in behind its rim. The still has a
+   background of its own, so this waits for the live model. */
+@media (min-width: 720px) {
+  .hero__stage:has(.reactor.is-live) .hero__name {
+    z-index: 0;
+    column-gap: calc(var(--core) * 0.7);
+  }
 }
 
 /* The reactor itself is the button: hold to charge, let go to pulse. */

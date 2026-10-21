@@ -13,7 +13,6 @@ const LINES = ['Pulse away.', 'Repulsor fired.', 'Systems nominal.', 'Again?', '
 const WIDE = 1024;
 
 const clamp = (value, lo, hi) => Math.min(hi, Math.max(lo, value));
-const bodyColour = () => window.getComputedStyle(document.body).backgroundColor;
 
 function webgl2() {
   try {
@@ -114,7 +113,6 @@ export function initReactor() {
     };
     size();
     new ResizeObserver(size).observe(canvas);
-    scene.setBackground(bodyColour());
     scene.setHue(state.hue);
     canvas.addEventListener('webglcontextlost', () => {
       scene.stop();

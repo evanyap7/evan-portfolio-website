@@ -126,8 +126,24 @@ function turn() {
   return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points, true), 96, 0.0047, 6, true);
 }
 
+// Additive light that leaves alpha alone: the canvas is clear, so a glow
+// that also added alpha would dim the page behind it, far past the model.
+function addLight(material) {
+  Object.assign(material, {
+    blending: THREE.CustomBlending,
+    blendSrc: THREE.SrcAlphaFactor,
+    blendDst: THREE.OneFactor,
+    blendSrcAlpha: THREE.ZeroFactor,
+    blendDstAlpha: THREE.OneFactor,
+  });
+  return material;
+}
+
 export function createReactor(canvas, state) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+  // Cleared to nothing, so the hero's name shows through behind the reactor;
+  // the bloom stays additive over it.
+  renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   // Touch screens are mostly phones: 1.5x is sharp enough there and keeps
   // the frame rate up.
@@ -163,9 +179,7 @@ export function createReactor(canvas, state) {
   const band = new THREE.MeshBasicMaterial();
   const lens = new THREE.MeshBasicMaterial({ map: lensFace() });
   const hot = new THREE.MeshBasicMaterial();
-  const aura = new THREE.MeshBasicMaterial({
-    map: halo(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
-  });
+  const aura = addLight(new THREE.MeshBasicMaterial({ map: halo(), transparent: true, depthWrite: false }));
 
   // Housing -----------------------------------------------------------
   reactor.add(new THREE.Mesh(lathe([
@@ -283,6 +297,7 @@ export function createReactor(canvas, state) {
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
   const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.45, 0.4, 0.95);
+  addLight(bloom.blendMaterial);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
@@ -360,10 +375,6 @@ export function createReactor(canvas, state) {
   return {
     setHue(degrees) {
       hue.setHSL(degrees / 360, 0.95, 0.56);
-      still();
-    },
-    setBackground(css) {
-      renderer.setClearColor(new THREE.Color().setStyle(css));
       still();
     },
     resize(width, height) {
