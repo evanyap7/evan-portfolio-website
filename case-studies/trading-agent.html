@@ -172,7 +172,7 @@
         <li>
           <h3>The proposer cannot size or send an order</h3>
           <p>An independent verifier recomputes what each proposal implies from my own data. It rejects anything ungrounded (every cited evidence ID must exist in this cycle, and the symbol's own price evidence must be cited), stale, priced outside a collar around the quote, with a stop too close or too far in ATRs, without enough reward for the risk, or without edge after costs.</p>
-          <p>Position size comes from quarter-Kelly on the stated edge, capped at 2% risk per trade and 6% of equity at risk across all positions. I used a quarter because a model's confidence figures are not calibrated.</p>
+          <p>Position size comes from quarter-Kelly on the stated edge, capped at 2% risk per trade and 6% of equity at risk across all positions. I used a quarter because the agent's confidence figures are not calibrated.</p>
           <p class="case__code"><code>verifier.py</code> · <code>portfolio.py</code> · <code>risk.py</code></p>
         </li>
         <li>
