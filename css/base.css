@@ -13,9 +13,7 @@
 /* One hue, --h, tints the whole site: a ramp of near-blacks and greys, all
    leaning a little toward it, with the same lightness steps as a plain
    greyscale ramp. The accent is the same hue at full strength, for the
-   italic serif words, focus rings and diagrams. The reactor's colour cells
-   (reactor.js) change --h, and the head script restores the visitor's last
-   choice before the first paint. Arc blue (205) is the default. */
+   italic serif words, focus rings and diagrams. The hue is arc blue (205). */
 :root {
   color-scheme: dark;
 

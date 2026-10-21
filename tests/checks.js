@@ -460,41 +460,20 @@ export function proof(win) {
 }
 
 // The hero's arc reactor: its still is decorative, the reactor is one
-// labelled button, and the five colour cells retint the site through --h,
-// remember the choice, and mark exactly one cell pressed. The check puts
-// the colour back afterwards, so later frames start from arc blue.
-export async function reactor(win) {
+// labelled button, and the colour cells are gone.
+export function reactor(win) {
   const doc = win.document;
   const root = doc.querySelector('[data-reactor]');
   if (!root) return [result('reactor present', false)];
   const poster = root.querySelector('.reactor__poster');
   const hit = root.querySelector('[data-reactor-hit]');
-  const cells = [...doc.querySelectorAll('[data-hue]')];
-  const hue = () => win.getComputedStyle(doc.documentElement).getPropertyValue('--h').trim();
-  const pressed = () => cells.filter((cell) => cell.getAttribute('aria-pressed') === 'true').map((cell) => cell.dataset.hue);
-  const out = [
+  return [
     result('reactor still is decorative', poster && poster.getAttribute('alt') === '' && poster.complete && poster.naturalWidth > 0),
     // The live canvas, once there, must paint above the still.
     result('live reactor paints above the still', !root.querySelector('canvas') || (parseInt(win.getComputedStyle(root.querySelector('canvas')).zIndex, 10) || 0) > (parseInt(win.getComputedStyle(poster).zIndex, 10) || 0), root.querySelector('canvas') ? win.getComputedStyle(root.querySelector('canvas')).zIndex : 'no canvas'),
     result('reactor is a labelled button', hit?.tagName === 'BUTTON' && /hold/i.test(hit.getAttribute('aria-label') || '')),
-    result('five colour cells, arc blue pressed', cells.length === 5 && pressed().join() === '205' && hue() === '205', `${cells.length} cells, pressed ${pressed()}, --h ${hue()}`),
+    result('no colour cells', !doc.querySelector('[data-hue], .cells')),
   ];
-  const gold = cells.find((cell) => cell.dataset.hue === '40');
-  gold?.click();
-  let stored = null;
-  try {
-    stored = win.localStorage.getItem('reactor-hue');
-  } catch {
-    stored = 'blocked';
-  }
-  out.push(result('a colour cell retints the site and is remembered', hue() === '40' && pressed().join() === '40' && (stored === '40' || stored === 'blocked'), `--h ${hue()}, stored ${stored}`));
-  cells.find((cell) => cell.dataset.hue === '205')?.click();
-  try {
-    win.localStorage.removeItem('reactor-hue');
-  } catch {
-    // Nothing was stored.
-  }
-  return out;
 }
 
 // On wide screens the credentials hang off the reactor as callouts: each

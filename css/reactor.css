@@ -24,12 +24,6 @@
   pointer-events: none;
 }
 
-/* The still was rendered in arc blue; other colours turn it round the
-   wheel until the live model takes over. */
-.reactor__poster {
-  filter: hue-rotate(calc((var(--h) - 205) * 1deg));
-}
-
 /* The live canvas must paint above the still, which comes later in the
    markup and would otherwise cover it. */
 .reactor__canvas {
@@ -99,7 +93,7 @@
   }
 }
 
-/* The status line and the colour cells, under the reactor. */
+/* The status line, under the reactor. */
 .reactor__panel {
   position: relative;
   z-index: 2;
@@ -117,48 +111,6 @@
 
 .reactor__status:empty {
   display: none;
-}
-
-.cells {
-  display: flex;
-  gap: 2px;
-}
-
-.cell {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-}
-
-.cell::before {
-  content: "";
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: hsl(var(--cell) 95% 62%);
-  box-shadow: 0 0 10px hsl(var(--cell) 100% 60% / 0.55);
-  transition: transform 200ms var(--ease-out);
-}
-
-.cell[aria-pressed="true"] {
-  box-shadow: inset 0 0 0 1px var(--line-2);
-}
-
-.cell[aria-pressed="true"]::before {
-  transform: scale(1.15);
-}
-
-@media (hover: hover) {
-  .cell:hover::before { transform: scale(1.25); }
-}
-
-@media (max-width: 1023px) {
-  .cell {
-    width: 44px;
-    height: 44px;
-  }
 }
 
 @media (max-width: 719px) {
@@ -302,7 +254,7 @@ html {
 }
 
 .gated .reactor__poster {
-  filter: hue-rotate(calc((var(--h) - 205) * 1deg)) brightness(0.16) saturate(0.4);
+  filter: brightness(0.16) saturate(0.4);
 }
 
 .reactor__poster {

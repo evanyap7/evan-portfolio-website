@@ -32,7 +32,7 @@ Open <http://localhost:4173/tests/>. The page loads the site at 13 sizes, from a
 - the six work cards are single links, named by their titles, with their `#work-…` ids, and each page they open exists
 - the Toolkit tabs (roles, arrow keys, Home and End, and the `#education` and `#certifications` links), the nav's current section, the progress line, the menu (the page and footer behind it are inert, and Escape closes it) and the copy button behave
 - the gate: a first visit opens gated with the page hidden and inert, Activate (44px) and the microphone (only with speech recognition) shown; Activate wakes the site and the session remembers it; typing “ego” wakes it too (the other runs start already woken)
-- the hero's arc reactor has a decorative still and is one labelled button; its five colour cells retint the site through `--h`, remember the choice and mark one cell pressed (the check resets to arc blue after); from 1024px the credentials hang off the reactor as callouts inside the hero, clear of the name and each other, and below that they are a plain list
+- the hero's arc reactor has a decorative still and is one labelled button, and the colour cells are gone; from 1024px the credentials hang off the reactor as callouts inside the hero, clear of the name and each other, and below that they are a plain list
 - each project page links back to all work and on to a next project that exists, and the smallest diagram note renders at least 9px from 1280px wide, 8px from 1024px and 7px below
 
 The heading says `PASS` or `FAIL`, and the table lists every result. `docs/` and `tests/` are left out of deploys by `.vercelignore`.
@@ -61,7 +61,7 @@ Every email link, the address in Contact and the copy button read from it.
 | `css/project.css` | The project page template |
 | `css/case-study.css` | The case study's article: pipeline, decisions and tables |
 | `css/figures.css` | Project diagrams and the keyframes |
-| `css/reactor.css` | The arc reactor, its colour cells and status line, the pulse, and the hero's callouts |
+| `css/reactor.css` | The arc reactor and its status line, the pulse, and the hero's callouts |
 | `js/main.js` | Starts everything; every page loads it, and each part does nothing on a page without its markup |
 | `js/index.js` | The nav's current section and the progress line |
 | `js/menu.js` | The menu below 1024px |
@@ -70,7 +70,7 @@ Every email link, the address in Contact and the copy button read from it.
 | `js/contact.js` | The copy button |
 | `js/reveal.js` | The fade and rise as content first scrolls into view |
 | `js/gate.js` | The way in: the dark first visit, and waking the site by the Activate button, the microphone (say “EGO”) or typing “ego” |
-| `js/reactor.js` | The reactor's page side: loading the model, charge and pulse, drag to spin, facing the pointer, the colour cells and placing the callouts |
+| `js/reactor.js` | The reactor's page side: loading the model, charge and pulse, drag to spin, facing the pointer and placing the callouts |
 | `js/reactor-scene.js` | The reactor itself in three.js: the model, its materials and lights, bloom, and each frame |
 | `js/motion.js` | The masked title reveals, the Experience timeline, and (mouse and trackpad only) the card spotlight and Contact's magnetic pills |
 | `js/reel.js`, `js/scenes.js` | The project diagram player and each diagram's timeline |
@@ -81,7 +81,7 @@ Every email link, the address in Contact and the copy button read from it.
 
 ## The design
 
-- One hue, `--h` (205, arc blue, by default), tints the whole palette at the top of `css/base.css`: a ramp from `--grey-950` (near-black) to `--grey-50` (near-white), every step leaning a little toward the hue at the lightness of a plain grey ramp. Everything else is named from it: the bands, cards on a gradient from `--card-top` to `--card` with a lighter top edge, two hairlines (`--line`, `--line-2`) and four text greys (`--text`, `--text-2`, `--muted`, `--dim`). Visitors can change `--h` with the reactor's colour cells (arc blue, teal, violet, gold, crimson); the choice is kept in `localStorage` (`reactor-hue`) and each page's head script restores it before the first paint.
+- One hue, `--h` (205, arc blue), tints the whole palette at the top of `css/base.css`: a ramp from `--grey-950` (near-black) to `--grey-50` (near-white), every step leaning a little toward the hue at the lightness of a plain grey ramp. Everything else is named from it: the bands, cards on a gradient from `--card-top` to `--card` with a lighter top edge, two hairlines (`--line`, `--line-2`) and four text greys (`--text`, `--text-2`, `--muted`, `--dim`).
 - `--accent` is the same hue at full strength: the italic serif words, the wordmark's dot, the focus ring, the diagrams (`--signal`) and the card spotlight. On the light band it turns a deep shade so it still reads.
 - Sections are bands (`.band`, `.band--900`, `.band--850`) painted edge to edge with a faint hairline where they meet. Contact and the footer are the one light band (`.band--light`), which redefines the tokens so text turns near-black and the pills dark.
 - Type: Geist 400, 500 and 600 for reading, UI and headings; Geist Mono for labels and dates; Instrument Serif italic for one accent word at a time (`.serif`, about 1.08 times the sans around it); Satoshi 900 for the `evan.` wordmark only. Geist, Geist Mono and Instrument Serif come from Google Fonts and Satoshi from Fontshare, with fallback stacks in `--font-sans`, `--font-mono` and `--font-serif`.
@@ -116,7 +116,7 @@ Others has two small drawings instead, piano keys and a moon beside a calendar, 
 - Between the main page and the project pages, browsers with cross-document view transitions fade and slide the page, and a work card's title morphs into the project page's title. Other browsers simply navigate.
 - A thin grey line along the top of the screen shows how far down the page you are.
 
-With Reduce Motion on, nothing moves: no animation runs at all, the reactor is a fully powered still (only its colour cells work), the figures show their final values and colour changes land at once.
+With Reduce Motion on, nothing moves: no animation runs at all, the reactor is a fully powered still, the figures show their final values and colour changes land at once.
 
 ## Update the resume
 

@@ -46,7 +46,7 @@
     }
   </script>
 
-  <script>document.documentElement.classList.add('js');try{var h=localStorage.getItem('reactor-hue');if(/^(205|172|258|40|350)$/.test(h))document.documentElement.style.setProperty('--h',h)}catch(e){}addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
+  <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
   <script>try{if(!location.hash&&!sessionStorage.getItem('portfolio-on')&&'noModule' in HTMLScriptElement.prototype){var d=document.documentElement;d.classList.add('gated');setTimeout(function(){if(!d.classList.contains('gate-ready'))d.classList.remove('gated')},5000)}}catch(e){}</script>
 </head>
 
@@ -108,13 +108,6 @@
       </div>
       <div class="reactor__panel">
         <p class="reactor__status mono" data-reactor-status aria-hidden="true"></p>
-        <div class="cells" role="group" aria-label="Reactor colour">
-          <button class="cell" type="button" data-hue="205" style="--cell: 205" aria-pressed="true"><span class="visually-hidden">Arc blue</span></button>
-          <button class="cell" type="button" data-hue="172" style="--cell: 172" aria-pressed="false"><span class="visually-hidden">Teal</span></button>
-          <button class="cell" type="button" data-hue="258" style="--cell: 258" aria-pressed="false"><span class="visually-hidden">Violet</span></button>
-          <button class="cell" type="button" data-hue="40" style="--cell: 40" aria-pressed="false"><span class="visually-hidden">Gold</span></button>
-          <button class="cell" type="button" data-hue="350" style="--cell: 350" aria-pressed="false"><span class="visually-hidden">Crimson</span></button>
-        </div>
       </div>
       <h1 class="hero__title" id="hero-title">I build AI <span class="serif">systems,</span> and
         <span class="serif">check</span> they work.</h1>

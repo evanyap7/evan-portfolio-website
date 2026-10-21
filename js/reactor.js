@@ -3,15 +3,12 @@
 // still of itself, and only where WebGL2 works; otherwise the still stays.
 // Hold the reactor (pointer, or Space/Enter on its button) to charge it,
 // and let go to fire a pulse; drag it to spin it; with a mouse it also
-// turns to face the pointer. The colour cells under it retint the reactor
-// and the whole site (--h), and remember the choice. With reduced motion
-// the reactor is a fully powered still and only the colour cells work.
-// On wide screens the hero's credentials hang off the reactor as callouts
-// on leader lines; narrower, they stay a plain list.
+// turns to face the pointer. With reduced motion the reactor is a fully
+// powered still. On wide screens the hero's credentials hang off the reactor
+// as callouts on leader lines; narrower, they stay a plain list.
 
 import { whenActive } from './gate.js';
 
-const HUE_KEY = 'reactor-hue';
 const LINES = ['Pulse away.', 'Repulsor fired.', 'Systems nominal.', 'Again?', 'Nice one.'];
 const WIDE = 1024;
 
@@ -24,27 +21,6 @@ function webgl2() {
   } catch {
     return false;
   }
-}
-
-// The colour cells: each sets --h, which every colour token derives from.
-function initCells(onHue) {
-  const cells = [...document.querySelectorAll('[data-hue]')];
-  const root = document.documentElement;
-  const current = window.getComputedStyle(root).getPropertyValue('--h').trim();
-  const press = (hue) => cells.forEach((cell) => cell.setAttribute('aria-pressed', String(cell.dataset.hue === hue)));
-  press(current);
-  cells.forEach((cell) => cell.addEventListener('click', () => {
-    const hue = cell.dataset.hue;
-    root.style.setProperty('--h', hue);
-    try {
-      localStorage.setItem(HUE_KEY, hue);
-    } catch {
-      // Storage can be blocked; the choice then lasts for this page only.
-    }
-    press(hue);
-    onHue(Number(hue));
-  }));
-  return Number(current) || 205;
 }
 
 // Places each credential at the end of a leader line from the reactor's rim.
@@ -117,11 +93,6 @@ export function initReactor() {
     if (reduce) scene?.poweredOn();
   }, { once: true });
 
-  state.hue = initCells((hue) => {
-    state.hue = hue;
-    scene?.setHue(hue);
-    scene?.setBackground(bodyColour());
-  });
   if ('ResizeObserver' in window) initCallouts(hero, hit);
 
   if (reduce) {
