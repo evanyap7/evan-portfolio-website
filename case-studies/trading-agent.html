@@ -131,7 +131,7 @@
       <p>I wanted a system that could run unattended without my having to trust a language model with money, and I wanted to know whether it had an edge at all. Models are fluent and sometimes wrong, so the design question was not "how smart can the agent be" but "how bad can a failure get, and how fast can I see it."</p>
 
       <h2>How it is built</h2>
-      <p>The only step that is not deterministic code is the one that proposes a trade. Everything before it is data, and everything after it is a gate.</p>
+      <p>In the version I tested, the only step that used a model was trade proposal. Deterministic code verified, sized and risk-checked every proposal. I have since removed the model, and the system now runs a rule-based momentum agent behind the same checks.</p>
 
       <div class="flow" role="group" aria-label="Pipeline, in three stages">
         <section class="flow__lane">
