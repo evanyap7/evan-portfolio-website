@@ -216,7 +216,7 @@
   scroll-margin-top: calc(-1 * var(--band-pad));
 }
 
-/* The huge section titles: one word in the italic serif. */
+/* The section titles: one word in the italic serif. */
 .title {
   font-size: var(--t-title);
   font-weight: 600;
@@ -233,7 +233,7 @@
 }
 
 .title + * {
-  margin-top: clamp(48px, 6vw, 88px);
+  margin-top: clamp(40px, 5vw, 72px);
 }
 
 /* Pills ------------------------------------------------------------- */

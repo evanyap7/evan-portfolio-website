@@ -536,7 +536,7 @@ ul.role__points li + li {
 @media (max-width: 719px) {
   /* "Selected work" stays on one line on phones. */
   .work .work__title {
-    font-size: 13vw;
+    font-size: min(var(--t-title), 13vw);
     white-space: nowrap;
   }
 

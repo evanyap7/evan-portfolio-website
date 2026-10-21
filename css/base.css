@@ -68,7 +68,7 @@
   --t-card: 20px;
   --t-small: 15.5px;
   --t-mono: 12.5px;
-  --t-title: clamp(60px, 12vw, 176px);
+  --t-title: clamp(44px, 7.2vw, 104px);
 }
 
 @media (max-width: 719px) {
