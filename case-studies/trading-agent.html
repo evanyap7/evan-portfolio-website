@@ -75,7 +75,7 @@
     <dl class="stats">
       <div><dt>Automated tests, run in CI on every push</dt><dd><span data-count>191</span></dd></div>
       <div><dt>Ideas tested for an edge, each against holding the index</dt><dd><span data-count>4</span></dd></div>
-      <div><dt>Best luck-adjusted (deflated) Sharpe ratio, against a bar of about 0.95</dt><dd><span data-count>0.65</span></dd></div>
+      <div><dt>Best deflated Sharpe ratio across the classic quant signals, against a bar of about 0.95</dt><dd><span data-count>0.65</span></dd></div>
     </dl>
     <figure class="card reel project__figure" data-reel="ledger">
     <figcaption class="reel__bar">
@@ -124,7 +124,7 @@
         <li><strong>What I built.</strong> A swing-trading system where the agent may only <em>propose</em>. Deterministic code verifies, sizes and risk-checks every idea, and an append-only ledger records each step. It placed its first real orders in September 2026, one share at a time.</li>
         <li><strong>What I tested.</strong> Four ideas for an edge: a Claude agent, classic quant signals, insider buying from SEC filings, and the plain momentum rule the system runs now.</li>
         <li><strong>What I found.</strong> No edge. Claude did not beat the free rule and cost about $27 a year, so I removed it. No classic signal survived out-of-sample testing and a correction for luck, and insider buying added nothing once sizing and stops applied.</li>
-        <li><strong>The uncomfortable part.</strong> The momentum rule roughly matches the S&amp;P 500 and does not beat it. I report that as the result, and the system stays in shadow mode.</li>
+        <li><strong>The uncomfortable part.</strong> The momentum rule returned +66.8% against SPY's +70.1% from 2022 to 2026, at about half the drawdown. Across the classic quant signals I tested, the best deflated Sharpe was 0.65, below my bar of about 0.95. I report that as the result, and the system stays in shadow mode.</li>
       </ul>
 
       <h2>The problem</h2>
