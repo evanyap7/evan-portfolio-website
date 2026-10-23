@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Personal Assistant Bot | Evan Yap</title>
-  <meta name="description" content="A serverless Telegram assistant for calendars, expenses, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first.">
+  <meta name="description" content="A serverless Telegram assistant with an orchestrator agent for expenses, calendars, workouts, habits, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first.">
   <meta name="theme-color" content="#04070a">
   <meta property="og:title" content="Personal Assistant Bot | Evan Yap">
-  <meta property="og:description" content="A serverless Telegram assistant for calendars, expenses, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first.">
+  <meta property="og:description" content="A serverless Telegram assistant with an orchestrator agent for expenses, calendars, workouts, habits, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.evanyap.com/work/assistant-bot">
   <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
@@ -68,11 +68,11 @@
   <main id="main" class="project">
     <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
     <header class="project__head">
-      <p class="mono label">Full-stack developer · Aug – Sept 2026</p>
+      <p class="mono label">Full-stack developer · Aug – Oct 2026</p>
       <h1 class="project__title vt-assistant-bot">Personal Assistant <span class="serif">Bot</span></h1>
     </header>
     <dl class="stats">
-      <div><dt>Intents, each validated by a Zod schema</dt><dd><span data-count>24</span></dd></div>
+      <div><dt>Intents, each validated by a Zod schema</dt><dd><span data-count>38</span></dd></div>
       <div><dt>Test commands routed correctly (my own set, so a smoke test)</dt><dd><span data-count>31/31</span></dd></div>
       <div><dt>Lower cost per call across the chain (21-message benchmark)</dt><dd><span data-count>~65%</span></dd></div>
       <div><dt>Lower batch latency than sequential parsing (7 receipts)</dt><dd><span data-count>~77%</span></dd></div>
@@ -116,8 +116,8 @@
     </svg>
     </figure>
     <div class="rows project__body">
-      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A serverless Telegram assistant that handles calendars, expenses, bill splitting and email from text, voice notes or photos. A three-model chain tries the cheapest model first and fails over to the next.</p></div></div>
-      <div><h2 class="mono">Stack</h2><p class="stack">Next.js · TypeScript · Vercel AI SDK · Gemini · Perplexity Sonar · Google Cloud Pub/Sub · Gmail, Sheets and Calendar APIs · Zod</p></div>
+      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A serverless Telegram assistant built around an orchestrator agent that calls tools for expenses, calendars, to-dos, a guided workout coach, habit streaks, inbox triage, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first and fails over to the next.</p></div></div>
+      <div><h2 class="mono">Stack</h2><p class="stack">Next.js · TypeScript · Vercel AI SDK · Claude · Gemini · Perplexity Sonar · Google Cloud Pub/Sub · Gmail, Sheets and Calendar APIs · Zod</p></div>
       <div><h2 class="mono">Links</h2><p class="links">
           <a class="pill" href="https://github.com/evanyap7/telegram-personal-assistant" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
           <a class="pill" href="https://github.com/evanyap7/telegram-personal-assistant/tree/main/scripts" target="_blank" rel="noopener">Benchmarks and tests <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
