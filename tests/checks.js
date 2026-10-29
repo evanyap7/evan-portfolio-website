@@ -4,7 +4,7 @@
 
 const WIDE = 1024;
 const SECTIONS = ['top', 'about', 'experience', 'work', 'toolkit', 'contact'];
-const CARDS = ['website-revamp', 'assistant-bot', 'trading-agent', 'research-agent', 'v-bay', 'parallel-match', 'others'];
+const CARDS = ['website-revamp', 'parallel-match', 'assistant-bot', 'trading-agent', 'research-agent', 'v-bay', 'others'];
 // The drawing-set palette (paper, desk, ink, accent) and the pastels before it.
 const OLD_COLOURS = /#(fafaf7|e6e5e0|111214|4f5156|6c6e72|2541e6|ffb7d5|ffd98e|a9ddff|b9f2df|ff8fb1|ffe446|cdf5e6|ff9fb6|3a4a86|9b3158)\b|rgba\(17,\s*18,\s*20|rgba\(37,\s*65,\s*230/i;
 
