@@ -365,6 +365,7 @@
 .vt-research-agent { view-transition-name: t-research-agent; }
 .vt-v-bay { view-transition-name: t-v-bay; }
 .vt-parallel-match { view-transition-name: t-parallel-match; }
+.vt-watchpartyyy { view-transition-name: t-watchpartyyy; }
 .vt-others { view-transition-name: t-others; }
 
 @keyframes vt-out {
