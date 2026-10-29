@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parallel Match | Evan Yap</title>
+  <meta name="description" content="A what-if engine for football: change one refereeing call and replay the rest of the match hundreds of times. Built with a team for the Microsoft x Premier League Inside the Game hackathon.">
+  <meta name="theme-color" content="#04070a">
+  <meta property="og:title" content="Parallel Match | Evan Yap">
+  <meta property="og:description" content="A what-if engine for football: change one refereeing call and replay the rest of the match hundreds of times. Built with a team for the Microsoft x Premier League Inside the Game hackathon.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.evanyap.com/work/parallel-match">
+  <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://www.evanyap.com/work/parallel-match">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000'/%3E%3Crect x='8' y='20' width='16' height='3' rx='1.5' fill='%23fafafa'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&family=Instrument+Serif:ital@1&display=swap">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@900&display=swap">
+
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/figures.css">
+  <link rel="stylesheet" href="/css/project.css">
+
+  <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+  <span class="progress" aria-hidden="true" data-progress></span>
+
+  <header class="nav">
+    <a class="wordmark" href="/" aria-label="Evan Yap, home">evan<span class="wordmark__dot">.</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="/#about">About</a>
+      <a href="/#experience">Experience</a>
+      <a href="/#work">Work</a>
+      <a href="/#toolkit">Toolkit</a>
+      <a href="/#contact">Contact</a>
+    </nav>
+    <div class="nav__end">
+      <a class="pill pill--solid nav__resume" href="/resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
+      <button class="pill nav__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-button>Menu</button>
+    </div>
+  </header>
+
+  <nav class="menu" id="menu" aria-label="Menu" hidden data-menu>
+    <ul class="menu__links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#work">Selected work</a></li>
+      <li><a href="/#toolkit">Toolkit</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+    <p class="menu__more">
+      <a class="pill pill--solid" href="/resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume (PDF) <span aria-hidden="true">↓</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      <a class="pill" href="/#contact" data-contact-link data-contact-text>Email</a>
+    </p>
+  </nav>
+
+  <main id="main" class="project">
+    <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
+    <header class="project__head">
+      <p class="mono label">Team of 4 · Microsoft x Premier League hackathon · Oct 2026</p>
+      <h1 class="project__title vt-parallel-match">Parallel <span class="serif">Match</span></h1>
+    </header>
+    <dl class="stats">
+      <div><dt>Win chance after removing one penalty (was 29%)</dt><dd><span data-count>15%</span></dd></div>
+      <div><dt>Paired simulations behind each answer</dt><dd><span data-count>500</span></dd></div>
+      <div><dt>Interface languages, one right to left</dt><dd><span data-count>18</span></dd></div>
+    </dl>
+    <figure class="card reel project__figure">
+      <figcaption class="reel__bar"><span class="reel__name">The real match beside the what-if</span></figcaption>
+      <div class="reel__scene reel__scene--plate"><img src="/img/previews/parallel-match-viewer.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The analyst view. Two pitches replay the same moment side by side, the original and the alternate timeline, above a panel naming the 56th-minute penalty and the Law it falls under. All clubs and players are synthetic."></div>
+    </figure>
+    <div class="rows project__body">
+      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A fan taps a borderline call, such as a penalty, and asks “what if it wasn’t given?”. The screen splits into the real match and an alternate one, with the change in win chance and its 95% interval. Every club and player is synthetic.</p></div></div>
+      <div><h2 class="mono">What I built</h2><div><ul class="items">
+          <li>
+            <h3 class="item__name">Simulator and what-if engine</h3>
+            <p class="item__text">A seeded match generator, and an engine that replays a match to one moment, changes the call and plays the rest hundreds of times. Each pair shares its random numbers, so the difference is the call, not luck.</p>
+          </li>
+          <li>
+            <h3 class="item__name">Agent desk</h3>
+            <p class="item__text">Agents draft the commentary, the Law explanation and the season precedent. A fact-checker agent verifies every number before it is shown. All numbers come from code, never from a model.</p>
+          </li>
+          <li>
+            <h3 class="item__name">API and 18-language interface</h3>
+            <p class="item__text">The API behind the viewer, and an interface in 18 languages where the agents answer in the fan’s choice.</p>
+          </li>
+        </ul></div></div>
+    </div>
+    <figure class="card reel project__figure">
+      <figcaption class="reel__bar"><span class="reel__name">Same moment, quantified</span></figcaption>
+      <div class="reel__scene reel__scene--plate"><img src="/img/previews/parallel-match-comparison.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The comparison panel. Westfield Rangers’ win chance falls 14.4 points with a 95% interval of 10.7 to 18.1, shown as a win-probability chart for both timelines beside a table of outcome shares."></div>
+    </figure>
+    <div class="rows project__body">
+      <div><h2 class="mono">Stack</h2><p class="stack">Python · React · TypeScript · Microsoft Agent Framework · Azure AI Foundry · MCP · Azure Container Apps</p></div>
+      <div><h2 class="mono">Links</h2><p class="links">
+          <a class="pill pill--solid" href="https://youtu.be/Qt4DRwWWmOo" target="_blank" rel="noopener">Demo video <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+          <a class="pill" href="https://github.com/evanyap7/Parallel-Match" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+          <a class="pill" href="https://pm-web.agreeableflower-13af161d.japaneast.azurecontainerapps.io/" target="_blank" rel="noopener">Live demo <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        </p></div>
+    </div>
+    <a class="card next" href="/work/others.html">
+      <span class="mono label">Next project</span>
+      <span class="next__title">Dragon Tiles <span aria-hidden="true">→</span></span>
+    </a>
+  </main>
+
+  <footer class="footer">
+    <p class="mono">© 2026 Evan Yap</p>
+    <a class="wordmark" href="/" aria-label="Evan Yap, home">evan<span class="wordmark__dot">.</span></a>
+  </footer>
+
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

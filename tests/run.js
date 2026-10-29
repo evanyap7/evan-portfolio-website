@@ -19,6 +19,7 @@ const PAGES = [
   '/case-studies/trading-agent.html',
   '/work/research-agent.html',
   '/work/v-bay.html',
+  '/work/parallel-match.html',
   '/work/others.html',
 ];
 const PAGE_CHECKS = ['titles', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'emDash', 'projectPage', 'figureText', 'menu'];

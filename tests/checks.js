@@ -4,7 +4,7 @@
 
 const WIDE = 1024;
 const SECTIONS = ['top', 'about', 'experience', 'work', 'toolkit', 'contact'];
-const CARDS = ['website-revamp', 'assistant-bot', 'trading-agent', 'research-agent', 'v-bay', 'others'];
+const CARDS = ['website-revamp', 'assistant-bot', 'trading-agent', 'research-agent', 'v-bay', 'parallel-match', 'others'];
 // The drawing-set palette (paper, desk, ink, accent) and the pastels before it.
 const OLD_COLOURS = /#(fafaf7|e6e5e0|111214|4f5156|6c6e72|2541e6|ffb7d5|ffd98e|a9ddff|b9f2df|ff8fb1|ffe446|cdf5e6|ff9fb6|3a4a86|9b3158)\b|rgba\(17,\s*18,\s*20|rgba\(37,\s*65,\s*230/i;
 
@@ -209,7 +209,7 @@ export async function workCards(win) {
   const cards = [...doc.querySelectorAll('#work .work__card')];
   const ids = cards.map((card) => card.id.replace('work-', '')).join(',');
   const out = [
-    result('six work cards, in order', ids === CARDS.join(','), ids),
+    result('seven work cards, in order', ids === CARDS.join(','), ids),
     result('cards hold no nested links or buttons', cards.every((card) => !card.querySelector('a, button'))),
     result('cards hold a counting figure', cards.every((card) => card.querySelector('.work__figure [data-count]'))),
   ];
@@ -225,7 +225,7 @@ export async function workCards(win) {
 }
 
 // The project pages and the case study: the way back and the next project,
-// which runs through all six and back to the start.
+// which runs through all seven and back to the start.
 export async function projectPage(win) {
   const doc = win.document;
   const back = doc.querySelector('main .back');
