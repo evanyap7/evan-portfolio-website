@@ -73,9 +73,9 @@
     </header>
     <dl class="stats">
       <div><dt>Intents, each validated by a Zod schema</dt><dd><span data-count>38</span></dd></div>
-      <div><dt>Test commands routed correctly (my own set, so a smoke test)</dt><dd><span data-count>31/31</span></dd></div>
-      <div><dt>Lower cost per call across the chain (21-message benchmark)</dt><dd><span data-count>~65%</span></dd></div>
-      <div><dt>Lower batch latency than sequential parsing (7 receipts)</dt><dd><span data-count>~77%</span></dd></div>
+      <div><dt>Test commands routed correctly (my own set)</dt><dd><span data-count>31/31</span></dd></div>
+      <div><dt>Lower cost per call (21-message benchmark)</dt><dd><span data-count>~65%</span></dd></div>
+      <div><dt>Lower latency than sequential parsing (7 receipts)</dt><dd><span data-count>~77%</span></dd></div>
     </dl>
     <figure class="card reel project__figure" data-reel="chain">
     <figcaption class="reel__bar">
@@ -116,7 +116,7 @@
     </svg>
     </figure>
     <div class="rows project__body">
-      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A serverless Telegram assistant built around an orchestrator agent that calls tools for expenses, calendars, to-dos, a guided workout coach, habit streaks, inbox triage, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first and fails over to the next.</p></div></div>
+      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A Telegram assistant that turns text, voice notes or photos into actions: expenses, calendar events, to-dos, workouts, habits and email. An orchestrator agent picks the tools, and a three-model chain tries the cheapest model first.</p></div></div>
       <div><h2 class="mono">Stack</h2><p class="stack">Next.js · TypeScript · Vercel AI SDK · Claude · Gemini · Perplexity Sonar · Google Cloud Pub/Sub · Gmail, Sheets and Calendar APIs · Zod</p></div>
       <div><h2 class="mono">Links</h2><p class="links">
           <a class="pill" href="https://github.com/evanyap7/telegram-personal-assistant" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
