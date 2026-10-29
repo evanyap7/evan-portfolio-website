@@ -197,13 +197,13 @@
 
 .reel__text--xl { font-size: 32px; }
 
-/* Others: two small drawings on one plate, piano keys and a moon beside a
-   calendar. Plain CSS animation, not reel.js: each plays once, for under
-   five seconds, when the plate first comes into view, and with reduced
-   motion they rest as drawn here. */
+/* Dragon Tiles: one small drawing on a plate, piano keys. Plain CSS
+   animation, not reel.js: it plays once, for under five seconds, when the
+   plate first comes into view, and with reduced motion it rests as drawn
+   here. */
 .pair {
   display: grid;
-  grid-template: minmax(0, 1fr) / repeat(2, minmax(0, 1fr));
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   overflow: hidden;
   aspect-ratio: 480 / 150;
 }
@@ -221,10 +221,6 @@
   overflow: visible;
 }
 
-.pair__keys {
-  border-right: 1px dashed var(--line);
-}
-
 .keys__white rect {
   fill: var(--text);
   stroke: var(--card);
@@ -237,31 +233,20 @@
   fill: var(--bg);
 }
 
-.keys__waves,
-.cal__head,
-.cal__tick,
-.cal__days {
+.keys__waves {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .keys__waves { stroke: var(--signal); stroke-width: 2; }
-.moon__body { fill: var(--signal); }
-.moon__glow { fill: none; stroke: var(--signal); stroke-width: 1.5; opacity: 0.35; transform-box: fill-box; transform-origin: center; }
-.cal__sheet { fill: var(--card); stroke: var(--muted); stroke-width: 1.25; }
-.cal__head { stroke: var(--muted); stroke-width: 1.25; }
-.cal__days { stroke: var(--dim); stroke-width: 3.5; }
-.cal__tick { stroke: var(--signal); stroke-width: 3; stroke-dasharray: 1 2; }
 
 /* Motion ------------------------------------------------------------ */
-/* Others' two drawings play once the first time their plate is seen
+/* Dragon Tiles' drawing plays once the first time their plate is seen
    (reveal.js adds .is-visible). */
 @media (prefers-reduced-motion: no-preference) {
   .is-visible .pair .keys__white rect { animation: key-press 600ms calc(300ms + var(--i) * 220ms) var(--ease-out) both; }
   .is-visible .pair .keys__waves { animation: draw 700ms 1900ms var(--ease) backwards; }
-  .is-visible .pair .moon__glow { animation: moon-glow 1400ms 300ms ease-out 3 both; }
-  .is-visible .pair .cal__tick { animation: draw 600ms 1200ms var(--ease) backwards; }
 }
 
 /* Titles: masked word reveal ----------------------------------------- */
@@ -379,6 +364,7 @@
 .vt-trading-agent { view-transition-name: t-trading-agent; }
 .vt-research-agent { view-transition-name: t-research-agent; }
 .vt-v-bay { view-transition-name: t-v-bay; }
+.vt-parallel-match { view-transition-name: t-parallel-match; }
 .vt-others { view-transition-name: t-others; }
 
 @keyframes vt-out {
@@ -405,11 +391,6 @@
 @keyframes key-press {
   0%, 100% { fill: var(--text); transform: none; }
   30% { fill: var(--signal); transform: scaleY(0.96); }
-}
-
-@keyframes moon-glow {
-  0% { opacity: 0.7; transform: scale(0.85); }
-  100% { opacity: 0.35; transform: scale(1); }
 }
 
 @keyframes draw {
