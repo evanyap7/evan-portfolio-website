@@ -68,7 +68,7 @@
   <main id="main" class="project">
     <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
     <header class="project__head">
-      <p class="mono label">Team of 4 · Microsoft x Premier League hackathon · Oct 2026</p>
+      <p class="mono label">Team of 3 · Microsoft x Premier League hackathon · Oct 2026</p>
       <h1 class="project__title vt-parallel-match">Parallel <span class="serif">Match</span></h1>
     </header>
     <dl class="stats">
@@ -76,6 +76,43 @@
       <div><dt>Paired simulations behind each answer</dt><dd><span data-count>500</span></dd></div>
       <div><dt>Interface languages, one right to left</dt><dd><span data-count>18</span></dd></div>
     </dl>
+    <figure class="card reel project__figure" data-reel="fork">
+    <figcaption class="reel__bar">
+    <span class="reel__name">One call, two matches, 500 replays</span>
+    <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
+    <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
+    </figcaption>
+    <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. The real match and a what-if match share the same start. A 56th-minute penalty is removed, and 500 paired replays run down both timelines. The team’s win chance falls from 29% to 15%.">
+    <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
+    <g data-a="stage">
+    <path class="reel__wire reel__draw" data-a="real" pathLength="1" d="M32 92H448"/>
+    <path class="reel__wire reel__draw stroke-signal" data-a="alt" pathLength="1" d="M180 92C210 92 210 172 240 172H448"/>
+    <g data-a="lanelabels">
+    <text class="reel__text reel__text--note reel__text--start" x="32" y="76">Real match</text>
+    <text class="reel__text reel__text--note reel__text--start reel__text--key" x="262" y="156">What if no penalty</text>
+    </g>
+    <g data-a="pen"><path class="reel__wire" d="M180 60V87"/><rect class="reel__pill" x="120" y="28" width="120" height="32" rx="16"/><text class="reel__text" x="180" y="49">56’ penalty</text><circle class="is-signal" cx="180" cy="92" r="5"/></g>
+    <g data-a="r1" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
+    <g data-a="a1" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
+    <g data-a="r2" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
+    <g data-a="a2" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
+    <g data-a="r3" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
+    <g data-a="a3" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
+    <text class="reel__text reel__text--note reel__text--key" data-a="runs" x="240" y="214">500 paired replays</text>
+    <g data-a="meters">
+    <text class="reel__text reel__text--note reel__text--start" x="32" y="254">Real</text>
+    <path class="reel__track" stroke-width="14" d="M124 250H400"/>
+    <path class="reel__fill reel__draw" data-a="bar1" pathLength="1" style="stroke: var(--muted)" stroke-width="14" stroke-dashoffset="0.71" d="M124 250H400"/>
+    <text class="reel__text reel__text--num reel__text--end" data-a="v1" x="448" y="256">29%</text>
+    <text class="reel__text reel__text--note reel__text--start reel__text--key" x="32" y="286">What-if</text>
+    <path class="reel__track" stroke-width="14" d="M124 282H400"/>
+    <path class="stroke-signal reel__fill reel__draw" data-a="bar2" pathLength="1" stroke-width="14" stroke-dashoffset="0.85" d="M124 282H400"/>
+    <text class="reel__text reel__text--num reel__text--end reel__text--key" data-a="v2" x="448" y="288">15%</text>
+    </g>
+    <text class="reel__text reel__text--note reel__text--end reel__text--key" data-a="delta" x="448" y="232">−14 points</text>
+    </g>
+    </svg>
+    </figure>
     <figure class="card reel project__figure">
       <figcaption class="reel__bar"><span class="reel__name">The real match beside the what-if</span></figcaption>
       <div class="reel__scene reel__scene--plate"><img src="/img/previews/parallel-match-viewer.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The analyst view. Two pitches replay the same moment side by side, the original and the alternate timeline, above a panel naming the 56th-minute penalty and the Law it falls under. All clubs and players are synthetic."></div>

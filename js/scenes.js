@@ -157,4 +157,58 @@ function market({ track, pop, fade, draw, count, ease }) {
   pop('even', 5730);
 }
 
-export const SCENES = { chain, ledger, rating, market };
+// Parallel Match: the real match and the what-if share one start. Pairs of
+// replays run down both lanes, then the two win chances are measured.
+function fork({ pop, fade, draw, travel, count }) {
+  draw('real', 300, 700);
+  fade('lanelabels', 800);
+  pop('pen', 900);
+  draw('alt', 1500, 800);
+
+  [0, 1, 2].forEach((i) => {
+    const at = 2500 + i * 650;
+    travel(`r${i + 1}`, [[at, 32, 92], [at + 900, 448, 92]]);
+    travel(`a${i + 1}`, [[at, 32, 92], [at + 450, 180, 92], [at + 650, 210, 132], [at + 850, 240, 172], [at + 1250, 448, 172]]);
+  });
+  fade('runs', 2400);
+  count('runs', 2500, 2300, 500, (value) => `${value} paired replays`);
+
+  fade('meters', 4900);
+  draw('bar1', 5000, 800, { from: 1, to: 0.71 });
+  count('v1', 5000, 800, 29, (value) => `${value}%`);
+  draw('bar2', 5500, 900, { from: 1, to: 0.85 });
+  count('v2', 5500, 900, 15, (value) => `${value}%`);
+  pop('delta', 6500);
+}
+
+// WatchPartyyy: a pause is caught in the page, passed through the extension
+// to the relay, and lands on a friend's player.
+function sync({ pop, fade, travel }) {
+  pop('in1', 250);
+  pop('in2', 370);
+  pop('in3', 490);
+  pop('relay', 610, { pulse: [3300] });
+  pop('friends', 730, { pulse: [4100] });
+  fade('wires', 600);
+  fade('notes', 800);
+
+  travel('dot1', [[1200, 92, 70], [1700, 240, 70], [2200, 388, 70], [2500, 388, 160], [3100, 240, 160], [3300, 240, 176]]);
+  travel('dot2', [[3600, 180, 206], [4100, 152, 206]]);
+  pop('ok', 4100);
+  fade('result', 4600);
+}
+
+// Website Revamp: nine pages arrive, three executive tools light up, and the
+// seven languages are counted in.
+function site({ pop, fade, count }) {
+  for (let i = 0; i < 9; i += 1) pop(`t${i + 1}`, 250 + i * 110, { pulse: [2400 + i * 90] });
+  fade('toolnote', 1500);
+  pop('tool1', 1600);
+  pop('tool2', 1750);
+  pop('tool3', 1900);
+  fade('langnote', 3000);
+  for (let i = 0; i < 7; i += 1) pop(`lang${i + 1}`, 3100 + i * 220);
+  count('langs', 3100, 1500, 7, (value) => `${value} languages`);
+}
+
+export const SCENES = { chain, ledger, rating, market, fork, sync, site };
