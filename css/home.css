@@ -472,7 +472,6 @@ ul.role__points li + li {
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.04em;
-  white-space: nowrap;
 }
 
 .work__figure [data-count] {
@@ -485,6 +484,7 @@ ul.role__points li + li {
   font-size: 15px;
   font-weight: 400;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .work__name {
