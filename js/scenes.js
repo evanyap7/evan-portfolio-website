@@ -198,17 +198,4 @@ function sync({ pop, fade, travel }) {
   fade('result', 4600);
 }
 
-// Website Revamp: nine pages arrive, three executive tools light up, and the
-// seven languages are counted in.
-function site({ pop, fade, count }) {
-  for (let i = 0; i < 9; i += 1) pop(`t${i + 1}`, 250 + i * 110, { pulse: [2400 + i * 90] });
-  fade('toolnote', 1500);
-  pop('tool1', 1600);
-  pop('tool2', 1750);
-  pop('tool3', 1900);
-  fade('langnote', 3000);
-  for (let i = 0; i < 7; i += 1) pop(`lang${i + 1}`, 3100 + i * 220);
-  count('langs', 3100, 1500, 7, (value) => `${value} languages`);
-}
-
-export const SCENES = { chain, ledger, rating, market, fork, sync, site };
+export const SCENES = { chain, ledger, rating, market, fork, sync };
