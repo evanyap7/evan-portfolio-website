@@ -70,7 +70,7 @@
     <header class="project__head">
       <p class="mono label">Case study · Systematic Trading System · Python</p>
       <h1 class="project__title vt-trading-agent case__title">I built a trading system, tested four ideas for an edge, and found <span class="serif">none</span>.</h1>
-      <p class="project__lede">The system can trade a small Webull Singapore account on its own, and no model can size or place an order. I tested four ideas for an edge on it, including a Claude agent. None beat holding the S&amp;P 500, so it now runs in shadow mode: it decides what it would trade and records it, without sending orders.</p>
+      <p class="project__lede">A trading system for a small Webull Singapore account, where no model can size or place an order. I tested four ideas for an edge on it, including a Claude agent. None beat holding the S&amp;P 500, so it now runs in shadow mode.</p>
     </header>
     <dl class="stats">
       <div><dt>Automated tests, run in CI on every push</dt><dd><span data-count>191</span></dd></div>
@@ -127,11 +127,8 @@
         <li><strong>The uncomfortable part.</strong> The momentum rule returned +66.8% against SPY's +70.1% from 2022 to 2026, at about half the drawdown. Across the classic quant signals I tested, the best deflated Sharpe was 0.65, below my bar of about 0.95. I report that as the result, and the system stays in shadow mode.</li>
       </ul>
 
-      <h2>The problem</h2>
-      <p>I wanted a system that could run unattended without my having to trust a language model with money, and I wanted to know whether it had an edge at all. Models are fluent and sometimes wrong, so the design question was not "how smart can the agent be" but "how bad can a failure get, and how fast can I see it."</p>
-
       <h2>How it is built</h2>
-      <p>In the version I tested, the only step that used a model was trade proposal. Deterministic code verified, sized and risk-checked every proposal. I have since removed the model, and the system now runs a rule-based momentum agent behind the same checks.</p>
+      <p>The agent may only propose a trade. Deterministic code verifies, sizes and risk-checks every proposal, and a tamper-evident ledger records each step. In the version I tested, trade proposal was the only step that used a model. It is now a rule behind the same checks.</p>
 
       <div class="flow" role="group" aria-label="Pipeline, in three stages">
         <section class="flow__lane">
@@ -167,30 +164,13 @@
       </div>
       <p class="case__note">Blue marks the only step that was ever a model. After the experiment below, even that step is a rule.</p>
 
-      <h2>Four decisions that matter</h2>
-      <ol class="case__decisions">
-        <li>
-          <h3>The proposer cannot size or send an order</h3>
-          <p>An independent verifier recomputes what each proposal implies from my own data. It rejects anything ungrounded (every cited evidence ID must exist in this cycle, and the symbol's own price evidence must be cited), stale, priced outside a collar around the quote, with a stop too close or too far in ATRs, without enough reward for the risk, or without edge after costs.</p>
-          <p>Position size comes from quarter-Kelly on the stated edge, capped at 2% risk per trade and 6% of equity at risk across all positions. I used a quarter because the agent's confidence figures are not calibrated.</p>
-          <p class="case__code"><code>verifier.py</code> · <code>portfolio.py</code> · <code>risk.py</code></p>
-        </li>
-        <li>
-          <h3>The risk limits are a file the agent cannot write</h3>
-          <p>Limits live in <code>config/risk_limits.yaml</code> and change only through a human git commit. The file's hash is recorded with every risk decision, so I can tell which limits applied to any trade. Examples: a 5% drawdown breaker, a 2% daily-loss check that blocks new entries, and at most five new trades a day.</p>
-        </li>
-        <li>
-          <h3>Execution is idempotent and never retries blindly</h3>
-          <p>Client order IDs are derived deterministically from the decision, so a repeated submit finds the existing order. Each order is previewed first, and a preview cost that differs from the intended cost is rejected. If the broker's answer is ambiguous, the order moves to a reconcile state and is resolved by asking the broker, not by sending it again. After a fill, a broker-side stop is placed and re-armed if it goes missing.</p>
-          <p class="case__code"><code>execution.py</code></p>
-        </li>
-        <li>
-          <h3>The audit trail is tamper-evident, and the kill switch is a file</h3>
-          <p>The <code>events</code> and <code>evidence</code> tables are insert-only, enforced by SQLite triggers that abort any update or delete. Each event stores the previous hash and its own, so an edit breaks the chain. Tables such as orders and trades are projections that can be rebuilt from the events plus broker history.</p>
-          <p>The kill switch needs no access to the running process: create <code>state/KILL</code> and new orders stop, and open entry orders are cancelled on the next pass. Real orders also need three separate switches to be on, so any one being off turns entries into rejections.</p>
-          <p class="case__code"><code>ledger.py</code> · <code>killswitch.py</code></p>
-        </li>
-      </ol>
+      <h2>Four design decisions</h2>
+      <ul class="case__list">
+        <li><strong>The proposer cannot size or send an order.</strong> An independent verifier rejects anything ungrounded, stale, mispriced or without edge after costs. Size comes from quarter-Kelly, capped at 2% risk per trade.</li>
+        <li><strong>The risk limits are a file the agent cannot write.</strong> They change only through a human git commit, and every risk decision records the file's hash.</li>
+        <li><strong>Execution never retries blindly.</strong> Order IDs are deterministic, every order is previewed, and an ambiguous broker answer is resolved by asking the broker, not by resending.</li>
+        <li><strong>The audit trail is tamper-evident, and the kill switch is a file.</strong> The ledger is insert-only and hash-chained, so an edit breaks the chain. Creating <code>state/KILL</code> stops new orders without touching the running process.</li>
+      </ul>
 
       <h2>Four tests for an edge</h2>
       <p>Each idea ran on liquid US stocks and ETFs, and each had to beat simply holding the index. None did.</p>
@@ -218,8 +198,8 @@
         <li><strong>Stated biases.</strong> The universe is today's survivors, which flatters every absolute return, and each report lists that under its caveats.</li>
       </ul>
 
-      <h2>The LLM study: did Claude earn its place?</h2>
-      <p>I replayed 2024 (about 252 trading days) over the 100 most liquid US stocks plus an S&amp;P 500 ETF, starting from $1,500. Both agents ran through the same verifier, sizing, stops, slippage model and kill switch. Before the run I set the bar: the Claude agent had to beat the baseline on <strong>both</strong> Sharpe ratio and win rate.</p>
+      <h2>The Claude test</h2>
+      <p>I replayed 2024 over the 100 most liquid US stocks, starting from $1,500, and set the bar before the run: the Claude agent had to beat the momentum baseline on both Sharpe ratio and win rate. It did not.</p>
 
       <div class="case__table" role="region" aria-label="Backtest results, scrollable" tabindex="0">
         <table>
@@ -230,54 +210,20 @@
           <tbody>
             <tr><th scope="row">Net return</th><td>+20.32%</td><td>+24.71%</td><td>+25.59%</td></tr>
             <tr><th scope="row">Sharpe ratio</th><td>1.39</td><td>1.36</td><td>1.89</td></tr>
-            <tr><th scope="row">Max drawdown</th><td>−6.36%</td><td>−12.36%</td><td>−8.41%</td></tr>
             <tr><th scope="row">Win rate</th><td>43.9%</td><td>47.4%</td><td>n/a</td></tr>
-            <tr><th scope="row">Profit factor</th><td>1.42</td><td>1.64</td><td>n/a</td></tr>
-            <tr><th scope="row">Trades</th><td>107</td><td>133</td><td>n/a</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p><strong>Verdict: it failed my rule.</strong> Claude's Sharpe was 1.39 against 1.36 for the baseline, a lead of 0.03 that is noise. SPY's was 1.89. Claude's win rate was also 3.5 points lower. Its one real advantage was roughly half the drawdown. A measured research cycle cost about $0.11, which is about $27 a year, or 1.8% of a $1,500 account, before any benefit.</p>
-      <p>So I removed the LLM layer, kept the baseline, and kept the harness that told me the truth.</p>
+      <p>Claude's Sharpe lead of 0.03 is noise, its win rate was lower, and it cost about $27 a year on a $1,500 account. Its one real advantage was roughly half the drawdown. So I removed the model and kept the harness that told me the truth.</p>
+      <p>Caveats: one year in a strong bull market, and one run of a nondeterministic model.</p>
 
-      <h3 class="case__sub">What I would not claim from this</h3>
-      <ul class="case__list">
-        <li>It is one year, and 2024 was a strong bull market for the benchmark.</li>
-        <li>It is one run of a nondeterministic model, so a rerun would give different numbers. The Sharpe gap of 0.03 sits well inside that noise.</li>
-        <li>With a $1,500 account, whole-share rounding and fixed order costs affect both agents.</li>
-        <li>An early 49-call partial run showed a 65% win rate for Claude on a handful of trades. I discarded it as statistically meaningless once the full year existed.</li>
-      </ul>
-
-      <h2>What went wrong along the way</h2>
-      <ol class="case__list case__list--numbered">
-        <li><strong>My first comparison was invalid.</strong> The harness never loaded the API key, so every model call failed. The backtester swallowed the error as "no trade" and printed a fake 0% win rate for Claude. Now the harness loads its configuration, records the first error of each kind, and aborts if a model agent only produces errors.</li>
-        <li><strong>I killed healthy runs.</strong> I was watching the wrong cache directory, so a run waiting on the network looked hung. I stopped it after 40 minutes and stranded about $7.50 of work.</li>
-        <li><strong>The cache was fragile.</strong> Its key included account state that depended on earlier model decisions, so only an identical chain of decisions could reuse it.</li>
-        <li><strong>I had no visibility into spend.</strong> About $13 looked like nothing until I added a spend ledger with a hard cap, an abort after three failures in a row, and a request timeout.</li>
-      </ol>
+      <h2>A mistake worth reporting</h2>
+      <p>My first comparison was invalid. The harness never loaded the API key, so every model call failed, and the backtester swallowed each error as "no trade". It printed a fake 0% win rate for Claude. The harness now records the first error of each kind and aborts if an agent only produces errors.</p>
 
       <h2>Where it stands</h2>
-      <p>The system placed its first real orders on 23 September 2026: one share at a time, each with a broker-side stop. I switched live trading off on 1 October. It now runs in shadow mode, which records decisions without sending orders, and the research since says to keep it that way. I would rather say that plainly than tune until a chart looks good.</p>
-      <p>A paper account seeded from the real one is compared with SPY each week. If I want an edge, the next place to look is a universe where small capital can compete, such as liquid small caps, with a point-in-time list of constituents to remove survivorship bias. Putting a model back in is not the plan.</p>
+      <p>The system placed its first real orders on 23 September 2026, one share at a time, each with a broker-side stop. I switched live trading off on 1 October, and it now runs in shadow mode, recording decisions without sending orders. I would rather say that plainly than tune until a chart looks good.</p>
 
-      <h2>Read the code</h2>
-      <div class="case__table" role="region" aria-label="Where things live, scrollable" tabindex="0">
-        <table>
-          <thead><tr><th scope="col">Concern</th><th scope="col">File</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Independent proposal checks</th><td><code>src/trading_agent/verifier.py</code></td></tr>
-            <tr><th scope="row">Sizing from edge</th><td><code>src/trading_agent/portfolio.py</code></td></tr>
-            <tr><th scope="row">Deterministic risk engine</th><td><code>src/trading_agent/risk.py</code></td></tr>
-            <tr><th scope="row">Idempotent execution</th><td><code>src/trading_agent/execution.py</code></td></tr>
-            <tr><th scope="row">Hash-chained ledger</th><td><code>src/trading_agent/ledger.py</code></td></tr>
-            <tr><th scope="row">Kill switch</th><td><code>src/trading_agent/killswitch.py</code></td></tr>
-            <tr><th scope="row">Backtester and harness</th><td><code>src/trading_agent/backtest.py</code>, <code>scripts/backtest_harness.py</code></td></tr>
-            <tr><th scope="row">Walk-forward research and luck correction</th><td><code>src/trading_agent/quant/</code></td></tr>
-            <tr><th scope="row">Insider-buying study</th><td><code>src/trading_agent/insider.py</code>, <code>scripts/insider_study.py</code></td></tr>
-          </tbody>
-        </table>
-      </div>
       <p class="links case__links">
         <a class="pill" href="https://github.com/evanyap7/evans-trading-agent" target="_blank" rel="noopener">Source on GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
         <a class="pill" href="https://github.com/evanyap7/evans-trading-agent/blob/HEAD/docs/backtest-llm-vs-baseline-2024.md" target="_blank" rel="noopener">LLM backtest report <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
