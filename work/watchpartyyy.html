@@ -76,23 +76,34 @@
       <div><dt>Extension scripts, each with one job</dt><dd><span data-count>3</span></dd></div>
       <div><dt>Video streams touched. Everyone uses their own subscription</dt><dd><span data-count>0</span></dd></div>
     </dl>
-    <figure class="card reel project__figure">
-      <figcaption class="reel__bar"><span class="reel__name">How a pause reaches your friends</span></figcaption>
-      <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Diagram. Inside your browser, a page script drives the Netflix player, a content script watches the video, and a background script holds the WebSocket. The WebSocket connects to a relay server that keeps each room’s state and passes play, pause, seek and chat to your friends’ browsers.">
-        <path class="reel__wire" d="M152 70H180M300 70H328"/>
-        <g><rect class="reel__box" x="32" y="40" width="120" height="60" rx="14"/><text class="reel__text" x="92" y="76">page.js</text></g>
-        <g><rect class="reel__box" x="180" y="40" width="120" height="60" rx="14"/><text class="reel__text" x="240" y="76">content.js</text></g>
-        <g><rect class="reel__box" x="328" y="40" width="120" height="60" rx="14"/><text class="reel__text" x="388" y="76">background.js</text></g>
-        <text class="reel__text reel__text--note" x="92" y="122">drives Netflix</text>
-        <text class="reel__text reel__text--note" x="240" y="122">watches video</text>
-        <text class="reel__text reel__text--note" x="388" y="122">holds socket</text>
-        <path class="reel__wire" d="M388 134V160H240V176M180 206H152"/>
-        <g><rect class="reel__box reel__box--ok" x="180" y="176" width="120" height="60" rx="14"/><text class="reel__text" x="240" y="212">Relay</text></g>
-        <g><rect class="reel__box" x="32" y="176" width="120" height="60" rx="14"/><text class="reel__text" x="92" y="212">Friends</text></g>
-        <text class="reel__text reel__text--note" x="240" y="258">room state</text>
-        <text class="reel__text reel__text--note" x="92" y="258">same code</text>
-        <text class="reel__text reel__text--note" x="240" y="298">play · pause · seek · chat</text>
-      </svg>
+    <figure class="card reel project__figure" data-reel="sync">
+    <figcaption class="reel__bar">
+    <span class="reel__name">How a pause reaches your friends</span>
+    <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
+    <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
+    </figcaption>
+    <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. A pause is caught by the page script, passed through the content script and the background script to the relay server, then sent on to a friend’s browser, where it pauses their player too.">
+    <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
+    <g data-a="stage">
+    <path class="reel__wire" data-a="wires" d="M152 70H180M300 70H328M388 134V160H240V176M180 206H152"/>
+    <g data-a="in1"><rect class="reel__box" x="32" y="40" width="120" height="60" rx="14"/><text class="reel__text" x="92" y="76">page.js</text></g>
+    <g data-a="in2"><rect class="reel__box" x="180" y="40" width="120" height="60" rx="14"/><text class="reel__text" x="240" y="76">content.js</text></g>
+    <g data-a="in3"><rect class="reel__box" x="328" y="40" width="120" height="60" rx="14"/><text class="reel__text" x="388" y="76">background.js</text></g>
+    <g data-a="notes">
+    <text class="reel__text reel__text--note" x="92" y="122">drives Netflix</text>
+    <text class="reel__text reel__text--note" x="240" y="122">watches video</text>
+    <text class="reel__text reel__text--note" x="388" y="122">holds socket</text>
+    <text class="reel__text reel__text--note" x="240" y="258">room state</text>
+    <text class="reel__text reel__text--note" x="92" y="258">same code</text>
+    </g>
+    <g data-a="relay"><rect class="reel__box reel__box--ok" x="180" y="176" width="120" height="60" rx="14"/><text class="reel__text" x="240" y="212">Relay</text></g>
+    <g data-a="friends"><rect class="reel__box" x="32" y="176" width="120" height="60" rx="14"/><text class="reel__text" x="92" y="212">Friends</text></g>
+    <g data-a="ok"><circle class="is-signal" cx="146" cy="180" r="11"/><path class="reel__glyph" d="M141.5 180.5l3 3 6-6.5"/></g>
+    <g data-a="dot1" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
+    <g data-a="dot2" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
+    <text class="reel__text reel__text--num reel__text--key" data-a="result" x="240" y="296">paused for everyone</text>
+    </g>
+    </svg>
     </figure>
     <div class="rows project__body">
       <div><h2 class="mono">Overview</h2><div><p class="project__summary">A Chrome extension that keeps play, pause and seek in sync for friends watching Netflix together, with a small chat panel. It only syncs the controls and never touches the video, so everyone uses their own subscription.</p></div></div>
