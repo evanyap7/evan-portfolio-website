@@ -1,0 +1,14 @@
+{
+  "name": "evan-portfolio-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "for f in js/*.js tests/*.js tests/*.mjs; do node --check \"$f\" || exit 1; done",
+    "check:browser": "node tests/ci.mjs",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "playwright-core": "^1.50.0"
+  }
+}
