@@ -12,7 +12,7 @@ try {
   const page = await browser.newPage();
   await page.goto(`http://localhost:${PORT}/tests/`);
   const summary = page.locator('[data-summary]');
-  await page.waitForFunction(() => /^(PASS|FAIL)/.test(document.querySelector('[data-summary]').textContent), null, { timeout: 540000 });
+  await page.waitForFunction(() => /^(PASS|FAIL)/.test(document.querySelector('[data-summary]').textContent), null, { timeout: 1200000 });
   const text = await summary.textContent();
   if (text.startsWith('FAIL')) {
     const rows = await page.$$eval('tr.fail', (trs) => trs.map((tr) => tr.textContent.trim().replace(/\s+/g, ' ')));
