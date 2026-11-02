@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Personal Assistant Bot | Evan Yap</title>
-  <meta name="description" content="A serverless Telegram assistant with an orchestrator agent for expenses, calendars, workouts, habits, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first.">
+  <meta name="description" content="A serverless Telegram assistant with an orchestrator agent for expenses, calendars, workouts, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first.">
   <meta name="theme-color" content="#04070a">
   <meta property="og:title" content="Personal Assistant Bot | Evan Yap">
-  <meta property="og:description" content="A serverless Telegram assistant with an orchestrator agent for expenses, calendars, workouts, habits, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first.">
+  <meta property="og:description" content="A serverless Telegram assistant with an orchestrator agent for expenses, calendars, workouts, bill splitting and email, from text, voice notes or photos. A three-model chain tries the cheapest model first.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.evanyap.com/work/assistant-bot">
   <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
@@ -68,14 +68,13 @@
   <main id="main" class="project">
     <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
     <header class="project__head">
-      <p class="mono label">Full-stack developer · Aug – Oct 2026</p>
+      <p class="mono label">Full-stack developer · Aug 2026 – now</p>
       <h1 class="project__title vt-assistant-bot">Personal Assistant <span class="serif">Bot</span></h1>
     </header>
     <dl class="stats">
-      <div><dt>Intents, each validated by a Zod schema</dt><dd><span data-count>38</span></dd></div>
-      <div><dt>Test commands routed correctly (my own set)</dt><dd><span data-count>31/31</span></dd></div>
-      <div><dt>Lower cost per call (21-message benchmark)</dt><dd><span data-count>~65%</span></dd></div>
-      <div><dt>Lower latency than sequential parsing (7 receipts)</dt><dd><span data-count>~77%</span></dd></div>
+      <div><dt>Intents, each validated by a Zod schema</dt><dd><span data-count>37</span></dd></div>
+      <div><dt>Test messages routed correctly (my own set of 39, Nov 2026)</dt><dd><span data-count>38/39</span></dd></div>
+      <div><dt>Lower latency than sequential parsing (6 receipts, mean of 3 runs)</dt><dd><span data-count>~74%</span></dd></div>
     </dl>
     <figure class="card reel project__figure" data-reel="chain">
     <figcaption class="reel__bar">
@@ -83,7 +82,7 @@
     <span class="reel__clock" data-reel-clock aria-hidden="true" hidden></span>
     <button class="reel__toggle" type="button" data-reel-toggle aria-pressed="false" hidden><span class="visually-hidden">Pause animation</span></button>
     </figcaption>
-    <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. Text, voice and photo messages go to the cheapest of three models first. When that model fails, the next one takes over, and the cost per call ends about 65% lower.">
+    <svg class="reel__scene" viewBox="0 0 480 320" role="img" aria-label="Animated diagram. Text, voice and photo messages go to the cheapest of three models first. When that model fails, the next one takes over, and 38 of 39 test messages end up routed correctly.">
     <path class="reel__rail reel__draw" data-a="progress" pathLength="1" d="M26 310H454"/>
     <g data-a="stage">
     <path class="reel__wire" data-a="wires" d="M92 68V128M240 68V98H92M388 68V98H240"/>
@@ -107,17 +106,17 @@
     <g data-a="dot3" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
     <g data-a="dot4" opacity="0"><circle class="is-signal-soft" r="13"/><circle class="is-signal" r="6.5"/></g>
     <g data-a="meter">
-    <text class="reel__text reel__text--note reel__text--start" x="32" y="248">Cost per call</text>
+    <text class="reel__text reel__text--note reel__text--start" x="32" y="248">Routed correctly</text>
     <path class="reel__track" stroke-width="20" d="M42 270H438"/>
-    <path class="stroke-signal reel__fill reel__draw" data-a="cost" pathLength="1" stroke-width="20" stroke-dashoffset="0.65" d="M42 270H438"/>
+    <path class="stroke-signal reel__fill reel__draw" data-a="cost" pathLength="1" stroke-width="20" stroke-dashoffset="0.03" d="M42 270H438"/>
     </g>
-    <text class="reel__text reel__text--num reel__text--end reel__text--key" data-a="saving" x="448" y="250">~65% lower</text>
+    <text class="reel__text reel__text--num reel__text--end reel__text--key" data-a="saving" x="448" y="250">97%</text>
     </g>
     </svg>
     </figure>
     <div class="rows project__body">
-      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A Telegram assistant that turns text, voice notes or photos into actions: expenses, calendar events, to-dos, workouts, habits and email. An orchestrator agent picks the tools, and a three-model chain tries the cheapest model first.</p></div></div>
-      <div><h2 class="mono">Stack</h2><p class="stack">Next.js · TypeScript · Vercel AI SDK · Claude · Gemini · Perplexity Sonar · Google Cloud Pub/Sub · Gmail, Sheets and Calendar APIs · Zod</p></div>
+      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A Telegram assistant that turns text, voice notes or photos into actions: expenses, calendar events, to-dos, workouts and email. An orchestrator agent picks the tools, and a three-model chain tries the cheapest model first.</p></div></div>
+      <div><h2 class="mono">Stack</h2><p class="stack">Next.js · TypeScript · Vercel AI SDK · Claude · Gemini (voice notes) · Perplexity Sonar · Google Cloud Pub/Sub · Gmail, Sheets and Calendar APIs · Zod</p></div>
       <div><h2 class="mono">Links</h2><p class="links">
           <a class="pill" href="https://github.com/evanyap7/telegram-personal-assistant" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
           <a class="pill" href="https://github.com/evanyap7/telegram-personal-assistant/tree/main/scripts" target="_blank" rel="noopener">Benchmarks and tests <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>

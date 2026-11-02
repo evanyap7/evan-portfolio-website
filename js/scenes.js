@@ -10,7 +10,8 @@ const BAD = token('--text', '#fafafa');
 const LINE = token('--muted', '#a1a1a1');
 
 // Personal Assistant Bot: three messages try the cheapest model first. The
-// third fails there and is passed on, then the cost meter settles.
+// third fails there and is passed on, then the routing meter fills to the
+// measured 38 of 39 (97%).
 function chain({ track, pop, fade, draw, travel, jolt, count, ease }) {
   const badge = (at) => [
     [at, { opacity: 0, scale: 0.5 }],
@@ -50,8 +51,8 @@ function chain({ track, pop, fade, draw, travel, jolt, count, ease }) {
   pop('ok2', 5300);
 
   fade('saving', 5800);
-  draw('cost', 5900, 1200, { from: 0, to: 0.65 });
-  count('saving', 5900, 1200, 65, (value) => `~${value}% lower`);
+  draw('cost', 5900, 1200, { from: 1, to: 0.03 });
+  count('saving', 5900, 1200, 97, (value) => `${value}%`);
 }
 
 // Trading agent: the LLM step is struck out and dropped for a plain rule,

@@ -70,10 +70,10 @@
     <header class="project__head">
       <p class="mono label">Case study · Systematic Trading System · Python</p>
       <h1 class="project__title vt-trading-agent case__title">I built a trading system, tested four ideas for an edge, and found <span class="serif">none</span>.</h1>
-      <p class="project__lede">A trading system for a small Webull Singapore account, where no model can size or place an order. I tested four ideas for an edge on it, including a Claude agent. None beat holding the S&amp;P 500, so it now runs in shadow mode.</p>
+      <p class="project__lede">A trading system for a small Webull Singapore account, where no model can size or place an order. I tested four ideas for an edge on it, including a Claude agent. None beat holding the S&amp;P 500, so I paused live trading with the kill switch.</p>
     </header>
     <dl class="stats">
-      <div><dt>Automated tests, run in CI on every push</dt><dd><span data-count>191</span></dd></div>
+      <div><dt>Automated tests, run in CI on every push</dt><dd><span data-count>209</span></dd></div>
       <div><dt>Ideas tested for an edge, each against holding the index</dt><dd><span data-count>4</span></dd></div>
       <div><dt>Best deflated Sharpe ratio across the classic quant signals, against a bar of about 0.95</dt><dd><span data-count>0.65</span></dd></div>
     </dl>
@@ -124,11 +124,11 @@
         <li><strong>What I built.</strong> A swing-trading system where the agent may only <em>propose</em>. Deterministic code verifies, sizes and risk-checks every idea, and an append-only ledger records each step. It placed its first real orders in September 2026, one share at a time.</li>
         <li><strong>What I tested.</strong> Four ideas for an edge: a Claude agent, classic quant signals, insider buying from SEC filings, and the plain momentum rule the system runs now.</li>
         <li><strong>What I found.</strong> No edge. Claude did not beat the free rule and cost about $27 a year, so I removed it. No classic signal survived out-of-sample testing and a correction for luck, and insider buying added nothing once sizing and stops applied.</li>
-        <li><strong>The uncomfortable part.</strong> The momentum rule returned +66.8% against SPY's +70.1% from 2022 to 2026, at about half the drawdown. Across the classic quant signals I tested, the best deflated Sharpe was 0.65, below my bar of about 0.95. I report that as the result, and the system stays in shadow mode.</li>
+        <li><strong>The uncomfortable part.</strong> The momentum rule returned +66.8% against SPY's +70.1% from 2022 to 2026, at about half the drawdown. Across the classic quant signals I tested, the best deflated Sharpe was 0.65, below my bar of about 0.95. I report that as the result, and live trading stays paused.</li>
       </ul>
 
       <h2>How it is built</h2>
-      <p>The agent may only propose a trade. Deterministic code verifies, sizes and risk-checks every proposal, and a tamper-evident ledger records each step. In the version I tested, trade proposal was the only step that used a model. It is now a rule behind the same checks.</p>
+      <p>The agent may only propose a trade. Deterministic code verifies, sizes and risk-checks every proposal, and a tamper-evident ledger records each step. In the version I tested, trade proposal was the only step that used a model. Proposals now come from a rule behind the same checks; a separate read-only advisor still calls a model, but it cannot trade.</p>
 
       <div class="flow" role="group" aria-label="Pipeline, in three stages">
         <section class="flow__lane">
@@ -222,7 +222,7 @@
       <p>My first comparison was invalid. The harness never loaded the API key, so every model call failed, and the backtester swallowed each error as "no trade". It printed a fake 0% win rate for Claude. The harness now records the first error of each kind and aborts if an agent only produces errors.</p>
 
       <h2>Where it stands</h2>
-      <p>The system placed its first real orders on 23 September 2026, one share at a time, each with a broker-side stop. I switched live trading off on 1 October, and it now runs in shadow mode, recording decisions without sending orders. I would rather say that plainly than tune until a chart looks good.</p>
+      <p>The system placed its first real orders on 23 September 2026, one share at a time, each with a broker-side stop. I paused live trading with the kill switch on 1 October, so it sends no new orders. I would rather say that plainly than tune until a chart looks good.</p>
 
       <p class="links case__links">
         <a class="pill" href="https://github.com/evanyap7/evans-trading-agent" target="_blank" rel="noopener">Source on GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
