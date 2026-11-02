@@ -47,3 +47,7 @@ python3 tests/serve.py 4173      # then open http://localhost:4173 (and /tests/ 
 ## Deploy
 
 Static, served by Vercel from the repo root with `cleanUrls` on. Pushes to `main-2` deploy to production; other branches get previews.
+
+## License
+
+The code is [MIT](LICENSE). The writing, photos and resume are mine and are not covered by it.
