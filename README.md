@@ -2,17 +2,21 @@
 
 **Live:** <https://www.evanyap.com>
 
-One black page in six sections (Intro, About, Experience, Selected work, Toolkit, Contact) plus a page for each project. Plain HTML, CSS and JavaScript: no framework, no build step, no dependencies.
+One black page in six sections (Intro, About, Experience, Selected work, Toolkit, Contact) plus a page for each project. Plain HTML, CSS and JavaScript: no framework, no build step and no npm packages. three.js and the fonts load from CDNs.
 
 ![Hero with a three.js arc reactor you can hold to charge and drag to spin](docs/hero.png)
 
 ## Highlights
 
 - **Interactive 3D arc reactor** in three.js: powers on with a pulse, hold to charge, drag to spin, highlights follow the pointer. A still image stands in where WebGL2 is missing.
-- **A way in.** A first visit opens dark ("Systems offline"). Wake it with a button, by saying "EGO" (speech recognition) or by typing it.
+- **A way in.** A first visit opens dark ("Systems offline"). Wake it with a button, by saying "EGO" (speech recognition) or by typing it; a scroll wakes it at once, and it wakes by itself after about 3 seconds. The resume and email stay reachable throughout.
 - **Looping project diagrams** drawn as inline SVG, played only while on screen, each with a pause button.
 - **Motion with restraint.** Word-by-word title reveals, counting figures, scroll-drawn timeline, cross-page view transitions. With Reduce Motion on, nothing moves.
 - **Tested in the browser.** [`/tests/`](tests/) loads the site at 13 sizes (320px to 1920px) and checks section order, heading levels, no sideways scroll, 44px tap targets, WCAG contrast, focus rings, keyboard paths and the gate.
+
+## How it was built
+
+I designed and directed this site and built it with AI coding assistants, mainly Claude Code. The browser checks in [`/tests/`](tests/) are how I check what they write. The working notes, plans and specs from that process are kept in [`docs/superpowers/`](docs/superpowers/).
 
 ## Run it
 
