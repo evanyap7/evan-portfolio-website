@@ -10,6 +10,11 @@
 // over within a few seconds, so a failed script cannot lock anyone out.
 
 const KEY = 'portfolio-on';
+// The gate never holds anyone for long: it wakes by itself this long after
+// the page loads (plus the 700 ms power-on, so awake by about 3 s), or at
+// once on a scroll or a click outside its controls.
+const AUTO_WAKE_MS = 2000;
+const SCROLL_KEYS = new Set(['ArrowDown', 'PageDown', 'End', ' ']);
 const WORD = 'ego';
 // How speech recognition tends to write the wake word down.
 const WAKE_WORD = /\b(ego|eggo|e\.? ?g\.? ?o)\b/i;
@@ -30,10 +35,11 @@ export function initGate() {
   const status = gate.querySelector('[data-gate-status]');
   const button = gate.querySelector('[data-gate-activate]');
   const mic = gate.querySelector('[data-gate-mic]');
-  // Everything but the gate is out of reach until the site wakes.
+  // Everything but the gate, the resume and email is out of reach until the
+  // site wakes.
   const asleep = [
     ...document.querySelectorAll('.skip-link, .nav, .menu, main > section:not(.hero), .footer'),
-    ...document.querySelectorAll('.hero__name, .reactor, .reactor__panel, .hero__title, .hero__lede, .hero__actions, .hero__creds'),
+    ...document.querySelectorAll('.hero__name, .reactor, .reactor__panel, .hero__title, .hero__lede, .hero__creds'),
   ];
   asleep.forEach((el) => { el.inert = true; });
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -63,9 +69,22 @@ export function initGate() {
 
   button.addEventListener('click', activate);
 
-  // Typing the wake word works anywhere on the page.
+  const autoWake = () => window.setTimeout(activate, AUTO_WAKE_MS);
+  if (document.readyState === 'complete') autoWake();
+  else window.addEventListener('load', autoWake, { once: true });
+  const inGate = (event) => event.target instanceof Element && gate.contains(event.target);
+  const nudge = (event) => { if (!inGate(event)) activate(); };
+  ['wheel', 'touchmove', 'pointerdown'].forEach((type) => {
+    document.addEventListener(type, nudge, { passive: true });
+  });
+
+  // Typing the wake word works anywhere on the page; a scroll key wakes it at once.
   let typed = '';
   const onKey = (event) => {
+    if (SCROLL_KEYS.has(event.key) && !inGate(event)) {
+      activate();
+      return;
+    }
     if (event.key.length !== 1) return;
     typed = (typed + event.key.toLowerCase()).slice(-WORD.length);
     if (typed === WORD) {

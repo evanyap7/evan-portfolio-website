@@ -530,6 +530,36 @@ export async function gate(win) {
   return out;
 }
 
+// A recruiter with six seconds is never stuck: the resume and email are
+// reachable behind the gate, and the site wakes by itself soon after load.
+export async function gateAuto(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  const reachable = (el) => {
+    if (!el || el.closest('[inert]') || win.getComputedStyle(el).visibility === 'hidden' || !shown(el)) return false;
+    const box = el.getBoundingClientRect();
+    const top = doc.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+    return Boolean(top && (top === el || el.contains(top)));
+  };
+  const out = [
+    result('gate: still gated just after load', root.classList.contains('gated')),
+    result('gate: resume reachable while gated', reachable(doc.querySelector('.hero__actions a[href$=".pdf"]'))),
+    result('gate: email reachable while gated', reachable(doc.querySelector('.hero__actions [data-contact-link]'))),
+  ];
+  await wait(2600);
+  out.push(result('gate: wakes by itself within about 3 seconds', !root.classList.contains('gated')));
+  return out;
+}
+
+// Scrolling wakes it at once.
+export async function gateScroll(win) {
+  const doc = win.document;
+  const was = doc.documentElement.classList.contains('gated');
+  doc.dispatchEvent(new win.WheelEvent('wheel', { deltaY: 120, bubbles: true }));
+  await wait(1200);
+  return [result('gate: scrolling wakes the site', was && !doc.documentElement.classList.contains('gated'))];
+}
+
 // Typing the wake word works too.
 export async function gateTyped(win) {
   const doc = win.document;

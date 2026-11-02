@@ -260,6 +260,25 @@ html {
   opacity: 0;
 }
 
+/* The resume and email stay in reach behind the gate (gate.js). On wider
+   screens they wait in the top corner, where the nav's resume button will
+   be, since the page cannot scroll yet; on a phone they already sit in view
+   under the gate. */
+.gated .hero > .hero__actions {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (min-width: 720px) {
+  .gated .hero > .hero__actions {
+    position: fixed;
+    top: 24px;
+    right: var(--gutter);
+    z-index: 3;
+    margin: 0;
+  }
+}
+
 /* Waking: once the reactor is up, the nav and the rest of the page fade in
    (the hero's own parts rise, in home.css). */
 .waking .nav,

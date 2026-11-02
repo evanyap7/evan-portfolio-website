@@ -159,6 +159,12 @@
   .hero > .hero__creds { animation-delay: 780ms; }
 }
 
+/* On a phone, behind the gate, the resume and email were already in place,
+   so they do not rise again when it wakes. */
+@media (prefers-reduced-motion: no-preference) and (max-width: 719px) {
+  .gate-ready .hero > .hero__actions { animation: none; }
+}
+
 /* About ------------------------------------------------------------- */
 .about {
   display: grid;
