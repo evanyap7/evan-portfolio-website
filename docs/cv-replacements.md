@@ -21,16 +21,33 @@ Every number below was checked against the repos on 2026-11-03.
 Update the mailto link as well as the visible text. The phone number is
 unchanged; whether it stays is up to you.
 
-### 2. Univers, bullet 1 (decision D17)
+### 2. Univers, bullet 1 (decision D17 and plan section 4.3)
 
 - Before: Deployed an ESG research and claim-verification agent (Next.js,
   TypeScript, Vercel AI SDK, Groq) that answers only from retrieved web pages and
   PDFs, producing cited facility briefs and VERIFIED, REFUTED or UNVERIFIED
   verdicts.
-- After: Deployed a retrieval-grounded ESG research and claim-verification agent
-  (Next.js, TypeScript, Vercel AI SDK, Groq): it answers only from retrieved web
-  pages and PDFs, producing cited facility briefs and VERIFIED, REFUTED or
-  UNVERIFIED verdicts.
+- After: Built and deployed a retrieval-grounded ESG research agent for energy
+  and decarbonisation consultants (Next.js, TypeScript, Vercel AI SDK, Groq): it
+  answers only from retrieved pages and PDFs and returns cited facility briefs or
+  VERIFIED / REFUTED / UNVERIFIED verdicts.
+- [EVAN] If you have real usage (how many consultants used it, or how many
+  facilities or claims were run), add it. If not, leave the bullet without an
+  outcome; do not estimate one.
+
+### 2b. Univers, bullet 3 [EVAN]
+
+- Before: Modelled a client's HVAC energy consumption with a regression model,
+  and scored AI and energy-management use cases on impact, telemetry
+  availability and feasibility for the Senior Director and client stakeholders.
+- After, only if you confirm the claim: Built a regression model of a client's
+  HVAC energy consumption that estimated within 2–3 percentage points of
+  observed consumption; scored AI and energy-management use cases on impact,
+  telemetry availability, feasibility and effort for the Senior Director and
+  client stakeholders.
+- Before using the "2–3 percentage points" figure, know three things: the
+  target variable, the error metric and the validation data. If you cannot
+  answer them, keep the bullet as it is.
 
 ### 3. EGO, bullet 1 (tool count and routing eval)
 
@@ -72,6 +89,14 @@ Evidence: `uv run pytest` gives 209. `.github/workflows/ci.yml` exists. The
 - After: **Engineering:** Git/GitHub, pytest, GitHub Actions CI, idempotency,
   audit logging, serverless deployment (Vercel)
 
+### 7. Optional, only if the page still fits
+
+- A positioning line under the contact block: "SUTD sophomore who builds AI
+  agents and measures whether they work. Seeking AI / software engineering
+  internships."
+- Move Awards (Top 5 of 100; 2nd Place, Vietnam Grand Challenge) up to just
+  below Education, where a six-second scan will catch them.
+
 ### Checked and left as they are
 
 - Parallel Match: "137 Python tests" (137 `def test_` in `tests/`) and
@@ -91,6 +116,12 @@ Evidence: `uv run pytest` gives 209. `.github/workflows/ci.yml` exists. The
   this was measured. Keep it only if you can explain it in an interview, for
   example "about 2 hours down to about 1 per client". Otherwise use "cut
   programming time per client".
+
+- **EGO: who uses it.** The Extra Projects tab calls it a "Production Telegram
+  assistant". If it is in daily use by you alone, say "in daily personal use"
+  or "single-user".
+- **Leadership: scale.** Add the team size or scope to "Floorball Captain;
+  House Exco" if you know it. Otherwise it reads as filler.
 
 ## Stale text in the other tabs
 
