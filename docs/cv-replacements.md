@@ -82,6 +82,24 @@ Evidence: `bench:parallel` was re-run on 2026-11-03 with 6 receipts and
 Evidence: `uv run pytest` gives 209. `.github/workflows/ci.yml` exists. The
 2% daily-loss stop and 5% drawdown breaker match `config/risk_limits.yaml`.
 
+### 5b. Systematic Trading System, bullet 3 (task T2: the "four ideas" framing)
+
+The current wording counts the Claude test twice: it is one of the four ideas,
+then gets mentioned again on top. The README and the site count four ideas:
+- the Claude agent;
+- the classic quant signals;
+- insider buying;
+- the momentum rule, which matches SPY rather than failing.
+
+- Before: Validated strategies with a walk-forward harness (no-look-ahead tests,
+  deflated Sharpe with trial counting): four studies found no edge, and a Claude
+  screening layer that missed its pre-set bar (win rate 43.9% vs 47.4%) was
+  removed.
+- After: Tested four ideas with a walk-forward harness (no-look-ahead test,
+  deflated Sharpe with trial counting): none beat the index, and a Claude
+  screening layer that missed its pre-set bar (win rate 43.9% vs 47.4%) was
+  removed.
+
 ### 6. Technical Skills (decision D17)
 
 - Before: **Engineering:** pytest, GitHub Actions CI, idempotency, audit
@@ -142,6 +160,7 @@ Fix these only if you still send these versions.
 | QUANT CV, Z.ai CV, Extra Projects | "97% (34/35)" / "35-case live eval set" | "97% (38/39)" / "39-case eval set" |
 | QUANT CV, Extra Projects | "Aug – Oct 2026" (bot) | "Aug 2026 – Present" |
 | QUANT CV, Extra Projects | "191 tests" | "209 tests" |
+| Extra Projects, QUANT CV | "Four studies, each published…, say no" / "ran 4 studies… none found an edge" | the "four ideas" framing from 5b |
 | QUANT CV, Extra Projects | "\~6,500-line" | "\~7,500-line" (7,518 lines) |
 | Extra Projects | "About 24,000 lines of TypeScript" | "About 26,500" |
 | Extra Projects | "Dec 2025 – Mar 2026" (Dragon Tiles) | "Sept 2025" (D3) |
