@@ -568,3 +568,40 @@ export async function gateTyped(win) {
   await wait(1200);
   return [result('gate: typing “ego” wakes the site', was && !doc.documentElement.classList.contains('gated'))];
 }
+
+// Search engines can find every page: robots.txt points at a sitemap that
+// lists the main page and every project page by its canonical address, and
+// the main page says who it is about in JSON-LD.
+export async function discovery(win) {
+  const doc = win.document;
+  const home = doc.querySelector('link[rel="canonical"]')?.href ?? '';
+  const get = async (path) => {
+    try {
+      const response = await win.fetch(path, { cache: 'no-store' });
+      return response.ok ? await response.text() : '';
+    } catch {
+      return '';
+    }
+  };
+  const robots = await get('/robots.txt');
+  const sitemap = await get('/sitemap.xml');
+  const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  const pages = [...doc.querySelectorAll('.work__grid a.work__card')]
+    .map((a) => new URL(a.getAttribute('href'), home).href.replace(/\.html$/, ''));
+  const expected = [home, ...pages];
+  const missing = expected.filter((url) => !listed.includes(url));
+  let person = null;
+  try {
+    person = JSON.parse(doc.querySelector('script[type="application/ld+json"]')?.textContent ?? 'null');
+  } catch {
+    person = null;
+  }
+  const profiles = [...doc.querySelectorAll('a[href*="github.com/"], a[href*="linkedin.com/in/"]')].map((a) => a.href);
+  const sameAs = person?.sameAs ?? [];
+  return [
+    result('robots.txt allows crawling and names the sitemap', robots.includes(`Sitemap: ${home}sitemap.xml`) && !/^Disallow:\s*\/\s*$/m.test(robots)),
+    result('sitemap lists the main page and every project page', listed.length === expected.length && missing.length === 0, missing.join(' ') || `${listed.length} urls`),
+    result('JSON-LD names the person behind the site', person?.['@type'] === 'Person' && person?.name === 'Evan Yap' && person?.url === home),
+    result('JSON-LD links the same profiles as the page', profiles.length > 0 && profiles.every((href) => sameAs.includes(href)), sameAs.join(' ')),
+  ];
+}

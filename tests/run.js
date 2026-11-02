@@ -34,6 +34,7 @@ const EXTRA = [
   { width: 1440, height: 800, src: '/', names: ['gateAuto'] },
   { width: 393, height: 852, src: '/', names: ['gateAuto'] },
   { width: 1440, height: 800, src: '/', names: ['gateScroll'] },
+  { width: 1440, height: 800, src: '/', names: ['discovery'] },
   { width: 1440, height: 800, src: '/#work-trading-agent', names: ['deepLink'] },
   { width: 393, height: 852, src: '/#work-others', names: ['deepLink'] },
   { width: 1440, height: 800, src: '/#toolkit', names: ['hashSection'] },

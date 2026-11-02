@@ -39,7 +39,7 @@ python3 tests/serve.py 4173      # then open http://localhost:4173 (and /tests/ 
 ## Maintaining it
 
 - **Email:** change `CONTACT_EMAIL` in `js/config.js`; every link and the copy button read from it.
-- **Add a project:** copy a page in `work/`, add a card to `ul.work__grid` in `index.html`, fix the "Next project" loop, and add it to `PAGES` and `CARDS` in `tests/`.
+- **Add a project:** copy a page in `work/`, add a card to `ul.work__grid` in `index.html`, fix the "Next project" loop, list it in `sitemap.xml`, and add it to `PAGES` and `CARDS` in `tests/`.
 - **Resume:** replace `resume/Evan-Yap-Resume.pdf`, with the phone number removed from the file itself (covering it with a box is not enough).
 - **Share image:** recapture `img/og.jpg` (1200 x 630) if the hero changes.
 - **Design:** one hue (`--h`, arc blue) tints the whole palette; tokens live at the top of `css/base.css`. Type is Geist, Geist Mono, Instrument Serif and Satoshi.
