@@ -184,11 +184,20 @@ async function boot() {
     observer.observe(document.querySelector('main') ?? document.body);
     cleanups.push(() => observer.disconnect());
   }
-  // A new window size keeps the visitor at the section they were reading.
+  // A new window size keeps the visitor at the section they were reading. A
+  // phone's address bar showing or hiding only changes the height a little:
+  // the page stays where the thumb left it, and the camera eases to match.
+  let size = [window.innerWidth, window.innerHeight];
   on(window, 'resize', () => {
+    const bar = window.innerWidth === size[0] && Math.abs(window.innerHeight - size[1]) <= 150;
+    size = [window.innerWidth, window.innerHeight];
     const held = stop;
     measure();
     fit();
+    if (bar) {
+      update();
+      return;
+    }
     if (held >= 0 && position().stop !== held) window.scrollTo({ top: places[held].top, behavior: 'instant' });
     update(true);
   });

@@ -730,6 +730,47 @@ export async function labResize(win, frame) {
   return [result('a shorter screen keeps the camera at Work', before === 'work' && after === 'work', `${before} → ${after}`)];
 }
 
+// The address bar showing or hiding mid-travel, just past where the camera
+// turns to the next section, leaves the page where the visitor's thumb left
+// it: no jump back to the section behind.
+export async function labResizeMid(win, frame) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('resize mid-travel: no lab in this frame', !root.classList.contains('lab'))];
+  await until(() => root.classList.contains('lab-ready'), 6000);
+  const frameTurn = () => new Promise((done) => { win.requestAnimationFrame(() => win.requestAnimationFrame(done)); });
+  const at = async (y) => {
+    win.scrollTo({ top: y, behavior: 'instant' });
+    await frameTurn();
+    return root.dataset.stop;
+  };
+  const top = (id) => Math.floor(doc.getElementById(id).getBoundingClientRect().top + win.scrollY);
+  const height = Number(frame.height);
+  await at(top('about'));
+  await wait(1500);
+  const moved = [];
+  for (const [side, change] of [[3, -80], [3, 80], [-3, -80], [-3, 80]]) {
+    frame.height = String(height);
+    await wait(400);
+    let lo = top('about');
+    let hi = top('work');
+    if ((await at(lo)) !== 'about' || (await at(hi)) !== 'work') return [result('resize mid-travel: finds the turn', false, `${await at(lo)} / ${await at(hi)}`)];
+    while (hi - lo > 1) {
+      const mid = Math.floor((lo + hi) / 2);
+      if ((await at(mid)) === 'work') hi = mid;
+      else lo = mid;
+    }
+    await at(hi + side);
+    await wait(300);
+    const before = win.scrollY;
+    frame.height = String(height + change);
+    await wait(500);
+    if (Math.abs(win.scrollY - before) > 2) moved.push(`${side > 0 ? 'after' : 'before'} the turn, ${change > 0 ? 'taller' : 'shorter'}: ${before} → ${win.scrollY}`);
+  }
+  frame.height = String(height);
+  return [result('resize mid-travel: the page stays where it was', moved.length === 0, moved.join('; '))];
+}
+
 // A lost WebGL context (a backgrounded phone tab, a GPU reset) drops to the
 // plain page with its words readable, never a black screen.
 export async function labLost(win) {
