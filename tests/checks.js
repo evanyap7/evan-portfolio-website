@@ -3,7 +3,8 @@
 // a list of { name, pass, detail }. run.js decides which checks run where.
 
 const WIDE = 1024;
-const SECTIONS = ['top', 'about', 'experience', 'work', 'toolkit', 'contact'];
+// The walk's order: the door, About, the suits, the trophy shelf, the bench, the office.
+const SECTIONS = ['top', 'about', 'work', 'experience', 'toolkit', 'contact'];
 const CARDS = ['website-revamp', 'parallel-match', 'assistant-bot', 'trading-agent', 'research-agent', 'watchpartyyy', 'v-bay', 'others'];
 // The drawing-set palette (paper, desk, ink, accent) and the pastels before it.
 const OLD_COLOURS = /#(fafaf7|e6e5e0|111214|4f5156|6c6e72|2541e6|ffb7d5|ffd98e|a9ddff|b9f2df|ff8fb1|ffe446|cdf5e6|ff9fb6|3a4a86|9b3158)\b|rgba\(17,\s*18,\s*20|rgba\(37,\s*65,\s*230/i;
@@ -13,6 +14,22 @@ const wait = (ms) => new Promise((done) => { setTimeout(done, ms); });
 const shown = (el) => {
   const box = el.getBoundingClientRect();
   return box.width > 0 && box.height > 0;
+};
+const until = async (test, ms) => {
+  for (let t = 0; t < ms && !test(); t += 100) await wait(100);
+  return test();
+};
+// Whether this frame can run the lab: WebGL2 and no reduced motion. The test
+// context is released at once so it never counts against the browser's limit.
+const labCapable = (win) => {
+  if (win.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+  try {
+    const gl = win.document.createElement('canvas').getContext('webgl2');
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    return Boolean(gl);
+  } catch {
+    return false;
+  }
 };
 
 // Six sections in story order, one h1, and headings that never skip a level.
@@ -615,5 +632,93 @@ export async function discovery(win) {
     result('sitemap lists the main page and every project page', listed.length === expected.length && missing.length === 0, missing.join(' ') || `${listed.length} urls`),
     result('JSON-LD names the person behind the site', person?.['@type'] === 'Person' && person?.name === 'Evan Yap' && person?.url === home),
     result('JSON-LD links the same profiles as the page', profiles.length > 0 && profiles.every((href) => sameAs.includes(href)), sameAs.join(' ')),
+  ];
+}
+
+// The lab: one fixed canvas behind the page, where the frame can run it, and
+// none where it cannot.
+export async function lab(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) {
+    return [result('no lab without WebGL2 or with reduced motion', !root.classList.contains('lab') && !doc.querySelector('.lab__canvas'))];
+  }
+  const ready = await until(() => root.classList.contains('lab-ready'), 6000);
+  const canvases = doc.querySelectorAll('canvas.lab__canvas');
+  const canvas = canvases[0];
+  const style = canvas && win.getComputedStyle(canvas);
+  const box = canvas?.getBoundingClientRect();
+  // The visible width. Headless Chrome reports root.clientWidth without the
+  // scrollbar it still lays out, so the visual viewport is the honest number.
+  const vw = Math.round(win.visualViewport?.width ?? root.clientWidth);
+  const vh = root.clientHeight;
+  return [
+    result('lab mode is on', root.classList.contains('lab')),
+    result('one lab canvas', canvases.length === 1, `${canvases.length}`),
+    result('lab canvas is fixed, hidden from readers and lets clicks through',
+      style?.position === 'fixed' && canvas.getAttribute('aria-hidden') === 'true' && style.pointerEvents === 'none',
+      style ? `${style.position} ${canvas.getAttribute('aria-hidden')} ${style.pointerEvents}` : 'missing'),
+    result('lab canvas fills the screen', box && Math.abs(box.width - vw) <= 1 && Math.abs(box.height - vh) <= 1,
+      box ? `${Math.round(box.width)}×${Math.round(box.height)} of ${vw}×${vh}` : 'missing'),
+    result('lab is ready within 6 s', ready),
+  ];
+}
+
+// Scrolling walks the camera: each section is a stop, and the end of the page
+// is the office even when the page is too short to bring Contact to the top.
+export async function labRail(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('rail: no lab in this frame', !root.classList.contains('lab'))];
+  await until(() => root.classList.contains('lab-ready'), 6000);
+  const seen = [];
+  for (const id of SECTIONS) {
+    doc.getElementById(id).scrollIntoView({ behavior: 'instant' });
+    await wait(300);
+    seen.push(`${id}:${root.dataset.stop}`);
+  }
+  const missed = seen.filter((pair) => { const [want, got] = pair.split(':'); return want !== got; });
+  win.scrollTo({ top: root.scrollHeight, behavior: 'instant' });
+  await wait(300);
+  const end = root.dataset.stop;
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('the camera stops at each section', missed.length === 0, seen.join(' ')),
+    result('the end of the page is the office', end === 'contact', end),
+  ];
+}
+
+// A phone's address bar changing the height mid-scroll keeps the camera where it is.
+export async function labResize(win, frame) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('resize: no lab in this frame', !root.classList.contains('lab'))];
+  await until(() => root.classList.contains('lab-ready'), 6000);
+  doc.getElementById('work').scrollIntoView({ behavior: 'instant' });
+  await wait(300);
+  const before = root.dataset.stop;
+  frame.height = '760';
+  await wait(400);
+  const after = root.dataset.stop;
+  return [result('a shorter screen keeps the camera at Work', before === 'work' && after === 'work', `${before} → ${after}`)];
+}
+
+// A lost WebGL context (a backgrounded phone tab, a GPU reset) drops to the
+// plain page with its words readable, never a black screen.
+export async function labLost(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('lost: no lab in this frame', !root.classList.contains('lab'))];
+  await until(() => root.classList.contains('lab-ready'), 6000);
+  const canvas = doc.querySelector('.lab__canvas');
+  if (!canvas) return [result('a lost context drops to the plain page', false, 'no lab canvas to lose')];
+  canvas.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();
+  const plain = await until(() => !root.classList.contains('lab') && !doc.querySelector('.lab__canvas'), 1500);
+  const text = doc.querySelector('#about .about__text');
+  const style = text && win.getComputedStyle(text);
+  return [
+    result('a lost context drops to the plain page', plain, `${root.className}`),
+    result('About reads after the drop', text && shown(text) && style.visibility !== 'hidden' && style.display !== 'none'),
   ];
 }
