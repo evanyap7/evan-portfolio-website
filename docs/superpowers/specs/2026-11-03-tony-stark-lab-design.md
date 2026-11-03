@@ -142,6 +142,20 @@ The transfer counts everything: three.js and its addons from the CDN (about 0.19
 
 **On a real phone** (Evan's iPhone 15, iOS Safari, same Wi-Fi): frame p50 17.0 ms, p95 18.0 ms, mid-row (12 draw calls, 81k triangles in view). Evan: "it's smooth". The camera does not jolt when Safari's address bar grows or shrinks. The decisions above stand.
 
+### Shipped (2026-11-04)
+
+The whole site, on the same Mac with the same profiles. Each run swept the full rail down and up twice over 56 s, from the door to the office.
+
+| Profile | Frame p50 / p95 / p99 | Frames over budget | Draw calls (peak) | Triangles (peak) | Transfer |
+| --- | --- | --- | --- | --- | --- |
+| Desktop: 1440×800, DPR 2, bloom on | 16.7 / 16.7 / 16.8 ms | 3 of 3350 over 25 ms | 277 | 269k | 3.75 MB |
+| Desktop: 1440×800, DPR 1, bloom on | 16.7 / 16.7 / 16.8 ms | 1 of 3354 over 25 ms | 276 | 208k | 3.69 MB |
+| Phone: 393×852, DPR 3 capped to 1.5, no bloom, CPU 4× slower | 16.7 / 16.7 / 16.8 ms | 5 of 3318 over 34 ms | 229 | 282k | 3.75 MB |
+
+The transfer: 2.70 MB of suit models, the portrait (0.18 MB), and three.js. The suit row is the busiest stop; the shelf, bench and office each stay under 260 draw calls and 15k triangles.
+
+**The one cut:** the full site first missed on desktop at DPR 2 (p95 33.4 ms, 427 frames over 25 ms, evenly at every stop). The cause was the bloom target's 4× MSAA at 2880×1600. With bloom off, or at DPR 1, it passed. So MSAA on the bloom target now runs only below a 1.5 pixel ratio. At 2× a crop of bay I can't be told apart from the MSAA one, while a 1.5 cap visibly softened the suit. Bloom stays.
+
 ## Constraints from the project
 
 - `CLAUDE.md`: `npm run check` before anything is called done or committed, and `npm run check:browser` (about 5.5 minutes, 6,429 checks) for behaviour or layout changes. CI treats the browser run as report-only, so it has to be read locally.
