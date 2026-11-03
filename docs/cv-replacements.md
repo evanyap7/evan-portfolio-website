@@ -176,7 +176,7 @@ Fix these only if you still send these versions.
 | Extra Projects | "About 24,000 lines of TypeScript" | "About 26,500" |
 | Extra Projects | "Dec 2025 – Mar 2026" (Dragon Tiles) | "Sept 2025" (D3) |
 | Extra Projects | "saves \~3 hours of research per facility audit" (research agent) | remove (D1) |
-| QUANT CV, Z.ai CV | "approved-research-agent" link | update once the rename to ai-research-agent is done (D10) |
+| QUANT CV, Z.ai CV | "approved-research-agent" link | "ai-research-agent" (renamed on 2026-11-03, D10; the old URL redirects) |
 
 ## The PDF in this repo
 
