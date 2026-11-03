@@ -2,8 +2,8 @@
 // reads its words and numbers from them, so the cards stay the one source of
 // truth (and the plain list of every project for anyone without WebGL).
 // Projects without a suit are listed under it as Other projects. Each project is
-// a suit: a Mark number, a codename and a core drawn in three.js
-// (hall-scene.js). Pick a suit and it assembles through four render passes,
+// a suit: a Mark number, a codename and a film suit's 3D model drawn in
+// three.js (hall-scene.js). Pick a suit and it assembles through four render passes,
 // blueprint, wireframe, shaded, lit; each pass can also be picked by hand.
 // With reduced motion every change is instant and nothing loops.
 
@@ -11,18 +11,18 @@ import { whenActive } from './gate.js';
 
 // In order of importance, each project wearing the Mark of the same number.
 // Only EGO has a codename of its own (it is the assistant's name); every other
-// suit goes by its project. `hue` tints the HUD; `spec` is the armour: bulk,
-// helmet, reactor shape and paint (base, accent, the panels in the accent).
-const RED = 0x9c1a17;
-const GOLD = 0xd3a24c;
+// suit goes by its project. `hue` tints the HUD; `spec` is the armour: which
+// model in models/hall/ it is, and, for a repainted suit, the colour its red
+// panels take (base) and its gold panels (accent).
+const SILVER = 0xb4bac2;
 const SUITS = [
-  { id: 'trading-agent', mark: 'I', hue: 30, spec: { bulk: 1.22, facets: 8, helm: 'mk1', paint: { base: 0x77736b, accent: 0x55524c, rough: 0.62, accentOn: ['abs', 'belt', 'forearm', 'shin', 'hand'] } } },
-  { id: 'assistant-bot', mark: 'II', code: 'EGO', hue: 205, spec: { paint: { base: 0xaeb4bb, accent: 0x8c949d, rough: 0.12, accentOn: ['abs', 'belt', 'knee', 'hand'] } } },
-  { id: 'research-agent', mark: 'III', hue: 44, spec: { paint: { base: RED, accent: GOLD, rough: 0.26, accentOn: ['face', 'abs', 'upperArm', 'thigh', 'hand'] } } },
-  { id: 'parallel-match', mark: 'IV', hue: 2, spec: { paint: { base: RED, accent: GOLD, rough: 0.24, accentOn: ['face', 'abs', 'upperArm', 'knee'] } } },
-  { id: 'website-revamp', mark: 'V', hue: 210, spec: { bulk: 0.97, paint: { base: 0xa9afb6, accent: 0xa51d1b, face: 0xa9afb6, rough: 0.2, accentOn: ['helmet', 'chest', 'shoulder', 'forearm', 'shin', 'boot'] } } },
-  { id: 'v-bay', mark: 'VI', hue: 18, spec: { reactor: 'tri', paint: { base: RED, accent: GOLD, rough: 0.24, accentOn: ['face', 'abs', 'upperArm', 'thigh'] } } },
-  { id: 'others', mark: 'VII', hue: 48, spec: { bulk: 1.06, paint: { base: RED, accent: GOLD, rough: 0.22, accentOn: ['face', 'abs', 'upperArm', 'forearm', 'thigh', 'shin'] } } },
+  { id: 'trading-agent', mark: 'I', hue: 30, spec: { model: 'mark-1' } },
+  { id: 'assistant-bot', mark: 'II', code: 'EGO', hue: 205, spec: { model: 'mark-7', paint: { base: 0x6b727b, accent: 0x50575f, metal: 0.8, rough: 0.42 } } },
+  { id: 'research-agent', mark: 'III', hue: 44, spec: { model: 'mark-7-lite' } },
+  { id: 'parallel-match', mark: 'IV', hue: 2, spec: { model: 'mark-50', paint: { base: 0xb3120f, accent: 0xe0b04a } } },
+  { id: 'website-revamp', mark: 'V', hue: 210, spec: { model: 'mark-7-lite', paint: { base: SILVER, accent: 0xa51d1b } } },
+  { id: 'v-bay', mark: 'VI', hue: 18, spec: { model: 'mark-50' } },
+  { id: 'others', mark: 'VII', hue: 48, spec: { model: 'mark-7' } },
 ];
 const PASSES = ['Blueprint', 'Wireframe', 'Shaded', 'Lit'];
 const STEP_MS = 1000;
@@ -216,13 +216,31 @@ export function initHall() {
     ui.open.href = suit.href;
     ui.suitButtons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
     if (hall) {
-      hall.setSuit(suit.spec, { instant: reduce });
-      assemble();
+      clearTimers();
+      hall.setSuit(suit.spec, { instant: reduce }).then((shown) => {
+        if (shown) assemble();
+      }, fail);
     }
   };
 
+  // The Hall can't stand without its scene or a suit's model: back to the cards.
+  const fail = () => {
+    clearTimers();
+    hall?.stop();
+    hall = null;
+    ui.root.remove();
+    others?.remove();
+    work.classList.remove('work--hall');
+  };
+
   ui.passButtons.forEach((button) => button.addEventListener('click', () => goTo(Number(button.dataset.pass), true)));
-  ui.suitButtons.forEach((button) => button.addEventListener('click', () => select(Number(button.dataset.suit))));
+  ui.suitButtons.forEach((button) => {
+    const index = Number(button.dataset.suit);
+    const warm = () => hall?.preload(suits[index].spec);
+    button.addEventListener('click', () => select(index));
+    button.addEventListener('pointerenter', warm);
+    button.addEventListener('focus', warm);
+  });
   ui.stage.addEventListener('click', () => goTo((pass + 1) % PASSES.length, true));
   ui.stage.addEventListener('pointermove', (event) => {
     if (!hall || event.pointerType === 'touch') return;
@@ -282,11 +300,7 @@ export function initHall() {
         sync();
       }).observe(ui.stage);
       document.addEventListener('visibilitychange', sync);
-    }).catch(() => {
-      ui.root.remove();
-      others?.remove();
-      work.classList.remove('work--hall');
-    });
+    }).catch(fail);
   };
 
   // Fetch three.js and build the first core only once Work is near.
