@@ -38,6 +38,7 @@
   <link rel="stylesheet" href="css/figures.css">
   <link rel="stylesheet" href="css/reactor.css">
   <link rel="stylesheet" href="css/hall.css">
+  <link rel="stylesheet" href="css/lab.css">
   <script type="importmap">
     {
       "imports": {
@@ -49,6 +50,7 @@
 
   <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
   <script>try{if(!location.hash&&!sessionStorage.getItem('portfolio-on')&&'noModule' in HTMLScriptElement.prototype){var d=document.documentElement;d.classList.add('gated');setTimeout(function(){if(!d.classList.contains('gate-ready'))d.classList.remove('gated')},5000)}}catch(e){}</script>
+  <script>try{var d=document.documentElement;if('noModule' in HTMLScriptElement.prototype&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var g=document.createElement('canvas').getContext('webgl2');if(g){var x=g.getExtension('WEBGL_lose_context');x&&x.loseContext();d.classList.add('lab');setTimeout(function(){if(!d.classList.contains('lab-ready'))d.classList.remove('lab')},8000)}}}catch(e){}</script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -71,8 +73,8 @@
     <a class="wordmark" href="#top" aria-label="Evan Yap, back to top">evan<span class="wordmark__dot">.</span></a>
     <nav class="nav__links" aria-label="Primary">
       <a href="#about">About</a>
-      <a href="#experience">Experience</a>
       <a href="#work">Work</a>
+      <a href="#experience">Experience</a>
       <a href="#toolkit">Toolkit</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -87,8 +89,8 @@
   <nav class="menu" id="menu" aria-label="Menu" hidden data-menu>
     <ul class="menu__links">
       <li><a href="#about">About</a></li>
-      <li><a href="#experience">Experience</a></li>
       <li><a href="#work">Selected work</a></li>
+      <li><a href="#experience">Experience</a></li>
       <li><a href="#toolkit">Toolkit</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
@@ -103,7 +105,7 @@
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero__stage">
         <p class="hero__name"><span>Evan</span> <span>Yap</span></p>
-        <div class="reactor" data-reactor>
+        <div class="reactor" data-reactor data-lab-frame="top">
           <img class="reactor__poster" src="img/reactor.webp" alt="" width="720" height="720" decoding="async">
           <button class="reactor__hit" type="button" data-reactor-hit
             aria-label="Arc reactor. Hold to charge it, then let go to fire a pulse."></button>
@@ -140,6 +142,7 @@
     </section>
 
     <section class="section band band--900" id="about" aria-labelledby="about-title">
+      <div class="lab-frame" data-lab-frame="about" aria-hidden="true"></div>
       <h2 class="title" id="about-title">About <span class="serif">me</span></h2>
       <div class="about">
         <figure class="card about__photo" data-reveal>
@@ -164,66 +167,8 @@
       </div>
     </section>
 
-    <section class="section band" id="experience" aria-labelledby="experience-title">
-      <h2 class="title" id="experience-title">My <span class="serif">experience</span></h2>
-      <div class="timeline" data-timeline>
-        <span class="timeline__fill" aria-hidden="true"></span>
-      <ol class="roles">
-        <li class="role" data-reveal>
-          <p class="role__dates mono">Aug 2026 – now</p>
-          <div class="role__who">
-            <h3 class="role__org"><img class="role__logo" src="img/logos/univers.svg" alt="Univers" width="104"
-                height="22"></h3>
-            <p class="role__title">Intern, AI Business Consultant · Aviation, Transportation, Logistics</p>
-          </div>
-          <ul class="role__points">
-            <li>Built and deployed an AI research agent for ESG disclosure research and claim verification that
-              answers only from the pages and PDFs it retrieved.</li>
-            <li>Calibrated an HVAC energy-consumption model to within 2–3 percentage points of observed use, to validate
-              client energy assumptions and find efficiency gains.</li>
-            <li>Ranked AI and energy-management use cases by impact, telemetry, feasibility and effort, and turned them
-              into business cases for the Senior Director, Global Lead and clients.</li>
-          </ul>
-        </li>
-        <li class="role" data-reveal>
-          <p class="role__dates mono">Sept 2024 – Jan 2026</p>
-          <div class="role__who">
-            <h3 class="role__org">EvanYapFitness</h3>
-            <p class="role__title">Founder</p>
-          </div>
-          <ul class="role__points">
-            <li>Grew an online coaching brand to 2.2k followers and 10k average views per post by iterating on content
-              analytics and A/B-tested messaging.</li>
-            <li>Coached 30 paying clients in total. Built an intake pipeline and an AI-assisted workflow that drafts
-              training and meal templates for me to refine by hand, halving average programming time per client.</li>
-          </ul>
-        </li>
-      </ol>
-      <h3 class="roles__earlier mono">Earlier</h3>
-      <ol class="roles roles--earlier">
-        <li class="role" data-reveal>
-          <p class="role__dates mono">Dec 2024 – Mar 2025</p>
-          <div class="role__who">
-            <h4 class="role__org">The Social Nugget</h4>
-            <p class="role__title">Digital Marketing Intern</p>
-          </div>
-          <p class="role__points">Tracked reach, click-through and A/B test results in Meta Business Suite and turned
-            them into reports that shaped the next content calendars.</p>
-        </li>
-        <li class="role" data-reveal>
-          <p class="role__dates mono">Jan 2023 – Nov 2024</p>
-          <div class="role__who">
-            <h4 class="role__org">Singapore Army</h4>
-            <p class="role__title">Detachment Commander, 1st Commando Battalion</p>
-          </div>
-          <p class="role__points">Led a detachment of 12 in a unit awarded Best Combat Unit for 2023/24, and represented
-            the SAF in the National Day Parade 2024 Colours Party.</p>
-        </li>
-      </ol>
-      </div>
-    </section>
-
-    <section class="section band band--900 work" id="work" aria-labelledby="work-title">
+    <section class="section band work" id="work" aria-labelledby="work-title">
+      <div class="lab-frame" data-lab-frame="work" aria-hidden="true"></div>
       <h2 class="title work__title" id="work-title">Selected <span class="serif">work</span></h2>
       <ul class="work__grid">
         <li data-reveal><a class="card work__card" id="work-website-revamp" href="work/website-revamp.html"
@@ -297,7 +242,68 @@
       </ul>
     </section>
 
+    <section class="section band band--900" id="experience" aria-labelledby="experience-title">
+      <div class="lab-frame" data-lab-frame="experience" aria-hidden="true"></div>
+      <h2 class="title" id="experience-title">My <span class="serif">experience</span></h2>
+      <div class="timeline" data-timeline>
+        <span class="timeline__fill" aria-hidden="true"></span>
+      <ol class="roles">
+        <li class="role" data-reveal>
+          <p class="role__dates mono">Aug 2026 – now</p>
+          <div class="role__who">
+            <h3 class="role__org"><img class="role__logo" src="img/logos/univers.svg" alt="Univers" width="104"
+                height="22"></h3>
+            <p class="role__title">Intern, AI Business Consultant · Aviation, Transportation, Logistics</p>
+          </div>
+          <ul class="role__points">
+            <li>Built and deployed an AI research agent for ESG disclosure research and claim verification that
+              answers only from the pages and PDFs it retrieved.</li>
+            <li>Calibrated an HVAC energy-consumption model to within 2–3 percentage points of observed use, to validate
+              client energy assumptions and find efficiency gains.</li>
+            <li>Ranked AI and energy-management use cases by impact, telemetry, feasibility and effort, and turned them
+              into business cases for the Senior Director, Global Lead and clients.</li>
+          </ul>
+        </li>
+        <li class="role" data-reveal>
+          <p class="role__dates mono">Sept 2024 – Jan 2026</p>
+          <div class="role__who">
+            <h3 class="role__org">EvanYapFitness</h3>
+            <p class="role__title">Founder</p>
+          </div>
+          <ul class="role__points">
+            <li>Grew an online coaching brand to 2.2k followers and 10k average views per post by iterating on content
+              analytics and A/B-tested messaging.</li>
+            <li>Coached 30 paying clients in total. Built an intake pipeline and an AI-assisted workflow that drafts
+              training and meal templates for me to refine by hand, halving average programming time per client.</li>
+          </ul>
+        </li>
+      </ol>
+      <h3 class="roles__earlier mono">Earlier</h3>
+      <ol class="roles roles--earlier">
+        <li class="role" data-reveal>
+          <p class="role__dates mono">Dec 2024 – Mar 2025</p>
+          <div class="role__who">
+            <h4 class="role__org">The Social Nugget</h4>
+            <p class="role__title">Digital Marketing Intern</p>
+          </div>
+          <p class="role__points">Tracked reach, click-through and A/B test results in Meta Business Suite and turned
+            them into reports that shaped the next content calendars.</p>
+        </li>
+        <li class="role" data-reveal>
+          <p class="role__dates mono">Jan 2023 – Nov 2024</p>
+          <div class="role__who">
+            <h4 class="role__org">Singapore Army</h4>
+            <p class="role__title">Detachment Commander, 1st Commando Battalion</p>
+          </div>
+          <p class="role__points">Led a detachment of 12 in a unit awarded Best Combat Unit for 2023/24, and represented
+            the SAF in the National Day Parade 2024 Colours Party.</p>
+        </li>
+      </ol>
+      </div>
+    </section>
+
     <section class="section band band--850" id="toolkit" aria-labelledby="toolkit-title">
+      <div class="lab-frame" data-lab-frame="toolkit" aria-hidden="true"></div>
       <h2 class="title" id="toolkit-title"><span class="serif">Toolkit</span></h2>
       <div class="kit" data-kit>
         <div class="kit__tabs" role="tablist" aria-label="Toolkit and credentials" hidden>
@@ -507,6 +513,7 @@
     </section>
 
     <section class="section band band--light contact" id="contact" aria-labelledby="contact-title">
+      <div class="lab-frame" data-lab-frame="contact" aria-hidden="true"></div>
       <h2 class="title" id="contact-title">Let’s <span class="serif">talk</span></h2>
       <p class="contact__invite">Have a project in mind, a half-formed idea, or just want to say hi?</p>
       <p class="contact__email">

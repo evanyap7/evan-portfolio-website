@@ -1,0 +1,131 @@
+/* The lab ------------------------------------------------------------
+   One 3D room fixed behind the whole page (js/lab.js). Everything here is
+   under :root.lab, which the head script sets only where the lab can run
+   and js/lab.js removes if it fails, so without it the page is the plain
+   banded page, unchanged.
+
+   The page lies over the room as a console: each section's words sit in a
+   panel, and each section has an empty window (.lab-frame) where the camera
+   frames that section's part of the room. On wide screens the panel is a
+   column down the left and the window fills the right; on narrow ones the
+   window is the top of the section and the panel follows it. */
+
+:root.lab {
+  /* A link to a section lands on the section's top: that is where the camera
+     arrives at its stop. Each panel keeps its title clear of the nav itself. */
+  scroll-padding-top: 0;
+  --pane: hsl(var(--h) 30% 6% / 0.86);
+  --pane-edge: hsl(var(--h) 60% 60% / 0.25);
+  --pane-pad: 24px;
+  --pane-w: 100%;
+  --window: 60svh;
+}
+
+/* The page's own near-black stays on <html>, under the canvas; the body
+   lets the room through. */
+:root.lab body { background: transparent; }
+
+:root.lab .lab__canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* The large viewport, so a phone's address bar sliding away never resizes
+     the renderer mid-scroll. */
+  height: 100lvh;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+
+.lab-frame { display: none; }
+
+/* Sections: no band fill; the panel is painted in its place. */
+:root.lab main > .section {
+  position: relative;
+  scroll-margin-top: 0;
+  background: none;
+  /* Narrow screens: the window is the top of the section, the panel starts
+     under it with a hairline and runs to the section's end. */
+  padding-top: calc(var(--window) + 32px);
+  border-image: linear-gradient(transparent var(--window), var(--pane-edge) var(--window) calc(var(--window) + 1px), var(--pane) 0) fill 0 / 0 / 0 100vw;
+}
+
+:root.lab .lab-frame {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: min(var(--window), 100%);
+  pointer-events: none;
+}
+
+/* Contact is the office, and its panel is paper: the light band's own
+   tokens, on its own off-white. */
+:root.lab main > .band--light {
+  border-image: linear-gradient(transparent var(--window), var(--band) 0) fill 0 / 0 / 0 100vw;
+}
+
+/* The footer is the foot of that same sheet. */
+:root.lab .footer.band {
+  margin-top: 0;
+  border-image: none;
+  background: var(--band);
+}
+
+@media (min-width: 1024px) {
+  :root.lab {
+    --pane-pad: 40px;
+    --pane-w: calc(34rem + 2 * var(--pane-pad));
+  }
+
+  /* Every section is at least a screen, so each stop of the walk gets one. */
+  :root.lab main > .section {
+    min-height: 100svh;
+    padding-top: max(var(--band-pad), calc(var(--nav) + var(--nav-top) + 40px));
+    padding-left: calc(var(--gutter) + var(--pane-pad));
+    border-image: linear-gradient(90deg,
+      transparent var(--gutter),
+      var(--pane-edge) var(--gutter) calc(var(--gutter) + 1px),
+      var(--pane) 0 calc(var(--gutter) + var(--pane-w) - 1px),
+      var(--pane-edge) 0 calc(var(--gutter) + var(--pane-w)),
+      transparent 0) fill 0 / 0 / 0;
+  }
+
+  :root.lab main > .section > :not(.lab-frame) {
+    max-width: 34rem;
+    margin-left: 0;
+  }
+
+  /* A console column reads from its left edge, and the grids laid out for
+     the whole page width take the layouts they use on a tablet. */
+  :root.lab main > .section .title { text-align: left; }
+  :root.lab .about { grid-template-columns: minmax(0, 1fr); }
+  :root.lab .role { grid-template-columns: 9.5rem minmax(0, 1fr); }
+  :root.lab .role__points { grid-column: 2; }
+  :root.lab .work .work__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  :root.lab main > .band--light {
+    border-image: linear-gradient(90deg,
+      transparent var(--gutter),
+      var(--band) var(--gutter) calc(var(--gutter) + var(--pane-w)),
+      transparent 0) fill 0 / 0 / 0;
+  }
+
+  /* The window: the rest of the screen, right of the panel. */
+  :root.lab .lab-frame {
+    left: calc(var(--gutter) + var(--pane-w) + 32px);
+    right: var(--gutter);
+    height: min(100svh, 100%);
+  }
+
+  /* The foot of the sheet, under the panel column. */
+  :root.lab .footer.band {
+    width: var(--pane-w);
+    max-width: none;
+    margin-left: calc(max(0px, (100% - var(--wide)) / 2) + var(--gutter));
+    padding-left: var(--pane-pad);
+    padding-right: var(--pane-pad);
+  }
+}

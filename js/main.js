@@ -3,6 +3,7 @@ import { initCopy } from './contact.js';
 import { initCount } from './count.js';
 import { initGate } from './gate.js';
 import { initIndex } from './index.js';
+import { initLab } from './lab.js';
 import { initMenu } from './menu.js';
 import { initMotion } from './motion.js';
 import { initReactor } from './reactor.js';
@@ -41,6 +42,7 @@ function initReels() {
 }
 
 initGate();
+initLab();
 applyContactEmail();
 initMenu();
 initIndex();
