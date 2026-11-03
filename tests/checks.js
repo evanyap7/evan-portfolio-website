@@ -777,6 +777,34 @@ export async function labLostWork(win) {
   ];
 }
 
+// A link to a suit puts the camera at its bay at once; it does not fly the
+// length of the room past every other suit to get there. The camera is read
+// through the page's own lab module (the same instance the page imported).
+export async function labDeepBay(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('deep bay: no lab in this frame', !root.classList.contains('lab'))];
+  await until(() => root.classList.contains('lab-ready'), 6000);
+  const lab = await new win.Function("return import('/js/lab.js')")().then((m) => m.getLab());
+  if (!lab) return [result('deep bay: the lab is up', false)];
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(1500);
+  const camera = lab.scene.camera.position;
+  const start = camera.clone();
+  win.location.hash = '#work-others';
+  for (let i = 0; i < 3; i += 1) await new Promise((done) => { win.requestAnimationFrame(done); });
+  const early = camera.clone();
+  await until(() => root.dataset.bay === '6', 3000);
+  await wait(1500);
+  const end = camera.clone();
+  const left = early.distanceTo(end);
+  const trip = start.distanceTo(end);
+  return [
+    result('deep bay: the link reaches bay VII', root.dataset.bay === '6', String(root.dataset.bay)),
+    result('deep bay: the camera is there from the first frames', left < 0.05 * trip, `${left.toFixed(2)} of ${trip.toFixed(2)} left`),
+  ];
+}
+
 // In the lab the suits stand in a row of bays: a tab walks the camera to its
 // bay, the panel names that suit, and the Hall stays on screen (sticky).
 export async function labBays(win) {

@@ -48,6 +48,8 @@ const EXTRA = [
   { width: 1440, height: 800, src: '/', names: ['labBayClear'] },
   { width: 1440, height: 800, src: '/', names: ['labLost'] },
   { width: 393, height: 852, src: '/', names: ['labLostWork'] },
+  { width: 1440, height: 800, src: '/', names: ['labDeepBay'] },
+  { width: 393, height: 852, src: '/', names: ['labDeepBay'] },
   { width: 1440, height: 800, src: '/', names: ['labLostWork'] },
   { width: 1440, height: 800, src: '/', names: ['gateDoor'] },
   { width: 1440, height: 800, src: '/#toolkit', names: ['labDoor'] },

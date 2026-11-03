@@ -236,10 +236,14 @@ async function boot() {
     },
     goToBay(index, { instant = false } = {}) {
       if (row < 0) return;
+      if (instant) measure();
       const { top, height } = places[row];
       const end = Math.max(top, Math.min(top + height - window.innerHeight, places[row + 1]?.top ?? Infinity));
       const i = Math.min(Math.max(Math.round(index), 0), BAYS - 1);
       scrollTo(top + ((end - top) * i) / (BAYS - 1), instant);
+      // A jump (a link to a suit) puts the camera there too, rather than
+      // flying it the length of the room past every other suit.
+      if (instant) update(true);
     },
     onStop(fn) {
       stopListeners.push(fn);
