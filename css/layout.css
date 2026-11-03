@@ -264,7 +264,7 @@
   color: var(--text);
   font-size: 15px;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.3;
   white-space: nowrap;
   transition: border-color 200ms, background-color 200ms, color 200ms;
 }
