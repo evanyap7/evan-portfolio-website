@@ -11,7 +11,8 @@ fits one page. Differences from the list below:
 - The trading test count is 263 (master after the property-based tests were
   merged), written as "263 tests in CI" to keep the line short. Parallel Match
   now has 197 Python tests, up from 137.
-- Awards and Leadership are one section below Education. The positioning line
+- Awards and Leadership are at the end, below Technical Skills (with the
+  Univers EnOS challenge placed under Univers experience). The positioning line
   reads "Builds AI agents and measures whether they work. Seeking AI / software
   internships."
 - `resume/Evan-Yap-Resume.pdf` is page 1 of an export from a temporary copy with
