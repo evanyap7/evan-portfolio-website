@@ -287,6 +287,47 @@
   margin-top: 18px;
 }
 
+/* Off the clock: the things in the lab's first room, as a list where there is
+   no lab (lab.css hides it; the room's objects read from it). */
+.about__things-title {
+  margin-top: 56px;
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.about__things {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 28px;
+  margin-top: 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.about__things li {
+  padding-top: 14px;
+  border-top: 1px solid var(--line-2);
+}
+
+.about__things h4 {
+  margin-bottom: 6px;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.about__things p {
+  margin-top: 0;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+@media (max-width: 539px) {
+  .about__things {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .about__statement {
   margin-bottom: 32px;
   color: var(--text);
