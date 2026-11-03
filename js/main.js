@@ -6,6 +6,7 @@ import { initIndex } from './index.js';
 import { initMenu } from './menu.js';
 import { initMotion } from './motion.js';
 import { initReactor } from './reactor.js';
+import { initHall } from './hall.js';
 import { initReveal } from './reveal.js';
 import { initTabs } from './tabs.js';
 
@@ -49,4 +50,5 @@ initCopy();
 initReveal();
 initMotion();
 initReactor();
+initHall();
 initReels();
