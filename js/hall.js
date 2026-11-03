@@ -8,11 +8,12 @@
 
 import { whenActive } from './gate.js';
 
-// In order of importance. `spec` shapes the core; the rest is the label.
+// In order of importance. `spec` shapes the suit; only EGO has a codename of
+// its own (it is the assistant's name), every other suit goes by its project.
 const SUITS = [
-  { id: 'trading-agent', mark: 'I', code: 'Baseline', spec: { sides: 6, coils: 6, h: 0.8, bolts: 8, hue: 28 } },
-  { id: 'assistant-bot', mark: 'II', code: 'EGO', spec: { sides: 64, coils: 10, h: 0.84, bolts: 10, hue: 196 } },
-  { id: 'research-agent', mark: 'III', code: 'Cite', spec: { sides: 3, coils: 3, h: 0.6, bolts: 6, hue: 152 } },
+  { id: 'trading-agent', mark: 'I', spec: { hue: 36, bulk: 1.14, facets: 8, mask: false, look: { plate: 0x8f949a, trim: 0x6d7278, rough: 0.5 } } },
+  { id: 'assistant-bot', mark: 'II', code: 'EGO', spec: { hue: 196, bulk: 1, facets: 16, mask: true, look: { plate: 0xd2d6db, trim: 0xa9afb7, rough: 0.2 } } },
+  { id: 'research-agent', mark: 'III', spec: { hue: 6, bulk: 1.04, facets: 16, mask: true, look: { plate: 0xb3171c, trim: 0xe0a93a, rough: 0.28 } } },
 ];
 const PASSES = ['Blueprint', 'Wireframe', 'Shaded', 'Lit'];
 const STEP_MS = 1000;
@@ -58,7 +59,7 @@ function mount(suits) {
   const stage = element('div', 'hall__stage');
   const canvas = element('canvas', 'hall__canvas');
   canvas.setAttribute('aria-hidden', 'true');
-  const hint = element('p', 'hall__hint', 'Click the core for the next pass');
+  const hint = element('p', 'hall__hint', 'Click the suit for the next pass');
   stage.append(canvas, hint);
 
   const panel = element('div', 'hall__panel');
@@ -93,7 +94,7 @@ function mount(suits) {
     const button = element('button', 'hall__suit');
     button.type = 'button';
     button.dataset.suit = String(index);
-    button.append(element('span', 'hall__suit-mark', `Mark ${suit.mark}`), element('span', 'hall__suit-name', suit.code));
+    button.append(element('span', 'hall__suit-mark', `Mark ${suit.mark}`), element('span', 'hall__suit-name', suit.code ?? suit.name));
     picker.append(button);
     return button;
   });
@@ -159,7 +160,7 @@ export function initHall() {
     current = index;
     const suit = suits[index];
     ui.root.style.setProperty('--suit-h', String(suit.spec.hue));
-    ui.mark.textContent = `Mark ${suit.mark} · ${suit.code}`;
+    ui.mark.textContent = suit.code ? `Mark ${suit.mark} · ${suit.code}` : `Mark ${suit.mark}`;
     ui.name.textContent = suit.name;
     ui.line.textContent = suit.line;
     ui.figure.textContent = suit.figure;
