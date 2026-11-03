@@ -333,6 +333,31 @@
   color: var(--dim);
 }
 
+.footer__credits {
+  flex: 1 0 100%;
+  margin-bottom: 16px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.footer__credits p { max-width: 72ch; }
+
+.footer__credits ul { margin-top: 4px; }
+
+/* Each link keeps a thumb-sized target without spacing the lines apart. */
+.footer__credits a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (min-width: 1024px) {
+  .footer__credits a { min-height: 0; }
+}
+
 .footer .wordmark {
   min-height: 44px;
   color: var(--muted);
