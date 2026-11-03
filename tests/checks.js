@@ -753,3 +753,29 @@ export async function labLost(win) {
     result('About reads after the drop', text && shown(text) && style.visibility !== 'hidden' && style.display !== 'none'),
   ];
 }
+
+// In the lab the suits stand in a row of bays: a tab walks the camera to its
+// bay, the panel names that suit, and the Hall stays on screen (sticky).
+export async function labBays(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('bays: no lab in this frame', true, 'no lab')];
+  await until(() => root.classList.contains('lab-ready') && doc.querySelector('.hall__suit[data-suit="4"]'), 6000);
+  doc.getElementById('work').scrollIntoView({ behavior: 'instant' });
+  await wait(300);
+  const button = doc.querySelector('.hall__suit[data-suit="4"]');
+  button?.click();
+  await wait(1200);
+  const card = doc.querySelector(`#work-${button?.dataset.id} .work__name`);
+  const name = doc.querySelector('.hall__name')?.textContent.trim();
+  const top = doc.querySelector('.hall')?.getBoundingClientRect().top ?? -1;
+  const bay = root.dataset.bay;
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('bays: the tab is pressed', button?.getAttribute('aria-pressed') === 'true', String(button?.getAttribute('aria-pressed'))),
+    result('bays: the panel names that suit', Boolean(name) && name === card?.textContent.trim(), `${name} vs ${card?.textContent.trim()}`),
+    result('bays: the Hall stays on screen', top >= 0 && top < win.innerHeight / 2, `top ${Math.round(top)}`),
+    result('bays: the camera is at bay V', bay === '4', String(bay)),
+  ];
+}

@@ -46,6 +46,7 @@ async function boot() {
     root.classList.remove('lab', 'lab-ready', 'door-open');
     delete root.dataset.stop;
     delete root.dataset.door;
+    delete root.dataset.bay;
     ready = Promise.resolve(null);
     return null;
   };
@@ -78,7 +79,18 @@ async function boot() {
   const measure = () => {
     // Floored: a section's top is fractional, the scroll lands on whole pixels,
     // and arriving at a section must count as being there.
-    places = stops.map(({ section }) => ({ top: Math.floor(section.getBoundingClientRect().top + window.scrollY), height: section.offsetHeight }));
+    // A section with a hold in it (the row of suits) starts where the hold's
+    // panel pins and ends with the hold: the camera reaches the first bay as
+    // the panel settles, and walks the bays while it stays pinned.
+    places = stops.map(({ section }) => {
+      const hold = section.querySelector('[data-lab-hold]');
+      if (!hold) return { top: Math.floor(section.getBoundingClientRect().top + window.scrollY), height: section.offsetHeight };
+      const box = hold.getBoundingClientRect();
+      const pin = hold.firstElementChild;
+      const pinned = (pin && parseFloat(getComputedStyle(pin).top)) || 0;
+      const top = Math.floor(box.top + window.scrollY - pinned);
+      return { top, height: Math.round(box.bottom + window.scrollY) - top };
+    });
     maxScroll = Math.max(0, root.scrollHeight - window.innerHeight);
   };
   const position = () => railPosition(window.scrollY, window.innerHeight, places, { maxScroll, row: { stop: row, count: BAYS } });
@@ -104,6 +116,8 @@ async function boot() {
     const nextBay = rail.bay >= 0 ? Math.round(rail.bay) : -1;
     if (nextBay !== bay) {
       bay = nextBay;
+      if (bay >= 0) root.dataset.bay = String(bay);
+      else delete root.dataset.bay;
       if (bay >= 0) bayListeners.forEach((fn) => fn(bay));
     }
   };

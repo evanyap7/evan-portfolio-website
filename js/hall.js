@@ -8,6 +8,7 @@
 // With reduced motion every change is instant and nothing loops.
 
 import { whenActive } from './gate.js';
+import { getLab } from './lab.js';
 
 // In order of importance, each project wearing the Mark of the same number.
 // Only EGO has a codename of its own (it is the assistant's name); every other
@@ -161,13 +162,30 @@ export function initHall() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ui = mount(suits);
   const others = mountOthers(suits);
-  title.after(ui.root);
-  if (others) ui.root.after(others);
+  // In the lab the Hall's panel is pinned while the visitor scrolls through a
+  // hold as long as the row of bays: each stretch of it walks the camera one
+  // bay on (css/hall.css, js/lab.js). The title stays above the hold and
+  // scrolls away, so on a phone the pin has room for the tabs.
+  let hold = null;
+  if (document.documentElement.classList.contains('lab')) {
+    hold = element('div', 'hall-hold');
+    hold.dataset.labHold = '';
+    const pin = element('div', 'hall-pin');
+    title.after(hold);
+    hold.append(pin);
+    pin.append(ui.root);
+    if (others) hold.after(others);
+  } else {
+    title.after(ui.root);
+    if (others) ui.root.after(others);
+  }
   // The Hall and the list replace the cards; the cards stay in the page for
   // search engines and come back if three.js fails to load.
   work.classList.add('work--hall');
 
   let hall = null;
+  let lab = null; // the lab, once the suits stand in its bays
+  let row = null;
   let current = 0;
   let pass = 3;
   let timers = [];
@@ -221,6 +239,7 @@ export function initHall() {
     ui.open.textContent = `${suit.more} →`;
     ui.open.href = suit.href;
     ui.suitButtons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
+    row?.focus(index);
     if (!hall || !hall.ready(suit.spec)) {
       ui.hint.textContent = `Loading Mark ${suit.mark}…`;
     }
@@ -246,6 +265,8 @@ export function initHall() {
     warming = true;
     const link = navigator.connection;
     if (link && (link.saveData || /2g|3g/.test(link.effectiveType ?? ''))) return;
+    // In the lab, every bay's suit stands too, nearest first.
+    row?.warm(suits.map((_, i) => i).sort((a, b) => Math.abs(a - current) - Math.abs(b - current)));
     const order = suits.map((_, i) => suits[(current + 1 + i) % suits.length]);
     order.reduce((chain, next) => chain.then(() => hall?.prepare(next.spec)), Promise.resolve());
   };
@@ -255,16 +276,35 @@ export function initHall() {
     clearTimers();
     hall?.stop();
     hall = null;
+    row = null;
+    lab = null;
     ui.root.remove();
     others?.remove();
+    hold?.remove();
     work.classList.remove('work--hall');
+  };
+
+  // A tab in the lab walks the camera to that suit's bay. The bays passed on
+  // the way are not picked; the one headed for is, on arrival or soon after.
+  let heading = -1;
+  let headingTimer = 0;
+  const headFor = (index) => {
+    heading = index;
+    clearTimeout(headingTimer);
+    headingTimer = setTimeout(() => {
+      heading = -1;
+    }, 1500);
+    lab.goToBay(index);
   };
 
   ui.passButtons.forEach((button) => button.addEventListener('click', () => goTo(Number(button.dataset.pass), true)));
   ui.suitButtons.forEach((button) => {
     const index = Number(button.dataset.suit);
     const warm = () => hall?.prepare(suits[index].spec);
-    button.addEventListener('click', () => select(index));
+    button.addEventListener('click', () => {
+      select(index);
+      if (lab) headFor(index);
+    });
     button.addEventListener('pointerenter', warm);
     button.addEventListener('focus', warm);
   });
@@ -343,6 +383,12 @@ export function initHall() {
     if (!target) return false;
     if (index >= 0 && index !== current) select(index);
     target.scrollIntoView({ block: 'start', behavior: 'instant' });
+    // In the lab the suit's place is its bay along the hold.
+    if (index >= 0 && hold) {
+      getLab().then((found) => {
+        if (found && current === index) found.goToBay(index, { instant: true });
+      });
+    }
     return true;
   };
 
@@ -364,7 +410,26 @@ export function initHall() {
     else hall.stop();
   };
 
+  // In the lab the suits stand in its bays and its one canvas draws them;
+  // scrolling through the hold picks the suit in the bay the camera reaches.
+  const loadLab = (found) => import('./lab/suits.js').then(({ createSuitRow }) => {
+    lab = found;
+    row = createSuitRow(found.scene, suits.map((suit) => suit.spec), { hues: suits.map((suit) => suit.hue) });
+    hall = row.stage;
+    found.onBay((index) => {
+      if (heading >= 0 && index !== heading) return;
+      heading = -1;
+      if (index !== current) select(index);
+    });
+    const standing = Number(document.documentElement.dataset.bay ?? -1);
+    select(standing >= 0 ? standing : current);
+  });
+
   const load = () => {
+    getLab().then((found) => (found ? loadLab(found) : loadHall())).catch(fail);
+  };
+
+  const loadHall = () => {
     import('./hall-scene.js').then(({ createHall }) => {
       hall = createHall(ui.canvas);
       const fit = () => {
