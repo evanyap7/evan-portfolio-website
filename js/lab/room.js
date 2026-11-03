@@ -7,6 +7,8 @@
 // Units are metres. Everything repeated is instanced, so the whole shell is a
 // couple of dozen draw calls.
 
+import { createDoor } from './door.js';
+
 const H = 4.2; // ceiling height of the hall
 const HALF = 6; // the hall is 12 m wide
 const END = -46; // the partition between the hall and the office
@@ -18,7 +20,10 @@ const BAYS = { x: 4.7, first: -13, step: -2.6, count: 7 };
 // outside the door, About, the first bay, the last bay, the trophy shelf, the
 // bench, the office. scene.js threads its two curves through these.
 export const VIEWS = [
-  { eye: [0, 1.7, 7.4], look: [0, DOOR.y, 0] },
+  // Square on to the door, near enough that the door fills the hero's frame
+  // (the reactor's box) to its edge: half that frame spans 20° (scene.js),
+  // and tan 20° × 4.8 m is the door's radius.
+  { eye: [0, DOOR.y, 4.8], look: [0, DOOR.y, 0] },
   { eye: [1.5, 1.65, -3.2], look: [-1.8, 1.45, -9.2] },
   { eye: [0.7, 1.55, -12.3], look: [BAYS.x, 1.15, BAYS.first] },
   { eye: [0.7, 1.55, -12.3 + BAYS.step * 6], look: [BAYS.x, 1.15, BAYS.first + BAYS.step * 6] },
@@ -119,15 +124,23 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   });
 
   // The door wall, with the round opening the vault door fills, a metal
-  // collar, and a thin lit ring on each face.
+  // collar, a ring of bolt heads, and a thin lit ring on each face.
   add(new THREE.Mesh(own(wallWithPortal(THREE, HALF * 2, H, DOOR)), wall));
   const collar = add(new THREE.Mesh(own(new THREE.TorusGeometry(DOOR.radius + 0.06, 0.09, 12, 96)), materials.metal));
   collar.position.set(0, DOOR.y, 0);
-  const ringGeometry = own(new THREE.TorusGeometry(DOOR.radius + 0.17, 0.012, 6, 128));
-  [[0.16, 2.4], [-0.16, 1.4]].forEach(([z, glow]) => {
+  const bolts = tier === 'phone' ? 16 : 24;
+  add(instanced(THREE, own(new THREE.CylinderGeometry(0.034, 0.038, 0.035, 12)), materials.metal,
+    Array.from({ length: bolts }, (_, i) => {
+      const a = (i / bolts) * Math.PI * 2;
+      return { at: [Math.cos(a) * (DOOR.radius + 0.3), DOOR.y + Math.sin(a) * (DOOR.radius + 0.3), 0.017], rx: Math.PI / 2 };
+    })));
+  const ringGeometry = own(new THREE.TorusGeometry(DOOR.radius + 0.45, 0.007, 6, 128));
+  [[0.01, 0.9], [-0.16, 0.7]].forEach(([z, glow]) => {
     const ring = add(new THREE.Mesh(ringGeometry, materials.strip(glow)));
     ring.position.set(0, DOOR.y, z);
   });
+  const door = createDoor(THREE, materials, { tier, y: DOOR.y, radius: DOOR.radius });
+  group.add(door.group);
 
   // The vestibule: a narrow dark passage up to the door, its floor lit by two
   // guide lines that lead the eye in.
@@ -244,15 +257,17 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     office: new THREE.Vector3(0, 0, -53),
   };
 
-  // The vault door arrives with its own task; until then the way in stands open.
-  const door = { isOpen: true, open: () => Promise.resolve() };
-
   return {
     group,
     door,
     bays,
     marks,
+    // Called each frame drawn, with the frame's time.
+    update(now) {
+      door.update(now);
+    },
     dispose() {
+      door.dispose();
       geometries.forEach((g) => g.dispose());
       owned.forEach((m) => m.dispose());
     },

@@ -129,12 +129,15 @@ export function initReactor() {
   // Renders only while the hero is on screen and the tab is visible.
   function run(live) {
     let seen = false;
-    const toggle = () => (seen && !document.hidden ? live.start() : live.stop());
+    // In the lab the reactor goes with the door, and draws nothing after.
+    const gone = () => document.documentElement.classList.contains('door-open');
+    const toggle = () => (seen && !document.hidden && !gone() ? live.start() : live.stop());
     new IntersectionObserver(([entry]) => {
       seen = entry.isIntersecting;
       toggle();
     }).observe(root);
     document.addEventListener('visibilitychange', toggle);
+    document.addEventListener('lab:door-open', toggle);
     interact();
   }
 

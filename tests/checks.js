@@ -689,6 +689,37 @@ export async function labRail(win) {
   ];
 }
 
+// The arc reactor is the lab's door: a first visit finds it shut, and waking
+// the site opens it.
+export async function gateDoor(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('door: no lab in this frame', !root.classList.contains('lab'))];
+  await until(() => root.classList.contains('lab-ready') || !root.classList.contains('gated'), 6000);
+  const shut = root.classList.contains('gated') ? root.dataset.door : 'woke before the lab was ready';
+  doc.querySelector('[data-gate-activate]')?.click();
+  await wait(2200);
+  return [
+    result('door: shut while the site is gated', shut === 'closed', String(shut)),
+    result('door: Activate opens it', root.dataset.door === 'open' && root.classList.contains('door-open'), `${root.dataset.door} ${root.classList.contains('door-open')}`),
+  ];
+}
+
+// A link into the page, or a visitor already let in this session, finds the
+// door already open at the first frame, with the camera at the linked stop.
+export async function labDoor(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('door: no lab in this frame', !root.classList.contains('lab'))];
+  await until(() => root.classList.contains('lab-ready'), 6000);
+  const first = `${root.dataset.door} ${root.dataset.stop}`;
+  await until(() => root.dataset.stop === 'toolkit', 1000);
+  return [
+    result('door: already open at the first frame', first.startsWith('open '), first),
+    result('door: the camera is at the linked stop', root.dataset.stop === 'toolkit', String(root.dataset.stop)),
+  ];
+}
+
 // A phone's address bar changing the height mid-scroll keeps the camera where it is.
 export async function labResize(win, frame) {
   const doc = win.document;

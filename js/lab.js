@@ -43,7 +43,7 @@ async function boot() {
     cleanups.forEach((fn) => fn());
     try { scene?.dispose(); } catch { /* already gone */ }
     canvas.remove();
-    root.classList.remove('lab', 'lab-ready');
+    root.classList.remove('lab', 'lab-ready', 'door-open');
     delete root.dataset.stop;
     delete root.dataset.door;
     ready = Promise.resolve(null);
@@ -83,6 +83,11 @@ async function boot() {
   };
   const position = () => railPosition(window.scrollY, window.innerHeight, places, { maxScroll, row: { stop: row, count: BAYS } });
 
+  // The door: shut while the site is gated, and the camera waits outside it
+  // until it has opened and the reactor in it has faded (css/lab.css).
+  const door = scene.room.door;
+  let held = true;
+
   const stopListeners = [];
   const bayListeners = [];
   let stop = -1;
@@ -90,7 +95,7 @@ async function boot() {
   const update = (instant = false) => {
     if (failed) return;
     const rail = position();
-    scene.setRail(rail, { instant });
+    scene.setRail(held ? { ...rail, u: 0 } : rail, { instant });
     if (rail.stop !== stop) {
       stop = rail.stop;
       root.dataset.stop = stops[stop].id;
@@ -115,6 +120,13 @@ async function boot() {
 
   const fit = () => scene.resize(canvas.clientWidth || window.innerWidth, canvas.clientHeight || window.innerHeight);
 
+  // A visitor already let in (a link into the page, or earlier this session)
+  // finds the door open from the first frame.
+  if (!root.classList.contains('gated')) {
+    door.open({ instant: true });
+    held = false;
+  }
+
   // The first frame. If it throws, the visitor never sees a broken room.
   try {
     measure();
@@ -124,8 +136,10 @@ async function boot() {
     return fail();
   }
   if (failed || !root.classList.contains('lab')) return fail();
-  root.dataset.door = scene.room.door.isOpen ? 'open' : 'closed';
+  root.dataset.door = door.isOpen ? 'open' : 'closed';
+  root.classList.toggle('door-open', door.isOpen);
   root.classList.add('lab-ready');
+  if (door.isOpen) document.dispatchEvent(new Event('lab:door-open'));
 
   on(window, 'scroll', schedule, { passive: true });
   if ('ResizeObserver' in window) {
@@ -157,6 +171,28 @@ async function boot() {
     sync();
   });
   on(document, 'visibilitychange', sync);
+
+  // Waking opens the door: the room starts drawing for it, and once the
+  // blades are home the reactor fades (400 ms), then the camera is free.
+  const open = () => {
+    if (failed || door.isOpen) return;
+    active = true;
+    sync();
+    door.open().then(() => {
+      if (failed) return;
+      root.dataset.door = 'open';
+      root.classList.add('door-open');
+      window.setTimeout(() => {
+        held = false;
+        update();
+        document.dispatchEvent(new Event('lab:door-open'));
+      }, 400);
+    });
+  };
+  if (!door.isOpen) {
+    if (root.classList.contains('waking')) open();
+    else on(document, 'portfolio:waking', open, { once: true });
+  }
 
   const scrollTo = (top, instant) => window.scrollTo({ top, behavior: instant ? 'instant' : 'smooth' });
   return {

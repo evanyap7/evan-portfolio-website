@@ -166,6 +166,7 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
     const dt = Math.min(0.1, Math.max(0, (now - then) / 1000));
     then = now;
     u = Math.abs(target - u) < 1e-4 ? target : damp(u, target, 6, dt);
+    room.update(now);
     listeners.forEach((fn) => fn(dt));
     draw();
   };

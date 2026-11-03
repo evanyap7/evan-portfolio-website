@@ -229,6 +229,21 @@
   from { opacity: 0; }
 }
 
+/* In the lab (js/lab.js) the reactor is the heart of the door. Once the
+   door has opened, the reactor and the callouts' leader lines go with it,
+   over 400 ms, and the room behind is the hero. The credentials stay. */
+:root.lab .reactor,
+:root.lab .hero__lines {
+  transition: opacity 400ms ease, visibility 0s 0s;
+}
+
+:root.lab.door-open .reactor,
+:root.lab.door-open .hero__lines {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 400ms ease, visibility 0s 400ms;
+}
+
 @keyframes draw-line {
   to { stroke-dashoffset: 0; }
 }

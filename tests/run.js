@@ -43,6 +43,9 @@ const EXTRA = [
   { width: 393, height: 852, src: '/#certifications', names: ['tabLink'] },
   { width: 393, height: 852, src: '/', names: ['labResize'] },
   { width: 1440, height: 800, src: '/', names: ['labLost'] },
+  { width: 1440, height: 800, src: '/', names: ['gateDoor'] },
+  { width: 1440, height: 800, src: '/#toolkit', names: ['labDoor'] },
+  { width: 393, height: 852, src: '/#toolkit', names: ['labDoor'] },
 ];
 
 // A frame that has not loaded, and had its fonts settle, by then is a failure.
