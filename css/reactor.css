@@ -90,7 +90,6 @@
   margin: calc(var(--core) / -2) 0 0 calc(var(--core) / -2);
   border: 2px solid var(--accent);
   border-radius: 50%;
-  box-shadow: 0 0 48px var(--accent-glow), inset 0 0 48px var(--accent-glow);
   pointer-events: none;
 }
 
@@ -104,7 +103,6 @@
 @keyframes name-flash {
   from {
     color: hsl(var(--h) 100% 92%);
-    text-shadow: 0 0 40px var(--accent-glow), 0 0 90px var(--accent-glow);
   }
 }
 
@@ -342,8 +340,8 @@ html {
 
 .gate__mic[aria-pressed="true"] {
   border-color: var(--accent);
+  background: hsl(var(--h) 100% 60% / 0.12);
   color: var(--accent);
-  box-shadow: 0 0 24px var(--accent-glow);
 }
 
 .gate__hint {

@@ -32,7 +32,6 @@
   --grey-100: hsl(var(--h) 22% 95%);
   --grey-50: hsl(var(--h) 30% 97.5%);
   --accent: hsl(var(--h) 95% 72%);
-  --accent-glow: hsl(var(--h) 100% 60% / 0.35);
 
   --bg: var(--grey-950);
   --band: var(--grey-950);    /* each section's own background */
