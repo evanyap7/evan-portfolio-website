@@ -24,9 +24,14 @@
   aspect-ratio: 1 / 1;
   max-height: 640px;
   width: 100%;
-  cursor: pointer;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
+
+.hall__stage:active { cursor: grabbing; }
 
 .hall__canvas {
   display: block;

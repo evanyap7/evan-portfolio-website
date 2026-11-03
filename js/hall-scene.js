@@ -225,7 +225,10 @@ export function createHall(canvas) {
   const ring = new THREE.RingGeometry(0.5, 0.515, 72).rotateX(-Math.PI / 2).translate(0, FEET, 0.02);
   const ringEdges = new THREE.EdgesGeometry(ring);
 
-  const state = { tx: 0, ty: 0 };
+  // tx, ty: where the pointer hovers. turn: how far the suit has been spun by
+  // hand, in radians and unbounded, so it can go all the way round; spin is its
+  // speed after a let-go, which fades.
+  const state = { tx: 0, ty: 0, turn: 0, spin: 0, held: false };
   const suits = new Map(); // spec → { promise, ready, urgent, suit }
   let suit = null; // on stage: { root, reps: [{ root, materials }], textures }
   let wanted = 0; // the latest setSuit call; older ones that land late are dropped
@@ -419,6 +422,9 @@ export function createHall(canvas) {
     }
     scan = 1;
     appear = instant ? 1 : 0;
+    state.turn = 0;
+    state.spin = 0;
+    if (!instant) suit.root.rotation.y = 0;
     applyVisibility();
   }
 
@@ -455,8 +461,13 @@ export function createHall(canvas) {
     }
     const glow = 0.3 + 0.7 * ease;
     const k = dt ? 1 - Math.exp(-dt * 6) : 1;
+    if (!state.held) {
+      state.turn += state.spin * dt;
+      state.spin *= Math.exp(-dt * 2.5);
+      if (Math.abs(state.spin) < 0.01) state.spin = 0;
+    }
     suit.root.rotation.x += (0.02 + Math.cos(time * 1.15) * 0.02 - state.ty * 0.12 - suit.root.rotation.x) * k;
-    suit.root.rotation.y += (0.2 + Math.sin(time * 0.9) * 0.3 + state.tx * 0.5 - suit.root.rotation.y) * k;
+    suit.root.rotation.y += (0.2 + Math.sin(time * 0.9) * 0.3 + state.tx * 0.5 + state.turn - suit.root.rotation.y) * k;
     suit.root.position.y = Math.sin(time * 1.3) * 0.016;
     suit.root.scale.setScalar(0.9 + 0.1 * ease);
     const lit = pass === 3 || (scan < 1 && from === 3);
@@ -495,6 +506,14 @@ export function createHall(canvas) {
         still();
         return true;
       });
+    },
+    // Spins the suit by hand; redraws at once when nothing is looping.
+    turn(radians) {
+      state.turn += radians;
+      if (!frame && suit) {
+        suit.root.rotation.y += radians;
+        composer.render();
+      }
     },
     // Whether a suit would go on stage at once.
     ready(spec) {

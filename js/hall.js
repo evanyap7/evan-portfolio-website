@@ -28,7 +28,7 @@ const SUITS = [
 ];
 const PASSES = ['Blueprint', 'Wireframe', 'Shaded', 'Lit'];
 const STEP_MS = 700;
-const HINT = 'Click the suit for the next pass';
+const HINT = 'Drag to turn · tap for the next pass';
 
 function webgl2() {
   try {
@@ -101,6 +101,9 @@ function mount(suits) {
   root.dataset.hall = '';
 
   const stage = element('div', 'hall__stage');
+  stage.tabIndex = 0;
+  stage.setAttribute('role', 'group');
+  stage.setAttribute('aria-label', 'The suit. Left and right arrow keys turn it; Enter shows the next pass.');
   const canvas = element('canvas', 'hall__canvas');
   canvas.setAttribute('aria-hidden', 'true');
   const hint = element('p', 'hall__hint', HINT);
@@ -265,7 +268,59 @@ export function initHall() {
     button.addEventListener('pointerenter', warm);
     button.addEventListener('focus', warm);
   });
-  ui.stage.addEventListener('click', () => goTo((pass + 1) % PASSES.length, true));
+  // Drag the suit round, all the way if you like; let go and it coasts to a
+  // stop. A drag is not a click, so it does not change the pass.
+  const TURN_PER_PX = 0.012;
+  let grab = null;
+  let dragged = false;
+  ui.stage.addEventListener('pointerdown', (event) => {
+    if (!hall || event.button !== 0) return;
+    grab = { x: event.clientX, lx: event.clientX, t: performance.now(), moved: false };
+    dragged = false;
+    hall.state.held = true;
+    hall.state.spin = 0;
+    ui.stage.setPointerCapture(event.pointerId);
+  });
+  ui.stage.addEventListener('pointermove', (event) => {
+    if (!grab || !hall) return;
+    if (!grab.moved && Math.abs(event.clientX - grab.x) < 6) return;
+    grab.moved = true;
+    dragged = true;
+    const dx = event.clientX - grab.lx;
+    const now = performance.now();
+    const turn = dx * TURN_PER_PX;
+    hall.turn(turn);
+    hall.state.spin = turn / Math.max(0.008, (now - grab.t) / 1000);
+    grab.lx = event.clientX;
+    grab.t = now;
+  });
+  const letGo = () => {
+    if (!grab) return;
+    // A pause before letting go leaves it still; otherwise it coasts.
+    const paused = performance.now() - grab.t > 120;
+    grab = null;
+    if (!hall) return;
+    hall.state.held = false;
+    hall.state.spin = paused ? 0 : Math.max(-9, Math.min(9, hall.state.spin));
+  };
+  ui.stage.addEventListener('pointerup', letGo);
+  ui.stage.addEventListener('pointercancel', letGo);
+  ui.stage.addEventListener('click', () => {
+    if (dragged) {
+      dragged = false;
+      return;
+    }
+    goTo((pass + 1) % PASSES.length, true);
+  });
+  // Arrow keys turn it for anyone without a pointer.
+  ui.stage.addEventListener('keydown', (event) => {
+    if (!hall || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
+    event.preventDefault();
+    hall.turn((event.key === 'ArrowLeft' ? -1 : 1) * 0.3);
+  });
+  ui.stage.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && event.target === ui.stage) goTo((pass + 1) % PASSES.length, true);
+  });
   ui.stage.addEventListener('pointermove', (event) => {
     if (!hall || event.pointerType === 'touch') return;
     const box = ui.stage.getBoundingClientRect();
