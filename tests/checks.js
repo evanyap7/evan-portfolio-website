@@ -384,7 +384,7 @@ export async function copy(win, frame) {
 // screen reader gets must read exactly as written, nothing in a heading may
 // be aria-hidden, and once a title has been seen every word is in place.
 const TITLES = {
-  'hero-title': 'I build AI agents and measure whether they work.',
+  'hero-title': 'Most AI demos never get tested. Mine have 460+ tests.',
   'about-title': 'About me',
   'experience-title': 'My experience',
   'work-title': 'Selected work',
