@@ -7,7 +7,9 @@
 
 .hall {
   --suit: hsl(var(--suit-h, 196) 95% 68%);
-  --suit-dim: hsl(var(--suit-h, 196) 40% 70% / 0.55);
+  /* Opaque, so a finished pass stays at least 4.8:1 on its pill for every
+     suit's hue; a see-through tint fell to 3.7:1 on the warm ones. */
+  --suit-dim: hsl(var(--suit-h, 196) 40% 62%);
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   column-gap: clamp(24px, 4vw, 64px);
