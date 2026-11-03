@@ -775,6 +775,34 @@ export async function labBays(win) {
   ];
 }
 
+// On a narrow screen the window above the pinned panel is the suit's alone
+// once the camera stands in the row: at the first bay the section's title,
+// which sits just above the pin, gives way instead of covering the suit.
+export async function labBayClear(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('bay clear: no lab in this frame', true, 'no lab')];
+  await until(() => root.classList.contains('lab-ready') && doc.querySelector('.hall__suit[data-suit="0"]'), 6000);
+  doc.getElementById('work').scrollIntoView({ behavior: 'instant' });
+  await wait(1500);
+  doc.querySelector('.hall__suit[data-suit="0"]').click();
+  await until(() => root.dataset.bay === '0', 4000);
+  await wait(1200);
+  const title = doc.querySelector('#work > .work__title');
+  const box = title.getBoundingClientRect();
+  const window = doc.querySelector('.hall__stage').getBoundingClientRect();
+  const overlaps = box.bottom > window.top + 1 && box.top < window.bottom - 1
+    && box.right > window.left + 1 && box.left < window.right - 1;
+  const opacity = Number(win.getComputedStyle(title).opacity);
+  const bay = root.dataset.bay;
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('bay clear: the camera is at bay I', bay === '0', String(bay)),
+    result('bay clear: the title leaves the suit its window', !overlaps || opacity < 0.05, `overlap ${overlaps}, opacity ${opacity}`),
+  ];
+}
+
 // A tab pressed before the suits have joined the lab (the visitor got there
 // first) still takes the camera to that suit, not to the bay it scrolled past.
 export async function labEarlyTab(win) {

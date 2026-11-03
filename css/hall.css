@@ -379,6 +379,16 @@
     padding-bottom: 32px;
   }
 
+  /* The title arrives with the visitor, then sits in the window just above
+     the pin. Once the camera stands in the row (lab.js sets data-bay as the
+     pin sticks) the window is the suit's, so the title gives way. Opacity,
+     not visibility, keeps it the section's heading for a screen reader. */
+  :root.lab[data-bay] .work--hall > .work__title { opacity: 0; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :root.lab .work--hall > .work__title { transition: opacity 0.35s ease; }
+  }
+
   /* Tighter, so the tabs fit in the pin under the window. */
   :root.lab .hall__panel { gap: 12px; }
   :root.lab .hall__suits { margin-top: 12px; }
