@@ -47,10 +47,13 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
 
   const camera = new THREE.PerspectiveCamera(40, 1, 0.05, 90);
 
-  // Bloom on the light strips and holograms, on desktop only.
+  // Bloom on the light strips and holograms, on desktop only. MSAA on its
+  // target only below a retina pixel ratio: at 2x, 4 samples doubled the frame
+  // time (p95 33 ms against 16.7 ms) for edges the eye can't tell apart.
   let composer = null;
   if (!phone) {
-    const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+    const samples = renderer.getPixelRatio() < 1.5 ? 4 : 0;
+    const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples });
     composer = new EffectComposer(renderer, target);
     composer.addPass(new RenderPass(scene, camera));
     composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.35, 0.4, 0.9));
