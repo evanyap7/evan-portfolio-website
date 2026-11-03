@@ -24,7 +24,9 @@ export const VIEWS = [
   // (the reactor's box) to its edge: half that frame spans 20° (scene.js),
   // and tan 20° × 4.8 m is the door's radius.
   { eye: [0, DOOR.y, 4.8], look: [0, DOOR.y, 0] },
-  { eye: [1.5, 1.65, -3.2], look: [-1.8, 1.45, -9.2] },
+  // Near enough to Evan's hologram (stops.js) that he stands three quarters
+  // of the frame high, the bar behind him and the screen on the wall beside.
+  { eye: [0.13, 1.5, -5.7], look: [-1.8, 1.4, -9.2] },
   { eye: [0.7, 1.55, -12.3], look: [BAYS.x, 1.15, BAYS.first] },
   { eye: [0.7, 1.55, -12.3 + BAYS.step * 6], look: [BAYS.x, 1.15, BAYS.first + BAYS.step * 6] },
   { eye: [-0.8, 1.7, -32.2], look: [-5.4, 1.5, -35.2] },

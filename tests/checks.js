@@ -779,3 +779,26 @@ export async function labBays(win) {
     result('bays: the camera is at bay V', bay === '4', String(bay)),
   ];
 }
+
+// In the lab, Evan stands in the first room as a hologram made from his cut-out
+// portrait; the photo's figure leaves the panel but still reaches screen readers.
+export async function labHolo(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('holo: no lab in this frame', true, 'no lab')];
+  await until(() => root.classList.contains('lab-ready'), 6000);
+  doc.getElementById('about').scrollIntoView({ behavior: 'instant' });
+  await wait(1500);
+  const entry = win.performance.getEntriesByType('resource').find((e) => e.name.endsWith('/img/evan-holo.webp'));
+  const img = doc.querySelector('#about figure img');
+  const style = img && win.getComputedStyle(img);
+  const figure = img?.closest('figure');
+  const box = figure?.getBoundingClientRect();
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('holo: the cut-out portrait loads', entry?.responseStatus === 200, entry ? `status ${entry.responseStatus}` : 'not requested'),
+    result('holo: the photo keeps its alt text for readers', Boolean(img) && img.alt.length > 20 && style.display !== 'none' && style.visibility !== 'hidden', img ? `${style.display} ${style.visibility}` : 'missing'),
+    result('holo: the photo leaves the panel', Boolean(box) && box.width <= 1 && box.height <= 1, box ? `${Math.round(box.width)}×${Math.round(box.height)}` : 'missing'),
+  ];
+}

@@ -57,8 +57,9 @@ async function boot() {
   on(canvas, 'webglcontextlost', fail);
 
   let createLab;
+  let buildStops;
   try {
-    ({ createLab } = await import('./lab/scene.js'));
+    [{ createLab }, { buildStops }] = await Promise.all([import('./lab/scene.js'), import('./lab/stops.js')]);
   } catch {
     return fail();
   }
@@ -68,6 +69,10 @@ async function boot() {
   const phone = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 720;
   try {
     scene = createLab(canvas, { tier: phone ? 'phone' : 'desktop', stops: stops.map(({ id, section, frame }) => ({ id, section, frame })) });
+    // The rooms' set pieces: built before the first frame, so their materials
+    // and light compile with the rest; a piece that fails to load (the
+    // portrait) leaves the room without it, not the lab.
+    buildStops(scene).catch(() => {});
   } catch {
     return fail();
   }
