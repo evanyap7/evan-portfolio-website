@@ -8,8 +8,9 @@ fits one page. Differences from the list below:
   "$4k monthly revenue" phrase is gone, "halved" became "cut", and the research
   agent bullet has no usage figure. The HVAC bullet keeps its wording, plus
   "effort".
-- The test count is 212 (the trading branch with T4 merged), written as
-  "212 tests in CI" to keep the line short.
+- The trading test count is 263 (master after the property-based tests were
+  merged), written as "263 tests in CI" to keep the line short. Parallel Match
+  now has 197 Python tests, up from 137.
 - Awards and Leadership are one section below Education. The positioning line
   reads "Builds AI agents and measures whether they work. Seeking AI / software
   internships."
@@ -88,9 +89,9 @@ Evidence: `bench:parallel` was re-run on 2026-11-03 with 6 receipts and
 ### 5. Systematic Trading System, bullet 2 (test count)
 
 - Before: …191 tests run in GitHub Actions CI.
-- After: …209 tests run in GitHub Actions CI.
+- After: …263 tests in CI.
 
-Evidence: `uv run pytest` gives 209. `.github/workflows/ci.yml` exists. The
+Evidence: `./scripts/check.sh` runs 263 tests on master `afc9d54`. `.github/workflows/ci.yml` exists. The
 2% daily-loss stop and 5% drawdown breaker match `config/risk_limits.yaml`.
 
 ### 5b. Systematic Trading System, bullet 3 (task T2: the "four ideas" framing)
@@ -128,8 +129,9 @@ then gets mentioned again on top. The README and the site count four ideas:
 
 ### Checked and left as they are
 
-- Parallel Match: "137 Python tests" (137 `def test_` in `tests/`) and
-  "18-language" (README) are correct. No result is claimed, as decision D16
+- Parallel Match: "18-language" (README) is correct. The test count went from
+  137 to 197 Python tests after the property-based tests were merged (197 run
+  with `unittest discover` on main `bf87887`). No result is claimed, as decision D16
   requires.
 - Trading: "live trading paused since 1 Oct 2026" matches the repo README.
 - Awards: Top 5 of 100 (Sep 2026) and 2nd Place, Vietnam Grand Challenge
@@ -170,7 +172,7 @@ Fix these only if you still send these versions.
 | QUANT CV, Z.ai CV, Extra Projects | "24 tools" | "28 tools" |
 | QUANT CV, Z.ai CV, Extra Projects | "97% (34/35)" / "35-case live eval set" | "97% (38/39)" / "39-case eval set" |
 | QUANT CV, Extra Projects | "Aug – Oct 2026" (bot) | "Aug 2026 – Present" |
-| QUANT CV, Extra Projects | "191 tests" | "209 tests" |
+| QUANT CV, Extra Projects | "191 tests" | "263 tests" |
 | Extra Projects, QUANT CV | "Four studies, each published…, say no" / "ran 4 studies… none found an edge" | the "four ideas" framing from 5b |
 | QUANT CV, Extra Projects | "\~6,500-line" | "\~7,500-line" (7,518 lines) |
 | Extra Projects | "About 24,000 lines of TypeScript" | "About 26,500" |
