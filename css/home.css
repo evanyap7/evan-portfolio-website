@@ -271,6 +271,17 @@
   .js .about__photo[data-reveal].is-visible {
     clip-path: inset(0 0 0 0 round var(--radius));
   }
+
+  /* The same failsafe as base.css's, for the wipe. */
+  .js:not(.reveal-ready) .about__photo[data-reveal] {
+    animation-name: photo-failsafe;
+  }
+}
+
+@keyframes photo-failsafe {
+  to {
+    clip-path: inset(0 0 0 0 round var(--radius));
+  }
 }
 
 .about__text p + p {

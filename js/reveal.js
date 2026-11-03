@@ -1,8 +1,10 @@
 // Fades and lifts content in the first time it scrolls into view. The
-// hidden starting state is scoped to .js in CSS, so nothing is hidden if
-// this never runs.
+// hidden starting state is scoped to .js in CSS, and a CSS failsafe shows
+// everything after a few seconds unless this has marked the page
+// `reveal-ready`, so nothing stays hidden if this never runs.
 
 export function initReveal() {
+  document.documentElement.classList.add('reveal-ready');
   const targets = document.querySelectorAll('[data-reveal]');
   const show = (target) => target.classList.add('is-visible');
 
