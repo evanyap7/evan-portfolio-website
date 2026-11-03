@@ -1,12 +1,13 @@
-/* Arial, resized to Geist's metrics, stands in while Geist loads, so the
-   text does not reflow (and shift the page) when the web font arrives. */
+/* Arial, resized to Schibsted Grotesk's metrics, stands in while it loads,
+   so the text does not reflow (and shift the page) when the web font
+   arrives. */
 @font-face {
-  font-family: "Geist Fallback";
+  font-family: "Schibsted Grotesk Fallback";
   src: local("Arial");
-  ascent-override: 95.94%;
-  descent-override: 28.16%;
+  ascent-override: 93.76%;
+  descent-override: 24.75%;
   line-gap-override: 0%;
-  size-adjust: 104.76%;
+  size-adjust: 104.16%;
 }
 
 /* Tokens ------------------------------------------------------------ */
@@ -48,9 +49,9 @@
   --signal: var(--accent);    /* diagrams */
   --focus: var(--accent);
 
-  --font-sans: "Geist", "Geist Fallback", "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans: "Schibsted Grotesk", "Schibsted Grotesk Fallback", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Azeret Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-serif: "Bodoni Moda", Georgia, "Times New Roman", serif;
 
   --nav: 64px;       /* the floating nav's height */
   --nav-top: 16px;   /* its distance from the top of the screen */

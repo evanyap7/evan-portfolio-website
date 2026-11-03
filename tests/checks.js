@@ -64,7 +64,7 @@ export function overflow(win) {
 
 export function fonts(win) {
   const loaded = [...win.document.fonts].filter((face) => face.status === 'loaded').map((face) => face.family.replace(/"/g, ''));
-  return ['Geist', 'Geist Mono', 'Instrument Serif', 'Satoshi']
+  return ['Schibsted Grotesk', 'Azeret Mono', 'Bodoni Moda', 'Satoshi']
     .map((family) => result(`${family} loaded`, loaded.includes(family), [...new Set(loaded)].join(', ')));
 }
 
