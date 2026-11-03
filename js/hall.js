@@ -288,6 +288,8 @@ export function initHall() {
   // the way are not picked; the one headed for is, on arrival or soon after.
   let heading = -1;
   let headingTimer = 0;
+  // A tab pressed before the suits have joined the lab waits for them.
+  let asked = -1;
   const headFor = (index) => {
     heading = index;
     clearTimeout(headingTimer);
@@ -304,6 +306,7 @@ export function initHall() {
     button.addEventListener('click', () => {
       select(index);
       if (lab) headFor(index);
+      else asked = index;
     });
     button.addEventListener('pointerenter', warm);
     button.addEventListener('focus', warm);
@@ -421,6 +424,12 @@ export function initHall() {
       heading = -1;
       if (index !== current) select(index);
     });
+    if (asked >= 0) {
+      select(asked);
+      headFor(asked);
+      asked = -1;
+      return;
+    }
     const standing = Number(document.documentElement.dataset.bay ?? -1);
     select(standing >= 0 ? standing : current);
   });

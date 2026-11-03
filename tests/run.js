@@ -42,6 +42,7 @@ const EXTRA = [
   { width: 1440, height: 800, src: '/#education', names: ['honoursLink'] },
   { width: 393, height: 852, src: '/#certifications', names: ['honoursLink'] },
   { width: 393, height: 852, src: '/', names: ['labResize'] },
+  { width: 393, height: 852, src: '/', names: ['labEarlyTab'] },
   { width: 1440, height: 800, src: '/', names: ['labLost'] },
   { width: 1440, height: 800, src: '/', names: ['gateDoor'] },
   { width: 1440, height: 800, src: '/#toolkit', names: ['labDoor'] },

@@ -775,6 +775,29 @@ export async function labBays(win) {
   ];
 }
 
+// A tab pressed before the suits have joined the lab (the visitor got there
+// first) still takes the camera to that suit, not to the bay it scrolled past.
+export async function labEarlyTab(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('early tab: no lab in this frame', true, 'no lab')];
+  await until(() => root.classList.contains('lab-ready') && doc.querySelector('.hall__suit[data-suit="4"]'), 6000);
+  const button = doc.querySelector('.hall__suit[data-suit="4"]');
+  // In one turn, as a finger would: the tab comes into view and is pressed
+  // before the observer that loads the suits has had its say.
+  button.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  button.click();
+  const there = await until(() => root.dataset.bay === '4', 4000);
+  const bay = root.dataset.bay;
+  const pressed = button.getAttribute('aria-pressed');
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('early tab: the camera reaches bay V', there, String(bay)),
+    result('early tab: the tab stays pressed', pressed === 'true', String(pressed)),
+  ];
+}
+
 // In the lab, Evan stands in the first room as a hologram made from his cut-out
 // portrait; the photo's figure leaves the panel but still reaches screen readers.
 export async function labHolo(win) {
