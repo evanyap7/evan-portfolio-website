@@ -179,25 +179,46 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   add(instanced(THREE, line, materials.metal, pilasters));
 
   // The suit bays: a niche between two metal fins, a lacquered plinth with a
-  // lit ring, a light above, and a pane of glass in front.
+  // lit ring, a light above, a column of light on the back wall in the suit's
+  // own colour (suits.js tints it), and a pane of glass in front, its edges lit.
   const bays = [];
   const fins = [];
   const plinths = [];
   const lamps = [];
+  const spines = [];
   const panes = [];
+  const edges = [];
+  const PANE = { x: BAYS.x - 1.05, half: 1.1, top: 3.2 };
   for (let k = 0; k < BAYS.count; k += 1) {
     const z = BAYS.first + BAYS.step * k;
     bays.push(new THREE.Vector3(BAYS.x, 0.09, z));
     [-1, 1].forEach((side) => fins.push({ at: [HALF - 0.45, H * 0.42, z + side * 1.15], scale: [0.9, H * 0.84, 0.05] }));
     plinths.push({ at: [BAYS.x, 0.045, z] });
     lamps.push({ at: [BAYS.x + 0.35, 3.25, z], scale: [0.6, 0.025, 1.2] });
-    panes.push({ at: [BAYS.x - 1.05, 1.6, z], ry: Math.PI / 2, scale: [2.2, 3.2, 1] });
+    spines.push({ at: [HALF - 0.03, 1.7, z], scale: [0.02, 2.6, 0.05] });
+    panes.push({ at: [PANE.x, PANE.top / 2, z], ry: Math.PI / 2, scale: [PANE.half * 2, PANE.top, 1] });
+    [-1, 1].forEach((side) => edges.push({ at: [PANE.x, PANE.top / 2, z + side * PANE.half], scale: [0.01, PANE.top, 0.01] }));
+    edges.push({ at: [PANE.x, PANE.top, z], scale: [0.01, 0.01, PANE.half * 2] });
   }
   add(instanced(THREE, line, materials.metal, fins));
   add(instanced(THREE, own(new THREE.CylinderGeometry(0.62, 0.66, 0.09, 48)), materials.lacquer, plinths));
   add(instanced(THREE, own(new THREE.TorusGeometry(0.6, 0.012, 6, 64)), materials.strip(3), plinths.map((p) => ({ at: [p.at[0], 0.095, p.at[2]], rx: Math.PI / 2 }))));
   add(instanced(THREE, line, materials.strip(1.6), lamps));
-  if (tier !== 'phone') add(instanced(THREE, own(new THREE.PlaneGeometry(1, 1)), materials.glass, panes));
+  add(instanced(THREE, line, materials.strip(1.4), edges));
+  // White until tinted; each bay's colour is an instance colour, so the
+  // shader that draws them is the same before and after.
+  const spineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
+  owned.push(spineMaterial);
+  const bayLights = add(instanced(THREE, line, spineMaterial, spines));
+  const white = new THREE.Color(0.5, 0.5, 0.5);
+  spines.forEach((_, k) => bayLights.setColorAt(k, white));
+  if (tier !== 'phone') {
+    // Barely there: the glass is seen by its lit edges and its reflections.
+    const glass = materials.glass.clone();
+    glass.opacity = 0.08;
+    owned.push(glass);
+    add(instanced(THREE, own(new THREE.PlaneGeometry(1, 1)), glass, panes));
+  }
 
   // The partition at the end of the hall, with a lit doorway into the office.
   const partition = add(new THREE.Mesh(own(wallWithDoorway(THREE, HALF * 2, H, { width: 2.6, height: 2.9 })), wall));
@@ -261,6 +282,8 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     group,
     door,
     bays,
+    // One instance per bay: setColorAt(k, colour), then instanceColor.needsUpdate.
+    bayLights,
     marks,
     // Called each frame drawn, with the frame's time.
     update(now) {
