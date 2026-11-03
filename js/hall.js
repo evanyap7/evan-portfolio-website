@@ -12,17 +12,18 @@ import { whenActive } from './gate.js';
 // In order of importance, each project wearing the Mark of the same number.
 // Only EGO has a codename of its own (it is the assistant's name); every other
 // suit goes by its project. `hue` tints the HUD; `spec` is the armour: which
-// model in models/hall/ it is, and, for a repainted suit, the colour its red
-// panels take (base) and its gold panels (accent).
-const SILVER = 0xb4bac2;
+// model in models/hall/ it is, for a repainted suit the colour its red panels
+// take (base) and its gold panels (accent), and `tone`, the clay's colour in
+// the shaded pass when the base won't do. Every suit wears its own colours.
 const SUITS = [
-  { id: 'trading-agent', mark: 'I', hue: 30, spec: { model: 'mark-1' } },
-  { id: 'assistant-bot', mark: 'II', code: 'EGO', hue: 205, spec: { model: 'mark-7', paint: { base: 0x6b727b, accent: 0x50575f, metal: 0.8, rough: 0.42 } } },
-  { id: 'research-agent', mark: 'III', hue: 44, spec: { model: 'mark-7-lite' } },
-  { id: 'parallel-match', mark: 'IV', hue: 2, spec: { model: 'mark-50', paint: { base: 0xb3120f, accent: 0xe0b04a } } },
-  { id: 'website-revamp', mark: 'V', hue: 210, spec: { model: 'mark-7-lite', paint: { base: SILVER, accent: 0xa51d1b } } },
-  { id: 'v-bay', mark: 'VI', hue: 18, spec: { model: 'mark-50' } },
-  { id: 'others', mark: 'VII', hue: 48, spec: { model: 'mark-7' } },
+  { id: 'trading-agent', mark: 'I', hue: 32, spec: { model: 'mark-1', tone: 0x6b5034 } },
+  { id: 'assistant-bot', mark: 'II', code: 'EGO', hue: 4, spec: { model: 'mark-7', tone: 0x9c2219 } },
+  { id: 'research-agent', mark: 'III', hue: 152, spec: { model: 'mark-7-lite', paint: { base: 0x0e7a4c, accent: 0xd7a83a } } },
+  // Mark IV wears Manchester United's colours: United red, black trim.
+  { id: 'parallel-match', mark: 'IV', hue: 356, spec: { model: 'mark-50', tone: 0xb3141a, paint: { base: 0xda291c, accent: 0x111214, metal: 0.55, rough: 0.4 } } },
+  { id: 'website-revamp', mark: 'V', hue: 268, spec: { model: 'mark-7-lite', paint: { base: 0x5b2ba3, accent: 0x9aa1ad } } },
+  { id: 'v-bay', mark: 'VI', hue: 44, spec: { model: 'mark-50', tone: 0x2e2f35, paint: { base: 0x1d1e22, accent: 0xd3a339, metal: 0.7, rough: 0.35 } } },
+  { id: 'others', mark: 'VII', hue: 218, spec: { model: 'mark-7', paint: { base: 0x1b3a78, accent: 0x8fa3bd, metal: 0.75, rough: 0.38 } } },
 ];
 const PASSES = ['Blueprint', 'Wireframe', 'Shaded', 'Lit'];
 const STEP_MS = 700;
