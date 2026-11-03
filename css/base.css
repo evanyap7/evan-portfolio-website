@@ -64,7 +64,7 @@
   /* Type */
   --t-body: 17px;
   --t-lede: 20px;
-  --t-card: 20px;
+  --t-card: 22px;     /* a clear step (1.29x) above the body text */
   --t-small: 15.5px;
   --t-mono: 12.5px;
   --t-title: clamp(44px, 7.2vw, 104px);
