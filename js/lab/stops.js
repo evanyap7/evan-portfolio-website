@@ -141,7 +141,7 @@ export function buildStops(lab) {
   set.add(drum, ring, lens, pool, beam);
 
   // The furniture: the things that say who he is, each standing on something.
-  const anchors = { ...furnish(THREE, materials, set), ...shelf(lab) };
+  const anchors = { ...furnish(THREE, materials, set), ...shelf(lab), ...bench(lab) };
 
   // The wall screen, on the left wall where the About panel stands in front
   // of it on a wide screen. Placed in the hall's own terms, then brought into
@@ -303,6 +303,49 @@ function shelf(lab) {
   });
   ['sutd', 'vinuni', 'vjc'].forEach((id, i) => {
     if (item(id)) place(id, props.diploma(THREE, materials, { school: words(item(id).querySelector('dt')) }), education, [-0.6, 0, 0.6][i], -0.02);
+  });
+  return anchors;
+}
+
+// Toolkit: the workbench against the partition, right of the office door, one
+// instrument on it for each row of the section's list, left to right in its
+// order: a terminal for the languages, a rack of boards for the frameworks,
+// the neural core for AI and data, a server for the cloud, an oscilloscope
+// for testing and a 3D printer for design. Returns each one's anchor as
+// toolkit:<row>, on the bench's front edge in front of it.
+const INSTRUMENTS = ['terminal', 'boardRack', 'neuralCore', 'serverBlade', 'oscilloscope', 'printer3d'];
+
+function bench(lab) {
+  const { THREE, materials } = lab;
+  if (!document.getElementById('toolkit')) return {};
+  const set = new THREE.Group();
+  set.name = 'toolkit';
+  lab.add('toolkit', set);
+
+  // The set stands at the bench's mark facing the camera, so the bench
+  // stands at its origin as it is.
+  const unit = put(props.workbench(THREE, materials), set, [0, 0, 0]);
+  const { top, depth } = unit.userData;
+  const anchors = {};
+  const moving = [];
+  INSTRUMENTS.forEach((name, i) => {
+    const x = (i - 2.5) * 0.45;
+    const thing = put(props[name](THREE, materials), unit, [x, top, -0.06]);
+    if (thing.userData.spin || thing.userData.trace) moving.push(thing.userData);
+    const label = new THREE.Object3D();
+    label.position.set(x, top + 0.01, depth / 2 - 0.02);
+    unit.add(label);
+    anchors[`toolkit:${i}`] = label;
+  });
+
+  // The core turns and the trace runs, unless motion is to be kept still.
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  lab.onFrame((dt) => {
+    if (still.matches) return;
+    moving.forEach(({ spin, trace }) => {
+      if (spin) spin.rotation.y += dt * 0.35;
+      if (trace) trace.offset.x = (trace.offset.x + dt * 0.12) % 1;
+    });
   });
   return anchors;
 }

@@ -283,6 +283,37 @@
   }
 }
 
+/* The bench's cards are holograms: a blue-edged pane of light with faint scan
+   lines, still opaque enough to read over the panel's words, its tools in two
+   columns with their icons lit. */
+.lab-card--holo {
+  border-color: hsl(var(--h) 95% 72% / 0.55);
+  background:
+    repeating-linear-gradient(hsl(var(--h) 95% 72% / 0.035) 0 1px, transparent 1px 4px),
+    linear-gradient(hsl(var(--h) 60% 11%), hsl(var(--h) 55% 6%));
+  box-shadow:
+    0 0 0 1px hsl(var(--h) 95% 72% / 0.12),
+    0 0 32px hsl(var(--h) 95% 60% / 0.28),
+    0 24px 64px hsl(var(--h) 60% 2% / 0.6),
+    inset 0 0 40px hsl(var(--h) 95% 60% / 0.08);
+}
+.lab-card--holo .lab-card__title { color: hsl(var(--h) 90% 92%); text-shadow: 0 0 18px hsl(var(--h) 95% 65% / 0.45); }
+.lab-card--holo .tools {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 20px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.lab-card--holo .tools li { min-width: 0; font-size: 16px; }
+.lab-card--holo .tools .icon {
+  flex: none;
+  color: hsl(var(--h) 95% 75%);
+  filter: drop-shadow(0 0 6px hsl(var(--h) 95% 65% / 0.6));
+}
+.lab-card--holo .lab-card__close { border-color: hsl(var(--h) 95% 72% / 0.4); }
+
 @media (prefers-reduced-motion: reduce) {
   .lab-spot__ring::after,
   .lab-card[open] { animation: none; }

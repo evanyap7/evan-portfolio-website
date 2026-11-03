@@ -877,3 +877,47 @@ export async function labShelf(win) {
     result('shelf: the 2nd place card opens with its words', open && title === '2nd place' && Boolean(words) && body === words, `${open} ${title} ${body ?? 'missing'}`),
   ];
 }
+
+// In the lab, Toolkit is a workbench: one object per kind of tool, each a
+// spot named for its group, opening that group's tools on a hologram card.
+export async function labBench(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('bench: no lab in this frame', true, 'no lab')];
+  await until(() => root.classList.contains('lab-ready') && doc.querySelectorAll('#toolkit .lab-spot').length > 0, 6000);
+  const spots = [...doc.querySelectorAll('#toolkit .lab-spot')];
+  const name = (b) => (b.getAttribute('aria-label') || b.textContent).trim();
+  const want = ['Languages', 'Frameworks', 'AI and data', 'Cloud and tools', 'Testing', 'Design and modelling'];
+  const names = spots.map(name);
+  const small = spots.filter((b) => { const r = b.getBoundingClientRect(); return r.width < 44 || r.height < 44; });
+  const testing = spots.find((b) => name(b) === 'Testing');
+  testing?.focus();
+  const count = () => spots.filter((b) => b.classList.contains('is-shown')).length;
+  await until(() => count() === 6, 3000);
+  const shown = count();
+  testing?.click();
+  await wait(300);
+  const card = doc.querySelector('dialog.lab-card');
+  const open = Boolean(card?.open);
+  const title = card?.querySelector('#lab-card-title')?.textContent.trim();
+  const tools = [...(card?.querySelectorAll('.lab-card__body li') ?? [])].map((li) => li.textContent.trim().toLowerCase());
+  const holo = Boolean(card?.classList.contains('lab-card--holo'));
+  if (card?.open) card.close();
+  await wait(100);
+  // The same card, opened next by a thing on the shelf, is a plain card again.
+  doc.querySelector('#experience .lab-spot')?.click();
+  await wait(100);
+  const plain = Boolean(card?.open) && !card.classList.contains('lab-card--holo');
+  if (card?.open) card.close();
+  await wait(100);
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('bench: six spots, in the rows\' order', names.length === 6 && want.every((n, i) => names[i] === n), names.join(', ') || 'none'),
+    result('bench: each at least 44 × 44', spots.length > 0 && small.length === 0, `${small.length} small`),
+    result('bench: all six in the window at its stop', shown === 6, `${shown} shown`),
+    result('bench: the Testing card lists its tools', open && title === 'Testing' && ['hegel', 'bombadil', 'property-based testing'].every((t) => tools.includes(t)), `${open} ${title} ${tools.join(', ')}`),
+    result('bench: its card is a hologram', holo, `${holo}`),
+    result('bench: the shelf\'s cards stay plain', plain, `${plain}`),
+  ];
+}

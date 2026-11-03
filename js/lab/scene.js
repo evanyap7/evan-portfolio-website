@@ -138,7 +138,10 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
     camera.position.copy(eye);
     camera.lookAt(look);
     const f = frameAt(u);
-    const tan = Math.min(Math.max((HALF_FOV * height) / Math.max(1, Math.min(f.w, f.h)), 0.18), 1.2);
+    // The cap is wide enough for a tall tablet's narrow window (a third of a
+    // 1024 × 1366 screen); the view offset keeps the window on the lens's
+    // axis, so only the canvas outside it, under the panel, is stretched.
+    const tan = Math.min(Math.max((HALF_FOV * height) / Math.max(1, Math.min(f.w, f.h)), 0.18), 2);
     camera.fov = (2 * Math.atan(tan) * 180) / Math.PI;
     camera.aspect = width / height;
     camera.setViewOffset(width, height, width / 2 - f.cx, height / 2 - f.cy, width, height);

@@ -47,6 +47,8 @@ export function createSpots(lab) {
     if (!spot) return;
     current = id;
     title.textContent = spot.title;
+    // The bench's cards are holograms; every other thing's is a plain plate.
+    card.classList.toggle('lab-card--holo', spot.variant === 'holo');
     body.replaceChildren(spot.body.cloneNode(true));
     scene.lean(spot.anchor);
     if (!card.open) card.showModal();
@@ -71,7 +73,7 @@ export function createSpots(lab) {
   scene.onFrame(place);
 
   return {
-    add({ id, label, stop, anchor, title: heading, body: words }) {
+    add({ id, label, stop, anchor, title: heading, body: words, variant = 'plain' }) {
       const section = document.getElementById(stop);
       const button = document.createElement('button');
       button.type = 'button';
@@ -92,7 +94,7 @@ export function createSpots(lab) {
         if (root.dataset.stop !== stop) lab.goToStop(stop, { instant: true });
       });
       section.append(button);
-      spots.set(id, { button, anchor, stop, title: heading, body: words, frame: section.querySelector('[data-lab-frame]') });
+      spots.set(id, { button, anchor, stop, title: heading, body: words, variant, frame: section.querySelector('[data-lab-frame]') });
       return button;
     },
     open,

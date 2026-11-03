@@ -34,7 +34,11 @@ export const VIEWS = [
   // frame is narrower than it is tall at every width, so the shelf lands the
   // same size on a phone, its fourteen things far enough apart to touch.
   { eye: [-2.2, 1.45, -34.3], look: [-5.63, 1.24, -35.25] },
-  { eye: [-1.1, 2.3, -38.4], look: [1.8, 0.95, -41.8] },
+  // Square on to the workbench (stops.js), against the partition right of the
+  // office door, near enough that its six instruments span the frame's width:
+  // its front is 3.9 m away, so the frame shows tan 20° × 3.9 m each side of
+  // the middle, and the outer ones (1.125 m out) land inside it on a phone.
+  { eye: [3.65, 1.9, -41.4], look: [3.65, 1.15, -45.5] },
   { eye: [0, 1.62, -43.6], look: [0, 1.3, -53] },
 ];
 
@@ -280,7 +284,8 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   const marks = {
     about: new THREE.Vector3(-1.8, 0, -9.2),
     shelf: new THREE.Vector3(-5.4, 0, -35.2),
-    bench: new THREE.Vector3(1.8, 0, -41.8),
+    // The bench's middle, its back against the partition.
+    bench: new THREE.Vector3(3.65, 0, -45.64),
     office: new THREE.Vector3(0, 0, -53),
   };
 

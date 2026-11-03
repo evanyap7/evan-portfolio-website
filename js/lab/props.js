@@ -644,3 +644,463 @@ export function shelfUnit(THREE, materials, names) {
   group.userData.depth = D;
   return anchored(THREE, group, 0, top / 2, D / 2);
 }
+
+// The workbench (Toolkit) -----------------------------------------------------
+// One long bench, brushed metal over dark lacquer, a pegboard behind it and a
+// shelf above with a light strip under it; and on it one instrument for each
+// kind of tool, left to right in the page's order. Their screens are painted
+// on canvas; the things that move (the neural core turning, the scope's trace)
+// are named in userData for the room to run.
+
+const kits = new WeakMap();
+function kit(THREE, materials) {
+  if (!kits.has(materials)) {
+    const lit = (color, k = 1) => new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(k), toneMapped: false });
+    kits.set(materials, {
+      board: new THREE.MeshStandardMaterial({ map: boardTexture(THREE), roughness: 0.5, metalness: 0.15 }),
+      peg: new THREE.MeshStandardMaterial({ map: pegTexture(THREE), roughness: 0.55, metalness: 0.45 }),
+      keys: new THREE.MeshStandardMaterial({ map: keysTexture(THREE), roughness: 0.6 }),
+      blue: lit(0x7fd8ff, 2.2),
+      amber: lit(0xffb35c, 1.8),
+      green: lit(0x7dffb0, 1.6),
+      edge: new THREE.LineBasicMaterial({ color: new THREE.Color(0x8fe0ff).multiplyScalar(2.2), transparent: true, opacity: 0.85, toneMapped: false }),
+    });
+  }
+  return kits.get(materials);
+}
+
+function canvasTexture(THREE, width, height, draw) {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  draw(canvas.getContext('2d'), width, height);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  return texture;
+}
+
+// Perforated steel, a hole every 6 cm.
+function pegTexture(THREE) {
+  return canvasTexture(THREE, 1024, 384, (g, w, h) => {
+    g.fillStyle = '#1b2229';
+    g.fillRect(0, 0, w, h);
+    const pitch = w / 46;
+    for (let y = pitch / 2; y < h; y += pitch) {
+      for (let x = pitch / 2; x < w; x += pitch) {
+        g.fillStyle = '#05070a';
+        g.beginPath();
+        g.arc(x, y, 3.2, 0, Math.PI * 2);
+        g.fill();
+        g.fillStyle = 'rgba(160, 190, 215, 0.12)';
+        g.fillRect(x - 3, y + 3.4, 6, 1);
+      }
+    }
+  });
+}
+
+// A circuit board: dark solder mask, copper traces, black chips with pins.
+function boardTexture(THREE) {
+  return canvasTexture(THREE, 256, 256, (g, w, h) => {
+    g.fillStyle = '#0c2426';
+    g.fillRect(0, 0, w, h);
+    let seed = 7;
+    const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    g.strokeStyle = 'rgba(214, 170, 92, 0.75)';
+    g.lineWidth = 2;
+    for (let i = 0; i < 26; i++) {
+      let x = rand() * w;
+      let y = rand() * h;
+      g.beginPath();
+      g.moveTo(x, y);
+      for (let k = 0; k < 3; k++) {
+        if (rand() > 0.5) x += (rand() - 0.5) * 120;
+        else y += (rand() - 0.5) * 120;
+        g.lineTo(x, y);
+      }
+      g.stroke();
+      g.fillStyle = '#d8ad5c';
+      g.beginPath();
+      g.arc(x, y, 3, 0, Math.PI * 2);
+      g.fill();
+    }
+    [[40, 60, 70, 50], [150, 140, 60, 60], [60, 180, 40, 28]].forEach(([x, y, cw, ch]) => {
+      g.fillStyle = '#c9a056';
+      for (let px = x + 4; px < x + cw - 2; px += 7) {
+        g.fillRect(px, y - 5, 3, 5);
+        g.fillRect(px, y + ch, 3, 5);
+      }
+      g.fillStyle = '#0a0d10';
+      g.fillRect(x, y, cw, ch);
+    });
+  });
+}
+
+// A keyboard's keys, seen from above.
+function keysTexture(THREE) {
+  return canvasTexture(THREE, 512, 160, (g, w, h) => {
+    g.fillStyle = '#0b0e12';
+    g.fillRect(0, 0, w, h);
+    const rows = 5;
+    const ch = h / rows;
+    for (let r = 0; r < rows; r++) {
+      const n = r === rows - 1 ? 9 : 15;
+      const cw = w / n;
+      for (let c = 0; c < n; c++) {
+        const wide = r === rows - 1 && c === 4 ? 5 : 1;
+        if (r === rows - 1 && c > 4 && c < 9) continue;
+        g.fillStyle = '#262d35';
+        g.fillRect(c * cw + 3, r * ch + 3, cw * wide - 6, ch - 6);
+      }
+    }
+  });
+}
+
+// The terminal's screen: a prompt and a few lines in the languages he writes,
+// in the site's mono and the room's blue.
+function codeTexture(THREE) {
+  return drawn(THREE, 640, 400, (g, w, h) => {
+    g.fillStyle = '#04111a';
+    g.fillRect(0, 0, w, h);
+    g.fillStyle = 'rgba(127, 216, 255, 0.12)';
+    g.fillRect(0, 0, w, 34);
+    g.textBaseline = 'middle';
+    line(g, 'evan@lab  ~/toolkit', { x: 18, y: 18, max: w - 36, size: 17, weight: 500, color: '#7fd8ff' });
+    const C = { k: '#7fd8ff', s: '#ffd28a', c: '#4d6b7d', t: '#d6e6ef', p: '#7dffb0' };
+    const code = [
+      [['$ ', C.p], ['python', C.t], [' suit.py --mark 7', C.s]],
+      [['def ', C.k], ['assemble', C.t], ['(parts):', C.t]],
+      [['    return ', C.k], ['sorted', C.t], ['(parts, key=fit)', C.t]],
+      [['const ', C.k], ['suit = ', C.t], ['await ', C.k], ['build', C.t], ['({ mark: 7 });', C.t]],
+      [['int ', C.k], ['main', C.t], ['() { ', C.t], ['return ', C.k], ['0', C.s], ['; }', C.t]],
+      [['SELECT ', C.k], ['name ', C.t], ['FROM ', C.k], ['suits;', C.t]],
+      [['// all systems nominal', C.c]],
+    ];
+    g.font = `500 21px ${MONO}`;
+    code.forEach((parts, i) => {
+      let x = 18;
+      parts.forEach(([text, color]) => {
+        g.fillStyle = color;
+        g.fillText(text, x, 66 + i * 44);
+        x += g.measureText(text).width;
+      });
+    });
+    g.fillStyle = '#7fd8ff';
+    g.fillRect(18, 66 + code.length * 44 - 12, 12, 24);
+  });
+}
+
+// The scope's screen: a graticule and a trace, made to wrap, so scrolling its
+// texture runs the trace across the screen.
+function traceTexture(THREE) {
+  const texture = canvasTexture(THREE, 512, 256, (g, w, h) => {
+    g.fillStyle = '#03121a';
+    g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(127, 216, 255, 0.16)';
+    g.lineWidth = 1;
+    for (let x = 0; x <= w; x += w / 8) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+    for (let y = 0; y <= h; y += h / 6) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+    g.strokeStyle = '#9ff0ff';
+    g.lineWidth = 4;
+    g.shadowColor = '#5fd0ff';
+    g.shadowBlur = 12;
+    g.beginPath();
+    for (let x = 0; x <= w; x += 2) {
+      const t = (x / w) * Math.PI * 2;
+      const y = h / 2 - h * 0.3 * (Math.sin(t * 2) * 0.75 + Math.sin(t * 6) * 0.25);
+      if (x === 0) g.moveTo(x, y);
+      else g.lineTo(x, y);
+    }
+    g.stroke();
+  });
+  texture.wrapS = THREE.RepeatWrapping;
+  return texture;
+}
+
+// The server's face: six blades, each with its vents and drive bays.
+function bladeTexture(THREE) {
+  return canvasTexture(THREE, 384, 320, (g, w, h) => {
+    g.fillStyle = '#12171d';
+    g.fillRect(0, 0, w, h);
+    const rows = 6;
+    const rh = h / rows;
+    for (let r = 0; r < rows; r++) {
+      const y = r * rh;
+      g.fillStyle = '#1d242c';
+      g.fillRect(6, y + 4, w - 12, rh - 8);
+      g.fillStyle = '#07090c';
+      for (let x = 20; x < w * 0.55; x += 10) g.fillRect(x, y + 12, 5, rh - 24);
+      g.fillStyle = '#2b333c';
+      for (let k = 0; k < 3; k++) g.fillRect(w * 0.6 + k * 34, y + 10, 28, rh - 20);
+    }
+  });
+}
+
+// Instances of one small part at many places.
+function many(THREE, geometry, material, points) {
+  const mesh = new THREE.InstancedMesh(geometry, material, points.length);
+  const m = new THREE.Matrix4();
+  points.forEach(([x, y, z], i) => mesh.setMatrixAt(i, m.makeTranslation(x, y, z)));
+  return mesh;
+}
+
+// The bench: 2.8 m long, 0.7 m deep, its top at 0.92 m; drawers at both ends,
+// an anti-static mat, a pegboard 1 m high behind and a shelf over it with its
+// strip lighting the top. userData: top, depth, width. Origin on the floor
+// under its middle; its front faces +z.
+export function workbench(THREE, materials) {
+  const p = paint(THREE, materials);
+  const k = kit(THREE, materials);
+  const group = new THREE.Group();
+  const W = 2.8;
+  const D = 0.7;
+  const TOP = 0.92;
+  group.add(box(THREE, W, 0.045, D, materials.metal, 0, TOP - 0.0225, 0));
+  group.add(box(THREE, W - 0.5, 0.004, D - 0.16, materials.rubber, 0, TOP + 0.002, 0.03));
+  group.add(box(THREE, W, 0.07, 0.02, materials.lacquer, 0, TOP - 0.08, D / 2 - 0.03));
+  group.add(box(THREE, W - 0.06, 0.08, D - 0.1, materials.rubber, 0, 0.04, -0.02));
+  group.add(box(THREE, W - 0.2, 0.03, D - 0.14, materials.lacquer, 0, 0.24, -0.03));
+  [-1, 1].forEach((side) => {
+    const x = side * (W / 2 - 0.32);
+    group.add(box(THREE, 0.6, TOP - 0.17, D - 0.06, materials.lacquer, x, (TOP - 0.17) / 2 + 0.06, -0.02));
+    [0.2, 0.42, 0.64].forEach((y) => {
+      group.add(box(THREE, 0.56, 0.2, 0.012, materials.lacquer, x, y, D / 2 - 0.044));
+      group.add(box(THREE, 0.2, 0.012, 0.02, materials.metal, x, y + 0.06, D / 2 - 0.03));
+    });
+  });
+  // The pegboard, and what hangs on it: a coil of cable, two drivers.
+  const PEG = 1.04;
+  group.add(face(THREE, W - 0.04, PEG, k.peg, 0, TOP + PEG / 2, -D / 2 + 0.012));
+  const coil = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.012, 8, 28), materials.rubber);
+  coil.position.set(-0.95, TOP + 0.68, -D / 2 + 0.04);
+  group.add(coil);
+  [[0.9, 0.62], [0.98, 0.64]].forEach(([x, y]) => {
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.16, 8), materials.metal);
+    shaft.position.set(x, TOP + y - 0.08, -D / 2 + 0.03);
+    const grip = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.1, 10), p.red);
+    grip.position.set(x, TOP + y + 0.04, -D / 2 + 0.03);
+    group.add(shaft, grip);
+  });
+  // The shelf, its strip under its front edge and the light it throws down
+  // the pegboard, and parts bins along it.
+  const SHELF = TOP + PEG - 0.06;
+  group.add(box(THREE, W, 0.03, 0.28, materials.lacquer, 0, SHELF, -D / 2 + 0.15));
+  [-1, 1].forEach((side) => group.add(box(THREE, 0.03, 0.2, 0.26, p.frame, side * (W / 2 - 0.1), SHELF - 0.11, -D / 2 + 0.14)));
+  group.add(box(THREE, W - 0.06, 0.006, 0.006, materials.strip(1.8), 0, SHELF - 0.02, -D / 2 + 0.27));
+  const wash = face(THREE, W - 0.1, 0.6, p.glow, 0, SHELF - 0.32, -D / 2 + 0.014);
+  wash.rotation.z = Math.PI;
+  group.add(wash);
+  for (let i = 0; i < 6; i++) {
+    const x = -1.1 + i * 0.3 + (i > 2 ? 0.3 : 0);
+    group.add(box(THREE, 0.2, 0.12, 0.2, i % 3 === 1 ? p.frame : p.red, x, SHELF + 0.075, -D / 2 + 0.14));
+    group.add(box(THREE, 0.07, 0.022, 0.002, materials.rubber, x, SHELF + 0.095, -D / 2 + 0.241));
+  }
+  group.add(face(THREE, 0.5, 0.05, brassMaterial(THREE, brass(THREE, [{ text: 'TOOLKIT', size: 44, spacing: 9 }], 512, 64)),
+    0, TOP - 0.08, D / 2 - 0.019));
+  group.userData.top = TOP;
+  group.userData.depth = D;
+  group.userData.width = W;
+  return anchored(THREE, group, 0, TOP, D / 2);
+}
+
+// Languages: a terminal, its screen 0.46 m across, on a stand, with a
+// keyboard in front. Origin on the bench under its middle; it faces +z.
+export function terminal(THREE, materials) {
+  const p = paint(THREE, materials);
+  const k = kit(THREE, materials);
+  const group = new THREE.Group();
+  group.add(box(THREE, 0.18, 0.012, 0.12, p.frame, 0, 0.006, -0.06));
+  group.add(box(THREE, 0.035, 0.17, 0.02, materials.metal, 0, 0.09, -0.08));
+  const screen = new THREE.Group();
+  screen.position.set(0, 0.3, -0.06);
+  screen.rotation.x = -0.08;
+  screen.add(box(THREE, 0.48, 0.31, 0.024, materials.lacquer));
+  screen.add(face(THREE, 0.45, 0.28, new THREE.MeshBasicMaterial({ map: codeTexture(THREE), color: new THREE.Color(0.95, 0.95, 0.95) }), 0, 0, 0.0125));
+  screen.add(box(THREE, 0.44, 0.004, 0.004, k.blue, 0, -0.157, 0.012));
+  group.add(screen);
+  const keyboard = box(THREE, 0.36, 0.016, 0.12, p.frame, 0, 0.008, 0.12);
+  keyboard.rotation.x = 0.05;
+  group.add(keyboard);
+  const keys = face(THREE, 0.34, 0.1, k.keys, 0, 0.0175, 0.12);
+  keys.rotation.x = -Math.PI / 2 + 0.05;
+  group.add(keys);
+  return anchored(THREE, group, 0, 0.3, 0);
+}
+
+// Frameworks: four boards standing in a slotted rack, each lit at its top,
+// one with a heatsink. Origin on the bench under its middle; it faces +z.
+export function boardRack(THREE, materials) {
+  const p = paint(THREE, materials);
+  const k = kit(THREE, materials);
+  const group = new THREE.Group();
+  group.add(box(THREE, 0.3, 0.035, 0.18, p.frame, 0, 0.0175, 0));
+  [-1, 1].forEach((side) => group.add(box(THREE, 0.012, 0.09, 0.18, materials.metal, side * 0.144, 0.08, 0)));
+  const heights = [0.2, 0.24, 0.22, 0.18];
+  heights.forEach((h, i) => {
+    const x = -0.09 + i * 0.06;
+    const card = new THREE.Mesh(new THREE.BoxGeometry(0.008, h, 0.15), k.board);
+    card.position.set(x, 0.035 + h / 2, 0);
+    // Turned a little toward the visitor, so their faces show.
+    card.rotation.y = 0.5;
+    group.add(card);
+    group.add(box(THREE, 0.004, 0.008, 0.008, i === 1 ? k.amber : k.blue, x + 0.008, 0.035 + h - 0.02, 0.06));
+  });
+  for (let f = 0; f < 6; f++) group.add(box(THREE, 0.04, 0.05, 0.003, materials.metal, -0.03, 0.1, -0.05 + f * 0.018));
+  return anchored(THREE, group, 0, 0.2, 0);
+}
+
+// AI and data: a neural core, a lattice of light over a projector puck, an
+// orbit round it. userData.spin: the part that turns. Origin on the bench
+// under its middle.
+export function neuralCore(THREE, materials) {
+  const k = kit(THREE, materials);
+  const group = new THREE.Group();
+  group.add(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.04, 32), materials.metal).translateY(0.02));
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.088, 0.005, 6, 40), materials.strip(2.6));
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = 0.041;
+  group.add(ring);
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.07, 0.12, 24, 1, true), materials.holo(0.18));
+  beam.position.y = 0.1;
+  group.add(beam);
+
+  const spin = new THREE.Group();
+  spin.position.y = 0.27;
+  const lattice = new THREE.IcosahedronGeometry(0.11, 1);
+  spin.add(new THREE.LineSegments(new THREE.EdgesGeometry(lattice), k.edge));
+  const seen = new Map();
+  const at = lattice.attributes.position;
+  for (let i = 0; i < at.count; i++) {
+    const key = `${at.getX(i).toFixed(3)},${at.getY(i).toFixed(3)},${at.getZ(i).toFixed(3)}`;
+    if (!seen.has(key)) seen.set(key, [at.getX(i), at.getY(i), at.getZ(i)]);
+  }
+  spin.add(many(THREE, new THREE.SphereGeometry(0.008, 8, 6), materials.holo(2.4), [...seen.values()]));
+  spin.add(new THREE.Mesh(new THREE.SphereGeometry(0.04, 20, 14), materials.holo(1.6)));
+  const orbit = new THREE.Mesh(new THREE.TorusGeometry(0.165, 0.0025, 6, 64), materials.holo(1.4));
+  orbit.rotation.set(1.2, 0.3, 0);
+  spin.add(orbit);
+  group.add(spin);
+  group.userData.spin = spin;
+  return anchored(THREE, group, 0, 0.27, 0);
+}
+
+// Cloud and tools: a short server chassis of six blades, each with its lights,
+// a handle at each side. Origin on the bench under its middle; it faces +z.
+export function serverBlade(THREE, materials) {
+  const p = paint(THREE, materials);
+  const k = kit(THREE, materials);
+  const group = new THREE.Group();
+  const W = 0.42;
+  const H = 0.34;
+  const D = 0.34;
+  group.add(box(THREE, W, H, D, p.frame, 0, H / 2 + 0.01, 0));
+  group.add(face(THREE, W - 0.03, H - 0.03, new THREE.MeshStandardMaterial({ map: bladeTexture(THREE), roughness: 0.5, metalness: 0.4 }), 0, H / 2 + 0.01, D / 2 + 0.001));
+  [-1, 1].forEach((side) => group.add(box(THREE, 0.014, H - 0.06, 0.03, materials.metal, side * (W / 2 + 0.007), H / 2 + 0.01, D / 2 - 0.01)));
+  const rows = 6;
+  const step = (H - 0.03) / rows;
+  const led = new THREE.BoxGeometry(0.008, 0.008, 0.004);
+  const blues = [];
+  const ambers = [];
+  for (let r = 0; r < rows; r++) {
+    const y = 0.025 + step * (r + 0.5);
+    blues.push([W / 2 - 0.05, y, D / 2 + 0.003], [W / 2 - 0.035, y, D / 2 + 0.003]);
+    (r === 2 ? ambers : blues).push([W / 2 - 0.02, y, D / 2 + 0.003]);
+  }
+  group.add(many(THREE, led, k.blue, blues), many(THREE, led, k.amber, ambers));
+  group.add(box(THREE, W + 0.02, 0.01, D + 0.02, materials.metal, 0, 0.005, 0));
+  return anchored(THREE, group, 0, 0.2, 0);
+}
+
+// Testing: an oscilloscope, its trace running on its screen, knobs at its
+// right and a probe lying on the bench. userData.trace: the screen's texture,
+// to be scrolled. Origin on the bench under its middle; it faces +z.
+export function oscilloscope(THREE, materials) {
+  const p = paint(THREE, materials);
+  const k = kit(THREE, materials);
+  const group = new THREE.Group();
+  const W = 0.38;
+  const H = 0.22;
+  const D = 0.28;
+  const body = new THREE.Group();
+  body.position.y = 0.02;
+  body.rotation.x = -0.12; // up on its feet, tilted back to the reader
+  body.add(box(THREE, W, H, D, p.frame, 0, H / 2, 0));
+  body.add(box(THREE, W + 0.01, H + 0.01, 0.02, materials.lacquer, 0, H / 2, D / 2 - 0.005));
+  const trace = traceTexture(THREE);
+  body.add(face(THREE, 0.2, 0.15, new THREE.MeshBasicMaterial({ map: trace, color: new THREE.Color(1.25, 1.25, 1.25), toneMapped: false }), -0.065, H / 2 + 0.01, D / 2 + 0.006));
+  const knob = new THREE.CylinderGeometry(0.014, 0.014, 0.016, 16);
+  [[0.08, 0.16], [0.135, 0.16], [0.08, 0.105], [0.135, 0.105]].forEach(([x, y]) => {
+    const m = new THREE.Mesh(knob, materials.metal);
+    m.rotation.x = Math.PI / 2;
+    m.position.set(x, y, D / 2 + 0.012);
+    body.add(m);
+  });
+  [0.065, 0.095, 0.125, 0.155].forEach((x, i) => body.add(box(THREE, 0.018, 0.012, 0.008, i === 0 ? k.green : materials.lacquer, x, 0.05, D / 2 + 0.008)));
+  body.add(box(THREE, 0.24, 0.016, 0.03, materials.metal, 0, H + 0.008, 0.02));
+  group.add(body);
+  [-1, 1].forEach((side) => group.add(box(THREE, 0.03, 0.02, 0.03, materials.rubber, side * (W / 2 - 0.04), 0.01, D / 2 - 0.05)));
+  // The probe: out of the front, along the bench, its tip toward the visitor.
+  const lead = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0.12, 0.04, D / 2 + 0.01),
+    new THREE.Vector3(0.16, 0.012, D / 2 + 0.08),
+    new THREE.Vector3(0.06, 0.008, D / 2 + 0.16),
+    new THREE.Vector3(-0.08, 0.008, D / 2 + 0.17),
+  ]);
+  group.add(new THREE.Mesh(new THREE.TubeGeometry(lead, 24, 0.004, 6), materials.rubber));
+  const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.005, 0.07, 10), p.white);
+  tip.rotation.z = Math.PI / 2;
+  tip.position.set(-0.115, 0.01, D / 2 + 0.17);
+  group.add(tip);
+  group.userData.trace = trace;
+  return anchored(THREE, group, 0, 0.15, 0);
+}
+
+// Design and modelling: a 3D printer, its frame lit along the top, a part half
+// printed on the bed with its newest layer glowing, and a spool of filament.
+// Origin on the bench under its middle; it faces +z.
+export function printer3d(THREE, materials) {
+  const p = paint(THREE, materials);
+  const k = kit(THREE, materials);
+  const group = new THREE.Group();
+  const W = 0.36;
+  const H = 0.46;
+  const D = 0.32;
+  group.add(box(THREE, W, 0.05, D, p.frame, 0, 0.025, 0));
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => group.add(box(THREE, 0.02, H, 0.02, materials.metal, sx * (W / 2 - 0.01), H / 2, sz * (D / 2 - 0.01))));
+  [-1, 1].forEach((sz) => group.add(box(THREE, W, 0.02, 0.02, materials.metal, 0, H - 0.01, sz * (D / 2 - 0.01))));
+  [-1, 1].forEach((sx) => group.add(box(THREE, 0.02, 0.02, D, materials.metal, sx * (W / 2 - 0.01), H - 0.01, 0)));
+  group.add(box(THREE, W - 0.02, 0.005, 0.005, materials.strip(1.6), 0, H - 0.024, D / 2 - 0.002));
+  // The bed and the part on it: a hex, its top layer still warm.
+  group.add(box(THREE, W - 0.08, 0.012, D - 0.08, materials.metal, 0, 0.12, 0));
+  const part = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.058, 0.07, 6), p.white);
+  part.position.set(0, 0.161, 0.01);
+  group.add(part);
+  const layer = new THREE.Mesh(new THREE.TorusGeometry(0.048, 0.0025, 4, 6), k.amber);
+  layer.rotation.x = Math.PI / 2;
+  layer.rotation.z = Math.PI / 6;
+  layer.position.set(0, 0.197, 0.01);
+  group.add(layer);
+  // The gantry and the hot end over the part.
+  group.add(box(THREE, W - 0.04, 0.016, 0.016, materials.metal, 0, 0.3, 0.01));
+  group.add(box(THREE, 0.05, 0.06, 0.04, materials.lacquer, 0.01, 0.28, 0.01));
+  const nozzle = new THREE.Mesh(new THREE.ConeGeometry(0.008, 0.02, 10), materials.metal);
+  nozzle.rotation.x = Math.PI;
+  nozzle.position.set(0.01, 0.24, 0.01);
+  group.add(nozzle);
+  group.add(new THREE.Mesh(new THREE.SphereGeometry(0.005, 8, 6), k.amber).translateX(0.01).translateY(0.228).translateZ(0.01));
+  // The spool, on its holder at the back.
+  const spool = new THREE.Group();
+  spool.position.set(0, H + 0.075, -D / 2 + 0.04);
+  const reel = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.05, 28), p.blue);
+  reel.rotation.z = Math.PI / 2;
+  const flanges = [-1, 1].map((s) => {
+    const f = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.006, 28), p.frame);
+    f.rotation.z = Math.PI / 2;
+    f.position.x = s * 0.028;
+    return f;
+  });
+  spool.add(reel, ...flanges);
+  group.add(spool);
+  group.add(box(THREE, 0.01, 0.08, 0.01, materials.metal, 0, H + 0.035, -D / 2 + 0.04));
+  return anchored(THREE, group, 0, 0.25, 0);
+}

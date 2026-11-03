@@ -280,6 +280,14 @@ async function boot() {
     }
     if (title) spots.add({ id: item.dataset.item, label: title, stop: 'experience', anchor, title, body });
   });
+  // The bench's instruments, one per row of the toolkit, in its order: each
+  // opens its row's tools, icons and all, on a hologram card.
+  document.querySelectorAll('#kit-tools dl > div').forEach((row, i) => {
+    const anchor = anchors[`toolkit:${i}`];
+    const list = row.querySelector('ul.tools');
+    const title = plain(row.querySelector('dt'));
+    if (anchor && list && title) spots.add({ id: `tool-${i}`, label: title, stop: 'toolkit', anchor, title, body: list, variant: 'holo' });
+  });
   cleanups.push(() => {
     spots.close();
     document.querySelectorAll('.lab-spot, dialog.lab-card').forEach((node) => node.remove());
