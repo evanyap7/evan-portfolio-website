@@ -19,8 +19,9 @@ const SUITS = [
   { id: 'trading-agent', mark: 'I', hue: 32, spec: { model: 'mark-1', tone: 0x6b5034 } },
   { id: 'assistant-bot', mark: 'II', code: 'EGO', hue: 4, spec: { model: 'mark-7', tone: 0x9c2219 } },
   { id: 'research-agent', mark: 'III', hue: 152, spec: { model: 'mark-7-lite', paint: { base: 0x0e7a4c, accent: 0xd7a83a } } },
-  // Mark IV wears Manchester United's colours: United red, black trim.
-  { id: 'parallel-match', mark: 'IV', hue: 356, spec: { model: 'mark-50', tone: 0xb3141a, paint: { base: 0xda291c, accent: 0x111214, metal: 0.55, rough: 0.4 } } },
+  // Mark IV wears Manchester United's colours, United red with black trim, and
+  // the club's crest on the left of the chest, where a kit's badge sits.
+  { id: 'parallel-match', mark: 'IV', hue: 356, spec: { model: 'mark-50', tone: 0xb3141a, paint: { base: 0xda291c, accent: 0x111214, metal: 0.55, rough: 0.4 }, badge: { name: 'crest-mufc', x: 0.12, y: 1.6, size: 0.13 } } },
   { id: 'website-revamp', mark: 'V', hue: 268, spec: { model: 'mark-7-lite', paint: { base: 0x5b2ba3, accent: 0x9aa1ad } } },
   { id: 'v-bay', mark: 'VI', hue: 44, spec: { model: 'mark-50', tone: 0x2e2f35, paint: { base: 0x1d1e22, accent: 0xd3a339, metal: 0.7, rough: 0.35 } } },
   { id: 'others', mark: 'VII', hue: 218, spec: { model: 'mark-7', paint: { base: 0x1b3a78, accent: 0x8fa3bd, metal: 0.75, rough: 0.38 } } },
