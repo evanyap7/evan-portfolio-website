@@ -1,6 +1,7 @@
-// The Hall of Armor, page side. It sits above the Work cards and reads its
-// words and numbers from them, so the cards stay the one source of truth (and
-// the plain list of every project for anyone without WebGL). Each project is
+// The Hall of Armor, page side. It takes the place of the Work cards and
+// reads its words and numbers from them, so the cards stay the one source of
+// truth (and the plain list of every project for anyone without WebGL).
+// Projects without a suit are listed under it as Other projects. Each project is
 // a suit: a Mark number, a codename and a core drawn in three.js
 // (hall-scene.js). Pick a suit and it assembles through four render passes,
 // blueprint, wireframe, shaded, lit; each pass can also be picked by hand.
@@ -59,6 +60,37 @@ function readCards() {
   }).filter(Boolean);
 }
 
+// The projects that have no suit, as one plain row each.
+function mountOthers(suits) {
+  const taken = new Set(suits.map((suit) => suit.id));
+  const cards = [...document.querySelectorAll('#work .work__card')].filter((card) => !taken.has(card.id.replace('work-', '')));
+  if (!cards.length) return null;
+  const root = element('div', 'others');
+  const list = element('ul', 'others__list');
+  list.setAttribute('aria-labelledby', 'others-title');
+  const title = element('h3', 'others__title', 'Other projects');
+  title.id = 'others-title';
+  cards.forEach((card) => {
+    const row = element('a', 'others__row');
+    row.href = card.getAttribute('href');
+    row.dataset.for = card.id.replace('work-', '');
+    const figure = card.querySelector('.work__figure [data-count]')?.textContent.trim() ?? '';
+    const unit = card.querySelector('.work__figure small')?.textContent.trim() ?? '';
+    row.append(
+      element('span', 'others__name', card.querySelector('.work__name')?.textContent.trim() ?? ''),
+      element('span', 'others__line', card.querySelector('.work__line')?.textContent.trim().replace(/\s+/g, ' ') ?? ''),
+      element('span', 'others__figure', `${figure} ${unit}`.trim()),
+      element('span', 'others__arrow', '→'),
+    );
+    row.lastChild.setAttribute('aria-hidden', 'true');
+    const item = element('li');
+    item.append(row);
+    list.append(item);
+  });
+  root.append(title, list);
+  return root;
+}
+
 function mount(suits) {
   // Shown from the start, so its height is in the page before the browser
   // jumps to a #hash below it; only the canvas waits for three.js.
@@ -90,7 +122,7 @@ function mount(suits) {
     passes.append(button);
     return button;
   });
-  const status = element('p', 'hall__status');
+  const status = element('p', 'hall__status visually-hidden');
   status.setAttribute('role', 'status');
 
   const open = element('a', 'hall__open');
@@ -103,6 +135,7 @@ function mount(suits) {
     const button = element('button', 'hall__suit');
     button.type = 'button';
     button.dataset.suit = String(index);
+    button.dataset.id = suit.id;
     button.append(element('span', 'hall__suit-mark', `Mark ${suit.mark}`), element('span', 'hall__suit-name', suit.code ?? suit.name));
     picker.append(button);
     return button;
@@ -121,7 +154,12 @@ export function initHall() {
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ui = mount(suits);
+  const others = mountOthers(suits);
   title.after(ui.root);
+  if (others) ui.root.after(others);
+  // The Hall and the list replace the cards; the cards stay in the page for
+  // search engines and come back if three.js fails to load.
+  work.classList.add('work--hall');
 
   let hall = null;
   let current = 0;
@@ -198,8 +236,30 @@ export function initHall() {
     hall.state.ty = 0;
   });
 
-  select(0);
+  // An old project link (#work-trading-agent) picks that suit and lands on
+  // the Hall; a project without a suit lands on its row.
+  const land = () => {
+    const key = window.location.hash.replace(/^#work-/, '');
+    if (key === window.location.hash) return false;
+    const index = suits.findIndex((suit) => suit.id === key);
+    const target = index >= 0 ? ui.root : others?.querySelector(`[data-for="${CSS.escape(key)}"]`);
+    if (!target) return false;
+    if (index >= 0 && index !== current) select(index);
+    target.scrollIntoView({ block: 'start', behavior: 'instant' });
+    return true;
+  };
+
+  select(Math.max(0, suits.findIndex((suit) => `#work-${suit.id}` === window.location.hash)));
   showPass(3);
+  window.addEventListener('hashchange', land);
+  // The browser's own jump aimed at a card that is now hidden, so land here,
+  // and again once the page has loaded and fonts have settled its height.
+  if (land() && document.readyState !== 'complete') {
+    const from = window.scrollY;
+    window.addEventListener('load', () => {
+      if (Math.abs(window.scrollY - from) < 4) land();
+    }, { once: true });
+  }
 
   const sync = () => {
     if (!hall || reduce) return;
@@ -224,6 +284,8 @@ export function initHall() {
       document.addEventListener('visibilitychange', sync);
     }).catch(() => {
       ui.root.remove();
+      others?.remove();
+      work.classList.remove('work--hall');
     });
   };
 

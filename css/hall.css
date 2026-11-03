@@ -1,5 +1,9 @@
-/* The Hall of Armor: one stage for the suit's core, one panel of readouts,
-   and a row to pick the suit. --suit-h is set per suit and tints the HUD. */
+/* The Hall of Armor: one stage for the suit, one panel of readouts, and a
+   row to pick the suit. --suit-h is set per suit and tints the HUD. While it
+   is up it stands in for the Work cards; projects without a suit are listed
+   under it as Other projects. */
+
+.work--hall .work__grid { display: none; }
 
 .hall {
   --suit: hsl(var(--suit-h, 196) 95% 68%);
@@ -10,6 +14,7 @@
   align-items: center;
   margin-top: clamp(40px, 4.5vw, 72px);
   margin-bottom: clamp(40px, 4.5vw, 72px);
+  scroll-margin-top: calc(var(--nav) + 2 * var(--nav-top));
 }
 
 .hall__stage {
@@ -101,7 +106,7 @@
   border: 0;
   border-radius: 999px;
   cursor: pointer;
-  transition: color 0.2s, background-color 0.2s, transform 0.2s;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s;
 }
 
 .hall__pass {
@@ -112,8 +117,7 @@
 
 .hall__pass.is-done { color: var(--suit-dim); }
 
-.hall__pass[aria-pressed='true'],
-.hall__suit[aria-pressed='true'] {
+.hall__pass[aria-pressed='true'] {
   color: var(--bg);
   background: var(--suit);
 }
@@ -123,12 +127,6 @@
 .hall__open:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 3px;
-}
-
-.hall__status {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--dim);
 }
 
 .hall__open {
@@ -142,35 +140,50 @@
 .hall__suits {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 12px;
   margin-top: clamp(24px, 3vw, 40px);
 }
 
+/* Slim tabs on one rule: the active suit lights its stretch of the line. */
 .hall__suit {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
+  gap: 6px;
   min-height: 64px;
-  padding: 14px 20px;
-  border-radius: var(--radius);
+  padding: 16px 4px 6px 0;
+  background: none;
+  border-top: 2px solid var(--line-2);
+  border-radius: 0;
   text-align: left;
+}
+
+.hall__suit[aria-pressed='true'] {
+  color: var(--text);
+  border-top-color: var(--suit);
 }
 
 .hall__suit-mark {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
+  color: var(--dim);
 }
 
+.hall__suit[aria-pressed='true'] .hall__suit-mark { color: var(--suit); }
+
 .hall__suit-name {
-  font-size: 1.125rem;
-  letter-spacing: -0.01em;
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 @media (hover: hover) {
-  .hall__pass:not([aria-pressed='true']):hover,
-  .hall__suit:not([aria-pressed='true']):hover { color: var(--text); background: var(--card-top); }
+  .hall__pass:not([aria-pressed='true']):hover { color: var(--text); background: var(--card-top); }
+  .hall__suit:not([aria-pressed='true']):hover { color: var(--text); border-top-color: var(--muted); }
 }
 
 .hall__pass:active,
@@ -183,7 +196,7 @@
     grid-column: auto;
     grid-template-columns: none;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(200px, 62%);
+    grid-auto-columns: minmax(132px, 38%);
     margin-top: 8px;
     overflow-x: auto;
     overscroll-behavior-x: contain;
@@ -204,4 +217,77 @@
   .hall__suit { transition: none; }
   .hall__pass:active,
   .hall__suit:active { transform: none; }
+}
+
+/* Other projects ---------------------------------------------------- */
+.others {
+  margin-bottom: clamp(16px, 2vw, 32px);
+}
+
+.others__title {
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--dim);
+}
+
+.others__list { border-top: 1px solid var(--line); }
+
+.others__row {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  column-gap: clamp(16px, 3vw, 40px);
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  scroll-margin-top: calc(var(--nav) + 2 * var(--nav-top));
+}
+
+.others__name {
+  font-size: var(--t-card);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.others__line {
+  color: var(--muted);
+  font-size: var(--t-small);
+  line-height: 1.55;
+}
+
+.others__figure {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.others__arrow {
+  color: var(--muted);
+  transition: color 0.2s, transform 0.3s var(--ease-out);
+}
+
+.others__row:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+
+@media (hover: hover) {
+  .others__row:hover .others__arrow { color: var(--text); transform: translateX(4px); }
+}
+
+@media (max-width: 719px) {
+  .others__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 8px;
+  }
+  .others__line { grid-column: 1 / -1; }
+  .others__figure { grid-column: 1; }
+  .others__arrow { grid-row: 1; grid-column: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .others__arrow { transition: none; }
 }
