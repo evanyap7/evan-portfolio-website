@@ -21,6 +21,21 @@ function paint(THREE, materials) {
       ebony: standard(0x121010, 0.35),
       felt: standard(0x8e1b22, 1),
       kopi: standard(0x9a6438, 0.18),
+      brass: standard(0xb48a4e, 0.32, 1),
+      gold: standard(0xd8ad48, 0.22, 1),
+      silverBlue: standard(0xa9c1d9, 0.2, 1),
+      velvet: standard(0x0d1526, 1),
+      paper: standard(0xece6d6, 0.85),
+      star: new THREE.MeshStandardMaterial({
+        color: 0xcfeeff, roughness: 0.04, metalness: 0.1, transparent: true, opacity: 0.5,
+        emissive: 0x2a6f99, emissiveIntensity: 0.35, depthWrite: false,
+      }),
+      starEdge: new THREE.LineBasicMaterial({ color: new THREE.Color(0x9fe2ff).multiplyScalar(1.5), toneMapped: false }),
+      // The soft light behind each of the shelf's tiers.
+      glow: new THREE.MeshBasicMaterial({
+        map: glowTexture(THREE), color: new THREE.Color(0.55, 0.75, 0.95), transparent: true,
+        blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false,
+      }),
       mug: new THREE.MeshStandardMaterial({
         color: 0xeaf6ff, roughness: 0.05, transparent: true, opacity: 0.28, depthWrite: false,
       }),
@@ -280,4 +295,352 @@ export function wallShelf(THREE, materials) {
   group.add(box(THREE, 1.6, 0.035, 0.26, materials.lacquer, 0, 0.7, 0.06));
   group.add(box(THREE, 1.6, 0.006, 0.006, materials.strip(1.4), 0, 0.68, 0.19));
   return anchored(THREE, group, 0, 0.72, 0.06);
+}
+
+// The trophy shelf (Experience) ----------------------------------------------
+// One dark-lacquer unit with five lit tiers, each named on a brass plate in the
+// site's mono, and the things on them: plaques for the roles, four trophies,
+// the scholarship's medal in a shadow box, framed certificates and diplomas.
+// Their words are painted on canvas in the page's own type.
+
+const MONO = '"Azeret Mono", ui-monospace, "SF Mono", Menlo, monospace';
+const SANS = '"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif';
+
+// A canvas texture painted by draw(g, w, h), and painted again once the page's
+// fonts are in, so its words are never left in a fallback face.
+function drawn(THREE, width, height, draw) {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const g = canvas.getContext('2d');
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  const paint = () => {
+    g.clearRect(0, 0, width, height);
+    draw(g, width, height);
+    texture.needsUpdate = true;
+  };
+  paint();
+  if (document.fonts?.load) {
+    Promise.all([document.fonts.load(`600 40px ${MONO}`), document.fonts.load(`600 40px ${SANS}`)]).then(paint, () => {});
+  }
+  return texture;
+}
+
+// Sets a line of text no wider than max, shrinking it until it fits.
+function line(g, text, { x, y, max, size, weight = 600, family = MONO, spacing = 0, color }) {
+  if ('letterSpacing' in g) g.letterSpacing = `${spacing}px`;
+  let s = size;
+  g.font = `${weight} ${s}px ${family}`;
+  while (g.measureText(text).width > max && s > 10) {
+    s -= 2;
+    g.font = `${weight} ${s}px ${family}`;
+  }
+  g.fillStyle = color;
+  g.fillText(text, x, y);
+  if ('letterSpacing' in g) g.letterSpacing = '0px';
+}
+
+// Splits text into at most two lines of roughly equal length, at a space.
+function split(text, at = 16) {
+  if (text.length <= at) return [text];
+  const mid = text.length / 2;
+  let best = -1;
+  for (let i = 0; i < text.length; i++) if (text[i] === ' ' && (best < 0 || Math.abs(i - mid) < Math.abs(best - mid))) best = i;
+  return best < 0 ? [text] : [text.slice(0, best), text.slice(best + 1)];
+}
+
+// Brushed brass with engraved words: each line { text, size }, centred.
+function brass(THREE, lines, width = 512, height = 96) {
+  return drawn(THREE, width, height, (g, w, h) => {
+    const ground = g.createLinearGradient(0, 0, w, h);
+    ground.addColorStop(0, '#8d6c3b');
+    ground.addColorStop(0.45, '#d6b37b');
+    ground.addColorStop(1, '#9a7744');
+    g.fillStyle = ground;
+    g.fillRect(0, 0, w, h);
+    for (let i = 0; i < h; i += 2) {
+      g.fillStyle = `rgba(255, 240, 210, ${0.04 + 0.05 * Math.abs(Math.sin(i * 12.9898))})`;
+      g.fillRect(0, i, w, 1);
+    }
+    g.strokeStyle = 'rgba(60, 40, 15, 0.55)';
+    g.lineWidth = 3;
+    g.strokeRect(6, 6, w - 12, h - 12);
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    const total = lines.reduce((sum, l) => sum + l.size * 1.25, 0);
+    let y = h / 2 - total / 2;
+    lines.forEach((l) => {
+      y += (l.size * 1.25) / 2;
+      const spec = { x: w / 2, max: w - 48, size: l.size, weight: l.weight ?? 600, spacing: l.spacing ?? l.size * 0.14 };
+      line(g, l.text, { ...spec, y: y + 1.5, color: 'rgba(255, 236, 196, 0.45)' });
+      line(g, l.text, { ...spec, y, color: '#2b1d0c' });
+      y += (l.size * 1.25) / 2;
+    });
+  });
+}
+
+const brassMaterial = (THREE, map) => new THREE.MeshStandardMaterial({ map, metalness: 0.55, roughness: 0.38 });
+
+// A plane with a texture on it, facing +z.
+const face = (THREE, w, h, material, x = 0, y = 0, z = 0) => {
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), material);
+  mesh.position.set(x, y, z);
+  return mesh;
+};
+
+// The light behind a tier: brightest low in the middle, gone at the edges.
+function glowTexture(THREE) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 64;
+  const g = canvas.getContext('2d');
+  const fill = g.createRadialGradient(128, 46, 4, 128, 46, 128);
+  fill.addColorStop(0, 'rgba(255,255,255,0.55)');
+  fill.addColorStop(0.5, 'rgba(255,255,255,0.16)');
+  fill.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = fill;
+  g.fillRect(0, 0, 256, 64);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+// Things that lean back on a strut: the face's group is tilted, its foot on
+// the shelf. Returns [outer, tilted].
+function leaning(THREE, materials, height, tilt = 0.14) {
+  const p = paint(THREE, materials);
+  const group = new THREE.Group();
+  const lean = new THREE.Group();
+  lean.rotation.x = -tilt;
+  group.add(lean);
+  const strut = box(THREE, 0.025, height * 0.8, 0.008, p.frame, 0, height * 0.38, -height * 0.16);
+  strut.rotation.x = 0.32;
+  group.add(strut);
+  return [group, lean];
+}
+
+const anchorIn = (THREE, group, lean, x, y, z) => {
+  anchored(THREE, lean, x, y, z);
+  group.userData.anchor = lean.userData.anchor;
+  return group;
+};
+
+// A role's plaque: a walnut board, 0.3 × 0.23 m, with a brass plate engraved
+// with the organisation and the dates. Origin under its foot; it faces +z.
+export function plaque(THREE, materials, { name, dates = '' }) {
+  const W = 0.3;
+  const H = 0.23;
+  const [group, lean] = leaning(THREE, materials, H);
+  lean.add(box(THREE, W, H, 0.024, materials.wood, 0, H / 2, 0));
+  const words = split(name.toUpperCase(), 14).map((text) => ({ text, size: 44 }));
+  if (dates) words.push({ text: dates, size: 26, weight: 500, spacing: 2 });
+  const plate = face(THREE, W - 0.06, H - 0.07, brassMaterial(THREE, brass(THREE, words, 512, 320)), 0, H / 2, 0.0125);
+  lean.add(plate);
+  return anchorIn(THREE, group, lean, 0, H / 2, 0.02);
+}
+
+// A trophy on a stepped black base, by the place it was won:
+//   second    a gold cup with two handles
+//   top5      a slim lidded urn in silver-blue
+//   nominated a glass star on a steel post
+//   unit      a wide regimental cup in silver on a wooden plinth, a red band round it
+// Origin under its base; it faces +z.
+export function trophy(THREE, materials, { place }) {
+  const p = paint(THREE, materials);
+  const group = new THREE.Group();
+  const lathe = (points, material, segments = 40) => new THREE.Mesh(
+    new THREE.LatheGeometry(points.map(([x, y]) => new THREE.Vector2(x, y)), segments), material);
+  const handles = (radius, tube, x, y, material) => [-1, 1].forEach((side) => {
+    const handle = new THREE.Mesh(new THREE.TorusGeometry(radius, tube, 8, 20, Math.PI), material);
+    handle.rotation.z = -side * Math.PI / 2;
+    handle.position.set(side * x, y, 0);
+    group.add(handle);
+  });
+  const base = (material = materials.lacquer) => {
+    group.add(box(THREE, 0.12, 0.04, 0.12, material, 0, 0.02, 0));
+    group.add(box(THREE, 0.09, 0.025, 0.09, material, 0, 0.0525, 0));
+    group.add(box(THREE, 0.07, 0.016, 0.002, p.brass, 0, 0.02, 0.061));
+  };
+
+  if (place === 'second') {
+    base();
+    group.add(lathe([[0, 0.065], [0.032, 0.065], [0.03, 0.075], [0.011, 0.09], [0.009, 0.15], [0.016, 0.16], [0.012, 0.168],
+      [0.03, 0.18], [0.058, 0.22], [0.072, 0.27], [0.076, 0.3], [0.072, 0.3], [0.068, 0.275], [0.054, 0.228], [0.02, 0.19]], p.gold));
+    handles(0.032, 0.006, 0.066, 0.245, p.gold);
+    return anchored(THREE, group, 0, 0.24, 0.07);
+  }
+  if (place === 'top5') {
+    base();
+    group.add(lathe([[0, 0.065], [0.026, 0.065], [0.018, 0.08], [0.014, 0.17], [0.03, 0.18], [0.05, 0.21], [0.055, 0.25],
+      [0.046, 0.29], [0.03, 0.3], [0.036, 0.308], [0, 0.312]], p.silverBlue));
+    const finial = new THREE.Mesh(new THREE.SphereGeometry(0.016, 16, 10), p.silverBlue);
+    finial.position.y = 0.33;
+    group.add(finial);
+    return anchored(THREE, group, 0, 0.24, 0.05);
+  }
+  if (place === 'nominated') {
+    base();
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.09, 10), materials.metal);
+    post.position.y = 0.11;
+    group.add(post);
+    const outline = new THREE.Shape();
+    for (let i = 0; i < 10; i++) {
+      const a = Math.PI / 2 + (i * Math.PI) / 5;
+      const r = i % 2 ? 0.036 : 0.085;
+      if (i === 0) outline.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+      else outline.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+    }
+    outline.closePath();
+    const geometry = new THREE.ExtrudeGeometry(outline, { depth: 0.02, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.004, bevelSegments: 1 });
+    geometry.translate(0, 0, -0.01);
+    const star = new THREE.Mesh(geometry, p.star);
+    star.position.y = 0.225;
+    star.add(new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 20), p.starEdge));
+    group.add(star);
+    return anchored(THREE, group, 0, 0.225, 0.03);
+  }
+  // The regimental cup.
+  group.add(box(THREE, 0.14, 0.08, 0.14, materials.wood, 0, 0.04, 0));
+  group.add(box(THREE, 0.145, 0.02, 0.145, p.felt, 0, 0.05, 0));
+  group.add(lathe([[0, 0.08], [0.04, 0.08], [0.035, 0.09], [0.014, 0.105], [0.012, 0.14], [0.04, 0.155], [0.085, 0.19],
+    [0.1, 0.24], [0.102, 0.262], [0.097, 0.262], [0.094, 0.24], [0.08, 0.195], [0.03, 0.165]], materials.metal, 48));
+  handles(0.042, 0.007, 0.1, 0.215, materials.metal);
+  return anchored(THREE, group, 0, 0.2, 0.1);
+}
+
+// The scholarship's medal: gold on a red ribbon, in a velvet-backed shadow
+// box under glass, 0.3 × 0.34 m, a brass plate at its foot. Origin under it.
+export function medal(THREE, materials, { words = ['1 OF 6'] } = {}) {
+  const p = paint(THREE, materials);
+  const W = 0.3;
+  const H = 0.34;
+  const D = 0.05;
+  const [group, lean] = leaning(THREE, materials, H, 0.08);
+  lean.add(box(THREE, W, H, 0.01, p.velvet, 0, H / 2, -D / 2));
+  [[0, H - 0.01, W, 0.02], [0, 0.01, W, 0.02]].forEach(([x, y, w, h]) => lean.add(box(THREE, w, h, D, materials.lacquer, x, y, 0)));
+  [-1, 1].forEach((side) => lean.add(box(THREE, 0.02, H, D, materials.lacquer, side * (W / 2 - 0.01), H / 2, 0)));
+  // The ribbon: two strands from the top meeting at the medal, white-striped.
+  [-1, 1].forEach((side) => {
+    const strand = new THREE.Group();
+    strand.add(box(THREE, 0.036, 0.15, 0.002, p.red));
+    strand.add(box(THREE, 0.008, 0.15, 0.003, p.white));
+    strand.position.set(side * 0.028, 0.245, -D / 2 + 0.008);
+    strand.rotation.z = side * 0.36;
+    lean.add(strand);
+  });
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.008, 40), p.gold);
+  disc.rotation.x = Math.PI / 2;
+  disc.position.set(0, 0.14, -D / 2 + 0.012);
+  const relief = new THREE.Mesh(new THREE.CylinderGeometry(0.033, 0.033, 0.01, 32), p.brass);
+  relief.rotation.x = Math.PI / 2;
+  relief.position.copy(disc.position);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.004, 8, 40), p.gold);
+  rim.position.copy(disc.position);
+  lean.add(disc, relief, rim);
+  lean.add(face(THREE, 0.17, 0.034, brassMaterial(THREE, brass(THREE, words.map((text) => ({ text, size: 40 })), 512, 100)), 0, 0.05, -D / 2 + 0.006));
+  lean.add(face(THREE, W - 0.03, H - 0.03, materials.glass, 0, H / 2, D / 2));
+  return anchorIn(THREE, group, lean, 0, 0.14, 0);
+}
+
+// Paper with a printed certificate or diploma on it.
+function document_(THREE, { kind, title, by = '', portrait = false }) {
+  const [w, h] = portrait ? [384, 512] : [512, 368];
+  return drawn(THREE, w, h, (g) => {
+    g.fillStyle = '#efe9dc';
+    g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#7d8a99';
+    g.lineWidth = 3;
+    g.strokeRect(16, 16, w - 32, h - 32);
+    g.lineWidth = 1;
+    g.strokeRect(24, 24, w - 48, h - 48);
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    line(g, kind, { x: w / 2, y: h * 0.17, max: w - 80, size: 20, weight: 500, spacing: 6, color: '#5d6874' });
+    const lines = split(title, portrait ? 14 : 22);
+    lines.forEach((text, i) => line(g, text, {
+      x: w / 2, y: h * (portrait ? 0.4 : 0.36) + i * 40, max: w - 80, size: 34, family: SANS, color: '#1c2229',
+    }));
+    if (by) line(g, by, { x: w / 2, y: h * (portrait ? 0.58 : 0.6), max: w - 100, size: 18, weight: 500, family: SANS, color: '#4a535d' });
+    g.fillStyle = 'rgba(40, 50, 60, 0.25)';
+    [0.7, 0.74].forEach((t) => g.fillRect(w * 0.2, h * (portrait ? t + 0.06 : t + 0.04), w * 0.32, 2));
+    const seal = g.createRadialGradient(w * 0.76, h * 0.8, 2, w * 0.76, h * 0.8, 34);
+    seal.addColorStop(0, '#e6c06a');
+    seal.addColorStop(1, '#9b7432');
+    g.fillStyle = seal;
+    g.beginPath();
+    g.arc(w * 0.76, h * 0.8, 30, 0, Math.PI * 2);
+    g.fill();
+  });
+}
+
+// A certificate in a thin steel frame, landscape, 0.36 × 0.26 m, leaning on
+// its strut. Origin under its foot; it faces +z.
+export function certificate(THREE, materials, { title, by = '' }) {
+  const p = paint(THREE, materials);
+  const W = 0.36;
+  const H = 0.26;
+  const [group, lean] = leaning(THREE, materials, H);
+  lean.add(box(THREE, W, H, 0.016, p.frame, 0, H / 2, 0));
+  const map = document_(THREE, { kind: 'CERTIFICATE', title, by });
+  lean.add(face(THREE, W - 0.03, H - 0.03, new THREE.MeshStandardMaterial({ map, roughness: 0.85 }), 0, H / 2, 0.0085));
+  return anchorIn(THREE, group, lean, 0, H / 2, 0.02);
+}
+
+// A diploma in a walnut frame with a cream mat, portrait, 0.26 × 0.34 m.
+// Origin under its foot; it faces +z.
+export function diploma(THREE, materials, { school }) {
+  const p = paint(THREE, materials);
+  const W = 0.26;
+  const H = 0.34;
+  const [group, lean] = leaning(THREE, materials, H, 0.12);
+  lean.add(box(THREE, W, H, 0.02, materials.wood, 0, H / 2, 0));
+  lean.add(face(THREE, W - 0.036, H - 0.036, p.paper, 0, H / 2, 0.0102));
+  const map = document_(THREE, { kind: 'EDUCATION', title: school, portrait: true });
+  lean.add(face(THREE, W - 0.07, H - 0.09, new THREE.MeshStandardMaterial({ map, roughness: 0.85 }), 0, H / 2, 0.0106));
+  return anchorIn(THREE, group, lean, 0, H / 2, 0.02);
+}
+
+// The shelf unit: 2 m wide, 0.36 m deep, 2.44 m tall, one tier for each name
+// (top first), 0.46 m apart over a 0.14 m plinth. Each tier has a brass plate
+// with its name on the fascia under it, a lit line under the fascia above, and
+// a soft light on the back. userData.levels: each tier's floor height, top
+// first; userData.depth: its depth. Origin on the floor under its middle; its
+// front faces +z.
+export function shelfUnit(THREE, materials, names) {
+  const group = new THREE.Group();
+  const W = 2;
+  const D = 0.36;
+  const FOOT = 0.14;
+  const STEP = 0.46;
+  const T = 0.03;
+  const n = names.length;
+  const top = FOOT + STEP * n;
+  const p = paint(THREE, materials);
+  group.add(box(THREE, W + 0.08, top + 0.04, 0.02, materials.lacquer, 0, (top + 0.04) / 2, -D / 2 + 0.01));
+  [-1, 1].forEach((side) => {
+    group.add(box(THREE, 0.04, top + 0.04, D, materials.lacquer, side * (W / 2 + 0.02), (top + 0.04) / 2, 0));
+    group.add(box(THREE, 0.044, top + 0.04, 0.008, materials.metal, side * (W / 2 + 0.02), (top + 0.04) / 2, D / 2 + 0.004));
+  });
+  group.add(box(THREE, W + 0.08, 0.04, D, materials.lacquer, 0, top + 0.02, 0));
+  group.add(box(THREE, W + 0.08, FOOT, D, materials.lacquer, 0, FOOT / 2, 0));
+  group.add(box(THREE, W, 0.006, 0.006, materials.strip(1), 0, 0.004, D / 2 + 0.01));
+  const levels = [];
+  for (let k = 0; k < n; k++) {
+    const y = FOOT + STEP * k;
+    const name = names[n - 1 - k];
+    if (k > 0) group.add(box(THREE, W, T, D - 0.02, materials.lacquer, 0, y - T / 2, -0.01));
+    group.add(box(THREE, W, 0.06, 0.012, materials.lacquer, 0, y - 0.03, D / 2 - 0.006));
+    group.add(face(THREE, 0.44, 0.042, brassMaterial(THREE, brass(THREE, [{ text: name.toUpperCase(), size: 44, spacing: 9 }], 512, 64)),
+      -W / 2 + 0.28, y - 0.03, D / 2 + 0.001));
+    // The lit line under the fascia above (the cap, for the top tier).
+    const ceiling = k === n - 1 ? top : y + STEP - 0.06;
+    group.add(box(THREE, W - 0.04, 0.006, 0.006, materials.strip(1.8), 0, ceiling - 0.004, D / 2 - 0.02));
+    group.add(face(THREE, W - 0.04, STEP - 0.04, p.glow, 0, y + (STEP - T) / 2, -D / 2 + 0.021));
+    levels.unshift(y);
+  }
+  group.userData.levels = levels;
+  group.userData.depth = D;
+  return anchored(THREE, group, 0, top / 2, D / 2);
 }

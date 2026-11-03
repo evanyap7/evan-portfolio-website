@@ -254,6 +254,32 @@ async function boot() {
     const title = heading.textContent.trim();
     spots.add({ id: item.dataset.thing, label: title, stop: item.closest('section')?.id ?? 'about', anchor, title, body: words });
   });
+
+  // The shelf's things, one per role and per row of the honours list: a
+  // role's card is its title and its first point; a row's is its own words.
+  const plain = (node) => (node?.getAttribute?.('alt') || node?.textContent || '').replace(/\s+/g, ' ').trim();
+  const para = (text) => Object.assign(document.createElement('p'), { textContent: text });
+  document.querySelectorAll('#experience [data-item]').forEach((item) => {
+    const anchor = anchors[item.dataset.item];
+    if (!anchor) return;
+    let title;
+    let body;
+    if (item.classList.contains('role')) {
+      const org = item.querySelector('.role__org');
+      title = plain(org?.querySelector('img') ?? org);
+      body = document.createElement('div');
+      const point = item.querySelector('.role__points li') ?? item.querySelector('.role__points');
+      body.append(para(plain(item.querySelector('.role__title'))), para(plain(point)));
+    } else {
+      const dt = item.querySelector('dt');
+      const dd = item.querySelector('dd');
+      if (!dt || !dd) return;
+      title = plain(dt);
+      body = document.createElement('p');
+      dd.childNodes.forEach((node) => body.append(node.cloneNode(true)));
+    }
+    if (title) spots.add({ id: item.dataset.item, label: title, stop: 'experience', anchor, title, body });
+  });
   cleanups.push(() => {
     spots.close();
     document.querySelectorAll('.lab-spot, dialog.lab-card').forEach((node) => node.remove());

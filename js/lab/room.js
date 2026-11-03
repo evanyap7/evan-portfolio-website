@@ -29,7 +29,11 @@ export const VIEWS = [
   { eye: [0.13, 1.5, -5.7], look: [-1.8, 1.4, -9.2] },
   { eye: [0.7, 1.55, -12.3], look: [BAYS.x, 1.15, BAYS.first] },
   { eye: [0.7, 1.55, -12.3 + BAYS.step * 6], look: [BAYS.x, 1.15, BAYS.first + BAYS.step * 6] },
-  { eye: [-0.8, 1.7, -32.2], look: [-5.4, 1.5, -35.2] },
+  // Nearly square on to the trophy shelf (stops.js), near enough that it fills
+  // four fifths of its frame's short side: 2.1 m at tan 20° × 3.6 m. The
+  // frame is narrower than it is tall at every width, so the shelf lands the
+  // same size on a phone, its fourteen things far enough apart to touch.
+  { eye: [-2.2, 1.45, -34.3], look: [-5.63, 1.24, -35.25] },
   { eye: [-1.1, 2.3, -38.4], look: [1.8, 0.95, -41.8] },
   { eye: [0, 1.62, -43.6], look: [0, 1.3, -53] },
 ];

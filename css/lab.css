@@ -93,7 +93,9 @@
       transparent 0) fill 0 / 0 / 0;
   }
 
-  :root.lab main > .section > :not(.lab-frame) {
+  /* Not the spots (js/lab/spots.js): they are in the section too, and their
+     own margin is what centres them on their objects. */
+  :root.lab main > .section > :not(.lab-frame, .lab-spot) {
     max-width: 34rem;
     margin-left: 0;
   }
@@ -257,6 +259,7 @@
   font-size: 17px;
   line-height: 1.6;
 }
+.lab-card__body p + p { margin-top: 12px; }
 .lab-card__close {
   margin-top: 22px;
   min-height: 44px;

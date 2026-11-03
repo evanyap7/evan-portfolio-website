@@ -141,7 +141,7 @@ export function buildStops(lab) {
   set.add(drum, ring, lens, pool, beam);
 
   // The furniture: the things that say who he is, each standing on something.
-  const anchors = furnish(THREE, materials, set);
+  const anchors = { ...furnish(THREE, materials, set), ...shelf(lab) };
 
   // The wall screen, on the left wall where the About panel stands in front
   // of it on a wide screen. Placed in the hall's own terms, then brought into
@@ -192,19 +192,21 @@ export function buildStops(lab) {
   return { anchors, loaded };
 }
 
+const put = (object, parent, [x, y, z], turn = 0) => {
+  object.position.set(x, y, z);
+  object.rotation.y = turn;
+  parent.add(object);
+  return object;
+};
+
+const words = (node) => (node ? (node.getAttribute?.('alt') || node.textContent).replace(/\s+/g, ' ').trim() : '');
+
 // About's furniture, in the set's terms: the bar behind him to the left (the
 // coffee machine and his kopi on it, the beret and hockey stick on the shelf
 // above), the gym to his right (a loaded bar on the rack, the floorball stick
 // leaning on it), and his guitar on its stand by the projector. Returns each
 // thing's anchor by the id the page's list uses (data-thing).
 function furnish(THREE, materials, set) {
-  const put = (object, parent, [x, y, z], turn = 0) => {
-    object.position.set(x, y, z);
-    object.rotation.y = turn;
-    parent.add(object);
-    return object;
-  };
-
   // Both pieces stand back and in, so each thing's spot lands inside the
   // room's window at every width (their far ends may run out of it).
   const bar = put(props.barCounter(THREE, materials), set, [-1.55, 0, -1.9], 0.3);
@@ -239,4 +241,68 @@ function furnish(THREE, materials, set) {
     beret: anchor(beret),
     hockey: anchor(hockey),
   };
+}
+
+// Experience: the trophy shelf, back to the left wall, one tier for each part
+// of the section's list, top first: the roles as plaques, the awards as
+// trophies, the scholarship's medal, the certificates and the diplomas. Their
+// words come from the page. Returns each thing's anchor by its data-item.
+const TIERS = ['Roles', 'Awards', 'Scholarship', 'Certifications', 'Education'];
+const PLACES = { top5: 'top5', second: 'second', nominated: 'nominated', combat: 'unit' };
+
+function shelf(lab) {
+  const { THREE, materials } = lab;
+  const section = document.getElementById('experience');
+  if (!section) return {};
+  const set = new THREE.Group();
+  set.name = 'experience';
+  lab.add('experience', set);
+  set.updateWorldMatrix(true, false);
+
+  // Placed in the hall's own terms (its back on the wall at x = -6, between
+  // two pilasters), then brought into the set.
+  const unit = props.shelfUnit(THREE, materials, TIERS);
+  const depth = unit.userData.depth;
+  unit.position.copy(set.worldToLocal(new THREE.Vector3(-6 + 0.01 + depth / 2, 0, -35.25)));
+  const turn = set.getWorldQuaternion(new THREE.Quaternion()).invert();
+  unit.quaternion.copy(turn.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2, 0))));
+  set.add(unit);
+
+  const [roles, awards, scholarship, certificates, education] = unit.userData.levels;
+  const item = (id) => section.querySelector(`[data-item="${id}"]`);
+  const anchors = {};
+  // Each thing's spot sits on the shelf's lip in front of it, like a museum
+  // label, so the dot never hides the thing itself.
+  const place = (id, object, level, x, z = 0) => {
+    put(object, unit, [x, level, z]);
+    const label = new THREE.Object3D();
+    label.position.set(x, level + 0.03, depth / 2 - 0.015);
+    unit.add(label);
+    anchors[id] = label;
+  };
+  const row = (x) => [-0.66, -0.22, 0.22, 0.66][x];
+
+  ['univers', 'fitness', 'nugget', 'army'].forEach((id, i) => {
+    const role = item(id);
+    if (!role) return;
+    const org = role.querySelector('.role__org');
+    const name = words(org?.querySelector('img') ?? org);
+    place(id, props.plaque(THREE, materials, { name, dates: words(role.querySelector('.role__dates')) }), roles, row(i), -0.02);
+  });
+  Object.keys(PLACES).forEach((id, i) => {
+    if (item(id)) place(id, props.trophy(THREE, materials, { place: PLACES[id] }), awards, row(i), 0.01);
+  });
+  if (item('scholarship')) {
+    place('scholarship', props.medal(THREE, materials, { words: [words(item('scholarship').querySelector('dt')).toUpperCase()] }), scholarship, 0, -0.02);
+  }
+  ['vertex', 'cpt'].forEach((id, i) => {
+    const row_ = item(id);
+    if (!row_) return;
+    const by = words(row_.querySelector('dd')).split(/(?<=\.)\s/)[0];
+    place(id, props.certificate(THREE, materials, { title: words(row_.querySelector('dt')), by }), certificates, i ? 0.42 : -0.42, -0.02);
+  });
+  ['sutd', 'vinuni', 'vjc'].forEach((id, i) => {
+    if (item(id)) place(id, props.diploma(THREE, materials, { school: words(item(id).querySelector('dt')) }), education, [-0.6, 0, 0.6][i], -0.02);
+  });
+  return anchors;
 }
