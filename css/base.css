@@ -177,6 +177,15 @@ strong, b {
   letter-spacing: -0.01em;
 }
 
+/* No paragraph ends on one word alone; headings split into even lines. */
+p, li, dd {
+  text-wrap: pretty;
+}
+
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+
 /* Long words break at hyphens on narrow screens instead of overflowing. */
 @media (max-width: 719px) {
   p, li, dd {

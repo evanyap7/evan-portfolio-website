@@ -352,7 +352,9 @@
   line-height: 1.5;
 }
 
-.footer__credits p { max-width: 72ch; }
+/* `ch` is the width of a zero, wider than the average letter: 62ch holds
+   about 75 characters to the line. */
+.footer__credits p { max-width: 62ch; }
 
 .footer__credits ul { margin-top: 4px; }
 
