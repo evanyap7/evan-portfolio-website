@@ -15,7 +15,15 @@ class NoStore(http.server.SimpleHTTPRequestHandler):
         super().end_headers()
 
 
+class Server(http.server.ThreadingHTTPServer):
+    # The default listen backlog is 5. A page opens a dozen module scripts at
+    # once, and when the machine is busy the server falls behind accepting
+    # them, so the extras were reset. One missing module stops js/main.js from
+    # running at all, and the checks then failed at random (menu, gate, tabs).
+    request_queue_size = 128
+
+
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 4173
-    http.server.ThreadingHTTPServer(('', port), NoStore).serve_forever()
+    Server(('', port), NoStore).serve_forever()
