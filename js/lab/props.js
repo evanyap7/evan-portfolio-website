@@ -40,6 +40,12 @@ function paint(THREE, materials) {
         color: 0xeaf6ff, roughness: 0.05, transparent: true, opacity: 0.28, depthWrite: false,
       }),
       warm: new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffb36b).multiplyScalar(1.4), toneMapped: false }),
+      walnut: new THREE.MeshStandardMaterial({ color: 0x8a6650, map: materials.wood.map, roughness: 0.42 }),
+      leather: standard(0x2a1b14, 0.7),
+      pool: new THREE.MeshBasicMaterial({
+        map: glowTexture(THREE), color: new THREE.Color(1, 0.62, 0.3).multiplyScalar(0.35), transparent: true,
+        blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false,
+      }),
     });
   }
   return paints.get(materials);
@@ -305,6 +311,7 @@ export function wallShelf(THREE, materials) {
 
 const MONO = '"Azeret Mono", ui-monospace, "SF Mono", Menlo, monospace';
 const SANS = '"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif';
+const SERIF = '"Bodoni Moda", Georgia, "Times New Roman", serif';
 
 // A canvas texture painted by draw(g, w, h), and painted again once the page's
 // fonts are in, so its words are never left in a fallback face.
@@ -323,7 +330,7 @@ function drawn(THREE, width, height, draw) {
   };
   paint();
   if (document.fonts?.load) {
-    Promise.all([document.fonts.load(`600 40px ${MONO}`), document.fonts.load(`600 40px ${SANS}`)]).then(paint, () => {});
+    Promise.all([document.fonts.load(`600 40px ${MONO}`), document.fonts.load(`600 40px ${SANS}`), document.fonts.load(`italic 400 40px ${SERIF}`)]).then(paint, () => {});
   }
   return texture;
 }
@@ -1103,4 +1110,190 @@ export function printer3d(THREE, materials) {
   group.add(spool);
   group.add(box(THREE, 0.01, 0.08, 0.01, materials.metal, 0, H + 0.035, -D / 2 + 0.04));
   return anchored(THREE, group, 0, 0.25, 0);
+}
+
+// The office (Contact) ------------------------------------------------------
+// A walnut desk with its back to the window, the screen on it showing the
+// page's own contact panel, a lamp, the chair pulled out. Each faces +z.
+
+// A walnut desk, 1.6 × 0.7 m, its top at 0.75, on four thin steel legs, with
+// a drawer under the right. Origin on the floor under its middle.
+export function desk(THREE, materials) {
+  const p = paint(THREE, materials);
+  const W = 1.6;
+  const D = 0.7;
+  const TOP = 0.75;
+  const group = new THREE.Group();
+  group.add(box(THREE, W, 0.035, D, p.walnut, 0, TOP - 0.0175, 0));
+  group.add(box(THREE, W - 0.12, 0.06, D - 0.12, p.frame, 0, TOP - 0.065, 0));
+  [-1, 1].forEach((sx) => [-1, 1].forEach((sz) => {
+    group.add(box(THREE, 0.03, TOP - 0.035, 0.03, p.frame, sx * (W / 2 - 0.07), (TOP - 0.035) / 2, sz * (D / 2 - 0.07)));
+  }));
+  group.add(box(THREE, 0.42, 0.14, D - 0.14, p.walnut, W / 2 - 0.33, TOP - 0.11, 0));
+  group.add(box(THREE, 0.1, 0.012, 0.012, materials.metal, W / 2 - 0.33, TOP - 0.11, D / 2 - 0.065));
+  group.userData.top = TOP;
+  group.userData.depth = D;
+  return anchored(THREE, group, 0, TOP, 0);
+}
+
+// The desk's screen, showing what the page's contact panel says, in its warm
+// UI: a window bar, "Let's talk", the address with its copy button, and the
+// three links. 0.78 × 0.44 m of picture on a slim stand. Origin on the desk
+// under its middle; anchor at the middle of the picture.
+export function deskScreen(THREE, materials, { email = '' } = {}) {
+  const p = paint(THREE, materials);
+  const W = 0.78;
+  const H = 0.44;
+  const group = new THREE.Group();
+  group.add(box(THREE, 0.24, 0.01, 0.16, materials.metal, 0, 0.005, -0.02));
+  group.add(box(THREE, 0.05, 0.2, 0.02, materials.metal, 0, 0.11, -0.07));
+  const map = drawn(THREE, 1280, 722, (g, w, h) => {
+    const ground = g.createLinearGradient(0, 0, 0, h);
+    ground.addColorStop(0, '#1d1510');
+    ground.addColorStop(1, '#100b08');
+    g.fillStyle = ground;
+    g.fillRect(0, 0, w, h);
+    // The window bar.
+    g.fillStyle = 'rgba(255, 214, 170, 0.06)';
+    g.fillRect(0, 0, w, 56);
+    ['#e0805a', '#e8b55c', '#7fa86a'].forEach((c, i) => {
+      g.fillStyle = c;
+      g.beginPath();
+      g.arc(36 + i * 28, 28, 8, 0, Math.PI * 2);
+      g.fill();
+    });
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    line(g, 'contact', { x: w / 2, y: 29, max: 400, size: 22, weight: 500, color: 'rgba(240, 214, 186, 0.6)', spacing: 2 });
+    // The heading, its last word in the italic serif and the amber.
+    g.textAlign = 'left';
+    g.textBaseline = 'alphabetic';
+    g.font = `500 112px ${SANS}`;
+    const lets = 'Let’s ';
+    g.font = `italic 400 122px ${SERIF}`;
+    const talkWidth = g.measureText('talk').width;
+    g.font = `500 112px ${SANS}`;
+    const letsWidth = g.measureText(lets).width;
+    const x0 = (w - letsWidth - talkWidth) / 2;
+    g.fillStyle = '#f6e9d8';
+    g.fillText(lets, x0, 250);
+    g.font = `italic 400 122px ${SERIF}`;
+    g.fillStyle = '#f0a85a';
+    g.fillText('talk', x0 + letsWidth, 250);
+    // The address, underlined, and its copy button beside it.
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    const address = email || 'Email me';
+    line(g, address, { x: w / 2 - 70, y: 380, max: w - 380, size: 64, weight: 500, family: SANS, color: '#f6e9d8' });
+    const addressWidth = g.measureText(address).width;
+    g.fillStyle = 'rgba(240, 168, 90, 0.6)';
+    g.fillRect(w / 2 - 70 - addressWidth / 2, 418, addressWidth, 3);
+    const pill = (x, y, pw, text, solid) => {
+      g.beginPath();
+      g.roundRect(x - pw / 2, y - 30, pw, 60, 30);
+      if (solid) {
+        g.fillStyle = '#f6e9d8';
+        g.fill();
+      } else {
+        g.strokeStyle = 'rgba(240, 214, 186, 0.4)';
+        g.lineWidth = 2;
+        g.stroke();
+      }
+      line(g, text, { x, y: y + 1, max: pw - 30, size: 26, weight: 500, family: SANS, color: solid ? '#140f0b' : '#f6e9d8' });
+    };
+    pill(w / 2 - 70 + addressWidth / 2 + 90, 382, 120, 'Copy', false);
+    pill(w / 2 - 220, 540, 200, 'Resume ↓', true);
+    pill(w / 2, 540, 200, 'GitHub ↗', true);
+    pill(w / 2 + 220, 540, 200, 'LinkedIn ↗', true);
+    // A faint glow at the foot, as if from the lamp, and the scan lines.
+    for (let y = 56; y < h; y += 4) {
+      g.fillStyle = 'rgba(0, 0, 0, 0.08)';
+      g.fillRect(0, y, w, 1);
+    }
+  });
+  const screen = new THREE.Group();
+  screen.position.set(0, 0.11 + H / 2 + 0.03, -0.07);
+  screen.rotation.x = -0.06;
+  screen.add(box(THREE, W + 0.024, H + 0.024, 0.022, materials.lacquer, 0, 0, -0.012));
+  const picture = face(THREE, W, H, new THREE.MeshBasicMaterial({ map, color: new THREE.Color(0.92, 0.92, 0.92), toneMapped: false }), 0, 0, 0.0005);
+  screen.add(picture);
+  group.add(screen);
+  // The light it throws on the desk in front of it.
+  const spill = face(THREE, W * 1.3, 0.5, p.pool, 0, 0.002, 0.18);
+  spill.rotation.x = -Math.PI / 2;
+  spill.material = spill.material.clone();
+  spill.material.color.setRGB(0.32, 0.22, 0.14);
+  group.add(spill);
+  // Its keyboard, in front.
+  const k = kit(THREE, materials);
+  const keyboard = box(THREE, 0.4, 0.016, 0.13, p.frame, 0, 0.008, 0.22);
+  keyboard.rotation.x = 0.05;
+  group.add(keyboard);
+  const keys = face(THREE, 0.38, 0.11, k.keys, 0, 0.0175, 0.22);
+  keys.rotation.x = -Math.PI / 2 + 0.05;
+  group.add(keys);
+  group.userData.screen = picture;
+  return anchored(THREE, group, 0, screen.position.y, -0.06);
+}
+
+// A desk lamp: a round foot, two steel arms and a shade turned down over the
+// desk, its bulb lit. Origin on the desk under the foot; the bulb is 0.44 up
+// and 0.08 forward of it (room.js puts the office's light there), and the pool
+// of light it throws lies on the desk in front.
+export function lamp(THREE, materials) {
+  const p = paint(THREE, materials);
+  const group = new THREE.Group();
+  const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.08, 0.02, 32), p.frame);
+  foot.position.y = 0.01;
+  group.add(foot);
+  const arm = (length, x, y, z, tilt) => {
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, length, 10), materials.metal);
+    mesh.position.set(x, y, z);
+    mesh.rotation.x = tilt;
+    group.add(mesh);
+  };
+  arm(0.3, 0, 0.16, -0.04, -0.28);
+  arm(0.24, 0, 0.38, 0.0, 0.62);
+  const joint = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 8), p.frame);
+  joint.position.set(0, 0.3, -0.08);
+  group.add(joint);
+  const shade = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.13, 32, 1, true), p.frame);
+  shade.material = p.frame.clone();
+  shade.material.side = THREE.DoubleSide;
+  shade.position.set(0, 0.47, 0.08);
+  shade.rotation.x = -0.45;
+  group.add(shade);
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.03, 16, 10), p.warm);
+  bulb.position.set(0, 0.44, 0.09);
+  group.add(bulb);
+  const pool = face(THREE, 0.7, 0.7, p.pool, 0.02, 0.003, 0.16);
+  pool.rotation.x = -Math.PI / 2;
+  group.add(pool);
+  return anchored(THREE, group, 0, 0.44, 0.09);
+}
+
+// An office chair, pulled out from the desk: five-spoke foot on castors, a
+// gas column, a leather seat at 0.47 and a low back. Origin on the floor
+// under the column; its front faces +z.
+export function chair(THREE, materials) {
+  const p = paint(THREE, materials);
+  const group = new THREE.Group();
+  for (let i = 0; i < 5; i += 1) {
+    const spoke = box(THREE, 0.035, 0.03, 0.3, p.frame, 0, 0.07, 0);
+    spoke.rotation.y = (i / 5) * Math.PI * 2;
+    spoke.translateZ(0.15);
+    group.add(spoke);
+    const castor = new THREE.Mesh(new THREE.SphereGeometry(0.025, 10, 8), materials.rubber);
+    castor.position.set(Math.sin(spoke.rotation.y) * 0.29, 0.025, Math.cos(spoke.rotation.y) * 0.29);
+    group.add(castor);
+  }
+  const column = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.36, 14), materials.metal);
+  column.position.y = 0.26;
+  group.add(column);
+  group.add(box(THREE, 0.5, 0.08, 0.48, p.leather, 0, 0.47, 0.02));
+  group.add(box(THREE, 0.04, 0.32, 0.04, p.frame, 0, 0.62, -0.23));
+  const back = box(THREE, 0.46, 0.28, 0.06, p.leather, 0, 0.78, -0.25);
+  back.rotation.x = -0.12;
+  group.add(back);
+  return anchored(THREE, group, 0, 0.6, 0);
 }

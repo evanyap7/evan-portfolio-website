@@ -10,7 +10,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { createMaterials } from './materials.js';
-import { createRoom, VIEWS } from './room.js';
+import { createRoom, VIEWS, DOORWAY_BEND } from './room.js';
 import { damp } from './rail.js';
 
 const ROW = 2; // the stop that takes two points on the path: the suits, first bay to last
@@ -58,15 +58,20 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
   }
 
   // The path: one point per stop, two for the suits. Catmull-Rom through all
-  // seven, except along the row of bays, where the camera dollies straight.
+  // seven, except along the row of bays, where the camera dollies straight,
+  // and the last stretch, bench to office, which bends in through the doorway
+  // (a straight line would cut through the partition beside it).
   const eyes = VIEWS.map((v) => new THREE.Vector3(...v.eye));
   const looks = VIEWS.map((v) => new THREE.Vector3(...v.look));
   const eyeCurve = new THREE.CatmullRomCurve3(eyes, false, 'centripetal');
   const lookCurve = new THREE.CatmullRomCurve3(looks, false, 'centripetal');
   const last = eyes.length - 1;
+  const bend = (points) => new THREE.QuadraticBezierCurve3(points[last - 1], new THREE.Vector3(...(points === eyes ? DOORWAY_BEND.eye : DOORWAY_BEND.look)), points[last]);
+  const bends = new Map([[eyes, bend(eyes)], [looks, bend(looks)]]);
   const along = (curve, points, u, out) => {
     const v = Math.min(Math.max(u, 0), last);
     if (v >= ROW && v <= ROW + 1) return out.lerpVectors(points[ROW], points[ROW + 1], v - ROW);
+    if (v >= last - 1) return bends.get(points).getPoint(v - (last - 1), out);
     return out.copy(curve.getPoint(v / last));
   };
 
@@ -137,6 +142,7 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
     }
     camera.position.copy(eye);
     camera.lookAt(look);
+    room.follow(eye);
     const f = frameAt(u);
     // The cap is wide enough for a tall tablet's narrow window (a third of a
     // 1024 × 1366 screen); the view offset keeps the window on the lens's

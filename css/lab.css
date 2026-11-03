@@ -61,16 +61,33 @@
   pointer-events: none;
 }
 
-/* Contact is the office, and its panel is paper: the light band's own
-   tokens, on its own off-white. */
-:root.lab main > .band--light {
-  border-image: linear-gradient(transparent var(--window), var(--band) 0) fill 0 / 0 / 0 100vw;
+/* Contact is the office, the one warm room, and its panel is the desk
+   screen's UI: walnut-dark ground, cream words, the lamp's amber for the
+   accent. Every light-band token is redefined, so the pills, the copy button
+   and the focus ring follow. The footer is the foot of the same screen. */
+:root.lab .band--light {
+  color-scheme: dark;
+  --band: hsl(28 28% 7%);
+  --bg: hsl(28 28% 7%);
+  --text: hsl(36 45% 93%);
+  --text-2: hsl(34 22% 80%);
+  --muted: hsl(32 16% 70%);
+  --dim: hsl(30 12% 64%);
+  --line: hsl(34 50% 80% / 0.12);
+  --line-2: hsl(34 50% 80% / 0.24);
+  --edge: hsl(34 50% 80% / 0.08);
+  --solid-hover: hsl(34 40% 78%);
+  --accent: hsl(30 85% 64%);
+  --focus: hsl(32 90% 66%);
 }
 
-/* The footer is the foot of that same sheet. */
+:root.lab main > .band--light {
+  border-image: linear-gradient(transparent var(--window), hsl(30 85% 64% / 0.35) var(--window) calc(var(--window) + 1px), var(--band) 0) fill 0 / 0 / 0 100vw;
+}
+
 :root.lab .footer.band {
   margin-top: 0;
-  border-image: none;
+  border-image: linear-gradient(var(--band) 0 0) fill 0 / 0 / 0 100vw;
   background: var(--band);
 }
 
@@ -111,7 +128,9 @@
   :root.lab main > .band--light {
     border-image: linear-gradient(90deg,
       transparent var(--gutter),
-      var(--band) var(--gutter) calc(var(--gutter) + var(--pane-w)),
+      hsl(30 85% 64% / 0.35) var(--gutter) calc(var(--gutter) + 1px),
+      var(--band) 0 calc(var(--gutter) + var(--pane-w) - 1px),
+      hsl(30 85% 64% / 0.35) 0 calc(var(--gutter) + var(--pane-w)),
       transparent 0) fill 0 / 0 / 0;
   }
 
@@ -124,6 +143,7 @@
 
   /* The foot of the sheet, under the panel column. */
   :root.lab .footer.band {
+    border-image: linear-gradient(90deg, hsl(30 85% 64% / 0.35) 0 1px, var(--band) 0 calc(100% - 1px), hsl(30 85% 64% / 0.35) 0) fill 0 / 0 / 0;
     width: var(--pane-w);
     max-width: none;
     margin-left: calc(max(0px, (100% - var(--wide)) / 2) + var(--gutter));

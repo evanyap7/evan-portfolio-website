@@ -12,7 +12,12 @@ import { createDoor } from './door.js';
 const H = 4.2; // ceiling height of the hall
 const HALF = 6; // the hall is 12 m wide
 const END = -46; // the partition between the hall and the office
-const OFFICE = { back: -58, half: 5, height: 3.4 };
+// The office is smaller than the hall and warmer: 6.8 m by 8, the desk's back
+// to its window, the lamp on the desk its one light.
+const OFFICE = { back: -54, half: 3.4, height: 3.2 };
+const WINDOW = { width: 2.8, bottom: 1.0, top: 2.45 };
+const DOORWAY = { width: 2.6, height: 2.9 };
+const LAMP = [-0.57, 1.19, -53.62]; // its bulb, where the office's light is
 export const DOOR = { y: 1.85, radius: 1.75 };
 const BAYS = { x: 4.7, first: -13, step: -2.6, count: 7 };
 
@@ -39,8 +44,107 @@ export const VIEWS = [
   // its front is 3.9 m away, so the frame shows tan 20° × 3.9 m each side of
   // the middle, and the outer ones (1.125 m out) land inside it on a phone.
   { eye: [3.65, 1.9, -41.4], look: [3.65, 1.15, -45.5] },
-  { eye: [0, 1.62, -43.6], look: [0, 1.3, -53] },
+  // Inside the office, seated height, square on to the desk and its screen,
+  // the window and the city above them. scene.js brings the camera here from
+  // the bench through the doorway, not through the partition.
+  { eye: [0, 1.42, -50.6], look: [0, 1.18, -53.6] },
 ];
+
+// The bend from the bench to the office: a control point the last stretch of
+// the path is pulled toward, so it turns in through the doorway.
+export const DOORWAY_BEND = { eye: [0, 1.7, -43], look: [0.9, 1.15, -50] };
+
+// A wall with a rectangular window: the office's back wall.
+function wallWithWindow(THREE, width, height, { width: w, bottom, top }) {
+  const shape = new THREE.Shape();
+  shape.moveTo(-width / 2, 0);
+  shape.lineTo(width / 2, 0);
+  shape.lineTo(width / 2, height);
+  shape.lineTo(-width / 2, height);
+  shape.closePath();
+  const hole = new THREE.Path();
+  hole.moveTo(-w / 2, bottom);
+  hole.lineTo(-w / 2, top);
+  hole.lineTo(w / 2, top);
+  hole.lineTo(w / 2, bottom);
+  hole.closePath();
+  shape.holes.push(hole);
+  return new THREE.ShapeGeometry(shape);
+}
+
+// The city at night, seen through the office window: a deep blue sky going
+// to a sodium glow at the horizon, and towers in silhouette with a scatter
+// of lit windows, most warm, a few cool. Seeded, so it is the same city on
+// every visit.
+function cityTexture(THREE) {
+  const w = 1024;
+  const h = 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const g = canvas.getContext('2d');
+  const sky = g.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, '#060b18');
+  sky.addColorStop(0.45, '#0e1a33');
+  sky.addColorStop(0.72, '#3b2a2a');
+  sky.addColorStop(0.86, '#6b4128');
+  sky.addColorStop(1, '#2a1a12');
+  g.fillStyle = sky;
+  g.fillRect(0, 0, w, h);
+  let seed = 7;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+  // Three rows of towers, the far ones paler with the haze.
+  [
+    { base: 0.62, tall: 0.22, ink: '#141522', lit: 0.1, size: 2 },
+    { base: 0.74, tall: 0.34, ink: '#0b0c14', lit: 0.18, size: 3 },
+    { base: 0.9, tall: 0.42, ink: '#050609', lit: 0.24, size: 4 },
+  ].forEach((row) => {
+    let x = -20;
+    while (x < w) {
+      const width = 30 + random() * 70;
+      const top = h * (row.base - row.tall * (0.35 + random() * 0.65));
+      g.fillStyle = row.ink;
+      g.fillRect(x, top, width, h - top);
+      if (random() < 0.25) g.fillRect(x + width * 0.4, top - 18 - random() * 30, 2, 40);
+      for (let y = top + 8; y < h - 6; y += row.size * 3) {
+        for (let wx = x + 5; wx < x + width - 5; wx += row.size * 2.6) {
+          if (random() > row.lit) continue;
+          const cool = random() < 0.18;
+          g.fillStyle = cool ? `rgba(170, 205, 255, ${0.35 + random() * 0.4})` : `rgba(255, ${190 + random() * 40 | 0}, 120, ${0.4 + random() * 0.5})`;
+          g.fillRect(wx, y, row.size, row.size * 1.3);
+        }
+      }
+      x += width + random() * 10;
+    }
+  });
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+// A pane of the sliding glass door: glass in a thin metal frame, with a
+// frosted band at hand height so it reads as a door when it is shut.
+function doorPane(THREE, glass, frame, frost, width, height) {
+  const pane = new THREE.Group();
+  const sheet = new THREE.Mesh(new THREE.PlaneGeometry(width, height), glass);
+  sheet.position.y = height / 2;
+  const band = new THREE.Mesh(new THREE.PlaneGeometry(width - 0.06, 0.16), frost);
+  band.position.set(0, 1.12, 0.002);
+  pane.add(sheet, band);
+  const bar = (w, h, x, y) => {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.03), frame);
+    mesh.position.set(x, y, 0);
+    pane.add(mesh);
+  };
+  bar(width, 0.035, 0, 0.0175);
+  bar(width, 0.035, 0, height - 0.0175);
+  bar(0.035, height, -width / 2 + 0.0175, height / 2);
+  bar(0.035, height, width / 2 - 0.0175, height / 2);
+  return pane;
+}
 
 function instanced(THREE, geometry, material, placements) {
   const mesh = new THREE.InstancedMesh(geometry, material, placements.length);
@@ -231,7 +335,7 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   }
 
   // The partition at the end of the hall, with a lit doorway into the office.
-  const partition = add(new THREE.Mesh(own(wallWithDoorway(THREE, HALF * 2, H, { width: 2.6, height: 2.9 })), wall));
+  const partition = add(new THREE.Mesh(own(wallWithDoorway(THREE, HALF * 2, H, DOORWAY)), wall));
   partition.position.z = END;
   add(instanced(THREE, line, materials.strip(1.8), [
     { at: [-1.36, 1.45, END], scale: [0.03, 2.9, 0.06] },
@@ -239,13 +343,16 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     { at: [0, 2.92, END], scale: [2.75, 0.03, 0.06] },
   ]));
 
-  // The office: a warm room, wood underfoot and on the lower walls.
+  // The office: a warm room, walnut underfoot and on the lower walls.
+  const walnut = materials.wood.clone();
+  walnut.color.set(0x8a6650);
+  owned.push(walnut);
   const depth = END - OFFICE.back;
   const mid = (END + OFFICE.back) / 2;
   const plank = own(new THREE.PlaneGeometry(OFFICE.half * 2, depth));
   const plankUv = plank.attributes.uv;
   for (let i = 0; i < plankUv.count; i += 1) plankUv.setXY(i, plankUv.getX(i) * 3, plankUv.getY(i) * 2);
-  const officeFloor = add(new THREE.Mesh(plank, materials.wood));
+  const officeFloor = add(new THREE.Mesh(plank, walnut));
   officeFloor.rotation.x = -Math.PI / 2;
   officeFloor.position.set(0, 0.002, mid);
   const officeRoof = add(new THREE.Mesh(own(new THREE.PlaneGeometry(OFFICE.half * 2, depth)), ceiling));
@@ -260,13 +367,61 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     mesh.rotation.y = -side * Math.PI / 2;
     mesh.position.set(side * OFFICE.half, OFFICE.height / 2, mid);
   });
-  const back = add(new THREE.Mesh(own(new THREE.PlaneGeometry(OFFICE.half * 2, OFFICE.height)), plaster));
-  back.position.set(0, OFFICE.height / 2, OFFICE.back);
-  add(instanced(THREE, line, materials.wood, [
-    { at: [-OFFICE.half + 0.03, 0.55, mid], scale: [0.06, 1.1, depth] },
-    { at: [OFFICE.half - 0.03, 0.55, mid], scale: [0.06, 1.1, depth] },
-    { at: [0, 0.55, OFFICE.back + 0.03], scale: [OFFICE.half * 2, 1.1, 0.06] },
+  const back = add(new THREE.Mesh(own(wallWithWindow(THREE, OFFICE.half * 2, OFFICE.height, WINDOW)), plaster));
+  back.position.set(0, 0, OFFICE.back);
+  // Wainscot on the side walls and under the window.
+  add(instanced(THREE, line, walnut, [
+    { at: [-OFFICE.half + 0.03, 0.5, mid], scale: [0.06, 1.0, depth] },
+    { at: [OFFICE.half - 0.03, 0.5, mid], scale: [0.06, 1.0, depth] },
+    { at: [0, 0.5, OFFICE.back + 0.03], scale: [OFFICE.half * 2, 1.0, 0.06] },
   ]));
+
+  // The window: a steel frame, two mullions, a wooden sill, and the city
+  // behind it, far enough back that it shifts a little as the camera walks.
+  const steel = materials.metal.clone();
+  steel.color.set(0x23272c);
+  steel.roughness = 0.5;
+  owned.push(steel);
+  const sash = (WINDOW.bottom + WINDOW.top) / 2;
+  const tall = WINDOW.top - WINDOW.bottom;
+  add(instanced(THREE, line, steel, [
+    { at: [-WINDOW.width / 2, sash, OFFICE.back], scale: [0.05, tall + 0.05, 0.08] },
+    { at: [WINDOW.width / 2, sash, OFFICE.back], scale: [0.05, tall + 0.05, 0.08] },
+    { at: [0, WINDOW.top, OFFICE.back], scale: [WINDOW.width + 0.05, 0.05, 0.08] },
+    { at: [-WINDOW.width / 6, sash, OFFICE.back], scale: [0.025, tall, 0.04] },
+    { at: [WINDOW.width / 6, sash, OFFICE.back], scale: [0.025, tall, 0.04] },
+  ]));
+  add(instanced(THREE, line, walnut, [
+    { at: [0, WINDOW.bottom - 0.02, OFFICE.back + 0.05], scale: [WINDOW.width + 0.16, 0.04, 0.16] },
+  ]));
+  const cityMap = cityTexture(THREE);
+  const city = new THREE.MeshBasicMaterial({ map: cityMap, color: new THREE.Color(0.85, 0.85, 0.85), fog: false });
+  owned.push(cityMap, city);
+  const skyline = add(new THREE.Mesh(own(new THREE.PlaneGeometry(9, 4.5)), city));
+  skyline.position.set(0, 1.55, OFFICE.back - 1.4);
+
+  // The sliding glass door, on the office side of the doorway: two panes that
+  // part and slide behind the partition as the camera comes up to it.
+  const doorGlass = materials.glass.clone();
+  doorGlass.opacity = 0.14;
+  doorGlass.side = THREE.DoubleSide;
+  const frost = new THREE.MeshStandardMaterial({ color: 0xc9d6df, roughness: 0.9, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide });
+  owned.push(doorGlass, frost);
+  const paneWidth = DOORWAY.width / 2 + 0.02;
+  const leaves = [-1, 1].map((side) => {
+    const pane = doorPane(THREE, doorGlass, steel, frost, paneWidth, DOORWAY.height - 0.02);
+    pane.traverse((o) => o.geometry && geometries.push(o.geometry));
+    // The two run in their own tracks, a few centimetres apart.
+    pane.position.set((side * paneWidth) / 2, 0, END - (side < 0 ? 0.07 : 0.11));
+    pane.userData.side = side;
+    return add(pane);
+  });
+  const doorCentre = new THREE.Vector3(0, DOORWAY.height / 2, END);
+  const slide = (open) => leaves.forEach((pane) => {
+    const side = pane.userData.side;
+    pane.position.x = side * (paneWidth / 2 + open * paneWidth);
+  });
+  slide(0);
 
   // Lights: a cool sky over everything, one key from above the door end, and
   // a warm lamp in the office. Nothing casts a real-time shadow.
@@ -276,8 +431,8 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   key.position.set(4, 9, 6);
   key.target.position.set(0, 0, -20);
   lights.add(key, key.target);
-  const warm = new THREE.PointLight(0xffb36b, 14, 14, 2);
-  warm.position.set(0, OFFICE.height - 0.5, -51.5);
+  const warm = new THREE.PointLight(0xffb36b, 6, 9, 2);
+  warm.position.set(...LAMP);
   lights.add(warm);
   group.add(lights);
 
@@ -286,7 +441,8 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     shelf: new THREE.Vector3(-5.4, 0, -35.2),
     // The bench's middle, its back against the partition.
     bench: new THREE.Vector3(3.65, 0, -45.64),
-    office: new THREE.Vector3(0, 0, -53),
+    // The desk's middle, its back a hand's width off the window wall.
+    office: new THREE.Vector3(0, 0, OFFICE.back + 0.45),
   };
 
   return {
@@ -299,6 +455,13 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     // Called each frame drawn, with the frame's time.
     update(now) {
       door.update(now);
+    },
+    // Called each time the camera is placed: the glass door is shut until the
+    // camera is within 4.5 m of it, open by 2.5 m, and stays open once the
+    // camera is through.
+    follow(eye) {
+      const t = Math.min(Math.max((eye.distanceTo(doorCentre) - 2.5) / 2, 0), 1);
+      slide(eye.z < END ? 1 : 1 - t * t * (3 - 2 * t));
     },
     dispose() {
       door.dispose();

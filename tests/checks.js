@@ -180,8 +180,16 @@ export function contrast(win) {
     pair('light band solid pill text', light('--bg'), light('--text'), 4.5);
     pair('light band focus ring', light('--focus'), light('--band'), 3);
     const shownBg = win.getComputedStyle(band).borderImageSource;
-    const pale = (shownBg.match(/rgba?\([^)]*\)/g) || []).some((c) => c.match(/[\d.]+/g).slice(0, 3).every((v) => Number(v) >= 230));
-    out.push(result('Contact is the light band', band.id === 'contact' && pale, shownBg.slice(0, 60)));
+    const painted = (shownBg.match(/rgba?\([^)]*\)/g) || []).map((c) => c.match(/[\d.]+/g).slice(0, 3).map(Number));
+    if (doc.documentElement.classList.contains('lab')) {
+      // In the lab Contact is the office's warm screen: its panel is painted
+      // in the band's own (dark) --band.
+      const own = rgb(light('--band')).join(',');
+      out.push(result('Contact is the office screen, painted in its own --band', band.id === 'contact' && painted.some((c) => c.join(',') === own), shownBg.slice(0, 80)));
+    } else {
+      const pale = painted.some((c) => c.every((v) => v >= 230));
+      out.push(result('Contact is the light band', band.id === 'contact' && pale, shownBg.slice(0, 60)));
+    }
   }
   return out;
 }
@@ -919,5 +927,53 @@ export async function labBench(win) {
     result('bench: the Testing card lists its tools', open && title === 'Testing' && ['hegel', 'bombadil', 'property-based testing'].every((t) => tools.includes(t)), `${open} ${title} ${tools.join(', ')}`),
     result('bench: its card is a hologram', holo, `${holo}`),
     result('bench: the shelf\'s cards stay plain', plain, `${plain}`),
+  ];
+}
+
+// In the lab, Contact is the office: its panel is the desk screen's own warm
+// UI on a dark warm ground, the footer follows on the same ground, and the
+// address, the copy button and the credits all still read.
+export async function labOffice(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('office: no lab in this frame', true, 'no lab')];
+  await until(() => root.classList.contains('lab-ready'), 6000);
+  win.scrollTo({ top: root.scrollHeight, behavior: 'instant' });
+  await until(() => root.dataset.stop === 'contact', 1000);
+  const stop = root.dataset.stop;
+  const rgb = (value) => (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+  const luminance = ([r, g, b]) => [r, g, b]
+    .map((c) => c / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
+    .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+  const ratio = (a, b) => {
+    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+  };
+  const copy = doc.querySelector('#contact .contact__copy');
+  const copyBox = copy?.getBoundingClientRect();
+  const link = doc.querySelector('#contact [data-contact-link]');
+  const email = (link?.getAttribute('href') ?? '').replace(/^mailto:/, '');
+  const footer = doc.querySelector('.footer');
+  const ground = rgb(win.getComputedStyle(footer).backgroundColor);
+  const probe = doc.createElement('i');
+  probe.style.color = win.getComputedStyle(doc.getElementById('contact')).getPropertyValue('--band');
+  doc.body.append(probe);
+  const panel = rgb(win.getComputedStyle(probe).color);
+  probe.remove();
+  const warm = panel.length === 3 && luminance(panel) < 0.03 && panel[0] > panel[2];
+  const credits = [...doc.querySelectorAll('.footer__credits p, .footer__credits li, .footer__credits a, .footer > .mono, .footer .wordmark')];
+  const worst = credits.map((el) => ({ el, value: ratio(rgb(win.getComputedStyle(el).color), ground) }))
+    .sort((a, b) => a.value - b.value)[0];
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('office: the end of the page is the office', stop === 'contact', String(stop)),
+    result('office: the copy button shows, at least 44 px', Boolean(copy) && !copy.hidden && copyBox.width >= 44 && copyBox.height >= 44,
+      copyBox ? `${copy.hidden ? 'hidden ' : ''}${Math.round(copyBox.width)}×${Math.round(copyBox.height)}` : 'missing'),
+    result('office: the address on the screen is the email', Boolean(email) && link.textContent.trim() === email, `${link?.textContent.trim()} vs ${email}`),
+    result('office: the panel is the screen\'s warm dark ground', warm, panel.join(',')),
+    result('office: the footer is on the same ground', ground.join(',') === panel.join(','), `${ground.join(',')} vs ${panel.join(',')}`),
+    result('office: the credits read at least 4.5:1', Boolean(worst) && worst.value >= 4.5, worst ? `${worst.el.className || worst.el.tagName} ${worst.value.toFixed(2)}:1` : 'none'),
   ];
 }

@@ -6,6 +6,7 @@
 
 import { createHologram } from './hologram.js';
 import * as props from './props.js';
+import { CONTACT_EMAIL } from '../config.js';
 
 const HUE = 196 / 360;
 const PORTRAIT = new URL('../../img/evan-holo.webp', import.meta.url).href;
@@ -141,7 +142,7 @@ export function buildStops(lab) {
   set.add(drum, ring, lens, pool, beam);
 
   // The furniture: the things that say who he is, each standing on something.
-  const anchors = { ...furnish(THREE, materials, set), ...shelf(lab), ...bench(lab) };
+  const anchors = { ...furnish(THREE, materials, set), ...shelf(lab), ...bench(lab), ...office(lab) };
 
   // The wall screen, on the left wall where the About panel stands in front
   // of it on a wide screen. Placed in the hall's own terms, then brought into
@@ -348,4 +349,24 @@ function bench(lab) {
     });
   });
   return anchors;
+}
+
+// Contact: the office. The desk stands with its back to the window, its screen
+// showing the contact panel, the lamp to its left, a book and his kopi beside
+// the keyboard, the chair pulled out to the right. Nothing in it is a spot:
+// the panel itself is the screen's UI.
+function office(lab) {
+  const { THREE, materials } = lab;
+  if (!document.getElementById('contact')) return {};
+  const set = new THREE.Group();
+  set.name = 'contact';
+  lab.add('contact', set);
+
+  const table = put(props.desk(THREE, materials), set, [0, 0, 0]);
+  const { top } = table.userData;
+  put(props.deskScreen(THREE, materials, { email: CONTACT_EMAIL }), table, [0.05, top, -0.15]);
+  put(props.lamp(THREE, materials), table, [-0.6, top, -0.15], 0.35);
+  put(props.kopiCup(THREE, materials), table, [0.5, top, 0.12]);
+  put(props.chair(THREE, materials), set, [0.98, 0, 0.5], -1.05);
+  return {};
 }
