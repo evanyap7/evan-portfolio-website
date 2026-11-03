@@ -121,6 +121,27 @@ The camera goes through a second door into a smaller room with a desk. A screen 
 
 I have not measured the current Hall's cost, so these are proposals, not facts.
 
+### Spike results (2026-11-03)
+
+The throwaway spike (`spike/lab.html`, not committed): an empty lab, the camera rail, an iris door, and all seven suits loaded and standing in their bays. Each profile scrolled the whole rail twice in headless Chrome on Evan's Mac.
+
+| Profile | Frame p50 / p95 / p99 | Frames over budget | Draw calls (peak) | Triangles (peak) | Geometries / textures | Transfer |
+| --- | --- | --- | --- | --- | --- | --- |
+| Desktop: 1440×800, DPR 2, bloom on | 16.7 / 17.6 / 17.6 ms | 0 of 740 over 25 ms | 61 | 158k | 50 / 54 | 2.76 MB |
+| Phone: 393×852, DPR 3 capped to 1.5, no bloom, CPU 4× slower | 16.7 / 17.6 / 17.7 ms | 0 of 734 over 34 ms | 42 | 158k | 49 / 41 | 2.76 MB |
+
+The transfer counts everything: three.js and its addons from the CDN (about 0.19 MB compressed) and the four suit models (2.57 MB).
+
+**Decisions, by the plan's rules:**
+
+- **All seven suits stay live** on phones (p95 17.6 ms, under the 33 ms limit). No snapshot stand-ins. Only the suit being looked at gets the four passes; the other six stay in the plain Lit state, as the spec guessed, so the passes add no cost.
+- **Bloom stays on desktop.** The 17.6 ms p95 is the jitter of a 60 Hz display's frame timer, not missed frames: no frame took longer than 25 ms.
+- **Transfer budget:** 2.76 of 4.5 MB used, which leaves about 1.7 MB for the portrait, the props, the shelf and the office.
+
+**Limits of this measurement:** Chrome slows the CPU but not the graphics chip, so the phone profile ran on the Mac's GPU. The spike also leaves out the passes' clipping, the badge decals and the props, so the final scene will cost more than this.
+
+**On a real phone** (Evan's iPhone 15, iOS Safari, same Wi-Fi): frame p50 17.0 ms, p95 18.0 ms, mid-row (12 draw calls, 81k triangles in view). Evan: "it's smooth". The camera does not jolt when Safari's address bar grows or shrinks. The decisions above stand.
+
 ## Constraints from the project
 
 - `CLAUDE.md`: `npm run check` before anything is called done or committed, and `npm run check:browser` (about 5.5 minutes, 6,429 checks) for behaviour or layout changes. CI treats the browser run as report-only, so it has to be read locally.
