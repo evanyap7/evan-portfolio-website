@@ -132,6 +132,11 @@
 .menu__links {
   max-width: 1120px;
   margin: 0 auto;
+}
+
+/* The rule above the list belongs to its first row, as each row's own rule
+   below it does, so no row's text sits against its list's edge. */
+.menu__links li:first-child a {
   border-top: 1px solid var(--line);
 }
 
@@ -205,15 +210,25 @@
 }
 
 /* Sections ---------------------------------------------------------- */
-/* Space lives inside each band. A link to a section lands with its title
-   just under the nav rather than at the band's top edge. */
+/* Space lives inside each band, the gutters included, so the text is inset
+   from the edge of the section's own background. A link to a section lands
+   with its title just under the nav rather than at the band's top edge.
+   The band's height steps up with the screen: 64px, then 8vw, then 120px
+   (written as steps, not clamp(), so static design checks can read it). */
 .section {
-  --band-pad: clamp(64px, 8vw, 120px);
-  width: calc(100% - 2 * var(--gutter));
-  max-width: calc(var(--wide) - 48px);
+  --band-pad: 64px;
+  max-width: var(--wide);
   margin: 0 auto;
-  padding-block: var(--band-pad);
+  padding: var(--band-pad) var(--gutter);
   scroll-margin-top: calc(-1 * var(--band-pad));
+}
+
+@media (min-width: 800px) {
+  .section { --band-pad: 8vw; }
+}
+
+@media (min-width: 1500px) {
+  .section { --band-pad: 120px; }
 }
 
 /* The section titles: one word in the italic serif. */
