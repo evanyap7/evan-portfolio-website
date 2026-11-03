@@ -8,12 +8,18 @@
 
 import { whenActive } from './gate.js';
 
-// In order of importance. `spec` shapes the suit; only EGO has a codename of
-// its own (it is the assistant's name), every other suit goes by its project.
+// In order of importance. Only EGO has a codename of its own (it is the
+// assistant's name); every other suit goes by its project. `spec` shapes the
+// suit: hue (its light and the HUD), bulk, facets, helmet, chest emblem,
+// extras, and the lit colourway.
 const SUITS = [
-  { id: 'trading-agent', mark: 'I', spec: { hue: 36, bulk: 1.14, facets: 8, mask: false, look: { plate: 0x8f949a, trim: 0x6d7278, rough: 0.5 } } },
-  { id: 'assistant-bot', mark: 'II', code: 'EGO', spec: { hue: 196, bulk: 1, facets: 16, mask: true, look: { plate: 0xd2d6db, trim: 0xa9afb7, rough: 0.2 } } },
-  { id: 'research-agent', mark: 'III', spec: { hue: 6, bulk: 1.04, facets: 16, mask: true, look: { plate: 0xb3171c, trim: 0xe0a93a, rough: 0.28 } } },
+  { id: 'trading-agent', mark: 'I', spec: { hue: 46, bulk: 1.14, facets: 8, helm: 'slit', emblem: { sides: 4, turn: Math.PI / 4 }, extras: ['pack'], look: { plate: 0x7b8188, trim: 0x4e545b, rough: 0.5 } } },
+  { id: 'assistant-bot', mark: 'II', code: 'EGO', spec: { hue: 196, bulk: 1, facets: 20, helm: 'visor', emblem: { sides: 32 }, look: { plate: 0xe4e7eb, trim: 0x9aa3ad, rough: 0.18 } } },
+  { id: 'research-agent', mark: 'III', spec: { hue: 140, bulk: 1.02, facets: 16, helm: 'dome', emblem: { sides: 6 }, look: { plate: 0x2f6b4f, trim: 0xc07a45, rough: 0.3 } } },
+  { id: 'parallel-match', mark: 'IV', spec: { hue: 78, bulk: 1.08, facets: 12, helm: 'hex', emblem: { sides: 5 }, extras: ['pack'], look: { plate: 0x223e70, trim: 0xdfe4ea, rough: 0.3 } } },
+  { id: 'website-revamp', mark: 'V', spec: { hue: 265, bulk: 0.96, facets: 20, helm: 'dome', emblem: { sides: 4 }, look: { plate: 0x3a3d44, trim: 0xb8bec6, rough: 0.22 } } },
+  { id: 'v-bay', mark: 'VI', spec: { hue: 330, bulk: 1, facets: 10, helm: 'visor', emblem: { sides: 6, turn: Math.PI / 6 }, extras: ['spines'], look: { plate: 0x5a2d4a, trim: 0xc9ccd2, rough: 0.28 } } },
+  { id: 'others', mark: 'VII', spec: { hue: 16, bulk: 1.04, facets: 16, helm: 'crest', emblem: { sides: 8, turn: Math.PI / 8 }, extras: ['spines'], look: { plate: 0x8c5a2b, trim: 0x4fae8a, rough: 0.26 } } },
 ];
 const PASSES = ['Blueprint', 'Wireframe', 'Shaded', 'Lit'];
 const STEP_MS = 1000;
