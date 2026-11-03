@@ -9,7 +9,6 @@ import { initMotion } from './motion.js';
 import { initReactor } from './reactor.js';
 import { initHall } from './hall.js';
 import { initReveal } from './reveal.js';
-import { initTabs } from './tabs.js';
 
 // Every page loads this one script. Each part looks for its own markup and
 // does nothing on a page without it.
@@ -47,7 +46,6 @@ applyContactEmail();
 initMenu();
 initIndex();
 initCount();
-initTabs();
 initCopy();
 initReveal();
 initMotion();

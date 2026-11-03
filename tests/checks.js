@@ -90,7 +90,7 @@ export function fonts(win) {
 // it is measured by that area.
 export function targets(win) {
   if (win.innerWidth >= WIDE) return [];
-  const selector = '.nav a, .nav button, .menu a, .pill, .work__card, .hall__suit, .hall__pass, .others__row, .kit__tab, [data-copy], .contact__address, .back, .next, .footer a';
+  const selector = '.nav a, .nav button, .menu a, .pill, .work__card, .hall__suit, .hall__pass, .others__row, [data-copy], .contact__address, .back, .next, .footer a';
   // Layout sizes, so a rise animation's transform mid-flight cannot round a
   // 44px pill down to 43.99.
   const small = [...win.document.querySelectorAll(selector)].filter(shown).filter((el) => el.offsetWidth < 44 || el.offsetHeight < 44);
@@ -268,50 +268,37 @@ export function figureText(win) {
   return [result(`diagram notes at least ${min}px`, smallest >= min - 0.05, `${smallest.toFixed(1)}px`)];
 }
 
-// The Toolkit section is a WAI-ARIA tabs widget: each tab names its panel and
-// the panel names it back, one tab is selected and in the tab order, one
-// panel shows, and the arrow keys, Home and End move the selection.
-export function tabs(win) {
+// Experience carries the honours after the roles, each tier under its own
+// heading (awards, the scholarship, certificates, schooling), and Toolkit is
+// only the tools: no tabs.
+export function honours(win) {
   const doc = win.document;
-  const list = doc.querySelector('#toolkit [role="tablist"]');
-  const tabs = [...doc.querySelectorAll('#toolkit [role="tab"]')];
-  const panels = tabs.map((tab) => doc.getElementById(tab.getAttribute('aria-controls')));
-  const names = tabs.map((tab) => tab.textContent.trim()).join(',');
-  const selected = () => tabs.filter((tab) => tab.getAttribute('aria-selected') === 'true');
-  const visible = () => panels.filter((panel) => panel && !panel.hidden && shown(panel));
-  const wired = panels.every((panel, i) => panel?.getAttribute('role') === 'tabpanel' && panel.getAttribute('aria-labelledby') === tabs[i].id);
-  const roving = () => tabs.every((tab) => tab.tabIndex === (tab.getAttribute('aria-selected') === 'true' ? 0 : -1));
-  const out = [
-    result('toolkit tabs: four, in order', list && shown(list) && names === 'Toolkit,Recognition,Education,Certifications', names),
-    result('toolkit tabs: each tab and panel name each other', wired),
-    result('toolkit tabs: Toolkit selected on load, one panel shown', selected().length === 1 && selected()[0] === tabs[0] && visible().length === 1 && visible()[0] === panels[0] && roving(), visible().map((panel) => panel.id).join()),
+  const shelf = doc.querySelector('#experience [data-shelf]');
+  const tiers = [...(shelf?.querySelectorAll('.honours__tier') ?? [])];
+  const names = tiers.map((h) => h.textContent.trim()).join(',');
+  const ids = tiers.map((h) => h.closest('[id]')?.id).join(',');
+  const rows = tiers.map((h) => h.nextElementSibling?.querySelectorAll(':scope > div').length ?? 0).join(',');
+  return [
+    result('honours: four tiers in Experience, in order', names === 'Awards,Scholarship,Certifications,Education', names || 'none'),
+    result('honours: each tier keeps its old link', ids === 'recognition,scholarship,certifications,education', ids),
+    result('honours: 4 awards, 1 scholarship, 2 certificates, 3 schools', rows === '4,1,2,3', rows),
+    result('honours: Toolkit has no tabs', !doc.querySelector('#toolkit [role="tablist"], #toolkit [role="tab"], [data-kit]')),
   ];
-  const press = (key) => doc.activeElement.dispatchEvent(new win.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
-  tabs[0].focus();
-  press('ArrowRight');
-  const right = selected()[0] === tabs[1] && doc.activeElement === tabs[1] && visible()[0] === panels[1] && visible().length === 1;
-  press('End');
-  const end = selected()[0] === tabs[3] && doc.activeElement === tabs[3];
-  press('ArrowRight');
-  const wrap = selected()[0] === tabs[0];
-  press('ArrowLeft');
-  const back = selected()[0] === tabs[3];
-  press('Home');
-  const home = selected()[0] === tabs[0] && visible()[0] === panels[0];
-  out.push(result('toolkit tabs: arrows, Home and End move the selection', right && end && wrap && back && home && roving(), `${right} ${end} ${wrap} ${back} ${home}`));
-  tabs[2].click();
-  out.push(result('toolkit tabs: clicking a tab shows only its panel', visible().length === 1 && visible()[0] === panels[2]));
-  tabs[0].click();
-  doc.activeElement?.blur();
-  return out;
 }
 
-// Arriving at #education or #certifications opens that tab.
-export function tabLink(win) {
+// An old link to #education or #certifications lands on that tier, now in
+// Experience, on screen.
+export async function honoursLink(win) {
+  await wait(800);
+  let last = -1;
+  for (let i = 0; i < 40 && win.scrollY !== last; i += 1) {
+    last = win.scrollY;
+    await wait(150);
+  }
   const id = win.location.hash.slice(1);
-  const panel = win.document.getElementById(id);
-  const tab = panel && win.document.getElementById(panel.getAttribute('aria-labelledby'));
-  return [result(`#${id} opens its tab`, panel && !panel.hidden && shown(panel) && tab?.getAttribute('aria-selected') === 'true')];
+  const tier = win.document.getElementById(id);
+  const top = tier?.getBoundingClientRect().top ?? -1;
+  return [result(`#${id} lands on its tier in Experience`, Boolean(tier?.closest('#experience')) && shown(tier) && top >= 0 && top < win.innerHeight, `top ${Math.round(top)}`)];
 }
 
 // An old project link such as #work-trading-agent lands on that card. With
@@ -846,5 +833,47 @@ export async function labSpots(win) {
     result('spots: the card carries the list’s words', Boolean(words) && body === words, body ?? 'missing'),
     result('spots: Escape closes it and focus returns', closed && back, `${closed} ${doc.activeElement?.className}`),
     result('spots: focusing a spot brings the camera back', away === 'contact' && Boolean(returned), `${away} → ${root.dataset.stop}`),
+  ];
+}
+
+// The trophy shelf (Experience): a spot on every plaque, trophy, medal and
+// frame, fourteen in all, each opening that row's own words.
+export async function labShelf(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('shelf: no lab in this frame', true, 'no lab')];
+  await until(() => root.classList.contains('lab-ready') && doc.querySelectorAll('#experience .lab-spot').length > 0, 6000);
+  const spots = [...doc.querySelectorAll('#experience .lab-spot')];
+  const name = (b) => (b.getAttribute('aria-label') || b.textContent).trim();
+  const small = spots.filter((b) => { const r = b.getBoundingClientRect(); return r.width < 44 || r.height < 44; });
+  const want = ['Univers', 'EvanYapFitness', 'The Social Nugget', 'Singapore Army', 'Top 5', '2nd place', 'Nominated', 'Best Combat Unit', '1 of 6'];
+  const names = spots.map(name);
+  const second = spots.find((b) => name(b) === '2nd place');
+  const words = [...doc.querySelectorAll('#recognition dt')].find((dt) => dt.textContent.trim() === '2nd place')?.nextElementSibling?.textContent.trim();
+  second?.focus();
+  await wait(400);
+  // A spot is drawn centred on the point its transform puts it at (the
+  // panel's own margins must not reach it).
+  const off = spots.filter((b) => b.classList.contains('is-shown')).filter((b) => {
+    const r = b.getBoundingClientRect();
+    const m = new win.DOMMatrix(win.getComputedStyle(b).transform);
+    return Math.abs(r.left + r.width / 2 - m.m41) > 1 || Math.abs(r.top + r.height / 2 - m.m42) > 1;
+  });
+  second?.click();
+  await wait(300);
+  const card = doc.querySelector('dialog.lab-card');
+  const open = Boolean(card?.open);
+  const title = card?.querySelector('#lab-card-title')?.textContent.trim();
+  const body = card?.querySelector('.lab-card__body')?.textContent.trim();
+  if (card?.open) card.close();
+  await wait(100);
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('shelf: fourteen spots', spots.length === 14, `${spots.length}`),
+    result('shelf: roles, awards and the scholarship are named', want.every((n) => names.includes(n)), names.join(', ') || 'none'),
+    result('shelf: each at least 44 × 44', spots.length > 0 && small.length === 0, `${small.length} small`),
+    result('shelf: each spot centred on its object', spots.length > 0 && off.length === 0, off.map(name).join(', ') || 'all centred'),
+    result('shelf: the 2nd place card opens with its words', open && title === '2nd place' && Boolean(words) && body === words, `${open} ${title} ${body ?? 'missing'}`),
   ];
 }

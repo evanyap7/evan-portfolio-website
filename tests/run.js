@@ -10,7 +10,7 @@ const SIZES = [
 ];
 
 // Checks run on the main page at every size, in this order.
-const ALL = ['structure', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'contrast', 'emDash', 'aboutPhoto', 'proof', 'workTitle', 'workCards', 'titles', 'pointerOnly', 'timeline', 'tabs', 'navIndex', 'progress', 'menu', 'copy', 'reactor', 'callouts', 'lab', 'labRail', 'labBays', 'labHolo', 'labSpots'];
+const ALL = ['structure', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'contrast', 'emDash', 'aboutPhoto', 'proof', 'workTitle', 'workCards', 'titles', 'pointerOnly', 'timeline', 'honours', 'navIndex', 'progress', 'menu', 'copy', 'reactor', 'callouts', 'lab', 'labRail', 'labBays', 'labHolo', 'labSpots', 'labShelf'];
 
 // The project pages and the case study, each checked at every size too.
 const PAGES = [
@@ -39,8 +39,8 @@ const EXTRA = [
   { width: 393, height: 852, src: '/#work-others', names: ['deepLink'] },
   { width: 1440, height: 800, src: '/#work-watchpartyyy', names: ['deepLink'] },
   { width: 1440, height: 800, src: '/#toolkit', names: ['hashSection'] },
-  { width: 1440, height: 800, src: '/#education', names: ['tabLink'] },
-  { width: 393, height: 852, src: '/#certifications', names: ['tabLink'] },
+  { width: 1440, height: 800, src: '/#education', names: ['honoursLink'] },
+  { width: 393, height: 852, src: '/#certifications', names: ['honoursLink'] },
   { width: 393, height: 852, src: '/', names: ['labResize'] },
   { width: 1440, height: 800, src: '/', names: ['labLost'] },
   { width: 1440, height: 800, src: '/', names: ['gateDoor'] },

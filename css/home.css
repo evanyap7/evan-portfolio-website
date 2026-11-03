@@ -479,6 +479,18 @@ ul.role__points li + li {
   font-size: 17px;
 }
 
+/* The honours, after the roles: each tier under its own small heading,
+   as the earlier roles are. */
+.honours__tier {
+  margin: 64px 0 16px;
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.honours__group {
+  scroll-margin-top: calc(var(--nav) + var(--nav-top) + 24px);
+}
+
 @media (max-width: 1023px) {
   .role {
     grid-template-columns: 9.5rem minmax(0, 1fr);
@@ -614,73 +626,6 @@ ul.role__points li + li {
 }
 
 /* Toolkit ----------------------------------------------------------- */
-/* Four tabs as one segmented pill. Without tabs.js the row stays hidden
-   and every panel shows, one under another. */
-.kit__tabs {
-  display: flex;
-  gap: 4px;
-  width: max-content;
-  max-width: 100%;
-  margin: 0 auto 56px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--card);
-}
-
-.kit__tabs[hidden] {
-  display: none;
-}
-
-.kit__tab {
-  flex: none;
-  min-height: 44px;
-  padding: 0 22px;
-  border-radius: 999px;
-  color: var(--muted);
-  font-size: 15px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: color 200ms, background-color 200ms;
-}
-
-/* The chosen tab is filled, so it is marked by more than colour. */
-.kit__tab[aria-selected="true"] {
-  background: var(--text);
-  color: var(--bg);
-}
-
-@media (hover: hover) {
-  .kit__tab[aria-selected="false"]:hover { color: var(--text); }
-}
-
-.kit__panel + .kit__panel {
-  margin-top: 56px;
-}
-
-.kit.is-ready .kit__panel {
-  margin-top: 0;
-}
-
-.kit__panel:focus-visible {
-  outline-offset: 8px;
-}
-
-.kit__head {
-  margin-bottom: 16px;
-  color: var(--dim);
-  font-weight: 400;
-}
-
-.kit.is-ready .kit__head {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 /* Each tool is its mark and name; tools without a mark are name only. */
 .tools {
   display: flex;
@@ -710,7 +655,7 @@ ul.role__points li + li {
 /* Logos of the schools and certificate providers, above each name. Most
    are drawn in white, like the Univers logo; the VJC crest and the NCSF
    mark keep their own colours. */
-.kit__logo {
+.honours__logo {
   display: block;
   width: auto;
   height: 32px;
@@ -719,7 +664,7 @@ ul.role__points li + li {
   object-position: left center;
 }
 
-.kit__logo--sutd {
+.honours__logo--sutd {
   width: 94px;
   height: 22px;
   margin-bottom: 12px;
@@ -728,16 +673,16 @@ ul.role__points li + li {
   filter: brightness(0) invert(1);
 }
 
-.kit__logo--white {
+.honours__logo--white {
   height: 52px;
   filter: brightness(0) invert(1);
 }
 
-.kit__logo--round {
+.honours__logo--round {
   height: 40px;
 }
 
-.kit__logo--wide {
+.honours__logo--wide {
   height: 38px;
 }
 
@@ -752,28 +697,6 @@ ul.role__points li + li {
 
 @media (hover: hover) {
   .text-link:hover { text-decoration-color: var(--text); }
-}
-
-/* A newly shown panel fades and rises a little. */
-@media (prefers-reduced-motion: no-preference) {
-  .kit.is-ready .kit__panel:not([hidden]) {
-    animation: rise 420ms var(--ease-out);
-  }
-}
-
-/* On a phone the four tabs sit two by two. */
-@media (max-width: 719px) {
-  .kit__tabs {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
-    margin-bottom: 40px;
-    border-radius: 26px;
-  }
-
-  .kit__tab {
-    padding: 0 12px;
-  }
 }
 
 /* Contact ----------------------------------------------------------- */
