@@ -802,3 +802,49 @@ export async function labHolo(win) {
     result('holo: the photo leaves the panel', Boolean(box) && box.width <= 1 && box.height <= 1, box ? `${Math.round(box.width)}×${Math.round(box.height)}` : 'missing'),
   ];
 }
+
+// The things in the first room (the About list) are real buttons over their
+// objects; each opens a card with the list's own words, and focusing one from
+// elsewhere brings the camera back to the room.
+export async function labSpots(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('spots: no lab in this frame', true, 'no lab')];
+  await until(() => root.classList.contains('lab-ready') && doc.querySelectorAll('#about .lab-spot').length > 0, 6000);
+  doc.getElementById('about').scrollIntoView({ behavior: 'instant' });
+  await wait(600);
+  const want = ['Barbell', 'Floorball stick', 'Coffee machine', 'Guitar', 'Commando beret', 'Hockey stick'];
+  const spots = [...doc.querySelectorAll('#about .lab-spot')];
+  const names = spots.map((b) => (b.getAttribute('aria-label') || b.textContent).trim());
+  const small = spots.filter((b) => { const r = b.getBoundingClientRect(); return r.width < 44 || r.height < 44; });
+  const guitar = spots.find((b) => (b.getAttribute('aria-label') || b.textContent).trim() === 'Guitar');
+  const words = doc.querySelector('[data-things] [data-thing="guitar"] p')?.textContent.trim();
+  guitar?.focus();
+  guitar?.click();
+  await wait(300);
+  const card = doc.querySelector('dialog.lab-card');
+  const open = Boolean(card?.open);
+  const title = card?.querySelector('#lab-card-title')?.textContent.trim();
+  const body = card?.querySelector('.lab-card__body')?.textContent.trim();
+  // What Escape does to a modal dialog (a synthetic key event does not reach
+  // the browser's own handling): a cancel, then the close.
+  if (card?.open) (card.requestClose ? card.requestClose() : card.close());
+  await wait(300);
+  const closed = Boolean(card) && !card.open;
+  const back = doc.activeElement === guitar;
+  doc.getElementById('contact').scrollIntoView({ behavior: 'instant' });
+  await wait(600);
+  const away = root.dataset.stop;
+  spots.find((b) => (b.getAttribute('aria-label') || b.textContent).trim() === 'Barbell')?.focus();
+  const returned = await until(() => root.dataset.stop === 'about', 800);
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('spots: six objects, named from the list', names.length === 6 && want.every((n) => names.includes(n)), names.join(', ') || 'none'),
+    result('spots: each at least 44 × 44', spots.length > 0 && small.length === 0, `${small.length} small`),
+    result('spots: the Guitar card opens', open && title === 'Guitar', `${open} ${title}`),
+    result('spots: the card carries the list’s words', Boolean(words) && body === words, body ?? 'missing'),
+    result('spots: Escape closes it and focus returns', closed && back, `${closed} ${doc.activeElement?.className}`),
+    result('spots: focusing a spot brings the camera back', away === 'contact' && Boolean(returned), `${away} → ${root.dataset.stop}`),
+  ];
+}

@@ -58,8 +58,13 @@ async function boot() {
 
   let createLab;
   let buildStops;
+  let createSpots;
   try {
-    [{ createLab }, { buildStops }] = await Promise.all([import('./lab/scene.js'), import('./lab/stops.js')]);
+    [{ createLab }, { buildStops }, { createSpots }] = await Promise.all([
+      import('./lab/scene.js'),
+      import('./lab/stops.js'),
+      import('./lab/spots.js'),
+    ]);
   } catch {
     return fail();
   }
@@ -67,12 +72,15 @@ async function boot() {
   if (failed || !root.classList.contains('lab')) return fail();
 
   const phone = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 720;
+  let anchors = {};
   try {
     scene = createLab(canvas, { tier: phone ? 'phone' : 'desktop', stops: stops.map(({ id, section, frame }) => ({ id, section, frame })) });
     // The rooms' set pieces: built before the first frame, so their materials
     // and light compile with the rest; a piece that fails to load (the
     // portrait) leaves the room without it, not the lab.
-    buildStops(scene).loaded.catch(() => {});
+    const built = buildStops(scene);
+    anchors = built.anchors;
+    built.loaded.catch(() => {});
   } catch {
     return fail();
   }
@@ -214,7 +222,7 @@ async function boot() {
   }
 
   const scrollTo = (top, instant) => window.scrollTo({ top, behavior: instant ? 'instant' : 'smooth' });
-  return {
+  const api = {
     scene,
     goToStop(id, { instant = false } = {}) {
       const k = stops.findIndex((s) => s.id === id);
@@ -234,4 +242,22 @@ async function boot() {
       bayListeners.push(fn);
     },
   };
+
+  // The things in the rooms you can click, one per item in the page's own
+  // list (the list stays the words; the spot only points at its object).
+  const spots = createSpots(api);
+  document.querySelectorAll('[data-things] > li[data-thing]').forEach((item) => {
+    const anchor = anchors[item.dataset.thing];
+    const heading = item.querySelector('h4');
+    const words = item.querySelector('p');
+    if (!anchor || !heading || !words) return;
+    const title = heading.textContent.trim();
+    spots.add({ id: item.dataset.thing, label: title, stop: item.closest('section')?.id ?? 'about', anchor, title, body: words });
+  });
+  cleanups.push(() => {
+    spots.close();
+    document.querySelectorAll('.lab-spot, dialog.lab-card').forEach((node) => node.remove());
+  });
+
+  return api;
 }

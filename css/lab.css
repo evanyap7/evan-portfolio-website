@@ -143,3 +143,159 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* The things in the room (js/lab/spots.js): each a real button, held over its
+   object each frame. It is invisible and lets clicks through until its object
+   is in its room's window, but stays in the tab order. */
+.lab-spot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-out);
+  will-change: transform;
+}
+.lab-spot.is-shown { opacity: 1; pointer-events: auto; }
+.lab-spot:focus-visible { opacity: 1; outline-offset: 2px; }
+
+/* A lit dot with a ring breathing out from it, the room's blue. */
+.lab-spot__ring {
+  position: absolute;
+  inset: 13px;
+  border-radius: 50%;
+  background: hsl(var(--h) 95% 72% / 0.9);
+  box-shadow: 0 0 0 3px hsl(var(--h) 60% 6% / 0.65), 0 0 14px hsl(var(--h) 95% 72% / 0.8);
+}
+.lab-spot__ring::after {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border: 1.5px solid hsl(var(--h) 95% 72% / 0.75);
+  border-radius: 50%;
+  animation: lab-spot-pulse 2.4s var(--ease-out) infinite;
+}
+@keyframes lab-spot-pulse {
+  from { transform: scale(0.55); opacity: 1; }
+  to { transform: scale(1.35); opacity: 0; }
+}
+
+/* Its name, on hover or focus, on a plate to its right. */
+.lab-spot__label {
+  position: absolute;
+  top: 50%;
+  left: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--pane-edge);
+  border-radius: 8px;
+  background: var(--pane);
+  font: 500 13px/1 var(--font-mono);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-4px, -50%);
+  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  pointer-events: none;
+}
+.lab-spot:hover .lab-spot__label,
+.lab-spot:focus-visible .lab-spot__label {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* The card a thing opens: a console plate over the room, the room still
+   showing round it. On a phone it rises from the foot of the screen. */
+.lab-card {
+  position: fixed;
+  inset: auto 16px 16px 16px;
+  width: auto;
+  max-width: 480px;
+  max-height: min(70svh, 560px);
+  margin: 0 auto;
+  padding: 28px 28px 24px;
+  overflow: auto;
+  border: 1px solid var(--pane-edge);
+  border-radius: var(--radius);
+  /* Opaque: the card often lands over the panel's words. */
+  background: linear-gradient(hsl(var(--h) 30% 9%), hsl(var(--h) 30% 5%));
+  box-shadow: 0 24px 64px hsl(var(--h) 60% 2% / 0.6), inset 0 1px 0 hsl(var(--h) 80% 80% / 0.08);
+  color: var(--text-2);
+}
+.lab-card::backdrop {
+  background: hsl(var(--h) 50% 2% / 0.35);
+}
+.lab-card[open] { animation: lab-card-in 0.32s var(--ease-out); }
+@keyframes lab-card-in {
+  from { opacity: 0; transform: translateY(12px); }
+}
+.lab-card__title {
+  margin: 0 0 12px;
+  font: 500 clamp(24px, 3vw, 30px)/1.15 var(--font-sans);
+  color: var(--text);
+}
+.lab-card__title::before {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 2px;
+  margin-bottom: 16px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+.lab-card__body p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.lab-card__close {
+  margin-top: 22px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: none;
+  color: var(--text);
+  font: 500 14px/1 var(--font-mono);
+  cursor: pointer;
+}
+.lab-card__close:hover { border-color: var(--accent); }
+
+/* Wide screens: the card stands to the left, over the panel, leaving the
+   window (and the object the camera leans toward) clear. */
+@media (min-width: 900px) {
+  .lab-card {
+    inset: auto auto 48px max(var(--gutter), calc((100vw - var(--wide)) / 2 + var(--gutter)));
+    width: min(440px, 40vw);
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-spot__ring::after,
+  .lab-card[open] { animation: none; }
+}
+
+/* In the lab the list of things is the spots' words, kept for readers (and
+   for the cards) but not shown in the panel. */
+:root.lab .about__things,
+:root.lab .about__things-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

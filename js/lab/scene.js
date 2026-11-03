@@ -121,16 +121,19 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
   // the visitor is looking at.
   let u = 0;
   let target = 0;
+  // Leaning is a dolly: eye and gaze both move LEAN of the way toward the
+  // object, eased in and out (the last point is kept so it eases back from it).
   let leanTo = null;
+  let leaning = 0;
   const leanPoint = new THREE.Vector3();
   const eye = new THREE.Vector3();
   const look = new THREE.Vector3();
   const place = () => {
     along(eyeCurve, eyes, u, eye);
     along(lookCurve, looks, u, look);
-    if (leanTo) {
-      leanTo.getWorldPosition(leanPoint);
-      look.lerp(leanPoint, LEAN);
+    if (leaning > 1e-4) {
+      eye.lerp(leanPoint, LEAN * leaning);
+      look.lerp(leanPoint, LEAN * leaning);
     }
     camera.position.copy(eye);
     camera.lookAt(look);
@@ -166,6 +169,8 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
     const dt = Math.min(0.1, Math.max(0, (now - then) / 1000));
     then = now;
     u = Math.abs(target - u) < 1e-4 ? target : damp(u, target, 6, dt);
+    if (leanTo) leanTo.getWorldPosition(leanPoint);
+    leaning = damp(leaning, leanTo ? 1 : 0, 4, dt);
     room.update(now);
     listeners.forEach((fn) => fn(dt));
     draw();
@@ -207,6 +212,11 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
     },
     lean(object) {
       leanTo = object ?? null;
+      if (leanTo) leanTo.getWorldPosition(leanPoint);
+      if (!running) {
+        leaning = leanTo ? 1 : 0;
+        draw();
+      }
     },
     onFrame(fn) {
       listeners.push(fn);
