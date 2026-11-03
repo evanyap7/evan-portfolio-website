@@ -7,4 +7,5 @@ read its output. If it fails, fix the cause; never skip hooks (`--no-verify`). R
 For changes to behaviour or layout also run `npm run check:browser` (headless Chrome, 6415 checks,
 about 5.5 minutes). It runs in CI, not in the pre-commit hook, because of its runtime.
 
-Hooks install with `npm install` (husky `prepare`).
+Hooks install with `npm install` (husky `prepare`). The pre-commit hook also runs a gitleaks secret
+scan on staged changes when gitleaks is installed (`brew install gitleaks`).
