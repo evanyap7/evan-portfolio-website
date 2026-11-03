@@ -25,7 +25,8 @@ const SUITS = [
   { id: 'others', mark: 'VII', hue: 48, spec: { model: 'mark-7' } },
 ];
 const PASSES = ['Blueprint', 'Wireframe', 'Shaded', 'Lit'];
-const STEP_MS = 1000;
+const STEP_MS = 700;
+const HINT = 'Click the suit for the next pass';
 
 function webgl2() {
   try {
@@ -100,7 +101,7 @@ function mount(suits) {
   const stage = element('div', 'hall__stage');
   const canvas = element('canvas', 'hall__canvas');
   canvas.setAttribute('aria-hidden', 'true');
-  const hint = element('p', 'hall__hint', 'Click the suit for the next pass');
+  const hint = element('p', 'hall__hint', HINT);
   stage.append(canvas, hint);
 
   const panel = element('div', 'hall__panel');
@@ -142,7 +143,7 @@ function mount(suits) {
   });
 
   root.append(stage, panel, picker);
-  return { root, stage, canvas, mark, name, line, figure, figureLabel, open, status, passButtons, suitButtons };
+  return { root, stage, canvas, hint, mark, name, line, figure, figureLabel, open, status, passButtons, suitButtons };
 }
 
 export function initHall() {
@@ -215,12 +216,33 @@ export function initHall() {
     ui.open.textContent = `${suit.more} →`;
     ui.open.href = suit.href;
     ui.suitButtons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
+    if (!hall || !hall.ready(suit.spec)) {
+      ui.hint.textContent = `Loading Mark ${suit.mark}…`;
+    }
     if (hall) {
       clearTimers();
+      // Not ready yet: the suit on stage scans back to its blueprint meanwhile.
+      if (!hall.ready(suit.spec)) goTo(0);
       hall.setSuit(suit.spec, { instant: reduce }).then((shown) => {
-        if (shown) assemble();
+        if (!shown) return;
+        ui.hint.textContent = HINT;
+        assemble();
+        warmRest();
       }, fail);
     }
+  };
+
+  // Once a suit stands, the others are fetched and readied one at a time in
+  // idle moments, so switching later is instant. Not on a slow or metered link:
+  // there a suit is readied when its button is hovered or focused.
+  let warming = false;
+  const warmRest = () => {
+    if (warming) return;
+    warming = true;
+    const link = navigator.connection;
+    if (link && (link.saveData || /2g|3g/.test(link.effectiveType ?? ''))) return;
+    const order = suits.map((_, i) => suits[(current + 1 + i) % suits.length]);
+    order.reduce((chain, next) => chain.then(() => hall?.prepare(next.spec)), Promise.resolve());
   };
 
   // The Hall can't stand without its scene or a suit's model: back to the cards.
@@ -236,7 +258,7 @@ export function initHall() {
   ui.passButtons.forEach((button) => button.addEventListener('click', () => goTo(Number(button.dataset.pass), true)));
   ui.suitButtons.forEach((button) => {
     const index = Number(button.dataset.suit);
-    const warm = () => hall?.preload(suits[index].spec);
+    const warm = () => hall?.prepare(suits[index].spec);
     button.addEventListener('click', () => select(index));
     button.addEventListener('pointerenter', warm);
     button.addEventListener('focus', warm);

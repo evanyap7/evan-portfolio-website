@@ -3,10 +3,15 @@
 // meshopt-compressed, WebP textures). A suit can wear its model's own paint or
 // be repainted: the model's red panels take the suit's base colour and its
 // gold panels the accent, so one model can stand in for several Marks. Each
-// suit is drawn four times from the same mesh, once per render pass:
-// blueprint (edges only), wireframe, shaded clay, and fully lit. Changing pass
-// sweeps a scan line up the suit: below the line is the new pass, above it the
-// old one.
+// suit is drawn four times, once per render pass: blueprint (edges only) and
+// wireframe from the file's low-poly copy, with hidden lines removed, then
+// shaded clay and fully lit from the full mesh. Changing pass sweeps a scan
+// line up the suit: below the line is the new pass, above it the old one.
+//
+// A suit is prepared once and kept: its model fetched, its materials made,
+// its shaders compiled off the main thread where the browser can, and its
+// textures and buffers sent to the GPU in idle moments, so picking it later
+// swaps it in at once.
 
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
@@ -24,6 +29,7 @@ const EDGE_ANGLE = 28;
 const FEET = -1.06; // the floor ring's height; every model stands on it
 const TALL = 2.08; // a model's height on the stage (the files are 2.0 tall, feet at 0)
 const JARVIS = 196; // the hue of every reactor, eye and blueprint line
+const CLAY = 0x9aa3ad;
 
 // Per model: how bright its red and gold panels are on average (linear, the
 // brightest channel), so a repaint keeps the texture's shading and wear.
@@ -34,28 +40,46 @@ const MODELS = {
   'mark-50': { red: 0.074, gold: 0.158 },
 };
 
+const TEXTURE_SLOTS = ['map', 'normalMap', 'emissiveMap', 'metalnessMap', 'roughnessMap', 'aoMap'];
+
 let loader = null;
 const loaded = new Map();
 
-// Fetches a model once; resolves to its meshes as { geometry, material, matrix }
-// (the matrix carries the file's node transform, which undoes quantisation).
+// Fetches a model once. Resolves to { pieces, wire }: the textured meshes, and
+// the file's low-poly copy (the node named 'wire') that the blueprint and
+// wireframe passes draw, each as { geometry, material, matrix } (the matrix
+// carries the file's node transform, which undoes quantisation).
 function loadModel(name) {
   if (!loaded.has(name)) {
     loader ??= new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
     const url = new URL(`../models/hall/${name}.glb`, import.meta.url).href;
     const request = loader.loadAsync(url).then((gltf) => {
       gltf.scene.updateMatrixWorld(true);
-      const meshes = [];
+      const pieces = [];
+      const wire = [];
       gltf.scene.traverse((node) => {
-        if (node.isMesh) meshes.push({ geometry: node.geometry, material: node.material, matrix: node.matrixWorld.clone(), edges: null });
+        if (!node.isMesh) return;
+        const piece = { geometry: node.geometry, material: node.material, matrix: node.matrixWorld.clone() };
+        (node.name.startsWith('wire') ? wire : pieces).push(piece);
       });
-      return meshes;
+      // A file without its own copy draws the lines from the full mesh.
+      if (!wire.length) wire.push(...pieces.map((piece) => ({ ...piece })));
+      wire.forEach((piece) => {
+        piece.edges = new THREE.EdgesGeometry(piece.geometry, EDGE_ANGLE);
+      });
+      return { pieces, wire };
     });
     request.catch(() => loaded.delete(name));
     loaded.set(name, request);
   }
   return loaded.get(name);
 }
+
+// Resolves in the browser's next idle moment (or soon, where it has none).
+const idle = () => new Promise((resolve) => {
+  if ('requestIdleCallback' in window) window.requestIdleCallback(() => resolve(), { timeout: 400 });
+  else setTimeout(resolve, 40);
+});
 
 // Red panels to `base`, gold panels to `accent`, anything grey, dark or blue
 // (the glow) left as it is. Hue decides: gold is red with a lot of green.
@@ -116,7 +140,8 @@ export function createHall(canvas) {
   coreLight.position.set(0, 0.45, 0.5);
   scene.add(key, warm, coreLight);
 
-  const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+  // Phones draw without multisampling: the pixel ratio already smooths edges.
+  const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: coarse ? 0 : 4 });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
   const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.45, 0.4, 0.95);
@@ -130,14 +155,29 @@ export function createHall(canvas) {
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
-  // The scan line and the two planes that split old pass from new.
+  // The scan line and the planes that split old pass from new. Every material
+  // on stage always has exactly one plane, so one compiled shader serves it
+  // settled and mid-sweep: settled, its plane is one that keeps everything.
   const planeNew = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
   const planeOld = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-  const scanMaterial = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, toneMapped: false });
+  const planeAll = new THREE.Plane(new THREE.Vector3(0, -1, 0), 1e4);
+  const KEEP_ALL = [planeAll];
+  const KEEP_NEW = [planeNew];
+  const KEEP_OLD = [planeOld];
+  const scanMaterial = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, toneMapped: false, clippingPlanes: KEEP_ALL });
   const scanLine = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.012), scanMaterial);
   scanLine.position.z = 0.3;
   scanLine.visible = false;
   scene.add(scanLine);
+
+  // Warming up draws into a 1×1 target, so the shaders compile for an
+  // offscreen target exactly as the composer's render pass will use them.
+  const warmTarget = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType });
+  const primer = new THREE.Scene();
+  primer.add(new THREE.Mesh(
+    new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(9), 3)),
+    new THREE.MeshBasicMaterial({ clippingPlanes: KEEP_ALL }),
+  ));
 
   const tinted = (mult, base) => new THREE.Color().copy(base).multiplyScalar(mult);
   const hue = new THREE.Color().setHSL(JARVIS / 360, 0.95, 0.56);
@@ -151,8 +191,9 @@ export function createHall(canvas) {
   const ringEdges = new THREE.EdgesGeometry(ring);
 
   const state = { tx: 0, ty: 0 };
-  let suit = null; // { root, reps: [{ root, materials }], owned: materials to dispose }
-  let wanted = 0; // the latest setSuit call; older loads that land late are dropped
+  const suits = new Map(); // spec → { promise, ready, urgent, suit }
+  let suit = null; // on stage: { root, reps: [{ root, materials }], textures }
+  let wanted = 0; // the latest setSuit call; older ones that land late are dropped
   let pass = 3;
   let from = 3;
   let scan = 1; // 1 = settled; 0 to 1 = sweeping from `from` to `pass`
@@ -161,28 +202,35 @@ export function createHall(canvas) {
   let last = 0;
   let frame = 0;
 
-  // The four representations of one model, as [meshes or lines] per pass.
-  function build(spec, meshes) {
-    dispose();
+  // The four representations of one suit, each a group of meshes or lines.
+  function build(spec, { pieces, wire: outline }) {
     const model = MODELS[spec.model];
-    const owned = [];
-    const own = (material) => {
-      owned.push(material);
+    const make = (material) => {
+      material.clippingPlanes = KEEP_ALL;
       return material;
     };
-    const line = (mult) => own(new THREE.LineBasicMaterial({ color: tinted(mult, hue), toneMapped: false }));
-    const wire = (mult) => own(new THREE.MeshBasicMaterial({ color: tinted(mult, hue), wireframe: true, transparent: true, opacity: 0.55, toneMapped: false }));
-    const glow = (mult) => own(new THREE.MeshBasicMaterial({ color: tinted(mult, glowColor), toneMapped: false, side: THREE.DoubleSide }));
+    const line = (mult) => make(new THREE.LineBasicMaterial({ color: tinted(mult, hue), toneMapped: false }));
+    const glow = (mult) => make(new THREE.MeshBasicMaterial({ color: tinted(mult, glowColor), toneMapped: false, side: THREE.DoubleSide }));
+    // Writes depth only, pushed back a little, so lines behind the suit hide.
+    const hider = () => make(new THREE.MeshBasicMaterial({
+      colorWrite: false,
+      side: THREE.DoubleSide,
+      polygonOffset: true,
+      polygonOffsetFactor: 1,
+      polygonOffsetUnits: 1,
+    }));
 
-    const blueprintLine = line(0.85);
-    const wireLine = wire(0.7);
+    // The clay takes the suit's colour, so no pass reads as plain white.
+    const clayColor = spec.tone !== undefined
+      ? new THREE.Color(spec.tone)
+      : new THREE.Color(CLAY).lerp(new THREE.Color(spec.paint?.base ?? CLAY), 0.8);
     const clayFor = new Map();
     const clay = (source) => {
       if (!clayFor.has(source)) {
-        clayFor.set(source, own(new THREE.MeshStandardMaterial({
-          color: 0x9aa3ad,
-          metalness: 0.05,
-          roughness: 0.62,
+        clayFor.set(source, make(new THREE.MeshStandardMaterial({
+          color: clayColor,
+          metalness: 0.1,
+          roughness: 0.6,
           normalMap: source.normalMap,
           normalScale: source.normalScale,
           emissiveMap: source.emissiveMap,
@@ -194,9 +242,16 @@ export function createHall(canvas) {
     const litFor = new Map();
     const lit = (source) => {
       if (!litFor.has(source)) {
-        litFor.set(source, own(spec.paint ? repainted(source, spec.paint, model) : source.clone()));
+        litFor.set(source, make(spec.paint ? repainted(source, spec.paint, model) : source.clone()));
       }
       return litFor.get(source);
+    };
+
+    const placed = (object, piece, order = 0) => {
+      object.matrixAutoUpdate = false;
+      object.matrix.copy(piece.matrix);
+      object.renderOrder = order;
+      return object;
     };
 
     const root = new THREE.Group();
@@ -205,20 +260,20 @@ export function createHall(canvas) {
       const figure = new THREE.Group();
       figure.position.y = FEET;
       figure.scale.setScalar(TALL / 2);
-      meshes.forEach((piece) => {
-        let object;
-        if (kind === 'blueprint') {
-          piece.edges ??= new THREE.EdgesGeometry(piece.geometry, EDGE_ANGLE);
-          object = new THREE.LineSegments(piece.edges, blueprintLine);
-        } else if (kind === 'wire') {
-          object = new THREE.Mesh(piece.geometry, wireLine);
-        } else {
-          object = new THREE.Mesh(piece.geometry, kind === 'shaded' ? clay(piece.material) : lit(piece.material));
-        }
-        object.matrixAutoUpdate = false;
-        object.matrix.copy(piece.matrix);
-        figure.add(object);
-      });
+      if (kind === 'blueprint' || kind === 'wire') {
+        const ink = kind === 'blueprint'
+          ? line(0.85)
+          : make(new THREE.MeshBasicMaterial({ color: tinted(0.75, hue), wireframe: true, toneMapped: false }));
+        const hide = hider();
+        outline.forEach((piece) => {
+          figure.add(placed(new THREE.Mesh(piece.geometry, hide), piece, 0));
+          figure.add(placed(kind === 'blueprint' ? new THREE.LineSegments(piece.edges, ink) : new THREE.Mesh(piece.geometry, ink), piece, 1));
+        });
+      } else {
+        pieces.forEach((piece) => {
+          figure.add(placed(new THREE.Mesh(piece.geometry, kind === 'shaded' ? clay(piece.material) : lit(piece.material)), piece));
+        });
+      }
       repRoot.add(figure);
       // Each pass gets its own ring material: the scan line clips old and new apart.
       repRoot.add(kind === 'lit' || kind === 'shaded' ? new THREE.Mesh(ring, glow(1.2)) : new THREE.LineSegments(ringEdges, line(1)));
@@ -229,18 +284,92 @@ export function createHall(canvas) {
       });
       return { root: repRoot, materials };
     });
-    scene.add(root);
-    suit = { root, reps, owned };
-    appear = 0;
-    applyVisibility();
+    const textures = new Set();
+    reps.forEach((rep) => rep.materials.forEach((material) => {
+      TEXTURE_SLOTS.forEach((slot) => {
+        if (material[slot]) textures.add(material[slot]);
+      });
+    }));
+    return { root, reps, textures };
   }
 
-  function dispose() {
-    if (!suit) return;
-    scene.remove(suit.root);
-    // Geometry and textures belong to the cached model; only our materials go.
-    suit.owned.forEach((material) => material.dispose());
-    suit = null;
+  // Draws `object` once into the 1×1 target with the stage's lights, so its
+  // buffers and textures are on the GPU before it is first seen.
+  function warmDraw(object) {
+    const shown = suit?.root.visible;
+    if (suit) suit.root.visible = false;
+    scene.add(object);
+    renderer.setRenderTarget(warmTarget);
+    renderer.render(scene, camera);
+    renderer.setRenderTarget(null);
+    scene.remove(object);
+    if (suit) suit.root.visible = shown;
+  }
+
+  // Compiles every shader the suit needs, without blocking where the browser
+  // can link programs in parallel. three.js reads the clipping-plane count of
+  // the last drawn material when it compiles, so a one-plane primer draws first.
+  let scanCompiled = false;
+  function compile(next) {
+    renderer.setRenderTarget(warmTarget);
+    renderer.render(primer, camera);
+    const done = [renderer.compileAsync(next.root, camera, scene)];
+    if (!scanCompiled) {
+      scanCompiled = true;
+      done.push(renderer.compileAsync(scanLine, camera, scene));
+    }
+    renderer.setRenderTarget(null);
+    return Promise.all(done);
+  }
+
+  // Fetches, builds and warms a suit once. `urgent` skips the idle waits, for
+  // a suit the visitor has just picked.
+  function prepare(spec, urgent = false) {
+    let entry = suits.get(spec);
+    if (entry) {
+      entry.urgent ||= urgent;
+      return entry.promise;
+    }
+    entry = { urgent, ready: false, suit: null, promise: null };
+    const pause = () => (entry.urgent ? Promise.resolve() : idle());
+    entry.promise = loadModel(spec.model)
+      .then(async (meshes) => {
+        await pause();
+        const next = build(spec, meshes);
+        entry.suit = next;
+        await compile(next);
+        for (const texture of next.textures) {
+          if (entry.urgent) break;
+          await pause();
+          renderer.initTexture(texture);
+        }
+        if (!entry.urgent) {
+          for (const rep of next.reps) {
+            await pause();
+            if (entry.urgent) break;
+            next.reps.forEach((other) => {
+              other.root.visible = other === rep;
+            });
+            warmDraw(next.root);
+          }
+        }
+        entry.ready = true;
+        return next;
+      });
+    entry.promise.catch(() => suits.delete(spec));
+    suits.set(spec, entry);
+    return entry.promise;
+  }
+
+  function show(next, instant) {
+    if (suit !== next) {
+      if (suit) scene.remove(suit.root);
+      suit = next;
+      scene.add(suit.root);
+    }
+    scan = 1;
+    appear = instant ? 1 : 0;
+    applyVisibility();
   }
 
   // Which representations draw, and which side of the scan line each keeps.
@@ -251,7 +380,7 @@ export function createHall(canvas) {
       const isNew = index === pass;
       const isOld = sweeping && index === from;
       rep.root.visible = isNew || isOld;
-      const planes = sweeping ? [isNew ? planeNew : planeOld] : [];
+      const planes = !sweeping ? KEEP_ALL : isNew ? KEEP_NEW : KEEP_OLD;
       rep.materials.forEach((material) => {
         material.clippingPlanes = planes;
       });
@@ -262,7 +391,8 @@ export function createHall(canvas) {
   function step(dt) {
     time += dt;
     if (!suit) return;
-    appear = Math.min(1, appear + dt / 0.7);
+    // A new suit grows in and its lights come up together, smoothly.
+    appear = Math.min(1, appear + dt / 0.6);
     const ease = 1 - (1 - appear) ** 3;
     if (scan < 1) {
       scan = Math.min(1, scan + dt / SCAN_SECONDS);
@@ -273,17 +403,17 @@ export function createHall(canvas) {
       scanLine.position.y = y;
       scanMaterial.opacity = Math.sin(Math.PI * Math.min(1, scan));
     }
-    const flick = appear < 1 ? (Math.sin(time * 70) > 0.1 - appear ? 1 : 0.3) : 1;
+    const glow = 0.3 + 0.7 * ease;
     const k = dt ? 1 - Math.exp(-dt * 6) : 1;
     suit.root.rotation.x += (0.02 + Math.cos(time * 1.15) * 0.02 - state.ty * 0.12 - suit.root.rotation.x) * k;
     suit.root.rotation.y += (0.2 + Math.sin(time * 0.9) * 0.3 + state.tx * 0.5 - suit.root.rotation.y) * k;
     suit.root.position.y = Math.sin(time * 1.3) * 0.016;
-    suit.root.scale.setScalar(0.82 + 0.18 * ease);
+    suit.root.scale.setScalar(0.9 + 0.1 * ease);
     const lit = pass === 3 || (scan < 1 && from === 3);
-    scene.environmentIntensity = ENV * flick;
-    key.intensity = 1.6 * flick;
-    warm.intensity = 0.8 * flick;
-    coreLight.intensity = (lit ? 0.7 : 0.2) * flick * (1 + 0.04 * Math.sin(time * 19.7));
+    scene.environmentIntensity = ENV * glow;
+    key.intensity = 1.6 * glow;
+    warm.intensity = 0.8 * glow;
+    coreLight.intensity = (lit ? 0.7 : 0.2) * glow * (1 + 0.04 * Math.sin(time * 19.7));
     bloom.strength = lit ? 0.5 : 0.18;
     key.position.set(-2.2 + state.tx * 3.2, 2.8 - state.ty * 2.4, 4);
   }
@@ -309,19 +439,20 @@ export function createHall(canvas) {
     setSuit(spec, { instant = false } = {}) {
       wanted += 1;
       const ticket = wanted;
-      return loadModel(spec.model).then((meshes) => {
+      return prepare(spec, true).then((next) => {
         if (ticket !== wanted) return false;
-        build(spec, meshes);
-        scan = 1;
-        if (instant) appear = 1;
-        applyVisibility();
+        show(next, instant);
         still();
         return true;
       });
     },
-    // Starts fetching a suit the visitor is about to pick.
-    preload(spec) {
-      loadModel(spec.model).catch(() => {});
+    // Whether a suit would go on stage at once.
+    ready(spec) {
+      return Boolean(suits.get(spec)?.ready);
+    },
+    // Fetches and warms a suit in idle moments; resolves when it is ready.
+    prepare(spec) {
+      return prepare(spec).then(() => true, () => false);
     },
     // `instant` skips the scan line (reduced motion).
     setPass(next, { instant = false } = {}) {
