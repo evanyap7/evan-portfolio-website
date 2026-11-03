@@ -21,6 +21,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
 
 const VIEW = 2.85; // world units across the canvas
 const SCAN_SECONDS = 0.85;
@@ -73,6 +74,40 @@ function loadModel(name) {
     loaded.set(name, request);
   }
   return loaded.get(name);
+}
+
+// A badge's image (models/hall/<name>.webp), fetched once.
+const badges = new Map();
+function loadBadge(name) {
+  if (!badges.has(name)) {
+    const url = new URL(`../models/hall/${name}.webp`, import.meta.url).href;
+    const request = new THREE.TextureLoader().loadAsync(url).then((texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      return texture;
+    });
+    request.catch(() => badges.delete(name));
+    badges.set(name, request);
+  }
+  return badges.get(name);
+}
+
+// The badge pressed onto the armour: a ray from the front finds the surface at
+// (x, y) in the file's units (feet at 0, 2.0 tall), and a decal follows its
+// curve there. Null where the ray misses the suit.
+function badgeGeometry(pieces, badge) {
+  const meshes = pieces.map((piece) => {
+    const mesh = new THREE.Mesh(piece.geometry);
+    mesh.matrixAutoUpdate = false;
+    mesh.matrix.copy(piece.matrix);
+    mesh.matrixWorld.copy(piece.matrix);
+    return mesh;
+  });
+  const ray = new THREE.Raycaster(new THREE.Vector3(badge.x, badge.y, 5), new THREE.Vector3(0, 0, -1));
+  const hit = ray.intersectObjects(meshes, false)[0];
+  if (!hit) return null;
+  const size = new THREE.Vector3(badge.size, badge.size, badge.size);
+  return new DecalGeometry(hit.object, hit.point, new THREE.Euler(), size);
 }
 
 // Resolves in the browser's next idle moment (or soon, where it has none).
@@ -203,7 +238,7 @@ export function createHall(canvas) {
   let frame = 0;
 
   // The four representations of one suit, each a group of meshes or lines.
-  function build(spec, { pieces, wire: outline }) {
+  function build(spec, { pieces, wire: outline }, badgeMap) {
     const model = MODELS[spec.model];
     const make = (material) => {
       material.clippingPlanes = KEEP_ALL;
@@ -254,6 +289,20 @@ export function createHall(canvas) {
       return object;
     };
 
+    // A badge is worn in the lit pass only, drawn just in front of the armour.
+    const badgeShape = badgeMap ? badgeGeometry(pieces, spec.badge) : null;
+    const badge = badgeShape && new THREE.Mesh(badgeShape, make(new THREE.MeshStandardMaterial({
+      map: badgeMap,
+      transparent: true,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -4,
+      polygonOffsetUnits: -4,
+      metalness: 0.2,
+      roughness: 0.45,
+    })));
+    if (badge) badge.renderOrder = 2;
+
     const root = new THREE.Group();
     const reps = ['blueprint', 'wire', 'shaded', 'lit'].map((kind) => {
       const repRoot = new THREE.Group();
@@ -273,6 +322,7 @@ export function createHall(canvas) {
         pieces.forEach((piece) => {
           figure.add(placed(new THREE.Mesh(piece.geometry, kind === 'shaded' ? clay(piece.material) : lit(piece.material)), piece));
         });
+        if (kind === 'lit' && badge) figure.add(badge);
       }
       repRoot.add(figure);
       // Each pass gets its own ring material: the scan line clips old and new apart.
@@ -332,10 +382,10 @@ export function createHall(canvas) {
     }
     entry = { urgent, ready: false, suit: null, promise: null };
     const pause = () => (entry.urgent ? Promise.resolve() : idle());
-    entry.promise = loadModel(spec.model)
-      .then(async (meshes) => {
+    entry.promise = Promise.all([loadModel(spec.model), spec.badge && loadBadge(spec.badge.name)])
+      .then(async ([meshes, badgeMap]) => {
         await pause();
-        const next = build(spec, meshes);
+        const next = build(spec, meshes, badgeMap);
         entry.suit = next;
         await compile(next);
         for (const texture of next.textures) {
