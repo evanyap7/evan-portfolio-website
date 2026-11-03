@@ -73,7 +73,7 @@ export function fonts(win) {
 // it is measured by that area.
 export function targets(win) {
   if (win.innerWidth >= WIDE) return [];
-  const selector = '.nav a, .nav button, .menu a, .pill, .work__card, .kit__tab, [data-copy], .contact__address, .back, .next, .footer a';
+  const selector = '.nav a, .nav button, .menu a, .pill, .work__card, .hall__suit, .hall__pass, .others__row, .kit__tab, [data-copy], .contact__address, .back, .next, .footer a';
   // Layout sizes, so a rise animation's transform mid-flight cannot round a
   // 44px pill down to 43.99.
   const small = [...win.document.querySelectorAll(selector)].filter(shown).filter((el) => el.offsetWidth < 44 || el.offsetHeight < 44);
@@ -191,7 +191,8 @@ export function aboutPhoto(win) {
 // the title sits on its (last line's) baseline.
 export function workTitle(win) {
   const title = win.document.getElementById('work-title');
-  const grid = win.document.querySelector('#work .work__grid');
+  // With the Hall up, it stands in for the cards.
+  const grid = win.document.querySelector('#work.work--hall .hall') ?? win.document.querySelector('#work .work__grid');
   if (!title || !grid) return [result('Selected work title readable', false, 'missing')];
   const probe = win.document.createElement('span');
   probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
@@ -296,7 +297,9 @@ export function tabLink(win) {
   return [result(`#${id} opens its tab`, panel && !panel.hidden && shown(panel) && tab?.getAttribute('aria-selected') === 'true')];
 }
 
-// An old project link such as #work-trading-agent lands on that card.
+// An old project link such as #work-trading-agent lands on that card. With
+// the Hall up it picks that suit and lands on the Hall, or on the project's
+// Other projects row if it has no suit.
 export async function deepLink(win) {
   // Give the browser time to start the jump before waiting for it to settle.
   await wait(800);
@@ -305,10 +308,19 @@ export async function deepLink(win) {
     last = win.scrollY;
     await wait(150);
   }
+  const doc = win.document;
   const id = win.location.hash.slice(1);
-  const card = win.document.getElementById(id);
-  const top = card?.getBoundingClientRect().top ?? -1;
-  return [result(`#${id} lands on its card`, card?.matches('.work__card') && top >= 0 && top < win.innerHeight / 2, `top ${Math.round(top)}`)];
+  const key = id.replace(/^work-/, '');
+  const card = doc.getElementById(id);
+  if (!doc.querySelector('#work.work--hall')) {
+    const top = card?.getBoundingClientRect().top ?? -1;
+    return [result(`#${id} lands on its card`, card?.matches('.work__card') && top >= 0 && top < win.innerHeight / 2, `top ${Math.round(top)}`)];
+  }
+  const button = doc.querySelector(`.hall__suit[data-id="${key}"]`);
+  const target = button ? doc.querySelector('.hall') : doc.querySelector(`.others__row[data-for="${key}"]`);
+  const top = target?.getBoundingClientRect().top ?? -1;
+  const picked = !button || button.getAttribute('aria-pressed') === 'true';
+  return [result(`#${id} lands on its ${button ? 'suit' : 'row'}`, Boolean(target) && picked && top >= 0 && top < win.innerHeight / 2, `top ${Math.round(top)}`)];
 }
 
 // The nav marks the section on screen.
