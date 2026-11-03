@@ -19,7 +19,12 @@ jobs:
       # Same fast gate as the pre-commit hook: JS syntax.
       - run: npm run check
       # Full browser suite (~5.5 min locally, longer on the runner). Reports
-      # only: its menu "inert" checks are flaky, so it must not block merges.
+      # only, so a green job does not mean it passed: read this step's log. Its
+      # earlier random failures came from the test server dropping script
+      # requests under load (fixed in tests/serve.py), and its runs here timed
+      # out at 20 minutes with no output. tests/ci.mjs now prints progress, every
+      # failure and any failed request. Make this step blocking (remove
+      # continue-on-error) only once a run here has finished with PASS.
       - run: npx playwright install --with-deps chromium
       - run: npm run check:browser
         continue-on-error: true
