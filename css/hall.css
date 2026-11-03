@@ -12,8 +12,6 @@
   margin-bottom: clamp(40px, 4.5vw, 72px);
 }
 
-.hall[hidden] { display: none; }
-
 .hall__stage {
   position: relative;
   aspect-ratio: 1 / 1;

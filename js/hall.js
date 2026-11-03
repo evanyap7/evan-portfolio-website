@@ -58,8 +58,9 @@ function readCards() {
 }
 
 function mount(suits) {
+  // Shown from the start, so its height is in the page before the browser
+  // jumps to a #hash below it; only the canvas waits for three.js.
   const root = element('div', 'hall');
-  root.hidden = true;
   root.dataset.hall = '';
 
   const stage = element('div', 'hall__stage');
@@ -207,7 +208,6 @@ export function initHall() {
   const load = () => {
     import('./hall-scene.js').then(({ createHall }) => {
       hall = createHall(ui.canvas);
-      ui.root.hidden = false;
       const fit = () => {
         const box = ui.stage.getBoundingClientRect();
         if (box.width && box.height) hall.resize(Math.round(box.width), Math.round(box.height));
