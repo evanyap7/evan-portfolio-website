@@ -1,9 +1,20 @@
 # CV replacements (audit task W1, 2026-11-03)
 
 The CV is the Google Doc "Evan's_CV with availabilities", tab **Current CV**.
-These edits are to be made by hand: the one-page limit can only be checked in
-the Doc itself. After editing, export it as PDF and replace
-`resume/Evan-Yap-Resume.pdf` in this repo.
+
+**Applied on 2026-11-03.** The Current CV tab now has these edits, is A4 and
+fits one page. Differences from the list below:
+- The open [EVAN] questions were left unanswered, so the claims were cut: the
+  "$4k monthly revenue" phrase is gone, "halved" became "cut", and the research
+  agent bullet has no usage figure. The HVAC bullet keeps its wording, plus
+  "effort".
+- The test count is 212 (the trading branch with T4 merged), written as
+  "212 tests in CI" to keep the line short.
+- Awards and Leadership are one section below Education. The positioning line
+  reads "Builds AI agents and measures whether they work. Seeking AI / software
+  internships."
+- `resume/Evan-Yap-Resume.pdf` is page 1 of an export from a temporary copy with
+  the phone number removed.
 
 Page setup to keep: **A4**, **0.5" margins** on all sides, Jake Ryan layout,
 **exactly one page**. Each edit below is roughly length-neutral; check the page
@@ -169,7 +180,7 @@ Fix these only if you still send these versions.
 
 ## The PDF in this repo
 
-`resume/Evan-Yap-Resume.pdf` is still the old export: its mailto link is
-`evan_yap@mymail.sutd.edu.sg`. Replace it with a new A4 export after making the
-edits above. It has not been regenerated here, because it has to come from the
-Doc you edit.
+`resume/Evan-Yap-Resume.pdf` was replaced on 2026-11-03 with the edited Current
+CV tab: one A4 page, mailto `evanyap7@gmail.com`, no phone number. To refresh it
+later, copy the Doc, delete the phone number in the copy, export page 1 as PDF,
+then trash the copy.
