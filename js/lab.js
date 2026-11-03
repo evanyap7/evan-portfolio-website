@@ -72,7 +72,7 @@ async function boot() {
     // The rooms' set pieces: built before the first frame, so their materials
     // and light compile with the rest; a piece that fails to load (the
     // portrait) leaves the room without it, not the lab.
-    buildStops(scene).catch(() => {});
+    buildStops(scene).loaded.catch(() => {});
   } catch {
     return fail();
   }

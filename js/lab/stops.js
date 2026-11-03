@@ -5,6 +5,7 @@
 // on the wall that the About panel stands in front of.
 
 import { createHologram } from './hologram.js';
+import * as props from './props.js';
 
 const HUE = 196 / 360;
 const PORTRAIT = new URL('../../img/evan-holo.webp', import.meta.url).href;
@@ -95,7 +96,9 @@ function screenTexture(THREE) {
   return texture;
 }
 
-export async function buildStops(lab) {
+// Builds the sets now and returns { anchors, loaded }: the About things'
+// anchors by id, and a promise that settles when the portrait is in.
+export function buildStops(lab) {
   const { THREE, scene, camera, renderer, materials } = lab;
   const arc = new THREE.Color().setHSL(HUE, 0.9, 0.62);
   const set = new THREE.Group();
@@ -137,22 +140,8 @@ export async function buildStops(lab) {
   beam.renderOrder = 1;
   set.add(drum, ring, lens, pool, beam);
 
-  // The bar, behind him to the left: a counter in warm wood under a dark top,
-  // with a warm line of light under its lip.
-  const bar = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.0, 0.6), materials.wood);
-  body.position.y = 0.52;
-  const top = new THREE.Mesh(new THREE.BoxGeometry(2.56, 0.05, 0.74), materials.lacquer);
-  top.position.y = 1.045;
-  const kick = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.04, 0.56), materials.rubber);
-  kick.position.y = 0.02;
-  const lipLight = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffb36b).multiplyScalar(1.4), toneMapped: false });
-  const lip = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.012, 0.012), lipLight);
-  lip.position.set(0, 1.01, 0.31);
-  bar.add(body, top, kick, lip);
-  bar.position.set(-1.75, 0, -1.5);
-  bar.rotation.y = 0.18;
-  set.add(bar);
+  // The furniture: the things that say who he is, each standing on something.
+  const anchors = furnish(THREE, materials, set);
 
   // The wall screen, on the left wall where the About panel stands in front
   // of it on a wide screen. Placed in the hall's own terms, then brought into
@@ -193,10 +182,61 @@ export async function buildStops(lab) {
     holo.mesh.position.y = HOLO.foot + 0.015 * Math.sin(time * 0.8);
   });
 
-  const texture = await new THREE.TextureLoader().loadAsync(PORTRAIT);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
-  holo = createHologram(THREE, texture, { height: HOLO.height });
-  holo.mesh.position.y = HOLO.foot;
-  set.add(holo.mesh);
+  const loaded = new THREE.TextureLoader().loadAsync(PORTRAIT).then((texture) => {
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+    holo = createHologram(THREE, texture, { height: HOLO.height });
+    holo.mesh.position.y = HOLO.foot;
+    set.add(holo.mesh);
+  });
+  return { anchors, loaded };
+}
+
+// About's furniture, in the set's terms: the bar behind him to the left (the
+// coffee machine and his kopi on it, the beret and hockey stick on the shelf
+// above), the gym to his right (a loaded bar on the rack, the floorball stick
+// leaning on it), and his guitar on its stand by the projector. Returns each
+// thing's anchor by the id the page's list uses (data-thing).
+function furnish(THREE, materials, set) {
+  const put = (object, parent, [x, y, z], turn = 0) => {
+    object.position.set(x, y, z);
+    object.rotation.y = turn;
+    parent.add(object);
+    return object;
+  };
+
+  // Both pieces stand back and in, so each thing's spot lands inside the
+  // room's window at every width (their far ends may run out of it).
+  const bar = put(props.barCounter(THREE, materials), set, [-1.55, 0, -1.9], 0.3);
+  const top = bar.userData.anchor.position.y;
+  const coffee = put(props.coffeeMachine(THREE, materials), bar, [0.45, top, -0.04]);
+  put(props.kopiCup(THREE, materials), bar, [0.1, top, 0.18]);
+  const shelf = put(props.wallShelf(THREE, materials), bar, [0, top, -0.3]);
+  const ledge = shelf.userData.anchor.position.y;
+  // The beret is kept on display, a little larger than worn, so it reads.
+  const beret = put(props.beret(THREE, materials), shelf, [0.3, ledge, 0.06], 0.3);
+  beret.scale.setScalar(1.4);
+  // The hockey stick leans on the front of the bar, clear of the hologram.
+  const hockey = put(props.hockeyStick(THREE, materials), bar, [0.3, 0, 0.38]);
+  hockey.rotation.x = -0.1;
+
+  const rack = put(props.powerRack(THREE, materials), set, [1.55, 0, -1.85], -0.35);
+  const barbell = put(props.barbell(THREE, materials), rack, [0, 1.375, 0.55]);
+  // The floorball stick leans on the rack's near upright.
+  const floorball = put(props.floorballStick(THREE, materials), rack, [-0.4, 0.02, 0.36], 0.2);
+  floorball.rotation.z = -0.12;
+
+  const stand = put(props.guitarStand(THREE, materials), set, [0.95, 0, 0.4], -0.45);
+  const guitar = put(props.guitar(THREE, materials), stand, [0, 0.125, 0.01]);
+  guitar.rotation.x = -0.25;
+
+  const anchor = (object) => object.userData.anchor;
+  return {
+    barbell: anchor(barbell),
+    floorball: anchor(floorball),
+    coffee: anchor(coffee),
+    guitar: anchor(guitar),
+    beret: anchor(beret),
+    hockey: anchor(hockey),
+  };
 }
