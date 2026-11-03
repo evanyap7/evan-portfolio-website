@@ -94,6 +94,14 @@
   background: var(--card) radial-gradient(rgba(255, 255, 255, 0.09) 0.8px, transparent 0.8px) 0 0 / 16px 16px;
 }
 
+/* The drawing sits inside its frame, not against it. Phones keep the full
+   width, where the smallest notes are already near their 7px floor. */
+@media (min-width: 720px) {
+  svg.reel__scene {
+    padding: 12px;
+  }
+}
+
 /* The screenshot fills the plate's box, letterboxed, never cropped. */
 .reel__scene--plate {
   display: grid;
