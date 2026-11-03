@@ -13,11 +13,12 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VIEW = 3.2; // world units across the canvas; a suit is about 2.3 tall
+const VIEW = 2.85; // world units across the canvas; a suit is about 2.1 tall
 const SCAN_SECONDS = 0.85;
-const SCAN_RANGE = 1.35;
+const SCAN_RANGE = 1.2;
 const EDGE_ANGLE = 15;
-const LIFT = 0.15; // centres the figure on the stage
+const LIFT = 0.08; // centres the figure on the stage
+const JARVIS = 196; // the hue of every reactor, eye and blueprint line
 
 // A regular polygon with circumradius r, first vertex at the top (plus turn).
 function ngon(r, sides, turn = 0) {
@@ -35,11 +36,18 @@ function ngon(r, sides, turn = 0) {
   return shape;
 }
 
-// The parts of one suit, as plain data: geometry (already placed) and role.
-// spec: { bulk, facets, helm, emblem: { sides, turn }, extras: [] }.
-// helm is one of slit, dome, visor, hex, crest; extras may hold pack, spines.
+// Painted panels: each suit's paint says which of these take the accent
+// colour (gold on the hot rods, red on Mark V) and which the base.
+const PANELS = ['limb', 'helmet', 'face', 'chest', 'abs', 'belt', 'hips', 'shoulder', 'upperArm', 'forearm', 'hand', 'thigh', 'knee', 'shin', 'boot'];
+// Lit parts that are the same on every suit.
+const FIXED = ['dark', 'chrome', 'glow', 'core', 'hot', 'floor'];
+
+// The parts of one suit, as plain data: geometry (already placed) and role,
+// a panel name or a fixed role. spec: { bulk, facets, helm, reactor }, where
+// helm is 'classic' (faceplate, slit eyes, ear discs) or 'mk1' (the riveted
+// bucket of the cave suit) and reactor is 'round' or 'tri'.
 function buildParts(spec) {
-  const { bulk = 1, facets = 16, helm = 'dome', emblem = { sides: 32 }, extras = [] } = spec;
+  const { bulk = 1, facets = 20, helm = 'classic', reactor = 'round' } = spec;
   const parts = [];
   const matrix = new THREE.Matrix4();
   const quat = new THREE.Quaternion();
@@ -51,98 +59,100 @@ function buildParts(spec) {
     parts.push({ geometry: geometry.applyMatrix4(matrix), role });
   };
   const ball = (r, w = 16, h = 10) => new THREE.SphereGeometry(r, w, h);
-  // Part of a sphere facing +z: `width` radians around, polar band t0 to t1.
-  const shell = (r, width, t0, t1) => new THREE.SphereGeometry(r, 16, 8, Math.PI / 2 - width / 2, width, t0, t1 - t0);
-  const tube = (top, bottom, height) => new THREE.CylinderGeometry(top, bottom, height, facets);
-  const ring = (r, tube_) => new THREE.TorusGeometry(r, tube_, 8, facets * 2);
+  // Part of a unit sphere facing +z: `width` radians around, polar band t0 to t1.
+  const cap = (width, t0, t1, r = 1) => new THREE.SphereGeometry(r, 24, 14, Math.PI / 2 - width / 2, width, t0, t1 - t0);
+  const tube = (top, bottom, height, sides = facets) => new THREE.CylinderGeometry(top, bottom, height, sides);
   const slab = (w, h, d) => new THREE.BoxGeometry(w, h, d);
-  const head = [1, 1.12, 1.06];
+  const b = bulk;
 
-  // Helmet, centred at y 0.82.
-  if (helm === 'slit') {
-    add(slab(0.27, 0.33, 0.3), 'plate', [0, 0.82, 0]);
-    add(slab(0.29, 0.05, 0.31), 'trim', [0, 0.9, 0.006]);
-    add(slab(0.2, 0.028, 0.02), 'glow', [0, 0.83, 0.153]);
-    add(slab(0.03, 0.12, 0.02), 'trim', [0, 0.73, 0.153]);
-  } else if (helm === 'hex') {
-    add(ball(0.16, 6, 4), 'plate', [0, 0.82, 0], { scale: head, rot: [0, Math.PI / 6, 0] });
-    add(slab(0.18, 0.03, 0.04), 'glow', [0, 0.84, 0.14]);
-    add(slab(0.2, 0.06, 0.06), 'trim', [0, 0.72, 0.1]);
-  } else {
-    add(ball(0.155), 'plate', [0, 0.82, 0], { scale: head });
-    if (helm === 'visor') {
-      add(shell(0.16, 2.1, 1.05, 1.9), 'core', [0, 0.82, 0], { scale: head });
-      add(shell(0.162, 2.3, 0.95, 1.05), 'trim', [0, 0.82, 0], { scale: head });
-    } else {
-      add(shell(0.159, 1.9, 1.3, 1.5), 'glow', [0, 0.82, 0], { scale: head });
-      add(shell(0.161, 1.6, 1.75, 2.45), 'trim', [0, 0.82, 0], { scale: head });
-    }
-    if (helm === 'crest') {
-      const fin = new THREE.Shape();
-      fin.moveTo(-0.12, 0);
-      fin.quadraticCurveTo(-0.02, 0.05, 0.14, 0.12);
-      fin.quadraticCurveTo(0.06, 0.02, 0.1, 0);
-      fin.closePath();
-      [0, 1, 2].forEach((i) => {
-        const g = new THREE.ExtrudeGeometry(fin, { depth: 0.014, bevelEnabled: false });
-        g.translate(0, 0, -0.007);
-        add(g, 'trim', [0, 0.95 - i * 0.07, -0.05 - i * 0.05], { rot: [0, -Math.PI / 2, -0.35 - i * 0.25], scale: [1 - i * 0.18, 1 - i * 0.18, 1] });
-      });
-    }
-  }
-  add(tube(0.065, 0.075, 0.1), 'dark', [0, 0.65, 0]);
-  add(ring(0.1, 0.018), 'trim', [0, 0.62, 0], { rot: [Math.PI / 2, 0, 0], scale: [1, 0.75, 1] });
-
-  // Chest: a turned V profile, flattened front to back.
-  const profile = [[0.001, -0.17], [0.2, -0.16], [0.22, -0.06], [0.29, 0.1], [0.33, 0.19], [0.31, 0.25], [0.16, 0.29], [0.001, 0.29]]
-    .map(([r, y]) => new THREE.Vector2(r === 0.001 ? r : r * bulk, y));
-  add(new THREE.LatheGeometry(profile, facets), 'plate', [0, 0.36, 0], { scale: [1, 1, 0.66] });
-
-  // The emblem: a raised frame, the light in the suit's own shape, a hot core.
-  const { sides = 32, turn = 0 } = emblem;
-  const frame = new THREE.ExtrudeGeometry(ngon(0.085, sides, turn), { depth: 0.02, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.006, bevelSegments: 1 });
-  add(frame, 'chrome', [0, 0.42, 0.17]);
-  add(new THREE.ShapeGeometry(ngon(0.065, sides, turn)), 'core', [0, 0.42, 0.198]);
-  add(new THREE.ShapeGeometry(ngon(0.03, sides, turn)), 'hot', [0, 0.42, 0.2]);
-
-  // Abdomen in bands, belt, hips.
-  [0.13, 0.05, -0.03].forEach((y, i) => add(tube(0.2 - i * 0.008, 0.19 - i * 0.008, 0.07), i % 2 ? 'dark' : 'plate', [0, y, 0], { scale: [1, 1, 0.7] }));
-  add(tube(0.215, 0.215, 0.06), 'trim', [0, -0.1, 0], { scale: [1, 1, 0.75] });
-  add(slab(0.38 * bulk, 0.14, 0.25), 'plate', [0, -0.2, 0]);
-
-  if (extras.includes('pack')) {
-    add(slab(0.36 * bulk, 0.34, 0.14), 'dark', [0, 0.42, -0.24]);
+  // Helmet, centred at y 0.85.
+  const head = [0.112 * b ** 0.3, 0.14, 0.128];
+  if (helm === 'mk1') {
+    // A riveted iron bucket: flat front, eye holes and a mouth grille.
+    add(tube(0.125, 0.12, 0.29, 8), 'helmet', [0, 0.85, 0], { rot: [0, Math.PI / 8, 0] });
+    add(slab(0.165, 0.23, 0.02), 'face', [0, 0.84, 0.115]);
     [-1, 1].forEach((side) => {
-      add(tube(0.045, 0.06, 0.12), 'chrome', [side * 0.11, 0.2, -0.26]);
-      add(new THREE.CircleGeometry(0.04, 16), 'core', [side * 0.11, 0.139, -0.26], { rot: [Math.PI / 2, 0, 0] });
+      add(slab(0.045, 0.022, 0.01), 'glow', [side * 0.04, 0.89, 0.126]);
+      add(ball(0.009, 6, 4), 'chrome', [side * 0.07, 0.94, 0.125]);
+      add(ball(0.009, 6, 4), 'chrome', [side * 0.07, 0.74, 0.125]);
     });
+    [0, 1, 2].forEach((i) => add(slab(0.07, 0.008, 0.01), 'dark', [0, 0.8 - i * 0.02, 0.126]));
+  } else {
+    add(ball(1, 28, 18), 'helmet', [0, 0.85, 0], { scale: head });
+    // The faceplate: brow to chin, cheek to cheek, a little proud of the skull.
+    add(cap(1.9, 0.62, 2.5, 1.035), 'face', [0, 0.85, 0], { scale: head });
+    [-1, 1].forEach((side) => {
+      // Eye slits that frown: the inner ends sit lower.
+      add(slab(0.05, 0.015, 0.01), 'glow', [side * 0.041, 0.866, 0.124], { rot: [0, side * 0.36, side * 0.16] });
+      add(tube(0.034, 0.034, 0.018, 20), 'helmet', [side * 0.112, 0.84, -0.01], { rot: [0, 0, Math.PI / 2] });
+    });
+    add(slab(0.05, 0.005, 0.01), 'dark', [0, 0.772, 0.112]);
   }
+  add(tube(0.05, 0.06, 0.1), 'dark', [0, 0.69, 0]);
+
+  // Chest: a turned V, broad at the pecs and narrow at the waist, flattened
+  // front to back, with two pectoral plates and the reactor housing between.
+  const profile = [[0.001, -0.12], [0.155, -0.12], [0.175, -0.04], [0.225, 0.1], [0.25, 0.2], [0.235, 0.26], [0.12, 0.31], [0.001, 0.31]]
+    .map(([r, y]) => new THREE.Vector2(r === 0.001 ? r : r * b, y));
+  add(new THREE.LatheGeometry(profile, facets), 'chest', [0, 0.36, 0], { scale: [1, 1, 0.62] });
+  [-1, 1].forEach((side) => {
+    add(cap(2.4, 0.35, 2.3), 'chest', [side * 0.092 * b, 0.5, 0.055], { scale: [0.112 * b, 0.092, 0.08], rot: [0, side * 0.28, 0] });
+  });
+  add(tube(0.07, 0.074, 0.05, 32), 'chest', [0, 0.47, 0.125], { rot: [Math.PI / 2, 0, 0] });
+  if (reactor === 'tri') {
+    const tri = (r) => ngon(r, 3, Math.PI);
+    add(new THREE.ExtrudeGeometry(tri(0.082), { depth: 0.012, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.004, bevelSegments: 1 }), 'chrome', [0, 0.47, 0.148]);
+    add(new THREE.ShapeGeometry(tri(0.066)), 'core', [0, 0.47, 0.166]);
+    add(new THREE.ShapeGeometry(tri(0.03)), 'hot', [0, 0.47, 0.168]);
+  } else {
+    add(new THREE.TorusGeometry(0.056, 0.01, 10, 40), 'chrome', [0, 0.47, 0.152]);
+    add(new THREE.CircleGeometry(0.05, 40), 'core', [0, 0.47, 0.152]);
+    add(new THREE.CircleGeometry(0.026, 32), 'hot', [0, 0.47, 0.155]);
+  }
+
+  // Abdomen: a dark core under six plates, then belt and hips.
+  add(tube(0.135 * b, 0.125 * b, 0.26), 'dark', [0, 0.14, 0], { scale: [1, 1, 0.75] });
+  [0.22, 0.16, 0.1].forEach((y, row) => [-1, 1].forEach((side) => {
+    add(slab(0.058 - row * 0.004, 0.048, 0.03), 'abs', [side * 0.033, y, 0.088], { rot: [0, side * 0.22, 0] });
+  }));
+  add(tube(0.148 * b, 0.148 * b, 0.05), 'belt', [0, 0.0, 0], { scale: [1, 1, 0.76] });
+  add(tube(0.152 * b, 0.12, 0.16), 'hips', [0, -0.1, 0], { scale: [1, 1, 0.78] });
+
+  // A limb in the base colour with a raised front plate that takes the panel's
+  // own colour, the way the films lay gold over red.
+  const plated = (role, r0, r1, length, at, tilt, plate = 0.06) => {
+    add(tube(r0, r1, length), 'limb', at, { rot: [0, 0, tilt] });
+    const r = Math.max(r0, r1) * 1.04;
+    add(cap(2.1, 0.3, 2.84), role, at, { scale: [r, length / 2, r], rot: [0, at[0] > 0 ? 0.45 : -0.45, tilt] });
+    return plate;
+  };
 
   // Arms and legs, built once per side.
   [-1, 1].forEach((side) => {
-    const ax = (x) => side * x * bulk;
-    add(ball(0.1), 'dark', [ax(0.4), 0.56, 0]);
-    add(new THREE.SphereGeometry(0.14 * bulk, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.6), 'plate', [ax(0.41), 0.57, 0], { scale: [1, 0.85, 0.95], rot: [0, 0, side * -0.3] });
-    if (extras.includes('spines')) {
-      add(slab(0.02, 0.1, 0.05), 'trim', [ax(0.45), 0.72, 0], { rot: [0, 0, side * -0.4] });
-    }
-    add(tube(0.085 * bulk, 0.075 * bulk, 0.3), 'plate', [ax(0.47), 0.36, 0], { rot: [0, 0, side * 0.1] });
-    add(ball(0.075), 'dark', [ax(0.5), 0.2, 0]);
-    add(tube(0.095 * bulk, 0.07 * bulk, 0.32), 'trim', [ax(0.53), 0.02, 0], { rot: [0, 0, side * 0.06] });
-    add(ring(0.076 * bulk, 0.012), 'chrome', [ax(0.54), -0.13, 0], { rot: [Math.PI / 2, 0, 0] });
-    add(ball(0.075), 'plate', [ax(0.55), -0.22, 0]);
-    add(new THREE.CircleGeometry(0.034, 20), 'glow', [ax(0.55), -0.22, 0.076]);
+    const ax = (x) => side * x * b;
+    add(ball(0.068 * b), 'dark', [ax(0.265), 0.56, 0]);
+    add(new THREE.SphereGeometry(0.1 * b, 20, 10, 0, Math.PI * 2, 0, Math.PI * 0.56), 'shoulder', [ax(0.285), 0.59, 0], { scale: [1.05, 0.85, 1], rot: [0, 0, side * -0.4] });
+    plated('upperArm', 0.058 * b, 0.052 * b, 0.26, [ax(0.305), 0.385, 0], side * 0.08);
+    add(ball(0.05 * b), 'dark', [ax(0.322), 0.245, 0]);
+    plated('forearm', 0.052 * b, 0.064 * b, 0.26, [ax(0.336), 0.105, 0], side * 0.04);
+    add(tube(0.058 * b, 0.058 * b, 0.02), 'dark', [ax(0.342), -0.035, 0]);
+    add(slab(0.05 * b, 0.085, 0.07 * b), 'hand', [ax(0.344), -0.09, 0.004]);
+    add(slab(0.046 * b, 0.07, 0.064 * b), 'hand', [ax(0.344), -0.16, 0.014], { rot: [0.25, 0, 0] });
+    add(slab(0.018, 0.05, 0.022), 'hand', [ax(0.344) - side * 0.028 * b, -0.085, 0.034], { rot: [0, 0, side * 0.3] });
+    add(new THREE.CircleGeometry(0.019, 20), 'glow', [ax(0.344) - side * 0.026 * b, -0.095, 0.004], { rot: [0, -side * Math.PI / 2, 0] });
 
-    add(tube(0.13, 0.095, 0.4), 'plate', [side * 0.14, -0.5, 0]);
-    add(ball(0.09), 'dark', [side * 0.14, -0.74, 0.01]);
-    add(shell(0.1, 1.8, 0.4, 1.9), 'trim', [side * 0.14, -0.74, 0.02]);
-    add(tube(0.1, 0.07, 0.38), 'plate', [side * 0.14, -0.95, 0]);
-    add(ball(0.06), 'dark', [side * 0.14, -1.15, 0]);
-    add(slab(0.17, 0.1, 0.3), 'trim', [side * 0.14, -1.23, 0.06]);
+    const lx = side * 0.09 * b;
+    plated('thigh', 0.095 * b, 0.072 * b, 0.42, [lx, -0.38, 0], 0);
+    add(ball(0.06 * b), 'dark', [lx, -0.61, 0]);
+    add(cap(2, 0.4, 1.9, 0.066 * b), 'knee', [lx, -0.61, 0.022]);
+    plated('shin', 0.072 * b, 0.058 * b, 0.38, [lx, -0.83, 0], 0);
+    add(ball(1, 16, 10), 'limb', [lx, -0.77, -0.028], { scale: [0.064 * b, 0.12, 0.056 * b] });
+    add(tube(0.062 * b, 0.074 * b, 0.08), 'boot', [lx, -1.05, 0]);
+    add(slab(0.098 * b, 0.065, 0.2), 'boot', [lx, -1.105, 0.04]);
   });
 
   // A ring of light on the floor under the boots.
-  add(new THREE.RingGeometry(0.55, 0.57, 72), 'glow', [0, -1.29, 0], { rot: [-Math.PI / 2, 0, 0] });
+  add(new THREE.RingGeometry(0.5, 0.515, 72), 'floor', [0, -1.14, 0.02], { rot: [-Math.PI / 2, 0, 0] });
 
   return { parts, outerR: 1 };
 }
@@ -206,49 +216,62 @@ export function createHall(canvas) {
 
   const tinted = (mult, base = hue) => new THREE.Color().copy(base).multiplyScalar(mult);
 
-  const glowColor = new THREE.Color().setHSL(190 / 360, 0.95, 0.6);
-  const glowPale = new THREE.Color().copy(glowColor).lerp(new THREE.Color(1, 1, 1), 0.7);
-  let look = { plate: 0x9aa0a6, trim: 0x6b7076, rough: 0.4 };
+  const glowColor = new THREE.Color().setHSL(JARVIS / 360, 0.9, 0.62);
+  const glowPale = new THREE.Color().copy(glowColor).lerp(new THREE.Color(1, 1, 1), 0.75);
+  hue.setHSL(JARVIS / 360, 0.95, 0.56);
+  pale.copy(hue).lerp(new THREE.Color(1, 1, 1), 0.7);
+  scanMaterial.color.copy(pale).multiplyScalar(1.4);
+  coreLight.color.copy(glowColor);
+  let paint = { base: 0x9aa0a6, accent: 0x6b7076, rough: 0.4, accentOn: [] };
+
+  // Every role mapped to a material: panels share one per paint colour.
+  const roleMap = (panel, fixed) => {
+    const set = { ...fixed };
+    PANELS.forEach((name) => { set[name] = panel(name); });
+    return set;
+  };
 
   function materialsFor(kind) {
+    const accented = (name) => paint.accentOn.includes(name);
     if (kind === 'lit') {
-      const metal = (color, roughness) => new THREE.MeshPhysicalMaterial({ color, metalness: 0.9, roughness, clearcoat: 0.5, clearcoatRoughness: 0.25, side: THREE.DoubleSide });
-      return {
-        plate: metal(look.plate, look.rough),
-        trim: metal(look.trim, look.rough * 0.8),
+      // Lacquered paint: a metal flake under a clear coat, like the films' hot rods.
+      const lacquer = (color, roughness) => new THREE.MeshPhysicalMaterial({ color, metalness: 0.75, roughness, clearcoat: 1, clearcoatRoughness: 0.12, side: THREE.DoubleSide });
+      const base = lacquer(paint.base, paint.rough);
+      const accent = lacquer(paint.accent, paint.rough * 0.85);
+      const face = paint.face === undefined ? null : lacquer(paint.face, paint.rough * 0.85);
+      return roleMap((name) => (name === 'face' && face) || (accented(name) ? accent : base), {
         chrome: new THREE.MeshPhysicalMaterial({ color: 0xdfe3e8, metalness: 1, roughness: 0.12, side: THREE.DoubleSide }),
-        dark: new THREE.MeshStandardMaterial({ color: 0x2d3238, metalness: 0.85, roughness: 0.42 }),
-        glow: new THREE.MeshBasicMaterial({ color: tinted(1.7, glowColor), side: THREE.DoubleSide }),
-        core: new THREE.MeshBasicMaterial({ color: tinted(0.75, glowColor), side: THREE.DoubleSide }),
+        dark: new THREE.MeshStandardMaterial({ color: 0x24282d, metalness: 0.8, roughness: 0.45 }),
+        glow: new THREE.MeshBasicMaterial({ color: tinted(1.6, glowPale), side: THREE.DoubleSide }),
+        core: new THREE.MeshBasicMaterial({ color: tinted(0.9, glowColor), side: THREE.DoubleSide }),
         hot: new THREE.MeshBasicMaterial({ color: tinted(2.2, glowPale), side: THREE.DoubleSide }),
-      };
+        floor: new THREE.MeshBasicMaterial({ color: tinted(1.2, glowColor), side: THREE.DoubleSide }),
+      });
     }
     if (kind === 'shaded') {
-      const clay = () => new THREE.MeshStandardMaterial({ color: 0x9aa3ad, metalness: 0.05, roughness: 0.62, side: THREE.DoubleSide });
+      const clay = new THREE.MeshStandardMaterial({ color: 0x9aa3ad, metalness: 0.05, roughness: 0.62, side: THREE.DoubleSide });
       const light = (m) => new THREE.MeshBasicMaterial({ color: tinted(m, glowColor), toneMapped: false, side: THREE.DoubleSide });
-      return {
-        plate: clay(),
-        trim: clay(),
-        chrome: clay(),
+      return roleMap(() => clay, {
+        chrome: clay,
         dark: new THREE.MeshStandardMaterial({ color: 0x4a525a, roughness: 0.7 }),
-        glow: light(1),
-        core: light(0.8),
-        hot: light(1.4),
-      };
+        glow: light(1), core: light(0.8), hot: light(1.4), floor: light(1),
+      });
     }
     const line = (mult, base = hue) => new THREE.MeshBasicMaterial({ color: tinted(mult, base), wireframe: true, toneMapped: false, side: THREE.DoubleSide });
-    return {
-      plate: line(0.55), trim: line(0.8), chrome: line(0.7), dark: line(0.25),
-      glow: line(1), core: line(0.8), hot: line(1, pale),
-    };
+    const plain = line(0.5);
+    const lifted = line(0.8);
+    return roleMap((name) => (accented(name) || name === 'face' ? lifted : plain), {
+      chrome: line(0.7), dark: line(0.22), glow: line(1), core: line(0.8), hot: line(1, pale), floor: line(1),
+    });
   }
 
   function blueprintMaterials() {
     const line = (mult, base = hue) => new THREE.LineBasicMaterial({ color: tinted(mult, base), toneMapped: false });
-    return {
-      plate: line(0.85), trim: line(0.95), chrome: line(0.9), dark: line(0.3),
-      glow: line(1), core: line(0.9), hot: line(1, pale),
-    };
+    const plain = line(0.8);
+    const lifted = line(1);
+    return roleMap((name) => (paint.accentOn.includes(name) || name === 'face' ? lifted : plain), {
+      chrome: line(0.9), dark: line(0.3), glow: line(1), core: line(0.9), hot: line(1, pale), floor: line(1),
+    });
   }
 
   function dispose() {
@@ -264,14 +287,8 @@ export function createHall(canvas) {
 
   function build(spec) {
     dispose();
-    look = spec.look;
-    glowColor.setHSL(spec.hue / 360, 0.95, 0.6);
-    glowPale.copy(glowColor).lerp(new THREE.Color(1, 1, 1), 0.7);
-    hue.setHSL(spec.hue / 360, 0.95, 0.56);
-    pale.copy(hue).lerp(new THREE.Color(1, 1, 1), 0.7);
-    scanMaterial.color.copy(pale).multiplyScalar(1.4);
-    coreLight.color.copy(glowColor);
-    coreLight.position.set(0, 0.53, 0.45);
+    paint = { accentOn: [], ...spec.paint };
+    coreLight.position.set(0, 0.56, 0.45);
 
     const { parts, outerR } = buildParts(spec);
     const root = new THREE.Group();
@@ -290,7 +307,7 @@ export function createHall(canvas) {
         repRoot.add(object);
       });
       root.add(repRoot);
-      return { root: repRoot, materials: Object.values(set) };
+      return { root: repRoot, materials: [...new Set(Object.values(set))] };
     });
     scene.add(root);
     suit = { root, reps, outerR, geometries: [...new Set(parts.map((p) => p.geometry)), ...edges.values()] };

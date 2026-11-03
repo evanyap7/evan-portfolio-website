@@ -8,18 +8,20 @@
 
 import { whenActive } from './gate.js';
 
-// In order of importance. Only EGO has a codename of its own (it is the
-// assistant's name); every other suit goes by its project. `spec` shapes the
-// suit: hue (its light and the HUD), bulk, facets, helmet, chest emblem,
-// extras, and the lit colourway.
+// In order of importance, each project wearing the Mark of the same number.
+// Only EGO has a codename of its own (it is the assistant's name); every other
+// suit goes by its project. `hue` tints the HUD; `spec` is the armour: bulk,
+// helmet, reactor shape and paint (base, accent, the panels in the accent).
+const RED = 0x9c1a17;
+const GOLD = 0xd3a24c;
 const SUITS = [
-  { id: 'trading-agent', mark: 'I', spec: { hue: 46, bulk: 1.14, facets: 8, helm: 'slit', emblem: { sides: 4, turn: Math.PI / 4 }, extras: ['pack'], look: { plate: 0x7b8188, trim: 0x4e545b, rough: 0.5 } } },
-  { id: 'assistant-bot', mark: 'II', code: 'EGO', spec: { hue: 196, bulk: 1, facets: 20, helm: 'visor', emblem: { sides: 32 }, look: { plate: 0xe4e7eb, trim: 0x9aa3ad, rough: 0.18 } } },
-  { id: 'research-agent', mark: 'III', spec: { hue: 140, bulk: 1.02, facets: 16, helm: 'dome', emblem: { sides: 6 }, look: { plate: 0x2f6b4f, trim: 0xc07a45, rough: 0.3 } } },
-  { id: 'parallel-match', mark: 'IV', spec: { hue: 78, bulk: 1.08, facets: 12, helm: 'hex', emblem: { sides: 5 }, extras: ['pack'], look: { plate: 0x223e70, trim: 0xdfe4ea, rough: 0.3 } } },
-  { id: 'website-revamp', mark: 'V', spec: { hue: 265, bulk: 0.96, facets: 20, helm: 'dome', emblem: { sides: 4 }, look: { plate: 0x3a3d44, trim: 0xb8bec6, rough: 0.22 } } },
-  { id: 'v-bay', mark: 'VI', spec: { hue: 330, bulk: 1, facets: 10, helm: 'visor', emblem: { sides: 6, turn: Math.PI / 6 }, extras: ['spines'], look: { plate: 0x5a2d4a, trim: 0xc9ccd2, rough: 0.28 } } },
-  { id: 'others', mark: 'VII', spec: { hue: 16, bulk: 1.04, facets: 16, helm: 'crest', emblem: { sides: 8, turn: Math.PI / 8 }, extras: ['spines'], look: { plate: 0x8c5a2b, trim: 0x4fae8a, rough: 0.26 } } },
+  { id: 'trading-agent', mark: 'I', hue: 30, spec: { bulk: 1.22, facets: 8, helm: 'mk1', paint: { base: 0x77736b, accent: 0x55524c, rough: 0.62, accentOn: ['abs', 'belt', 'forearm', 'shin', 'hand'] } } },
+  { id: 'assistant-bot', mark: 'II', code: 'EGO', hue: 205, spec: { paint: { base: 0xaeb4bb, accent: 0x8c949d, rough: 0.12, accentOn: ['abs', 'belt', 'knee', 'hand'] } } },
+  { id: 'research-agent', mark: 'III', hue: 44, spec: { paint: { base: RED, accent: GOLD, rough: 0.26, accentOn: ['face', 'abs', 'upperArm', 'thigh', 'hand'] } } },
+  { id: 'parallel-match', mark: 'IV', hue: 2, spec: { paint: { base: RED, accent: GOLD, rough: 0.24, accentOn: ['face', 'abs', 'upperArm', 'knee'] } } },
+  { id: 'website-revamp', mark: 'V', hue: 210, spec: { bulk: 0.97, paint: { base: 0xa9afb6, accent: 0xa51d1b, face: 0xa9afb6, rough: 0.2, accentOn: ['helmet', 'chest', 'shoulder', 'forearm', 'shin', 'boot'] } } },
+  { id: 'v-bay', mark: 'VI', hue: 18, spec: { reactor: 'tri', paint: { base: RED, accent: GOLD, rough: 0.24, accentOn: ['face', 'abs', 'upperArm', 'thigh'] } } },
+  { id: 'others', mark: 'VII', hue: 48, spec: { bulk: 1.06, paint: { base: RED, accent: GOLD, rough: 0.22, accentOn: ['face', 'abs', 'upperArm', 'forearm', 'thigh', 'shin'] } } },
 ];
 const PASSES = ['Blueprint', 'Wireframe', 'Shaded', 'Lit'];
 const STEP_MS = 1000;
@@ -166,7 +168,7 @@ export function initHall() {
   const select = (index) => {
     current = index;
     const suit = suits[index];
-    ui.root.style.setProperty('--suit-h', String(suit.spec.hue));
+    ui.root.style.setProperty('--suit-h', String(suit.hue));
     ui.mark.textContent = suit.code ? `Mark ${suit.mark} · ${suit.code}` : `Mark ${suit.mark}`;
     ui.name.textContent = suit.name;
     ui.line.textContent = suit.line;
