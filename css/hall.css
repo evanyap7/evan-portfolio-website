@@ -144,7 +144,7 @@
 .hall__suits {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin-top: clamp(24px, 3vw, 40px);
 }
@@ -181,13 +181,24 @@
 @media (max-width: 860px) {
   .hall { grid-template-columns: minmax(0, 1fr); row-gap: 24px; }
   .hall__stage { max-height: 440px; }
-  .hall__suits { grid-column: auto; margin-top: 8px; }
+  .hall__suits {
+    grid-column: auto;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(200px, 62%);
+    margin-top: 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .hall__suits::-webkit-scrollbar { display: none; }
+  .hall__suit { scroll-snap-align: start; }
 }
 
 @media (max-width: 520px) {
   .hall__passes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; }
   .hall__pass { padding: 0 4px; font-size: 0.8125rem; }
-  .hall__suits { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (prefers-reduced-motion: reduce) {
