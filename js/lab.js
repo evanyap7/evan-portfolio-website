@@ -36,10 +36,16 @@ async function boot() {
 
   let scene = null;
   let failed = false;
+  let stop = -1;
+  let bay = -1;
   const cleanups = [];
+  // The plain page is far shorter than the lab's, so the visitor is put back
+  // at the section they were in, after the Hall has given Work its cards back
+  // (js/hall.js listens for lab:failed).
   const fail = () => {
     if (failed) return null;
     failed = true;
+    const reading = stops[stop]?.section;
     cleanups.forEach((fn) => fn());
     try { scene?.dispose(); } catch { /* already gone */ }
     canvas.remove();
@@ -48,6 +54,8 @@ async function boot() {
     delete root.dataset.door;
     delete root.dataset.bay;
     ready = Promise.resolve(null);
+    document.dispatchEvent(new Event('lab:failed'));
+    reading?.scrollIntoView({ block: 'start', behavior: 'instant' });
     return null;
   };
   const on = (target, type, fn, options) => {
@@ -115,8 +123,6 @@ async function boot() {
 
   const stopListeners = [];
   const bayListeners = [];
-  let stop = -1;
-  let bay = -1;
   const update = (instant = false) => {
     if (failed) return;
     const rail = position();

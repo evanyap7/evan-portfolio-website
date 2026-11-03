@@ -47,6 +47,8 @@ const EXTRA = [
   { width: 768, height: 1024, src: '/', names: ['labBayClear'] },
   { width: 1440, height: 800, src: '/', names: ['labBayClear'] },
   { width: 1440, height: 800, src: '/', names: ['labLost'] },
+  { width: 393, height: 852, src: '/', names: ['labLostWork'] },
+  { width: 1440, height: 800, src: '/', names: ['labLostWork'] },
   { width: 1440, height: 800, src: '/', names: ['gateDoor'] },
   { width: 1440, height: 800, src: '/#toolkit', names: ['labDoor'] },
   { width: 393, height: 852, src: '/#toolkit', names: ['labDoor'] },

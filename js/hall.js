@@ -283,6 +283,8 @@ export function initHall() {
     hold?.remove();
     work.classList.remove('work--hall');
   };
+  // The lab gone (a lost GPU context) takes the bays with it: the cards return.
+  if (hold) document.addEventListener('lab:failed', fail, { once: true });
 
   // A tab in the lab walks the camera to that suit's bay. The bays passed on
   // the way are not picked; the one headed for is, on arrival or soon after.

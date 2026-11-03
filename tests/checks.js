@@ -749,6 +749,34 @@ export async function labLost(win) {
   ];
 }
 
+// A context lost while the visitor stands among the suits leaves Work alive
+// (its cards back) and the visitor still at Work, not somewhere else.
+export async function labLostWork(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('lost at Work: no lab in this frame', !root.classList.contains('lab'))];
+  await until(() => root.classList.contains('lab-ready') && doc.querySelector('.hall__suit[data-suit="0"]'), 6000);
+  doc.getElementById('work').scrollIntoView({ behavior: 'instant' });
+  await wait(1500);
+  doc.querySelector('.hall__suit[data-suit="2"]')?.click();
+  await until(() => root.dataset.bay === '2', 3000);
+  await wait(800);
+  const canvas = doc.querySelector('.lab__canvas');
+  if (!canvas) return [result('lost at Work: drops to the cards', false, 'no lab canvas to lose')];
+  canvas.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();
+  await until(() => !root.classList.contains('lab'), 1500);
+  await wait(400);
+  const work = doc.getElementById('work');
+  const grid = work.querySelector('.work__grid');
+  const cards = grid && win.getComputedStyle(grid).display !== 'none' && grid.getBoundingClientRect().height > 0;
+  const box = work.getBoundingClientRect();
+  const inView = box.top < win.innerHeight && box.bottom > 0;
+  return [
+    result('lost at Work: the cards come back', Boolean(cards) && !work.classList.contains('work--hall'), work.className),
+    result('lost at Work: the visitor is still at Work', inView, `top ${Math.round(box.top)}, bottom ${Math.round(box.bottom)}`),
+  ];
+}
+
 // In the lab the suits stand in a row of bays: a tab walks the camera to its
 // bay, the panel names that suit, and the Hall stays on screen (sticky).
 export async function labBays(win) {
