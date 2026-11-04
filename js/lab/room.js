@@ -297,11 +297,16 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   }
   add(instanced(THREE, line, materials.metal, pilasters));
 
-  // The suit bays: a niche between two metal fins, a lacquered plinth with a
+  // The suit bays: a niche between two gunmetal fins, each with brushed
+  // plates in its faces and a lit front edge, a lacquered plinth with a
   // lit ring, a light above, a column of light on the back wall in the suit's
   // own colour (suits.js tints it), and a pane of glass in front, its edges lit.
   const bays = [];
   const fins = [];
+  const plates = [];
+  const seams = [];
+  const finEdges = [];
+  const FIN = { x: HALF - 0.45, depth: 0.9, h: H * 0.84, thick: 0.12 };
   const plinths = [];
   const lamps = [];
   const spines = [];
@@ -311,7 +316,18 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   for (let k = 0; k < BAYS.count; k += 1) {
     const z = BAYS.first + BAYS.step * k;
     bays.push(new THREE.Vector3(BAYS.x, 0.09, z));
-    [-1, 1].forEach((side) => fins.push({ at: [HALF - 0.45, H * 0.42, z + side * 1.15], scale: [0.9, H * 0.84, 0.05] }));
+    [-1, 1].forEach((side) => {
+      const at = z + side * 1.15;
+      fins.push({ at: [FIN.x, FIN.h / 2, at], scale: [FIN.depth, FIN.h, FIN.thick] });
+      // A brushed plate let into each face, split by two seams, and a light
+      // strip down the front edge.
+      [-1, 1].forEach((face) => {
+        const off = at + face * (FIN.thick / 2 + 0.004);
+        plates.push({ at: [FIN.x + 0.06, FIN.h / 2 + 0.05, off], scale: [FIN.depth - 0.3, FIN.h - 0.55, 0.008] });
+        [0.36, 0.68].forEach((t) => seams.push({ at: [FIN.x + 0.06, FIN.h * t, off + face * 0.004], scale: [FIN.depth - 0.3, 0.014, 0.004] }));
+      });
+      finEdges.push({ at: [FIN.x - FIN.depth / 2 - 0.006, FIN.h / 2, at], scale: [0.012, FIN.h - 0.24, 0.03] });
+    });
     plinths.push({ at: [BAYS.x, 0.045, z] });
     lamps.push({ at: [BAYS.x + 0.35, 3.25, z], scale: [0.6, 0.025, 1.2] });
     spines.push({ at: [HALF - 0.03, 1.7, z], scale: [0.02, 2.6, 0.05] });
@@ -319,7 +335,15 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     [-1, 1].forEach((side) => edges.push({ at: [PANE.x, PANE.top / 2, z + side * PANE.half], scale: [0.01, PANE.top, 0.01] }));
     edges.push({ at: [PANE.x, PANE.top, z], scale: [0.01, 0.01, PANE.half * 2] });
   }
-  add(instanced(THREE, line, materials.metal, fins));
+  // The fins are dark gunmetal, so their brushed plates and lit edges read.
+  const gunmetal = materials.metal.clone();
+  gunmetal.color.set(0x2b3239);
+  gunmetal.roughness = 0.5;
+  owned.push(gunmetal);
+  add(instanced(THREE, line, gunmetal, fins));
+  add(instanced(THREE, line, materials.metal, plates));
+  add(instanced(THREE, line, materials.lacquer, seams));
+  add(instanced(THREE, line, materials.strip(2.2), finEdges));
   add(instanced(THREE, own(new THREE.CylinderGeometry(0.62, 0.66, 0.09, 48)), materials.lacquer, plinths));
   add(instanced(THREE, own(new THREE.TorusGeometry(0.6, 0.012, 6, 64)), materials.strip(3), plinths.map((p) => ({ at: [p.at[0], 0.095, p.at[2]], rx: Math.PI / 2 }))));
   // Contact shadows: a wide soft one on the floor round each plinth, and a
