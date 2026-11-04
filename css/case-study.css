@@ -83,26 +83,6 @@
   background: var(--dim);
 }
 
-.case__list--numbered {
-  counter-reset: step;
-}
-
-.case__list--numbered li {
-  padding-left: 34px;
-  counter-increment: step;
-}
-
-.case__list--numbered li::before {
-  content: counter(step, decimal-leading-zero);
-  top: 0.3em;
-  width: auto;
-  height: auto;
-  background: none;
-  color: var(--dim);
-  font-family: var(--font-mono);
-  font-size: var(--t-mono);
-}
-
 .case__sub {
   margin-top: 36px;
   font-size: var(--t-card);
@@ -173,36 +153,6 @@
   color: var(--signal);
 }
 
-.case__decisions {
-  display: grid;
-  gap: 28px;
-  margin-top: 24px;
-  counter-reset: decision;
-}
-
-.case__decisions > li {
-  position: relative;
-  padding-left: 48px;
-  counter-increment: decision;
-}
-
-.case__decisions > li::before {
-  content: counter(decision, decimal-leading-zero);
-  position: absolute;
-  top: 4px;
-  left: 0;
-  color: var(--dim);
-  font-family: var(--font-mono);
-  font-size: var(--t-mono);
-}
-
-.case__decisions h3 {
-  font-size: var(--t-card);
-  font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-}
-
 .case__table {
   margin-top: 24px;
   overflow-x: auto;
@@ -254,11 +204,4 @@
 
 .case__links {
   margin-top: 48px;
-}
-
-@media (max-width: 719px) {
-  .case__decisions > li {
-    padding-left: 0;
-    padding-top: 28px;
-  }
 }
