@@ -9,6 +9,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { lens } from './lens.js';
 import { createMaterials } from './materials.js';
 import { createRoom, VIEWS, DOORWAY_BEND } from './room.js';
 import { damp } from './rail.js';
@@ -63,6 +65,7 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
   // target only below a retina pixel ratio: at 2x, 4 samples doubled the frame
   // time (p95 33 ms against 16.7 ms) for edges the eye can't tell apart.
   let composer = null;
+  let lensPass = null;
   if (!phone) {
     const samples = levels[quality].ratio < 1.5 ? 4 : 0;
     const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples });
@@ -70,6 +73,9 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
     composer.addPass(new RenderPass(scene, camera));
     composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.35, 0.4, 0.9));
     composer.addPass(new OutputPass());
+    // After tone mapping, so the grain sits on the picture as film does.
+    lensPass = new ShaderPass(lens);
+    composer.addPass(lensPass);
   }
 
   // The path: one point per stop, two for the suits. Catmull-Rom through all
@@ -180,6 +186,7 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
 
   const draw = () => {
     place();
+    if (lensPass) lensPass.uniforms.time.value = (performance.now() / 1000) % 100;
     if (composer && levels[quality].bloom) composer.render();
     else renderer.render(scene, camera);
   };
