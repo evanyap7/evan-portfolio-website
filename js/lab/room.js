@@ -32,8 +32,8 @@ export const VIEWS = [
   // Near enough to Evan's hologram (stops.js) that he stands three quarters
   // of the frame high, the bar behind him and the screen on the wall beside.
   { eye: [0.13, 1.5, -5.7], look: [-1.8, 1.4, -9.2] },
-  { eye: [0.7, 1.55, -12.3], look: [BAYS.x, 1.15, BAYS.first] },
-  { eye: [0.7, 1.55, -12.3 + BAYS.step * 6], look: [BAYS.x, 1.15, BAYS.first + BAYS.step * 6] },
+  { eye: [-1.0, 1.55, -12.3], look: [BAYS.x, 1.15, BAYS.first] },
+  { eye: [-1.0, 1.55, -12.3 + BAYS.step * 6], look: [BAYS.x, 1.15, BAYS.first + BAYS.step * 6] },
   // Nearly square on to the trophy shelf (stops.js), near enough that it fills
   // four fifths of its frame's short side: 2.1 m at tan 20° × 3.6 m. The
   // frame is narrower than it is tall at every width, so the shelf lands the
