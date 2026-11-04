@@ -521,26 +521,47 @@ export function callouts(win) {
   ];
 }
 
-// The gate: a first visit opens dark, with only the reactor and the way
-// in; the rest of the page is hidden and out of reach. Activate wakes it,
-// and the session remembers that.
+// Presses and holds the reactor for ms, then lets go.
+async function holdReactor(win, ms) {
+  const hit = win.document.querySelector('[data-reactor-hit]');
+  const at = { bubbles: true, button: 0, pointerId: 1, pointerType: 'mouse', isPrimary: true };
+  hit.dispatchEvent(new win.PointerEvent('pointerdown', at));
+  await wait(ms);
+  hit.dispatchEvent(new win.PointerEvent('pointerup', at));
+}
+
+// The gate: a first visit opens dark, with only the reactor, its charge
+// meter and the hint; the rest of the page is hidden and out of reach.
+// Holding the reactor charges it; let go early and it drains, still shut;
+// hold on to 100% and the site wakes, and the session remembers that.
 export async function gate(win) {
   const doc = win.document;
   const root = doc.documentElement;
-  const button = doc.querySelector('[data-gate-activate]');
-  const mic = doc.querySelector('[data-gate-mic]');
+  const hit = doc.querySelector('[data-reactor-hit]');
+  const meter = doc.querySelector('[data-gate-meter]');
   const hidden = (el) => win.getComputedStyle(el).visibility === 'hidden';
-  const voice = Boolean(win.SpeechRecognition || win.webkitSpeechRecognition);
+  const pct = () => Number.parseInt(meter?.textContent, 10);
   const out = [
     result('gate: a first visit opens gated', root.classList.contains('gated')),
-    result('gate: Activate shown and at least 44px', button && shown(button) && button.offsetHeight >= 44, button ? `${button.offsetWidth}×${button.offsetHeight}` : 'missing'),
-    result('gate: the mic shows only where speech recognition exists', mic && mic.hidden === !voice, `voice ${voice}, hidden ${mic?.hidden}`),
+    result('gate: the reactor is the way in, at least 44px and in reach', hit && shown(hit) && !hit.closest('[inert]') && hit.offsetHeight >= 44, hit ? `${hit.offsetWidth}×${hit.offsetHeight}` : 'missing'),
+    result('gate: no Activate button, microphone or typed word', !doc.querySelector('[data-gate-activate], [data-gate-mic]') && !/ego/i.test(doc.querySelector('[data-gate]').textContent)),
+    result('gate: the hint says to hold the reactor', /hold/i.test(doc.querySelector('.gate__hint')?.textContent ?? '') && shown(doc.querySelector('.gate__hint'))),
     result('gate: nav and sections hidden and inert', hidden(doc.querySelector('.nav')) && doc.querySelector('.nav').inert
       && [...doc.querySelectorAll('main > section:not(.hero)')].every((section) => hidden(section) && section.inert)),
     result('gate: the headline waits hidden', hidden(doc.querySelector('.hero__title'))),
   ];
-  button?.click();
-  await wait(1200);
+  // A short hold charges part way, then drains, and the door stays shut.
+  let part = 0;
+  const peek = wait(500).then(() => { part = pct(); });
+  await holdReactor(win, 500);
+  await peek;
+  await wait(900);
+  out.push(
+    result('gate: holding charges the meter', part > 10 && part < 100, `${part}%`),
+    result('gate: letting go early drains it and stays shut', pct() === 0 && root.classList.contains('gated'), `${pct()}%`),
+  );
+  await holdReactor(win, 1900);
+  await wait(900);
   let stored = null;
   try {
     stored = win.sessionStorage.getItem('portfolio-on');
@@ -548,15 +569,30 @@ export async function gate(win) {
     stored = 'blocked';
   }
   out.push(
-    result('gate: Activate wakes the site', !root.classList.contains('gated') && !doc.querySelector('.nav').inert && !hidden(doc.querySelector('.hero__title'))),
+    result('gate: holding to 100% wakes the site', !root.classList.contains('gated') && !doc.querySelector('.nav').inert && !hidden(doc.querySelector('.hero__title'))),
     result('gate: the session remembers it', stored === '1' || stored === 'blocked', String(stored)),
   );
   return out;
 }
 
+// Holding Space on the reactor works the same as holding it with a pointer.
+export async function gateKeys(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  const hit = doc.querySelector('[data-reactor-hit]');
+  const was = root.classList.contains('gated');
+  hit.focus();
+  hit.dispatchEvent(new win.KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+  await wait(1900);
+  hit.dispatchEvent(new win.KeyboardEvent('keyup', { key: ' ', bubbles: true }));
+  await wait(900);
+  return [result('gate: holding Space on the reactor wakes the site', was && !root.classList.contains('gated'))];
+}
+
 // A recruiter with six seconds is never stuck: the resume and email are
-// reachable behind the gate, and the site wakes by itself soon after load.
-export async function gateAuto(win) {
+// reachable behind the gate. The gate itself never opens on its own: not
+// with time, not on a scroll, not on a click elsewhere.
+export async function gateWaits(win) {
   const doc = win.document;
   const root = doc.documentElement;
   const reachable = (el) => {
@@ -570,27 +606,12 @@ export async function gateAuto(win) {
     result('gate: resume reachable while gated', reachable(doc.querySelector('.hero__actions a[href$=".pdf"]'))),
     result('gate: email reachable while gated', reachable(doc.querySelector('.hero__actions [data-contact-link]'))),
   ];
-  await wait(2600);
-  out.push(result('gate: wakes by itself within about 3 seconds', !root.classList.contains('gated')));
-  return out;
-}
-
-// Scrolling wakes it at once.
-export async function gateScroll(win) {
-  const doc = win.document;
-  const was = doc.documentElement.classList.contains('gated');
   doc.dispatchEvent(new win.WheelEvent('wheel', { deltaY: 120, bubbles: true }));
-  await wait(1200);
-  return [result('gate: scrolling wakes the site', was && !doc.documentElement.classList.contains('gated'))];
-}
-
-// Typing the wake word works too.
-export async function gateTyped(win) {
-  const doc = win.document;
-  const was = doc.documentElement.classList.contains('gated');
+  doc.body.dispatchEvent(new win.PointerEvent('pointerdown', { bubbles: true, button: 0 }));
   [...'xego'].forEach((key) => doc.dispatchEvent(new win.KeyboardEvent('keydown', { key, bubbles: true })));
-  await wait(1200);
-  return [result('gate: typing “ego” wakes the site', was && !doc.documentElement.classList.contains('gated'))];
+  await wait(4000);
+  out.push(result('gate: never opens by itself, on a scroll, a click or typing', root.classList.contains('gated')));
+  return out;
 }
 
 // Search engines can find every page: robots.txt points at a sitemap that
@@ -692,11 +713,11 @@ export async function gateDoor(win) {
   if (!labCapable(win)) return [result('door: no lab in this frame', !root.classList.contains('lab'))];
   await until(() => root.classList.contains('lab-ready') || !root.classList.contains('gated'), 6000);
   const shut = root.classList.contains('gated') ? root.dataset.door : 'woke before the lab was ready';
-  doc.querySelector('[data-gate-activate]')?.click();
-  await wait(2200);
+  await holdReactor(win, 1900);
+  await wait(1400);
   return [
     result('door: shut while the site is gated', shut === 'closed', String(shut)),
-    result('door: Activate opens it', root.dataset.door === 'open' && root.classList.contains('door-open'), `${root.dataset.door} ${root.classList.contains('door-open')}`),
+    result('door: holding the reactor to full opens it', root.dataset.door === 'open' && root.classList.contains('door-open'), `${root.dataset.door} ${root.classList.contains('door-open')}`),
   ];
 }
 
