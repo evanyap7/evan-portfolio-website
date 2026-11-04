@@ -22,6 +22,8 @@ const WINDOW = { width: 2.8, bottom: 1.0, top: 2.45 };
 const DOORWAY = { width: 2.6, height: 2.9 };
 const LAMP = [-0.57, 1.19, -53.62]; // its bulb, where the office's light is
 const DOOR = { y: 1.85, radius: 1.75 };
+const SKY = 0.55; // the hemisphere light's resting intensity
+const PULSE = 1600; // ms the reactor's pulse takes to roll down the room
 const BAYS = { x: 4.7, first: -13, step: -2.6, count: 7 };
 
 // Where the camera stands (eye) and what it looks at (look), in walk order:
@@ -436,7 +438,16 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   // Lights: a cool sky over everything, one key from above the door end, and
   // a warm lamp in the office. Nothing casts a real-time shadow.
   const lights = new THREE.Group();
-  lights.add(new THREE.HemisphereLight(0x9cc6e6, 0x040608, 0.55));
+  const sky = new THREE.HemisphereLight(0x9cc6e6, 0x040608, SKY);
+  lights.add(sky);
+  // The reactor's pulse: arc-blue light that flares at the door and rolls
+  // down the gallery as it fades. In the room from the start at nothing, so
+  // no shader recompiles when it fires.
+  const wave = new THREE.PointLight(0x8fd8ff, 0, 26, 1.2);
+  wave.position.set(0, DOOR.y, 0.5);
+  lights.add(wave);
+  let pulsedAt = -Infinity;
+  let glare = 0;
   const key = new THREE.DirectionalLight(0xe4f2ff, 1.25);
   key.position.set(4, 9, 6);
   key.target.position.set(0, 0, -20);
@@ -472,7 +483,20 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     shafts,
     marks,
     // Called each frame drawn, with the frame's time.
+    // Fires the reactor's pulse through the room.
+    pulse() {
+      pulsedAt = performance.now();
+    },
+    // How bright the pulse still is, 1 as it fires to 0 when spent.
+    get glare() {
+      return glare;
+    },
     update(now) {
+      const k = Math.min(Math.max((now - pulsedAt) / PULSE, 0), 1);
+      glare = (1 - k) ** 2;
+      wave.intensity = 70 * glare;
+      wave.position.z = 0.5 - 30 * (1 - (1 - k) ** 3);
+      sky.intensity = SKY + 1.1 * glare ** 1.5;
       door.update(now);
       dust?.update(now);
       shafts?.update(now);

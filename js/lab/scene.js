@@ -19,6 +19,7 @@ import { createGovernor, startingLevel } from '../perf.js';
 const ROW = 2; // the stop that takes two points on the path: the suits, first bay to last
 const HALF_FOV = Math.tan((20 * Math.PI) / 180); // half the frame's short side spans 20°
 const LEAN = 0.15;
+const BLOOM = 0.35; // the bloom's resting strength
 // Where each stop's group stands, and so where its objects are placed from.
 const MARK = { about: 'about', experience: 'shelf', toolkit: 'bench', contact: 'office' };
 
@@ -66,12 +67,14 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
   // time (p95 33 ms against 16.7 ms) for edges the eye can't tell apart.
   let composer = null;
   let lensPass = null;
+  let bloom = null;
   if (!phone) {
     const samples = levels[quality].ratio < 1.5 ? 4 : 0;
     const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples });
     composer = new EffectComposer(renderer, target);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), 0.35, 0.4, 0.9));
+    bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), BLOOM, 0.4, 0.9);
+    composer.addPass(bloom);
     composer.addPass(new OutputPass());
     // After tone mapping, so the grain sits on the picture as film does.
     lensPass = new ShaderPass(lens);
@@ -189,6 +192,8 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
   const draw = () => {
     place();
     if (lensPass) lensPass.uniforms.time.value = (performance.now() / 1000) % 100;
+    // The reactor's pulse blooms the room as it passes.
+    if (bloom) bloom.strength = BLOOM + 0.6 * room.glare;
     if (composer && levels[quality].bloom) composer.render();
     else renderer.render(scene, camera);
   };
@@ -258,6 +263,11 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
     // Back to full rate for a moment: something is about to move on its own.
     wake() {
       moved = performance.now();
+    },
+    // The reactor's pulse lights the room; drawn at full rate while it runs.
+    pulse() {
+      room.pulse();
+      moved = performance.now() + 1000;
     },
     setRail({ u: next }, { instant = false } = {}) {
       const to = Math.min(Math.max(next, 0), last);
