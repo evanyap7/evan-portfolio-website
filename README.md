@@ -10,7 +10,7 @@ The page is **Tony Stark's lab**. One fixed three.js canvas holds the whole room
 
 ## Highlights
 
-- **A lab you scroll through.** The camera flies a rail through the room. The reactor on the first screen is the door: a first visit finds it shut ("Systems offline"), and it opens with a button, by saying "EGO" (speech recognition) or typing it, on a scroll, or by itself after about 3 seconds. The resume and email stay reachable throughout.
+- **A lab you scroll through.** The camera flies a rail through the room. The reactor on the first screen is the door: a first visit finds it shut ("Systems offline"). Press and hold the reactor (or hold Space on it) and it charges; at 100% it fires a pulse and the door opens. It never opens by itself, so the resume and email stay reachable throughout.
 - **Interactive 3D arc reactor** in three.js: powers on with a pulse, hold to charge, drag to spin, highlights follow the pointer.
 - **The Hall of Armor.** Selected work stands in the lab as seven Iron Man suits, each fully lit and drag-to-turn, with its own readouts and the project it stands for. On a phone the whole suit is framed under the nav.
 - **A trophy shelf you can click all the way down Experience.** Fourteen objects (roles, awards, the scholarship) each open a card. On a wide screen the shelf stays clickable down the whole section, and hovering an object selects its row on the page and the other way round. On a phone it pins as a strip at the top while Experience scrolls under it, and the entry being read lights its trophy.
