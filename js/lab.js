@@ -244,6 +244,8 @@ async function boot() {
     active = true;
     sync();
     scene.wake();
+    // The reactor's pulse at 100% floods the room with its light.
+    scene.pulse();
     door.open().then(() => {
       if (failed) return;
       root.dataset.door = 'open';
