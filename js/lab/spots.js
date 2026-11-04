@@ -71,6 +71,11 @@ export function createSpots(lab) {
         if (box && spot.frame.offsetHeight >= window.innerHeight - 1) {
           const sheet = spot.section.getBoundingClientRect();
           box = { left: box.left, right: box.right, top: Math.max(0, sheet.top), bottom: Math.min(window.innerHeight, sheet.bottom) };
+        }        // A narrow screen pins the window to the top of the screen while the
+        // shelf is held there (css/lab.css), so it is where it was at arrival. The
+        // strip's own edge is the limit: an object on it may sit right at it.
+        if (box && root.classList.contains('shelf-pinned') && spot.stop === 'experience' && spot.frame.offsetHeight < window.innerHeight - 1) {
+          box = { left: 0, right: window.innerWidth, top: spot.frame.offsetTop, bottom: spot.frame.offsetTop + spot.frame.offsetHeight + 22 };
         }
         shown = p.onScreen && (!box || (p.x >= box.left + 22 && p.x <= box.right - 22 && p.y >= box.top + 22 && p.y <= box.bottom - 22));
         if (shown) spot.button.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;

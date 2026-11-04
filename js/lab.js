@@ -49,7 +49,7 @@ async function boot() {
     cleanups.forEach((fn) => fn());
     try { scene?.dispose(); } catch { /* already gone */ }
     canvas.remove();
-    root.classList.remove('lab', 'lab-ready', 'door-open');
+    root.classList.remove('lab', 'lab-ready', 'door-open', 'shelf-pinned');
     delete root.dataset.stop;
     delete root.dataset.door;
     delete root.dataset.bay;
@@ -123,6 +123,23 @@ async function boot() {
 
   const stopListeners = [];
   const bayListeners = [];
+  // On a narrow screen the shelf stays pinned as a strip at the top while the
+  // Experience list scrolls under it (css/lab.css). A phone has no hover, so
+  // the entry being read lights its object on the shelf instead.
+  const shelf = stops.findIndex((s) => s.id === 'experience');
+  const reading = [];
+  let pinned = false;
+  const spy = () => {
+    const narrow = window.matchMedia('(max-width: 1023px)').matches;
+    const frame = stops[shelf]?.frame;
+    const line = (frame ? frame.offsetTop + frame.offsetHeight : 0) + 48;
+    let at = null;
+    if (pinned && narrow) reading.forEach(({ item }) => { if (item.getBoundingClientRect().top <= line) at = item; });
+    reading.forEach(({ item, button }) => {
+      item.classList.toggle('is-read', item === at);
+      button.classList.toggle('is-read', item === at);
+    });
+  };
   const update = (instant = false) => {
     if (failed) return;
     const rail = position();
@@ -132,6 +149,12 @@ async function boot() {
       root.dataset.stop = stops[stop].id;
       stopListeners.forEach((fn) => fn(stops[stop].id));
     }
+    // Pinned for as long as the camera holds in Experience.
+    const pin = shelf >= 0 && window.scrollY >= places[shelf].top - 1 && window.scrollY <= places[shelf].top + places[shelf].height - window.innerHeight + 1;
+    const was = pinned;
+    pinned = pin;
+    if (pin !== was) root.classList.toggle('shelf-pinned', pin);
+    if (pin || was) spy();
     const nextBay = rail.bay >= 0 ? Math.round(rail.bay) : -1;
     if (nextBay !== bay) {
       bay = nextBay;
@@ -301,6 +324,7 @@ async function boot() {
     const button = spots.add({ id: item.dataset.item, label: title, stop: 'experience', anchor, title, body });
     // The row on the page and its object on the shelf select each other: the
     // mouse or the keyboard on either one lights both.
+    reading.push({ item, button });
     const link = (on) => {
       item.classList.toggle('is-linked', on);
       button.classList.toggle('is-linked', on);
