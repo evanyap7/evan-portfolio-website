@@ -2,17 +2,19 @@
 
 **Live:** <https://www.evanyap.com>
 
-One black page in six sections (Intro, About, Experience, Selected work, Toolkit, Contact) plus a page for each project. Plain HTML, CSS and JavaScript: no framework, no build step and no npm packages. three.js and the fonts load from CDNs.
+The page is **Tony Stark's lab**. One fixed three.js canvas holds the whole room, and scrolling moves a camera along a rail through the sections (Intro, About, Experience, Selected work, Toolkit, Contact), with a page for each project. Plain HTML, CSS and JavaScript as ES modules: no framework and no build step. The only npm packages are dev tools for the checks. three.js and the fonts load from CDNs. Where WebGL2 is missing, or Reduce Motion is on, the same content shows as an ordinary page.
 
 ![Hero with a three.js arc reactor you can hold to charge and drag to spin](docs/hero.png)
 
 ## Highlights
 
-- **Interactive 3D arc reactor** in three.js: powers on with a pulse, hold to charge, drag to spin, highlights follow the pointer. A still image stands in where WebGL2 is missing.
-- **A way in.** A first visit opens dark ("Systems offline"). Wake it with a button, by saying "EGO" (speech recognition) or by typing it; a scroll wakes it at once, and it wakes by itself after about 3 seconds. The resume and email stay reachable throughout.
+- **A lab you scroll through.** The camera flies a rail through the room. The reactor on the first screen is the door: a first visit finds it shut ("Systems offline"), and it opens with a button, by saying "EGO" (speech recognition) or typing it, on a scroll, or by itself after about 3 seconds. The resume and email stay reachable throughout.
+- **Interactive 3D arc reactor** in three.js: powers on with a pulse, hold to charge, drag to spin, highlights follow the pointer.
+- **The Hall of Armor.** Selected work stands in the lab as seven Iron Man suits, each fully lit and drag-to-turn, with its own readouts and the project it stands for. On a phone the whole suit is framed under the nav.
+- **A trophy shelf you can click all the way down Experience.** Fourteen objects (roles, awards, the scholarship) each open a card. On a wide screen the shelf stays clickable down the whole section, and hovering an object selects its row on the page and the other way round. On a phone it pins as a strip at the top while Experience scrolls under it, and the entry being read lights its trophy.
 - **Looping project diagrams** drawn as inline SVG, played only while on screen, each with a pause button.
 - **Motion with restraint.** Word-by-word title reveals, counting figures, scroll-drawn timeline, cross-page view transitions. With Reduce Motion on, nothing moves.
-- **Tested in the browser.** [`/tests/`](tests/) loads the site at 13 sizes (320px to 1920px) and checks section order, heading levels, no sideways scroll, 44px tap targets, WCAG contrast, focus rings, keyboard paths and the gate.
+- **Tested in the browser.** [`/tests/`](tests/) loads the site at 13 sizes (320px to 1920px) and runs about 7,000 checks: section order, heading levels, no sideways scroll, 44px tap targets, WCAG contrast, focus rings, keyboard paths, the gate, and the lab's camera, suits and shelf.
 
 ## How it was built
 
@@ -24,6 +26,9 @@ Scripts are ES modules, so serve over HTTP:
 
 ```sh
 python3 tests/serve.py 4173      # then open http://localhost:4173 (and /tests/ for the checks)
+npm install                      # once: installs the git hooks and the browser-check runner
+npm run check                    # JavaScript syntax and the lab's unit tests, fast
+npm run check:browser            # the full headless-Chrome suite, about 9 minutes
 ```
 
 ## Where things are
@@ -33,7 +38,9 @@ python3 tests/serve.py 4173      # then open http://localhost:4173 (and /tests/ 
 | `index.html` | Main page: hero, About, Experience, Selected work, Toolkit, Contact |
 | `work/`, `case-studies/` | One page per project, and the trading agent case study |
 | `css/` | `base.css` (tokens), `layout.css`, `home.css`, `project.css`, `figures.css`, `reactor.css` |
-| `js/` | `main.js` starts everything; `reactor*.js` the 3D model; `gate.js`, `motion.js`, `reel.js` + `scenes.js` (diagram player) |
+| `js/` | `main.js` starts everything; `reactor*.js` the hero's 3D model; `gate.js`, `motion.js`, `reel.js` + `scenes.js` (diagram player) |
+| `js/lab.js`, `js/lab/` | The lab: the camera rail, room, props, suits, hologram, door and clickable spots |
+| `js/hall*.js`, `models/hall/` | The Hall of Armor: the suit picker, its stage and the suit models |
 | `img/`, `resume/` | Icons, logos, share image, resume PDF |
 
 ## Maintaining it
@@ -46,7 +53,7 @@ python3 tests/serve.py 4173      # then open http://localhost:4173 (and /tests/ 
 
 ## Deploy
 
-Static, served by Vercel from the repo root with `cleanUrls` on. Pushes to `main-2` deploy to production; other branches get previews.
+Static, served by Vercel from the repo root with `cleanUrls` on. The default branch on GitHub is `tony-stark`. Vercel deploys whichever branch its project settings name as Production; other branches get previews.
 
 ## License
 
