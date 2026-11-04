@@ -348,6 +348,10 @@ export function initHall() {
     lab = found;
     row = createSuitRow(found.scene, suits.map((suit) => suit.spec), { hues: suits.map((suit) => suit.hue) });
     hall = row.stage;
+    // The whole row stands from the start, so the bays are never seen empty
+    // as the camera comes down the gallery. Not on a slow or metered link.
+    const link = navigator.connection;
+    if (!(link && (link.saveData || /2g|3g/.test(link.effectiveType ?? '')))) row.warm(suits.map((_, i) => i));
     found.onBay((index) => {
       if (heading >= 0 && index !== heading) return;
       heading = -1;
