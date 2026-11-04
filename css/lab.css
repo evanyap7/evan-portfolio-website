@@ -215,6 +215,21 @@
   background: hsl(var(--h) 95% 72% / 0.9);
   box-shadow: 0 0 0 3px hsl(var(--h) 60% 6% / 0.65), 0 0 14px hsl(var(--h) 95% 72% / 0.8);
 }
+/* The shelf and the page's rows select each other (js/lab.js). */
+.lab-spot__ring { transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out); }
+.lab-spot.is-linked .lab-spot__ring {
+  transform: scale(1.45);
+  box-shadow: 0 0 0 3px hsl(var(--h) 60% 6% / 0.65), 0 0 26px hsl(var(--h) 95% 72%);
+}
+.lab-spot.is-linked .lab-spot__label { opacity: 1; transform: translate(0, -50%); }
+:root.lab #experience [data-item] {
+  border-radius: 8px;
+  transition: box-shadow 0.25s var(--ease-out);
+}
+:root.lab #experience [data-item].is-linked {
+  box-shadow: 0 0 0 8px hsl(var(--h) 70% 60% / 0.07), 0 0 0 9px hsl(var(--h) 95% 72% / 0.45);
+}
+
 .lab-spot__ring::after {
   content: "";
   position: absolute;

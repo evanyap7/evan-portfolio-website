@@ -297,7 +297,21 @@ async function boot() {
       body = document.createElement('p');
       dd.childNodes.forEach((node) => body.append(node.cloneNode(true)));
     }
-    if (title) spots.add({ id: item.dataset.item, label: title, stop: 'experience', anchor, title, body });
+    if (!title) return;
+    const button = spots.add({ id: item.dataset.item, label: title, stop: 'experience', anchor, title, body });
+    // The row on the page and its object on the shelf select each other: the
+    // mouse or the keyboard on either one lights both.
+    const link = (on) => {
+      item.classList.toggle('is-linked', on);
+      button.classList.toggle('is-linked', on);
+    };
+    const mouse = (on) => (event) => { if (event.pointerType === 'mouse') link(on); };
+    [item, button].forEach((end) => {
+      end.addEventListener('pointerenter', mouse(true));
+      end.addEventListener('pointerleave', mouse(false));
+      end.addEventListener('focusin', () => link(true));
+      end.addEventListener('focusout', () => link(false));
+    });
   });
   // The bench's instruments, one per row of the toolkit, in its order: each
   // opens its row's tools, icons and all, on a hologram card.

@@ -63,7 +63,15 @@ export function createSpots(lab) {
       let shown = false;
       if (here) {
         const p = scene.project(spot.anchor);
-        const box = spot.frame?.getBoundingClientRect();
+        let box = spot.frame?.getBoundingClientRect();
+        // A window as tall as the screen (the wide layout) is the whole right
+        // side of the screen for as long as the camera holds in the section,
+        // not only while the section's top is on screen: a long section keeps
+        // its room, and its things, in reach as the panel scrolls.
+        if (box && spot.frame.offsetHeight >= window.innerHeight - 1) {
+          const sheet = spot.section.getBoundingClientRect();
+          box = { left: box.left, right: box.right, top: Math.max(0, sheet.top), bottom: Math.min(window.innerHeight, sheet.bottom) };
+        }
         shown = p.onScreen && (!box || (p.x >= box.left + 22 && p.x <= box.right - 22 && p.y >= box.top + 22 && p.y <= box.bottom - 22));
         if (shown) spot.button.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;
       }
@@ -94,7 +102,7 @@ export function createSpots(lab) {
         if (root.dataset.stop !== stop) lab.goToStop(stop, { instant: true });
       });
       section.append(button);
-      spots.set(id, { button, anchor, stop, title: heading, body: words, variant, frame: section.querySelector('[data-lab-frame]') });
+      spots.set(id, { button, section, anchor, stop, title: heading, body: words, variant, frame: section.querySelector('[data-lab-frame]') });
       return button;
     },
     open,
