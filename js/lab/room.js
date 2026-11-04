@@ -7,6 +7,7 @@
 // Units are metres. Everything repeated is instanced, so the whole shell is a
 // couple of dozen draw calls.
 
+import { createDetails } from './details.js';
 import { createDust } from './dust.js';
 import { createDoor } from './door.js';
 
@@ -444,6 +445,7 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   lights.add(warm);
   group.add(lights);
 
+  const details = tier === 'phone' ? null : createDetails(THREE, materials, { group, own, owned, instanced, H, HALF, END, BAYS });
   const dust = tier === 'phone' ? null : createDust(THREE);
   if (dust) group.add(dust.points);
 
@@ -478,6 +480,7 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     dispose() {
       door.dispose();
       dust?.dispose();
+      details?.dispose();
       geometries.forEach((g) => g.dispose());
       owned.forEach((m) => m.dispose());
     },
