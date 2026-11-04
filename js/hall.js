@@ -389,8 +389,14 @@ export function initHall() {
     }).catch(fail);
   };
 
-  // Fetch three.js and build the first core only once Work is near.
+  // In the lab the suits stand in the bays seen from the door, so they load
+  // as soon as the site wakes. Elsewhere, fetch three.js and build the first
+  // core only once Work is near.
   whenActive(() => {
+    if (document.documentElement.classList.contains('lab')) {
+      load();
+      return;
+    }
     if (!('IntersectionObserver' in window)) return;
     const near = new IntersectionObserver((entries) => {
       if (!entries.some((entry) => entry.isIntersecting)) return;
