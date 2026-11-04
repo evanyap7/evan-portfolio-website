@@ -10,6 +10,7 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { createGovernor, startingLevel } from './perf.js';
+import { CHARGE_S, DRAIN_PER_S } from './gate.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -318,14 +319,17 @@ export function createReactor(canvas, state) {
   function step(dt) {
     time += dt;
     const s = state;
-    // Charge builds over 1.4 s while held and drains fast once let go.
-    s.power = s.charging ? Math.min(1, s.power + dt / 1.4) : Math.max(0, s.power - dt * 2.2);
+    // Charge builds while held and drains fast once let go, at the gate's
+    // pace, so the model and the gate's meter fill together.
+    s.power = s.charging ? Math.min(1, s.power + dt / CHARGE_S) : Math.max(0, s.power - dt * DRAIN_PER_S);
     s.pulse = Math.max(0, s.pulse - dt * 1.6);
-    // Asleep (behind the gate) it is dark but for a faint ember; once woken
-    // it powers on: a few hard flickers, then steady with a faint shimmer.
-    boot = s.awake ? Math.min(1, boot + dt / 1.6) : 0;
-    const flick = !s.awake ? 0.05 + 0.02 * Math.sin(time * 1.4)
-      : boot < 1 ? (Math.sin(time * 61) > 0.2 - boot ? 1 : 0.25) * (0.35 + 0.65 * boot) : 1;
+    // Asleep (behind the gate) it is dark but for a faint ember, and held
+    // there it powers up with the charge: hard flickers that steady as it
+    // fills. Woken without a charge it powers on the same way by itself.
+    boot = s.awake ? Math.min(1, boot + dt / 1.6) : s.power;
+    const base = s.awake ? 0.35 : 0.05;
+    const flick = boot === 0 ? 0.05 + 0.02 * Math.sin(time * 1.4)
+      : boot < 1 ? (Math.sin(time * 61) > 0.2 - boot ? 1 : 0.25) * (base + (1 - base) * boot) : 1;
     scene.environmentIntensity = 0.07 + 0.15 * boot;
     key.intensity = 0.35 + 0.75 * boot;
     warm.intensity = 0.2 + 0.5 * boot;

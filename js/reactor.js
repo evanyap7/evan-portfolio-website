@@ -91,6 +91,10 @@ export function initReactor() {
     state.pulse = 1;
     if (reduce) scene?.poweredOn();
   }, { once: true });
+  // Held at the gate, it charges with the gate's meter.
+  document.addEventListener('gate:charge', (event) => {
+    if (!state.awake) state.charging = event.detail;
+  });
 
   if ('ResizeObserver' in window) initCallouts(hero, hit);
 
@@ -160,13 +164,11 @@ export function initReactor() {
       reset = setTimeout(() => say(idle), ms);
     };
     say(idle);
-    // Woken from the gate: a full pulse and a greeting.
+    // Charged to full at the gate: the pulse that lets the visitor in.
     document.addEventListener('portfolio:waking', () => {
       quiet = -2;
-      window.setTimeout(() => {
-        wave(1);
-        sayFor('Systems online.', 2600);
-      }, 900);
+      wave(1);
+      sayFor('Systems online.', 2600);
     }, { once: true });
 
     // Left alone it still gives itself a small pulse now and then, so the
@@ -231,8 +233,9 @@ export function initReactor() {
       sayFor(p > 0.99 ? 'Full power pulse.' : LINES[said++ % LINES.length], 1800);
     };
 
+    // Behind the gate, presses belong to the gate (gate.js).
     hit.addEventListener('pointerdown', (event) => {
-      if (event.button !== 0) return;
+      if (event.button !== 0 || !state.awake) return;
       hit.setPointerCapture(event.pointerId);
       press = { x: event.clientX, y: event.clientY, lx: event.clientX, ly: event.clientY, drag: false };
       charge();
@@ -273,12 +276,12 @@ export function initReactor() {
     hit.addEventListener('contextmenu', (event) => event.preventDefault());
 
     hit.addEventListener('keydown', (event) => {
-      if (event.key !== ' ' && event.key !== 'Enter') return;
+      if (!state.awake || (event.key !== ' ' && event.key !== 'Enter')) return;
       event.preventDefault();
       if (!event.repeat) charge();
     });
     hit.addEventListener('keyup', (event) => {
-      if (event.key !== ' ' && event.key !== 'Enter') return;
+      if (!state.awake || (event.key !== ' ' && event.key !== 'Enter')) return;
       event.preventDefault();
       if (state.charging) fire();
     });

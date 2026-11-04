@@ -302,12 +302,66 @@ html {
   transition: opacity 900ms ease 500ms;
 }
 
+/* Held at the gate, the still brightens with the charge (the live model
+   powers up by itself, in reactor-scene.js). */
 .gated .reactor__poster {
-  filter: brightness(0.16) saturate(0.4);
+  filter: brightness(calc(0.16 + 0.84 * var(--charge, 0))) saturate(calc(0.4 + 0.6 * var(--charge, 0)));
 }
 
 .reactor__poster {
   transition: filter 1200ms ease;
+}
+
+.gated.charging .reactor__poster {
+  transition: none;
+}
+
+/* The charge ring: a thin track round the reactor, and a fill that runs
+   round it from the top as the visitor holds on. Only behind the gate. */
+.reactor__charge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: calc(var(--core) * 1.12);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  rotate: -90deg;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.gated .reactor__charge {
+  opacity: 1;
+}
+
+.waking .reactor__charge {
+  opacity: 0;
+  transition-duration: 900ms;
+}
+
+.reactor__charge circle {
+  fill: none;
+  stroke-width: 0.6;
+}
+
+.reactor__charge-track {
+  stroke: hsl(var(--h) 30% 70% / 0.18);
+  stroke-dasharray: 0.4 1.6;
+}
+
+.reactor__charge-fill {
+  stroke: var(--accent);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(100 - 100 * var(--charge, 0));
+}
+
+.gated .reactor__hit {
+  cursor: pointer;
 }
 
 .gate {
@@ -316,16 +370,23 @@ html {
 
 .gated .gate {
   position: absolute;
-  top: calc(100% + 16px);
+  top: calc(100% + 12px);
   left: 50%;
   z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 6px;
   width: max-content;
   max-width: calc(100vw - 2 * var(--gutter));
+  padding: 12px 22px 14px;
+  border: 1px solid hsl(var(--h) 40% 70% / 0.16);
+  border-radius: 14px;
+  background: hsl(220 25% 5% / 0.78);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   translate: -50% 0;
+  text-align: center;
   transition: opacity 400ms ease;
 }
 
@@ -334,35 +395,29 @@ html {
   pointer-events: none;
 }
 
+.gate__meter {
+  font-size: 1.5rem;
+  letter-spacing: 0.08em;
+  color: hsl(var(--h) 100% calc(55% + 30% * var(--charge, 0)));
+  font-variant-numeric: tabular-nums;
+}
+
 .gate__status {
   color: var(--muted);
 }
 
-.gate__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-}
-
-.gate__icon {
-  width: 1.05em;
-  height: 1.05em;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.gate__mic[aria-pressed="true"] {
-  border-color: var(--accent);
-  background: hsl(var(--h) 100% 60% / 0.12);
-  color: var(--accent);
-}
-
 .gate__hint {
-  color: var(--dim);
+  color: var(--text);
+}
+
+/* The pulse that lets the visitor in: the reactor's light, over everything. */
+.gate-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: radial-gradient(circle at 50% 50%, hsl(var(--h) 100% 96%), hsl(var(--h) 100% 60% / 0.6) 35%, transparent 75%);
+  pointer-events: none;
+  opacity: 0;
 }
 
 /* On a phone the name sits under the reactor; while it is hidden it gives
@@ -371,21 +426,27 @@ html {
   .gated .hero__name { display: none; }
 }
 
-/* No keyboard to type on, as a rule, on a touch screen. */
-@media (pointer: coarse) {
-  .gate__hint { display: none; }
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .gated:not(.waking) .gate {
     animation: fade 900ms ease 400ms backwards;
   }
 
-  .gate__mic[aria-pressed="true"] .gate__icon {
-    animation: listen 1.2s ease-in-out infinite;
+  /* Until the first press the hint breathes, so the way in is plain. */
+  .gated:not(.charging) .gate__hint {
+    animation: breathe 2.4s ease-in-out 1.4s infinite;
+  }
+
+  /* Near full the reactor strains: the ring trembles. */
+  .gated.charging .reactor__charge {
+    animation: strain 90ms linear infinite;
   }
 }
 
-@keyframes listen {
-  50% { opacity: 0.35; }
+@keyframes breathe {
+  50% { opacity: 0.45; }
+}
+
+@keyframes strain {
+  25% { translate: calc(-50% + 0.6px * var(--charge, 0)) -50%; }
+  75% { translate: calc(-50% - 0.6px * var(--charge, 0)) calc(-50% + 0.4px * var(--charge, 0)); }
 }
