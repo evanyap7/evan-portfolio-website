@@ -223,6 +223,44 @@
 .lab-spot.is-shown { opacity: 1; pointer-events: auto; }
 .lab-spot:focus-visible { opacity: 1; outline-offset: 2px; }
 
+/* A suit in its bay is a link to its project (js/hall.js): a clear box held
+   over the suit, sized to it. Its name rises on a plate above on hover. */
+.lab-suit {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  width: calc(var(--h, 0px) * 0.5);
+  height: var(--h, 0px);
+  margin-left: calc(var(--h, 0px) * -0.25);
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.lab-suit.is-shown { opacity: 1; pointer-events: auto; }
+.lab-suit:focus-visible { opacity: 1; outline: 2px solid var(--accent, #6fd3ff); outline-offset: 4px; border-radius: 12px; }
+.lab-suit__name {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--pane-edge);
+  border-radius: 8px;
+  background: var(--pane);
+  font: 500 13px/1 var(--font-mono);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  pointer-events: none;
+}
+.lab-suit:hover .lab-suit__name,
+.lab-suit:focus-visible .lab-suit__name { opacity: 1; transform: translate(-50%, 0); }
+
 /* A lit dot with a ring breathing out from it, the room's blue. */
 .lab-spot__ring {
   position: absolute;

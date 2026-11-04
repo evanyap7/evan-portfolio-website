@@ -350,7 +350,7 @@ async function boot() {
   });
   cleanups.push(() => {
     spots.close();
-    document.querySelectorAll('.lab-spot, dialog.lab-card').forEach((node) => node.remove());
+    document.querySelectorAll('.lab-spot, .lab-suit, dialog.lab-card').forEach((node) => node.remove());
   });
 
   return api;

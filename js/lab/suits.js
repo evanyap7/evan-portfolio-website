@@ -108,7 +108,18 @@ export function createSuitRow(lab, specs, { hues = [] } = {}) {
     });
   }
 
+  // Two points a suit stands between, for hall.js to hold a link over it.
+  const ends = bays.slice(0, specs.length).map((bay) => {
+    const foot = new THREE.Object3D();
+    const head = new THREE.Object3D();
+    foot.position.copy(bay);
+    head.position.copy(bay).y += 2.1;
+    scene.add(foot, head);
+    return { foot, head };
+  });
+
   return {
+    ends,
     // The members hall.js uses of the Hall's canvas; resize, start and stop
     // belong to the lab, which owns the one canvas.
     stage: {

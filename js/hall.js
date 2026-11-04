@@ -137,6 +137,54 @@ function mount(suits) {
   return { root, stage, canvas, hint, mark, name, line, figure, figureLabel, open, suitButtons };
 }
 
+// A link over each suit in its bay, held there as the camera moves: a click on
+// the suit opens its project, as its card does. Real links, so the keyboard
+// and a screen reader have them too. Each is live only while the camera is at
+// Work and the suit lands inside Work's window (never over the panel).
+function linkSuits(found, row, suits) {
+  const root = document.documentElement;
+  const frame = document.querySelector('#work [data-lab-frame]');
+  const links = suits.map((suit, k) => {
+    const link = element('a', 'lab-suit');
+    link.href = suit.href;
+    link.setAttribute('aria-label', `${suit.name}: ${suit.more}`);
+    const name = element('span', 'lab-suit__name', suit.name);
+    name.setAttribute('aria-hidden', 'true');
+    link.append(name);
+    link.dataset.suit = suit.id;
+    document.getElementById('work').append(link);
+    return { link, k, shown: false, at: '' };
+  });
+  found.onFrame(() => {
+    const live = root.dataset.stop === 'work';
+    const box = live && frame ? frame.getBoundingClientRect() : null;
+    links.forEach((item) => {
+      let shown = false;
+      if (live) {
+        const { foot, head } = row.ends[item.k];
+        const a = found.project(foot);
+        const b = found.project(head);
+        const height = a.y - b.y;
+        const x = (a.x + b.x) / 2;
+        shown = a.onScreen && b.onScreen && height > 24
+          && (!box || (x >= box.left && x <= box.right && b.y >= box.top && a.y <= box.bottom));
+        if (shown) {
+          const at = `translate(${Math.round(x)}px, ${Math.round(b.y)}px)`;
+          if (at !== item.at) {
+            item.at = at;
+            item.link.style.transform = at;
+            item.link.style.setProperty('--h', `${Math.round(height)}px`);
+          }
+        }
+      }
+      if (shown !== item.shown) {
+        item.shown = shown;
+        item.link.classList.toggle('is-shown', shown);
+      }
+    });
+  });
+}
+
 export function initHall() {
   const work = document.getElementById('work');
   const title = document.getElementById('work-title');
@@ -348,6 +396,7 @@ export function initHall() {
     lab = found;
     row = createSuitRow(found.scene, suits.map((suit) => suit.spec), { hues: suits.map((suit) => suit.hue) });
     hall = row.stage;
+    linkSuits(found.scene, row, suits);
     // The whole row stands from the start, so the bays are never seen empty
     // as the camera comes down the gallery. Not on a slow or metered link.
     const link = navigator.connection;
