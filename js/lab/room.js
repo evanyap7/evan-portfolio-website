@@ -317,6 +317,13 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   add(instanced(THREE, line, materials.metal, fins));
   add(instanced(THREE, own(new THREE.CylinderGeometry(0.62, 0.66, 0.09, 48)), materials.lacquer, plinths));
   add(instanced(THREE, own(new THREE.TorusGeometry(0.6, 0.012, 6, 64)), materials.strip(3), plinths.map((p) => ({ at: [p.at[0], 0.095, p.at[2]], rx: Math.PI / 2 }))));
+  // Contact shadows: a wide soft one on the floor round each plinth, and a
+  // tight one on its top, under the boots.
+  const disc = own(new THREE.PlaneGeometry(1, 1));
+  add(instanced(THREE, disc, materials.contact, plinths.flatMap((p) => [
+    { at: [p.at[0], 0.006, p.at[2]], rx: -Math.PI / 2, scale: [2.6, 2.6, 1] },
+    { at: [p.at[0], 0.097, p.at[2]], rx: -Math.PI / 2, scale: [1.1, 1.1, 1] },
+  ])));
   add(instanced(THREE, line, materials.strip(1.6), lamps));
   add(instanced(THREE, line, materials.strip(1.4), edges));
   // White until tinted; each bay's colour is an instance colour, so the
