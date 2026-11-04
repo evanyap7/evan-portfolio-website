@@ -157,6 +157,9 @@ function linkSuits(found, row, suits) {
   });
   found.onFrame(() => {
     const live = root.dataset.stop === 'work';
+    // Only its left edge counts (the panel's side): the window is as tall as
+    // the screen for the whole hold, but its own box scrolls away with the
+    // section's first screen, and the suits stand past its right edge too.
     const box = live && frame ? frame.getBoundingClientRect() : null;
     links.forEach((item) => {
       let shown = false;
@@ -167,7 +170,8 @@ function linkSuits(found, row, suits) {
         const height = a.y - b.y;
         const x = (a.x + b.x) / 2;
         shown = a.onScreen && b.onScreen && height > 24
-          && (!box || (x >= box.left && x <= box.right && b.y >= box.top && a.y <= box.bottom));
+          && (!box || x >= box.left)
+          && b.y >= 0 && a.y <= window.innerHeight;
         if (shown) {
           const at = `translate(${Math.round(x)}px, ${Math.round(b.y)}px)`;
           if (at !== item.at) {
