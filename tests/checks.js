@@ -90,7 +90,7 @@ export function fonts(win) {
 // it is measured by that area.
 export function targets(win) {
   if (win.innerWidth >= WIDE) return [];
-  const selector = '.nav a, .nav button, .menu a, .pill, .work__card, .hall__suit, .hall__pass, .others__row, [data-copy], .contact__address, .back, .next, .footer a';
+  const selector = '.nav a, .nav button, .menu a, .pill, .work__card, .hall__suit, .others__row, [data-copy], .contact__address, .back, .next, .footer a';
   // Layout sizes, so a rise animation's transform mid-flight cannot round a
   // 44px pill down to 43.99.
   const small = [...win.document.querySelectorAll(selector)].filter(shown).filter((el) => el.offsetWidth < 44 || el.offsetHeight < 44);

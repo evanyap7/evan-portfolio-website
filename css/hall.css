@@ -99,13 +99,6 @@
   color: var(--muted);
 }
 
-.hall__passes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.hall__pass,
 .hall__suit {
   font: inherit;
   color: var(--muted);
@@ -116,20 +109,6 @@
   transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s;
 }
 
-.hall__pass {
-  min-height: 44px;
-  padding: 0 18px;
-  font-size: 0.9375rem;
-}
-
-.hall__pass.is-done { color: var(--suit-dim); }
-
-.hall__pass[aria-pressed='true'] {
-  color: var(--bg);
-  background: var(--suit);
-}
-
-.hall__pass:focus-visible,
 .hall__suit:focus-visible,
 .hall__open:focus-visible {
   outline: 2px solid var(--focus);
@@ -189,11 +168,9 @@
 }
 
 @media (hover: hover) {
-  .hall__pass:not([aria-pressed='true']):hover { color: var(--text); background: var(--card-top); }
   .hall__suit:not([aria-pressed='true']):hover { color: var(--text); border-top-color: var(--muted); }
 }
 
-.hall__pass:active,
 .hall__suit:active { transform: scale(0.97); }
 
 @media (max-width: 860px) {
@@ -214,15 +191,8 @@
   .hall__suit { scroll-snap-align: start; }
 }
 
-@media (max-width: 520px) {
-  .hall__passes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; }
-  .hall__pass { padding: 0 4px; font-size: 0.8125rem; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .hall__pass,
   .hall__suit { transition: none; }
-  .hall__pass:active,
   .hall__suit:active { transform: none; }
 }
 
@@ -361,9 +331,16 @@
      pane would cover the window once scrolled, so the pin and the list
      under it paint their own. */
   :root.lab main > #work {
-    --window: 40svh;
+    --window: 44svh;
     padding-top: var(--window);
     border-image: none;
+  }
+
+  /* The nav floats over the top of the window, so the suit is framed in what
+     is left under it: the whole suit shows, head included. */
+  :root.lab #work .lab-frame {
+    top: calc(var(--nav) + var(--nav-top) + 4px);
+    height: calc(var(--window) - var(--nav) - var(--nav-top) - 4px);
   }
 
   :root.lab .work--hall > .work__title,

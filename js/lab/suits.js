@@ -1,6 +1,6 @@
 // The row of suits in the lab: seven lit suits standing in their bays along
 // the gallery wall, and the Hall's suit stage (hall-stage.js), which steps
-// into whichever bay is in focus and plays its four passes there. hall.js
+// into whichever bay is in focus, fully lit. hall.js
 // drives `stage` exactly as it drives the Hall's own canvas.
 
 import { createSuitStage, buildLit, loadModel, loadBadge, FEET, JARVIS } from '../hall-stage.js';

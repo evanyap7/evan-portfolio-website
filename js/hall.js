@@ -3,8 +3,8 @@
 // truth (and the plain list of every project for anyone without WebGL).
 // Projects without a suit are listed under it as Other projects. Each project is
 // a suit: a Mark number, a codename and a film suit's 3D model drawn in
-// three.js (hall-scene.js). Pick a suit and it assembles through four render passes,
-// blueprint, wireframe, shaded, lit; each pass can also be picked by hand.
+// three.js (hall-scene.js). Pick a suit and it stands there fully lit, on show
+// from every side: drag it round, or use the arrow keys.
 // With reduced motion every change is instant and nothing loops.
 
 import { whenActive } from './gate.js';
@@ -27,9 +27,7 @@ const SUITS = [
   { id: 'v-bay', mark: 'VI', hue: 44, spec: { model: 'mark-50', tone: 0x2e2f35, paint: { base: 0x1d1e22, accent: 0xd3a339, metal: 0.7, rough: 0.35 } } },
   { id: 'others', mark: 'VII', hue: 218, spec: { model: 'mark-7', paint: { base: 0x1b3a78, accent: 0x8fa3bd, metal: 0.75, rough: 0.38 } } },
 ];
-const PASSES = ['Blueprint', 'Wireframe', 'Shaded', 'Lit'];
-const STEP_MS = 700;
-const HINT = 'Drag to turn · tap for the next pass';
+const HINT = 'Drag to turn';
 
 function webgl2() {
   try {
@@ -104,7 +102,7 @@ function mount(suits) {
   const stage = element('div', 'hall__stage');
   stage.tabIndex = 0;
   stage.setAttribute('role', 'group');
-  stage.setAttribute('aria-label', 'The suit. Left and right arrow keys turn it; Enter shows the next pass.');
+  stage.setAttribute('aria-label', 'The suit. Left and right arrow keys turn it.');
   const canvas = element('canvas', 'hall__canvas');
   canvas.setAttribute('aria-hidden', 'true');
   const hint = element('p', 'hall__hint', HINT);
@@ -119,21 +117,8 @@ function mount(suits) {
   const figureLabel = element('small');
   spec.append(figure, figureLabel);
 
-  const passes = element('div', 'hall__passes');
-  passes.setAttribute('role', 'group');
-  passes.setAttribute('aria-label', 'Render pass');
-  const passButtons = PASSES.map((label, index) => {
-    const button = element('button', 'hall__pass', label);
-    button.type = 'button';
-    button.dataset.pass = String(index);
-    passes.append(button);
-    return button;
-  });
-  const status = element('p', 'hall__status visually-hidden');
-  status.setAttribute('role', 'status');
-
   const open = element('a', 'hall__open');
-  panel.append(mark, name, line, spec, passes, status, open);
+  panel.append(mark, name, line, spec, open);
 
   const picker = element('div', 'hall__suits');
   picker.setAttribute('role', 'group');
@@ -149,7 +134,7 @@ function mount(suits) {
   });
 
   root.append(stage, panel, picker);
-  return { root, stage, canvas, hint, mark, name, line, figure, figureLabel, open, status, passButtons, suitButtons };
+  return { root, stage, canvas, hint, mark, name, line, figure, figureLabel, open, suitButtons };
 }
 
 export function initHall() {
@@ -187,45 +172,7 @@ export function initHall() {
   let lab = null; // the lab, once the suits stand in its bays
   let row = null;
   let current = 0;
-  let pass = 3;
-  let timers = [];
   let visible = false;
-
-  const clearTimers = () => {
-    timers.forEach(clearTimeout);
-    timers = [];
-  };
-
-  const showPass = (next) => {
-    pass = next;
-    ui.passButtons.forEach((button, index) => {
-      button.setAttribute('aria-pressed', String(index === next));
-      button.classList.toggle('is-done', index < next);
-    });
-    ui.status.textContent = next === 3
-      ? 'Pass 4 of 4: fully rendered.'
-      : `Pass ${next + 1} of 4: ${PASSES[next].toLowerCase()}. ${3 - next} to go.`;
-  };
-
-  const goTo = (next, manual) => {
-    if (manual) clearTimers();
-    showPass(next);
-    hall?.setPass(next, { instant: reduce });
-  };
-
-  // Builds the suit up from its blueprint to the finished core.
-  const assemble = () => {
-    clearTimers();
-    if (reduce) {
-      goTo(3);
-      return;
-    }
-    hall.setPass(0, { instant: true });
-    showPass(0);
-    [1, 2, 3].forEach((next) => {
-      timers.push(setTimeout(() => goTo(next), next * STEP_MS));
-    });
-  };
 
   const select = (index) => {
     current = index;
@@ -244,13 +191,9 @@ export function initHall() {
       ui.hint.textContent = `Loading Mark ${suit.mark}…`;
     }
     if (hall) {
-      clearTimers();
-      // Not ready yet: the suit on stage scans back to its blueprint meanwhile.
-      if (!hall.ready(suit.spec)) goTo(0);
       hall.setSuit(suit.spec, { instant: reduce }).then((shown) => {
         if (!shown) return;
         ui.hint.textContent = HINT;
-        assemble();
         warmRest();
       }, fail);
     }
@@ -273,7 +216,6 @@ export function initHall() {
 
   // The Hall can't stand without its scene or a suit's model: back to the cards.
   const fail = () => {
-    clearTimers();
     hall?.stop();
     hall = null;
     row = null;
@@ -301,7 +243,6 @@ export function initHall() {
     lab.goToBay(index);
   };
 
-  ui.passButtons.forEach((button) => button.addEventListener('click', () => goTo(Number(button.dataset.pass), true)));
   ui.suitButtons.forEach((button) => {
     const index = Number(button.dataset.suit);
     const warm = () => hall?.prepare(suits[index].spec);
@@ -314,14 +255,12 @@ export function initHall() {
     button.addEventListener('focus', warm);
   });
   // Drag the suit round, all the way if you like; let go and it coasts to a
-  // stop. A drag is not a click, so it does not change the pass.
+  // stop.
   const TURN_PER_PX = 0.012;
   let grab = null;
-  let dragged = false;
   ui.stage.addEventListener('pointerdown', (event) => {
     if (!hall || event.button !== 0) return;
     grab = { x: event.clientX, lx: event.clientX, t: performance.now(), moved: false };
-    dragged = false;
     hall.state.held = true;
     hall.state.spin = 0;
     ui.stage.setPointerCapture(event.pointerId);
@@ -330,7 +269,6 @@ export function initHall() {
     if (!grab || !hall) return;
     if (!grab.moved && Math.abs(event.clientX - grab.x) < 6) return;
     grab.moved = true;
-    dragged = true;
     const dx = event.clientX - grab.lx;
     const now = performance.now();
     const turn = dx * TURN_PER_PX;
@@ -350,21 +288,11 @@ export function initHall() {
   };
   ui.stage.addEventListener('pointerup', letGo);
   ui.stage.addEventListener('pointercancel', letGo);
-  ui.stage.addEventListener('click', () => {
-    if (dragged) {
-      dragged = false;
-      return;
-    }
-    goTo((pass + 1) % PASSES.length, true);
-  });
   // Arrow keys turn it for anyone without a pointer.
   ui.stage.addEventListener('keydown', (event) => {
     if (!hall || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
     event.preventDefault();
     hall.turn((event.key === 'ArrowLeft' ? -1 : 1) * 0.3);
-  });
-  ui.stage.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && event.target === ui.stage) goTo((pass + 1) % PASSES.length, true);
   });
   ui.stage.addEventListener('pointermove', (event) => {
     if (!hall || event.pointerType === 'touch') return;
@@ -398,7 +326,6 @@ export function initHall() {
   };
 
   select(Math.max(0, suits.findIndex((suit) => `#work-${suit.id}` === window.location.hash)));
-  showPass(3);
   window.addEventListener('hashchange', land);
   // The browser's own jump aimed at a card that is now hidden, so land here,
   // and again once the page has loaded and fonts have settled its height.
