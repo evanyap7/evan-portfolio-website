@@ -54,6 +54,22 @@
 :root.lab .reactor__status,
 :root.lab .hero__creds li { color: var(--text-2); }
 
+/* Once the door is open the room is the picture, so the name steps out of
+   its middle: it closes up and settles, smaller, just over the headline,
+   like a film's title over its opening shot. A transform, so nothing else
+   on the page moves. */
+@media (min-width: 720px) {
+  :root.lab .hero__name {
+    transition: scale 1400ms var(--ease-out), translate 1400ms var(--ease-out), column-gap 1400ms var(--ease-out);
+  }
+
+  :root.lab.door-open .hero__name {
+    column-gap: 0.26em;
+    scale: 0.42;
+    translate: 0 calc(var(--core) * 0.5 - 0.2em);
+  }
+}
+
 .lab-frame { display: none; }
 
 /* Sections: no band fill; the panel is painted in its place. */
