@@ -63,14 +63,52 @@ function floorPanels(ctx, size) {
   const rnd = random(23);
   ctx.fillStyle = '#4a4a4a';
   ctx.fillRect(0, 0, size, size);
+  // Wear shows in the roughness: foot traffic polishes some of the panel and
+  // leaves the rest dull, so the light breaks up as it would on a used floor.
+  for (let i = 0; i < 40; i += 1) {
+    const x = rnd() * size;
+    const y = rnd() * size;
+    const r = 30 + rnd() * 90;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    const v = rnd() > 0.5 ? 120 : 20;
+    g.addColorStop(0, `rgba(${v},${v},${v},0.22)`);
+    g.addColorStop(1, `rgba(${v},${v},${v},0)`);
+    ctx.fillStyle = g;
+    ctx.fillRect(x - r, y - r, r * 2, r * 2);
+  }
   for (let i = 0; i < size * size * 0.06; i += 1) {
     const v = 50 + rnd() * 50;
     ctx.fillStyle = `rgba(${v},${v},${v},0.5)`;
     ctx.fillRect(rnd() * size, rnd() * size, 1, 1);
   }
+  // Scuffs: short, pale, nearly parallel scratches where trolleys have run.
+  for (let i = 0; i < 70; i += 1) {
+    const x = rnd() * size;
+    const y = rnd() * size;
+    const a = 0.35 + (rnd() - 0.5) * 0.5;
+    const len = 8 + rnd() * 40;
+    ctx.strokeStyle = `rgba(210,210,210,${0.1 + rnd() * 0.25})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len);
+    ctx.stroke();
+  }
   ctx.fillStyle = 'rgba(200,200,200,0.9)';
   ctx.fillRect(0, 0, size, 2);
   ctx.fillRect(0, 0, 2, size);
+}
+
+// A soft round shadow, black in the middle and clear at the edge: the contact
+// shadow a thing casts on what it stands on.
+function softShadow(ctx, size) {
+  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  g.addColorStop(0, 'rgba(0,0,0,0.85)');
+  g.addColorStop(0.45, 'rgba(0,0,0,0.5)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.clearRect(0, 0, size, size);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
 }
 
 export function createMaterials(THREE, tier = 'desktop') {
@@ -83,6 +121,7 @@ export function createMaterials(THREE, tier = 'desktop') {
 
   const brushedMap = keep(canvasTexture(THREE, phone ? 128 : 256, brushed, { color: false }));
   const woodMap = keep(canvasTexture(THREE, phone ? 256 : 512, grain));
+  const shadowMap = keep(canvasTexture(THREE, 128, softShadow, { color: false }));
   const floorMap = keep(canvasTexture(THREE, phone ? 256 : 512, floorPanels, { color: false }));
 
   const metal = new THREE.MeshStandardMaterial({
@@ -99,6 +138,11 @@ export function createMaterials(THREE, tier = 'desktop') {
   // seams catch the light differently from the panels.
   const floor = new THREE.MeshStandardMaterial({
     color: 0x10161c, metalness: 0.35, roughness: 0.42, roughnessMap: floorMap, bumpMap: floorMap, bumpScale: 0.6,
+  });
+
+  // The soft shadow under things that stand: unlit black at partial opacity.
+  const contact = new THREE.MeshBasicMaterial({
+    color: 0x000000, alphaMap: shadowMap, transparent: true, opacity: 0.9, depthWrite: false,
   });
 
   // Light: unlit, and not tone mapped, so values over 1 reach the bloom.
@@ -119,9 +163,9 @@ export function createMaterials(THREE, tier = 'desktop') {
     return new THREE.MeshBasicMaterial({ color, toneMapped: false });
   });
 
-  const materials = { metal, lacquer, wood, rubber, fabric, glass, floor, holo, strip, textures: { brushedMap, woodMap, floorMap } };
+  const materials = { metal, lacquer, wood, rubber, fabric, glass, floor, contact, holo, strip, textures: { brushedMap, woodMap, floorMap } };
   materials.dispose = () => {
-    [metal, lacquer, wood, rubber, fabric, glass, floor, ...cache.values()].forEach((m) => m.dispose());
+    [metal, lacquer, wood, rubber, fabric, glass, floor, contact, ...cache.values()].forEach((m) => m.dispose());
     textures.forEach((t) => t.dispose());
   };
   return materials;
