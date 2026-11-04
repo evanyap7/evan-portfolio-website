@@ -60,7 +60,12 @@ export function createSuitRow(lab, specs, { hues = [] } = {}) {
           const list = node.material ? [].concat(node.material) : [];
           list.forEach((material) => {
             Object.values(material).forEach((value) => {
-              if (value && value.isTexture) renderer.initTexture(value);
+              if (!value || !value.isTexture) return;
+              try {
+                renderer.initTexture(value);
+              } catch {
+                // It uploads when first drawn instead.
+              }
             });
           });
         });
@@ -114,7 +119,7 @@ export function createSuitRow(lab, specs, { hues = [] } = {}) {
   function warmRow(order) {
     order.forEach((k) => {
       if (k < 0 || k >= specs.length) return;
-      queue = queue.then(() => build(k)).catch(() => {});
+      queue = queue.then(() => build(k)).catch((error) => console.warn(`suit ${k} failed to load`, error));
     });
   }
 
