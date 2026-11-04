@@ -1034,6 +1034,54 @@ export async function labShelf(win) {
   ];
 }
 
+// The shelf stays in reach the whole way down Experience: all fourteen spots
+// are shown mid-scroll, on screen, and on a narrow screen the shelf is a strip
+// pinned under the nav with the row being read lit.
+export async function labShelfHeld(win) {
+  const doc = win.document;
+  const root = doc.documentElement;
+  if (!labCapable(win)) return [result('shelf held: no lab in this frame', true, 'no lab')];
+  await until(() => root.classList.contains('lab-ready') && doc.querySelectorAll('#experience .lab-spot').length > 0, 6000);
+  const section = doc.getElementById('experience');
+  const narrow = win.innerWidth < 1024;
+  const top = section.getBoundingClientRect().top + win.scrollY;
+  win.scrollTo({ top: top + Math.max(0, section.offsetHeight - win.innerHeight) * 0.5, behavior: 'instant' });
+  await wait(900);
+  const spots = [...doc.querySelectorAll('#experience .lab-spot')];
+  const shown = spots.filter((b) => b.classList.contains('is-shown'));
+  const inside = shown.filter((b) => {
+    const r = b.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    return x >= 0 && x <= win.innerWidth && y >= 0 && y <= win.innerHeight;
+  });
+  const nav = doc.querySelector('.nav')?.getBoundingClientRect();
+  const behindNav = narrow && nav ? shown.filter((b) => { const r = b.getBoundingClientRect(); return r.top + r.height / 2 < nav.bottom; }) : [];
+  const read = doc.querySelectorAll('#experience .is-read').length;
+  const pinned = root.classList.contains('shelf-pinned');
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  await wait(100);
+  return [
+    result('shelf held: all fourteen spots shown mid-Experience', shown.length === 14 && inside.length === 14, `${shown.length} shown, ${inside.length} on screen`),
+    result('shelf held: no spot sits behind the nav', behindNav.length === 0, `${behindNav.length} behind`),
+    result(narrow ? 'shelf held: the strip is pinned and one row is lit' : 'shelf held: wide screens light no row by scrolling', narrow ? pinned && read === 2 : read === 0, `pinned ${pinned}, lit ${read}`),
+  ];
+}
+
+// Every suit stands fully lit: no render-pass tabs, no pass status, and the
+// hint says only that it can be turned.
+export async function labSuitsLit(win) {
+  const doc = win.document;
+  const stage = doc.querySelector('.hall__stage');
+  if (!stage) return [result('suits lit: no hall in this frame', true, 'no hall')];
+  await until(() => doc.querySelector('.hall__hint')?.textContent.trim() === 'Drag to turn', 6000);
+  return [
+    result('suits lit: no render-pass tabs or status', !doc.querySelector('.hall__pass, .hall__passes, .hall__status'), `${doc.querySelectorAll('.hall__pass').length} tabs`),
+    result('suits lit: the hint says only Drag to turn', doc.querySelector('.hall__hint')?.textContent.trim() === 'Drag to turn', doc.querySelector('.hall__hint')?.textContent.trim()),
+    result('suits lit: the stage names no pass', !/pass/i.test(stage.getAttribute('aria-label') ?? ''), stage.getAttribute('aria-label')),
+  ];
+}
+
 // In the lab, Toolkit is a workbench: one object per kind of tool, each a
 // spot named for its group, opening that group's tools on a hologram card.
 export async function labBench(win) {
