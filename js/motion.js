@@ -93,7 +93,7 @@ function initTimeline() {
 
 // Tracks the pointer over each card for the spotlight in figures.css.
 function initSpotlight() {
-  document.querySelectorAll('.work__card, a.card.next').forEach((card) => {
+  document.querySelectorAll('.work__card').forEach((card) => {
     let frame = 0;
     let x = 0;
     let y = 0;

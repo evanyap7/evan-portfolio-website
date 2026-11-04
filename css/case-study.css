@@ -17,7 +17,7 @@
 }
 
 .case__body > * {
-  max-width: 46rem;
+  max-width: 40rem;
 }
 
 .case__body > .flow,
@@ -27,15 +27,16 @@
 
 .case__body :where(p:not(.mono, .links)),
 .case__list {
-  margin-top: 16px;
-  color: var(--muted);
+  margin-top: 20px;
+  color: var(--text-2);
+  line-height: 1.7;
 }
 
 .case__body h2 {
-  margin-top: 64px;
-  padding-top: 20px;
+  margin-top: 80px;
+  padding-top: 28px;
   border-top: 1px solid var(--line);
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.03em;
@@ -43,6 +44,10 @@
 
 .case__body > h2:first-child {
   margin-top: 0;
+}
+
+.case__body > h2 + * {
+  margin-top: 24px;
 }
 
 .case__body strong {
@@ -65,7 +70,7 @@
 
 .case__list {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
 .case__list li {
@@ -76,9 +81,9 @@
 .case__list li::before {
   content: "";
   position: absolute;
-  top: 0.8em;
+  top: 0.85em;
   left: 0;
-  width: 8px;
+  width: 10px;
   height: 1px;
   background: var(--dim);
 }
