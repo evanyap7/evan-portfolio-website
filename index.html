@@ -50,7 +50,7 @@
 
   <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
   <script>try{if(!location.hash&&!sessionStorage.getItem('portfolio-on')&&'noModule' in HTMLScriptElement.prototype){var d=document.documentElement;d.classList.add('gated');setTimeout(function(){if(!d.classList.contains('gate-ready'))d.classList.remove('gated')},5000)}}catch(e){}</script>
-  <script>try{var d=document.documentElement;if('noModule' in HTMLScriptElement.prototype&&!matchMedia('(prefers-reduced-motion: reduce)').matches){var g=document.createElement('canvas').getContext('webgl2');if(g){var x=g.getExtension('WEBGL_lose_context');x&&x.loseContext();d.classList.add('lab');setTimeout(function(){if(!d.classList.contains('lab-ready'))d.classList.remove('lab')},8000)}}}catch(e){}</script>
+  <script>try{var d=document.documentElement;if('noModule' in HTMLScriptElement.prototype&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<600)){var g=document.createElement('canvas').getContext('webgl2');if(g){var x=g.getExtension('WEBGL_lose_context');x&&x.loseContext();d.classList.add('lab');setTimeout(function(){if(!d.classList.contains('lab-ready'))d.classList.remove('lab')},8000)}}}catch(e){}</script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
