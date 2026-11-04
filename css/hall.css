@@ -331,16 +331,21 @@
      pane would cover the window once scrolled, so the pin and the list
      under it paint their own. */
   :root.lab main > #work {
-    --window: 44svh;
+    --window: 40svh;
     padding-top: var(--window);
     border-image: none;
   }
 
   /* The nav floats over the top of the window, so the suit is framed in what
-     is left under it: the whole suit shows, head included. */
-  :root.lab #work .lab-frame {
-    top: calc(var(--nav) + var(--nav-top) + 4px);
-    height: calc(var(--window) - var(--nav) - var(--nav-top) - 4px);
+     is left under it: the whole suit shows, head included. A landscape phone
+     has no height to spare, and keeps the whole window. */
+  @media (min-height: 560px) {
+    :root.lab main > #work { --window: 44svh; }
+
+    :root.lab #work .lab-frame {
+      top: calc(var(--nav) + var(--nav-top) + 4px);
+      height: calc(var(--window) - var(--nav) - var(--nav-top) - 4px);
+    }
   }
 
   :root.lab .work--hall > .work__title,
