@@ -20,7 +20,7 @@ const OFFICE = { back: -54, half: 3.4, height: 3.2 };
 const WINDOW = { width: 2.8, bottom: 1.0, top: 2.45 };
 const DOORWAY = { width: 2.6, height: 2.9 };
 const LAMP = [-0.57, 1.19, -53.62]; // its bulb, where the office's light is
-export const DOOR = { y: 1.85, radius: 1.75 };
+const DOOR = { y: 1.85, radius: 1.75 };
 const BAYS = { x: 4.7, first: -13, step: -2.6, count: 7 };
 
 // Where the camera stands (eye) and what it looks at (look), in walk order:

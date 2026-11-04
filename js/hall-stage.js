@@ -31,7 +31,7 @@ const CLAY = 0x9aa3ad;
 
 // Per model: how bright its red and gold panels are on average (linear, the
 // brightest channel), so a repaint keeps the texture's shading and wear.
-export const MODELS = {
+const MODELS = {
   'mark-1': {},
   'mark-7': { red: 0.052, gold: 0.21 },
   'mark-7-lite': { red: 0.035, gold: 0.149 },
