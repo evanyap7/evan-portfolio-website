@@ -229,6 +229,9 @@
 /* Other projects ---------------------------------------------------- */
 .others {
   margin-bottom: clamp(16px, 2vw, 32px);
+  /* The rows answer to the width of their own column, not the window: in the
+     lab the text column is narrow on a wide screen. */
+  container-type: inline-size;
 }
 
 .others__title {
@@ -285,7 +288,7 @@
   .others__row:hover .others__arrow { color: var(--text); transform: translateX(4px); }
 }
 
-@media (max-width: 719px) {
+@container (max-width: 640px) {
   .others__row {
     grid-template-columns: minmax(0, 1fr) auto;
     row-gap: 8px;
