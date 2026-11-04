@@ -9,6 +9,7 @@
 
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { createGovernor, startingLevel } from './perf.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -148,7 +149,11 @@ export function createReactor(canvas, state) {
   // Touch screens are mostly phones: 1.5x is sharp enough there and keeps
   // the frame rate up.
   const coarse = window.matchMedia('(pointer: coarse)').matches;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2));
+  // The governor (js/perf.js) steps the pixel count down if frames run slow.
+  const cap = Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2);
+  const rungs = [cap, Math.min(cap, 1.25), 1, 0.75].map((ratio) => ({ ratio }));
+  renderer.setPixelRatio(rungs[startingLevel(rungs)].ratio);
+  let size = [1, 1];
 
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -356,8 +361,20 @@ export function createReactor(canvas, state) {
     key.position.set(-2.2 + s.tx * 3.2, 2.8 - s.ty * 2.4, 4);
   }
 
+  const governor = createGovernor(rungs, {
+    level: startingLevel(rungs),
+    floor: 2,
+    onLevel: ({ ratio }) => {
+      renderer.setPixelRatio(ratio);
+      renderer.setSize(size[0], size[1], false);
+      composer.setPixelRatio(ratio);
+      composer.setSize(size[0], size[1]);
+    },
+  });
+
   function loop(now) {
     frame = requestAnimationFrame(loop);
+    if (last) governor.note(now - last);
     const dt = Math.min(0.05, last ? (now - last) / 1000 : 0);
     last = now;
     step(dt);
@@ -378,6 +395,7 @@ export function createReactor(canvas, state) {
       still();
     },
     resize(width, height) {
+      size = [width, height];
       renderer.setSize(width, height, false);
       composer.setPixelRatio(renderer.getPixelRatio());
       composer.setSize(width, height);
