@@ -130,6 +130,37 @@ const REPAINT = /* glsl */ `
 #endif
 `;
 
+// Wear for the lab's suits: gloss that varies across the armour (worn bright
+// in places, dull in others) and faint grime in patches, from noise in the
+// model's own space so it stays put as the suit turns. It wraps whatever
+// onBeforeCompile the material already has (the repaint).
+function weathered(material) {
+  const before = material.onBeforeCompile;
+  const key = material.customProgramCacheKey?.bind(material);
+  material.onBeforeCompile = (shader, renderer) => {
+    before?.call(material, shader, renderer);
+    shader.vertexShader = shader.vertexShader
+      .replace('void main() {', 'varying vec3 vWorn;\nvoid main() {')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvWorn = position;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('void main() {', `varying vec3 vWorn;
+float wornHash(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+float wornNoise(vec3 x) {
+  vec3 i = floor(x); vec3 f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(wornHash(i), wornHash(i + vec3(1,0,0)), f.x), mix(wornHash(i + vec3(0,1,0)), wornHash(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(wornHash(i + vec3(0,0,1)), wornHash(i + vec3(1,0,1)), f.x), mix(wornHash(i + vec3(0,1,1)), wornHash(i + vec3(1,1,1)), f.x), f.y), f.z);
+}
+void main() {`)
+      .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
+float wornA = wornNoise(vWorn * 38.0);
+float wornB = wornNoise(vWorn * 9.0 + 7.0);
+roughnessFactor = clamp(roughnessFactor + (wornA - 0.5) * 0.32 + (wornB - 0.5) * 0.2, 0.08, 1.0);
+diffuseColor.rgb *= 1.0 - 0.28 * smoothstep(0.58, 0.85, wornB) * (0.6 + 0.4 * wornA);`);
+  };
+  material.customProgramCacheKey = () => `${key ? key() : ''}+worn`;
+  return material;
+}
+
 function repainted(source, paint, model) {
   const material = source.clone();
   const base = new THREE.Color(paint.base);
@@ -152,12 +183,13 @@ function repainted(source, paint, model) {
 // The suit as the lit pass draws it, its badge on: a group at the model's
 // scale (TALL), feet at its origin. `make` finishes each new material (the
 // stage gives it a clipping plane).
-function litFigure(spec, pieces, badgeMap, make = (material) => material) {
+function litFigure(spec, pieces, badgeMap, make = (material) => material, wear = false) {
   const model = MODELS[spec.model];
   const litFor = new Map();
   const lit = (source) => {
     if (!litFor.has(source)) {
-      litFor.set(source, make(spec.paint ? repainted(source, spec.paint, model) : source.clone()));
+      const base = spec.paint ? repainted(source, spec.paint, model) : source.clone();
+      litFor.set(source, make(wear ? weathered(base) : base));
     }
     return litFor.get(source);
   };
@@ -192,7 +224,7 @@ function litFigure(spec, pieces, badgeMap, make = (material) => material) {
 // a suit that only ever stands lit, with no passes, scan line or lights.
 export function buildLit(spec, { pieces }, badgeMap) {
   const group = new THREE.Group();
-  group.add(litFigure(spec, pieces, badgeMap));
+  group.add(litFigure(spec, pieces, badgeMap, undefined, true));
   return group;
 }
 
