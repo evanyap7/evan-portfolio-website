@@ -180,7 +180,9 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
       const from = pointOf(k);
       const to = k === ROW ? from + 1 : from;
       const distance = u < from ? from - u : u > to ? u - to : 0;
-      group.visible = distance < 1.5;
+      // The suits are seen from further: they stand in the first shot, down
+      // the gallery, as soon as the door opens.
+      group.visible = distance < (k === ROW ? 2.5 : 1.5);
     });
   };
 
