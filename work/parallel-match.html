@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&family=Azeret+Mono&family=Bodoni+Moda:ital,opsz@1,6..96&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap">
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@900&display=swap">
 
   <link rel="stylesheet" href="/css/base.css">
@@ -68,8 +68,8 @@
   <main id="main" class="project">
     <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
     <header class="project__head">
-      <p class="mono label">Team of 3 · Microsoft x Premier League hackathon · Oct 2026</p>
       <h1 class="project__title vt-parallel-match">Parallel <span class="serif">Match</span></h1>
+      <p class="mono label">Team of 3 · Microsoft x Premier League hackathon · Oct 2026</p>
     </header>
     <dl class="stats">
       <div><dt>Win chance after removing one penalty (was 29%)</dt><dd><span data-count>15%</span></dd></div>
@@ -118,19 +118,19 @@
       <div class="reel__scene reel__scene--plate"><img src="/img/previews/parallel-match-viewer.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The analyst view. Two pitches replay the same moment side by side, the original and the alternate timeline, above a panel naming the 56th-minute penalty and the Law it falls under. All clubs and players are synthetic."></div>
     </figure>
     <div class="rows project__body">
-      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A fan taps a borderline call, such as a penalty, and asks “what if it wasn’t given?”. The screen splits into the real match and an alternate one, with the change in win chance and its 95% interval. Every club and player is synthetic.</p></div></div>
+      <div><h2 class="mono">Overview</h2><div><p class="project__summary">Tap a borderline call, such as a penalty, and the screen splits into the real match and a what-if one, with the change in win chance. Every club and player is synthetic.</p></div></div>
       <div><h2 class="mono">What I built</h2><div><ul class="items">
           <li>
             <h3 class="item__name">Simulator and what-if engine</h3>
-            <p class="item__text">A seeded match generator, and an engine that replays a match to one moment, changes the call and plays the rest hundreds of times. Each pair shares its random numbers, so the difference is the call, not luck.</p>
+            <p class="item__text">Replays a match to one moment, changes the call and plays the rest hundreds of times. Each pair shares its random numbers, so the difference is the call, not luck.</p>
           </li>
           <li>
             <h3 class="item__name">Agent desk</h3>
-            <p class="item__text">Agents draft the commentary, the Law explanation and the season precedent. A fact-checker agent verifies every number before it is shown. All numbers come from code, never from a model.</p>
+            <p class="item__text">Agents draft the commentary and the Law explanation, and a fact-checker verifies every number. All numbers come from code, never from a model.</p>
           </li>
           <li>
             <h3 class="item__name">API and 18-language interface</h3>
-            <p class="item__text">The API behind the viewer, and an interface in 18 languages where the agents answer in the fan’s choice.</p>
+            <p class="item__text">The API behind the viewer, and 18 interface languages, with agents that answer in the fan’s own.</p>
           </li>
         </ul></div></div>
     </div>

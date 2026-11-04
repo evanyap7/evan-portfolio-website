@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&family=Azeret+Mono&family=Bodoni+Moda:ital,opsz@1,6..96&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap">
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@900&display=swap">
 
   <link rel="stylesheet" href="/css/base.css">
@@ -68,8 +68,8 @@
   <main id="main" class="project">
     <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
     <header class="project__head">
-      <p class="mono label">Developer · Chrome extension · Oct 2026</p>
       <h1 class="project__title vt-watchpartyyy">Watch<span class="serif">Partyyy</span></h1>
+      <p class="mono label">Developer · Chrome extension · Oct 2026</p>
     </header>
     <dl class="stats">
       <div><dt>Controls kept in lockstep: play, pause and seek</dt><dd><span data-count>3</span></dd></div>
@@ -106,19 +106,19 @@
     </svg>
     </figure>
     <div class="rows project__body">
-      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A Chrome extension that keeps play, pause and seek in sync for friends watching Netflix together, with a small chat panel. It only syncs the controls and never touches the video, so everyone uses their own subscription.</p></div></div>
+      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A Chrome extension that syncs play, pause and seek for friends watching Netflix together. It never touches the video, so everyone uses their own subscription.</p></div></div>
       <div><h2 class="mono">What I built</h2><div><ul class="items">
           <li>
             <h3 class="item__name">Sync that Netflix accepts</h3>
-            <p class="item__text">Netflix rejects direct writes to the video’s time, so a script in the page calls Netflix’s own player API instead. The content script watches the video and applies each event from the room.</p>
+            <p class="item__text">Netflix rejects direct writes to the video’s time, so a script in the page calls Netflix’s own player API instead.</p>
           </li>
           <li>
             <h3 class="item__name">Relay server</h3>
-            <p class="item__text">A Node WebSocket server that keeps each room’s latest playback state in memory, so a friend who joins late catches up straight away. It runs in Docker on Fly.io.</p>
+            <p class="item__text">A Node WebSocket server keeps each room’s latest state, so a friend who joins late catches up at once. It runs on Fly.io.</p>
           </li>
           <li>
             <h3 class="item__name">Working around Netflix’s limits</h3>
-            <p class="item__text">Netflix’s page policy blocks WebSockets from the content script, so a background script owns the connection. The injected chat panel and the undocumented player API can change, which I list as known limits.</p>
+            <p class="item__text">Netflix blocks WebSockets from the content script, so a background script owns the connection. The player API is undocumented and can change, so I list it as a known limit.</p>
           </li>
         </ul></div></div>
       <div><h2 class="mono">Stack</h2><p class="stack">JavaScript · Chrome extension (Manifest) · Node · WebSocket (ws) · Docker · Fly.io</p></div>
