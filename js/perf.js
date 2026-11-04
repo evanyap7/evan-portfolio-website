@@ -7,7 +7,7 @@
 
 const WINDOW = 40; // frames judged at once
 const SETTLE = 12; // frames ignored after a change (shader compiles, resizes)
-const SLOW = 26; // ms: under about 38 fps
+const SLOW = 21; // ms: under about 48 fps
 const VERY_SLOW = 45;
 
 // A small or old machine starts a rung or two down, before it has stuttered.

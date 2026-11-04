@@ -54,6 +54,16 @@ export function createSuitRow(lab, specs, { hues = [] } = {}) {
         const suit = buildLit(spec, meshes, badgeMap);
         put(suit, k, 0, 0.2);
         await renderer.compileAsync(suit, camera, scene);
+        // Its textures go to the graphics card now, a suit at a time while the
+        // page is idle, not all in the one frame it first comes into view.
+        suit.traverse((node) => {
+          const list = node.material ? [].concat(node.material) : [];
+          list.forEach((material) => {
+            Object.values(material).forEach((value) => {
+              if (value && value.isTexture) renderer.initTexture(value);
+            });
+          });
+        });
         suit.visible = !(shown && k === at);
         lab.add('work', suit);
         cheap[k] = suit;
