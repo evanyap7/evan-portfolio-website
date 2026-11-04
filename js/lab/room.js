@@ -10,6 +10,7 @@
 import { createDetails } from './details.js';
 import { createDust } from './dust.js';
 import { createDoor } from './door.js';
+import { createShafts } from './haze.js';
 
 const H = 4.2; // ceiling height of the hall
 const HALF = 6; // the hall is 12 m wide
@@ -448,6 +449,9 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
   const details = tier === 'phone' ? null : createDetails(THREE, materials, { group, own, owned, instanced, H, HALF, END, BAYS });
   const dust = tier === 'phone' ? null : createDust(THREE);
   if (dust) group.add(dust.points);
+  // A shaft of light from each bay's lamp down onto its suit.
+  const shafts = tier === 'phone' ? null : createShafts(THREE, bays.map((b) => [b.x, b.z]), { top: 3.22 });
+  if (shafts) group.add(...shafts.meshes);
 
   const marks = {
     about: new THREE.Vector3(-1.8, 0, -9.2),
@@ -464,11 +468,14 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     bays,
     // One instance per bay: setColorAt(k, colour), then instanceColor.needsUpdate.
     bayLights,
+    // Each bay's shaft of light (null on a phone): set(k, strength, colour).
+    shafts,
     marks,
     // Called each frame drawn, with the frame's time.
     update(now) {
       door.update(now);
       dust?.update(now);
+      shafts?.update(now);
     },
     // Called each time the camera is placed: the glass door is shut until the
     // camera is within 4.5 m of it, open by 2.5 m, and stays open once the
@@ -480,6 +487,7 @@ export function createRoom(THREE, materials, { tier = 'desktop' } = {}) {
     dispose() {
       door.dispose();
       dust?.dispose();
+      shafts?.dispose();
       details?.dispose();
       geometries.forEach((g) => g.dispose());
       owned.forEach((m) => m.dispose());

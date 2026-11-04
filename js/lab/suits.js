@@ -74,10 +74,14 @@ export function createSuitRow(lab, specs, { hues = [] } = {}) {
 
   // Each bay's column of light, in its suit's hue: bright for the one in focus.
   const colour = new THREE.Color();
+  const haze = new THREE.Color();
   function focus(index) {
     specs.forEach((_, k) => {
       colour.setHSL((hues[k] ?? JARVIS) / 360, 0.9, 0.6).multiplyScalar(k === index ? LIT : RESTING);
       room.bayLights.setColorAt(k, colour);
+      // Its shaft of light: white with a breath of the suit's hue, and the
+      // bay in focus lit the most.
+      room.shafts?.set(k, k === index ? 0.22 : 0.08, haze.set(0xdff0ff).lerp(colour, 0.12));
     });
     room.bayLights.instanceColor.needsUpdate = true;
   }
