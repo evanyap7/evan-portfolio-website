@@ -243,6 +243,7 @@ async function boot() {
     if (failed || door.isOpen) return;
     active = true;
     sync();
+    scene.wake();
     door.open().then(() => {
       if (failed) return;
       root.dataset.door = 'open';

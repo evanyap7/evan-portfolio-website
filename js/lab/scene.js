@@ -12,6 +12,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { createMaterials } from './materials.js';
 import { createRoom, VIEWS, DOORWAY_BEND } from './room.js';
 import { damp } from './rail.js';
+import { createGovernor, startingLevel } from '../perf.js';
 
 const ROW = 2; // the stop that takes two points on the path: the suits, first bay to last
 const HALF_FOV = Math.tan((20 * Math.PI) / 180); // half the frame's short side spans 20°
@@ -24,11 +25,22 @@ const stopOf = (point) => (point > ROW ? point - 1 : point);
 
 export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
   const phone = tier === 'phone';
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: phone, powerPreference: 'high-performance' });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, phone ? 1.5 : 2));
+  // Sharpest first. The governor (js/perf.js) steps down this ladder if frames
+  // run slow: bloom goes first on a laptop, then the pixel count falls.
+  const cap = Math.min(window.devicePixelRatio || 1, 2);
+  const levels = [
+    { ratio: cap, bloom: !phone },
+    { ratio: Math.min(cap, 1.5), bloom: !phone },
+    { ratio: Math.min(cap, 1.25), bloom: false },
+    { ratio: 1, bloom: false },
+    { ratio: 0.75, bloom: false },
+  ];
+  let quality = startingLevel(levels);
+  renderer.setPixelRatio(levels[quality].ratio);
 
   // The page's darkest band colour, so the room fades into the page around it.
   const air = new THREE.Color().setHSL(205 / 360, 0.45, 0.026);
@@ -52,7 +64,7 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
   // time (p95 33 ms against 16.7 ms) for edges the eye can't tell apart.
   let composer = null;
   if (!phone) {
-    const samples = renderer.getPixelRatio() < 1.5 ? 4 : 0;
+    const samples = levels[quality].ratio < 1.5 ? 4 : 0;
     const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples });
     composer = new EffectComposer(renderer, target);
     composer.addPass(new RenderPass(scene, camera));
@@ -168,16 +180,42 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
 
   const draw = () => {
     place();
-    if (composer) composer.render();
+    if (composer && levels[quality].bloom) composer.render();
     else renderer.render(scene, camera);
   };
+
+  // The size the canvas is drawn at follows the quality level.
+  const fitCanvas = () => {
+    renderer.setPixelRatio(levels[quality].ratio);
+    renderer.setSize(width, height, false);
+    if (composer) {
+      composer.setPixelRatio(levels[quality].ratio);
+      composer.setSize(width, height);
+    }
+  };
+  const governor = createGovernor(levels, {
+    level: quality,
+    floor: 3,
+    onLevel: (_, next) => {
+      quality = next;
+      fitCanvas();
+    },
+  });
 
   const listeners = [];
   let running = false;
   let raf = 0;
   let then = 0;
+  // Once the page has been still for a moment the room only breathes (lights,
+  // holograms), so it is drawn at half rate: the same look for half the work.
+  let moved = 0;
+  let drawn = 0;
   const tick = (now) => {
     raf = requestAnimationFrame(tick);
+    const calm = now - moved > 700 && u === target && !leanTo && leaning < 1e-3;
+    if (calm && now - drawn < 30) return;
+    if (!calm) governor.note(now - drawn);
+    drawn = now;
     const dt = Math.min(0.1, Math.max(0, (now - then) / 1000));
     then = now;
     u = Math.abs(target - u) < 1e-4 ? target : damp(u, target, 6, dt);
@@ -191,11 +229,8 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
   const resize = (w, h) => {
     width = Math.max(1, Math.round(w));
     height = Math.max(1, Math.round(h));
-    renderer.setSize(width, height, false);
-    if (composer) {
-      composer.setPixelRatio(renderer.getPixelRatio());
-      composer.setSize(width, height);
-    }
+    fitCanvas();
+    moved = performance.now();
     measure();
     if (!running) draw();
   };
@@ -211,8 +246,14 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
       groupFor(stopId).add(object);
       return object;
     },
+    // Back to full rate for a moment: something is about to move on its own.
+    wake() {
+      moved = performance.now();
+    },
     setRail({ u: next }, { instant = false } = {}) {
-      target = Math.min(Math.max(next, 0), last);
+      const to = Math.min(Math.max(next, 0), last);
+      if (to !== target) moved = performance.now();
+      target = to;
       if (instant) u = target;
       if (!running) draw();
     },
@@ -243,6 +284,8 @@ export function createLab(canvas, { tier = 'desktop', stops = [] } = {}) {
       if (running) return;
       running = true;
       then = performance.now();
+      drawn = then;
+      moved = then;
       raf = requestAnimationFrame(tick);
     },
     stop() {
