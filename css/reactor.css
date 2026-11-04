@@ -122,8 +122,10 @@
   text-align: center;
 }
 
+/* At rest the line is empty, but it keeps its line so the hero does not move
+   when it speaks while charging. */
 .reactor__status:empty {
-  display: none;
+  min-height: 1lh;
 }
 
 @media (max-width: 719px) {

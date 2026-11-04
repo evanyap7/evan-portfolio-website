@@ -143,7 +143,8 @@ export function initReactor() {
 
   // Input --------------------------------------------------------------
   function interact() {
-    const idle = fine ? 'Iron Man’s arc reactor · hold to charge, drag to spin' : 'Iron Man’s arc reactor · press and hold';
+    // At rest the line is empty (and hidden); it speaks only while charging.
+    const idle = '';
     let shown = '';
     let reset = 0;
     let said = 0;
