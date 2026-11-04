@@ -10,7 +10,7 @@ const DIM = 0.55; // the stage's key and warm lights, for the room's darker air
 const NEAR = 6; // the stage is fully lit with the camera this close
 const FAR = 12; // and dark from this far
 const LIT = 1.6; // the focused bay's light column
-const RESTING = 0.45; // the others'
+const RESTING = 0.9; // the others'
 
 const idle = () => new Promise((resolve) => {
   if ('requestIdleCallback' in window) window.requestIdleCallback(() => resolve(), { timeout: 600 });
