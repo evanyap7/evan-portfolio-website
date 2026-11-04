@@ -309,9 +309,9 @@ export function wallShelf(THREE, materials) {
 // the scholarship's medal in a shadow box, framed certificates and diplomas.
 // Their words are painted on canvas in the page's own type.
 
-const MONO = '"Azeret Mono", ui-monospace, "SF Mono", Menlo, monospace';
-const SANS = '"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif';
-const SERIF = '"Bodoni Moda", Georgia, "Times New Roman", serif';
+const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+const SANS = '"Instrument Sans", "Helvetica Neue", Arial, sans-serif';
+const SERIF = '"Instrument Serif", Georgia, "Times New Roman", serif';
 
 // A canvas texture painted by draw(g, w, h), and painted again once the page's
 // fonts are in, so its words are never left in a fallback face.

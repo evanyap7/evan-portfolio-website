@@ -51,7 +51,7 @@ npm run check:browser            # the full headless-Chrome suite, about 9 minut
 - **Add a project:** copy a page in `work/`, add a card to `ul.work__grid` in `index.html`, fix the "Next project" loop, list it in `sitemap.xml`, and add it to `PAGES` and `CARDS` in `tests/`.
 - **Resume:** replace `resume/Evan-Yap-Resume.pdf`, with the phone number removed from the file itself (covering it with a box is not enough).
 - **Share image:** recapture `img/og.jpg` (1200 x 630) if the hero changes.
-- **Design:** one hue (`--h`, arc blue) tints the whole palette; tokens live at the top of `css/base.css`. Type is Schibsted Grotesk, Azeret Mono, Bodoni Moda and Satoshi.
+- **Design:** one hue (`--h`, arc blue) tints the whole palette; tokens live at the top of `css/base.css`. Type is Instrument Sans, Instrument Serif (italic accents) and Satoshi (the wordmark); code and HUD labels use the system monospace.
 
 ## Deploy
 

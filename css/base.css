@@ -1,13 +1,12 @@
-/* Arial, resized to Schibsted Grotesk's metrics, stands in while it loads,
-   so the text does not reflow (and shift the page) when the web font
-   arrives. */
+/* Arial, resized to Instrument Sans's metrics, stands in while it loads, so
+   the text barely reflows when the web font arrives. */
 @font-face {
-  font-family: "Schibsted Grotesk Fallback";
+  font-family: "Instrument Sans Fallback";
   src: local("Arial");
-  ascent-override: 93.76%;
-  descent-override: 24.75%;
+  ascent-override: 93%;
+  descent-override: 24%;
   line-gap-override: 0%;
-  size-adjust: 104.16%;
+  size-adjust: 100.5%;
 }
 
 /* Tokens ------------------------------------------------------------ */
@@ -49,9 +48,9 @@
   --signal: var(--accent);    /* diagrams */
   --focus: var(--accent);
 
-  --font-sans: "Schibsted Grotesk", "Schibsted Grotesk Fallback", "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "Azeret Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --font-serif: "Bodoni Moda", Georgia, "Times New Roman", serif;
+  --font-sans: "Instrument Sans", "Instrument Sans Fallback", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
 
   --nav: 64px;       /* the floating nav's height */
   --nav-top: 16px;   /* its distance from the top of the screen */
@@ -63,11 +62,11 @@
   --ease: cubic-bezier(0.65, 0, 0.35, 1);
 
   /* Type */
-  --t-body: 17px;
-  --t-lede: 20px;
-  --t-card: 22px;     /* a clear step (1.29x) above the body text */
-  --t-small: 15.5px;
-  --t-mono: 12.5px;
+  --t-body: 19px;
+  --t-lede: 24px;
+  --t-card: 26px;     /* a clear step (1.37x) above the body text */
+  --t-small: 17px;
+  --t-mono: 14px;
   --t-title: clamp(44px, 7.2vw, 104px);
 }
 
@@ -76,9 +75,11 @@
     --gutter: 20px;
     --nav-top: 12px;
     --nav: 60px;
-    --t-body: 16px;
-    --t-lede: 18px;
-    --t-mono: 12px;
+    --t-body: 18px;
+    --t-lede: 21px;
+    --t-card: 23px;
+    --t-small: 16px;
+    --t-mono: 13px;
   }
 }
 
@@ -171,10 +172,10 @@ strong, b {
 .serif {
   color: var(--accent);
   font-family: var(--font-serif);
-  font-size: 1.08em;
+  font-size: 1.14em;
   font-style: italic;
   font-weight: 400;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 /* No paragraph ends on one word alone; headings split into even lines. */
@@ -238,7 +239,7 @@ h1, h2, h3, h4 {
   font-size: var(--t-mono);
   font-weight: 400;
   line-height: 1.5;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -263,12 +264,17 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] {
     opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+    filter: blur(6px);
+    transform: translateY(24px);
+    transition:
+      opacity 800ms var(--ease-out) var(--d, 0ms),
+      transform 900ms var(--ease-out) var(--d, 0ms),
+      filter 700ms var(--ease-out) var(--d, 0ms);
   }
 
   .js [data-reveal].is-visible {
     opacity: 1;
+    filter: none;
     transform: none;
   }
 
@@ -283,6 +289,7 @@ h1, h2, h3, h4 {
 @keyframes reveal-failsafe {
   to {
     opacity: 1;
+    filter: none;
     transform: none;
   }
 }
