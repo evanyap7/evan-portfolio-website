@@ -4,7 +4,9 @@
 
 The page is **Tony Stark's lab**. One fixed three.js canvas holds the whole room, and scrolling moves a camera along a rail through the sections (Intro, About, Experience, Selected work, Toolkit, Contact), with a page for each project. Plain HTML, CSS and JavaScript as ES modules: no framework and no build step. The only npm packages are dev tools for the checks. three.js and the fonts load from CDNs. Where WebGL2 is missing, or Reduce Motion is on, the same content shows as an ordinary page.
 
-![Hero with a three.js arc reactor you can hold to charge and drag to spin](docs/hero.png)
+![The lab's vault door opening onto Tony Stark's workshop, with a hologram of Evan inside](docs/hero.png)
+
+![The Hall of Armor: a suit in its bay, with the project beside it and the other six suits to pick from](docs/hall.png)
 
 ## Highlights
 
