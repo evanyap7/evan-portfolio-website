@@ -57,30 +57,51 @@ export function createSpots(lab) {
   // Each frame, every spot of the room the camera is in follows its object,
   // shown only where it lands inside that room's window (never over the
   // panel's words).
+  // Reads first, writes after, and each room's window measured once: with
+  // fourteen spots on the shelf, a read after every write would force fourteen
+  // layouts a frame.
   const place = () => {
+    const rects = new Map();
+    const rectOf = (element) => {
+      if (!rects.has(element)) rects.set(element, element.getBoundingClientRect());
+      return rects.get(element);
+    };
+    const pinned = root.classList.contains('shelf-pinned');
+    const put = [];
     spots.forEach((spot) => {
-      const here = root.dataset.stop === spot.stop;
       let shown = false;
-      if (here) {
+      let at = null;
+      if (root.dataset.stop === spot.stop) {
         const p = scene.project(spot.anchor);
-        let box = spot.frame?.getBoundingClientRect();
+        let box = spot.frame ? rectOf(spot.frame) : null;
         // A window as tall as the screen (the wide layout) is the whole right
         // side of the screen for as long as the camera holds in the section,
         // not only while the section's top is on screen: a long section keeps
         // its room, and its things, in reach as the panel scrolls.
         if (box && spot.frame.offsetHeight >= window.innerHeight - 1) {
-          const sheet = spot.section.getBoundingClientRect();
+          const sheet = rectOf(spot.section);
           box = { left: box.left, right: box.right, top: Math.max(0, sheet.top), bottom: Math.min(window.innerHeight, sheet.bottom) };
-        }        // A narrow screen pins the window to the top of the screen while the
-        // shelf is held there (css/lab.css), so it is where it was at arrival. The
-        // strip's own edge is the limit: an object on it may sit right at it.
-        if (box && root.classList.contains('shelf-pinned') && spot.stop === 'experience' && spot.frame.offsetHeight < window.innerHeight - 1) {
+        }
+        // A narrow screen pins the window to the top of the screen while the
+        // shelf is held there (css/lab.css), so it is where it was at arrival.
+        // The strip's own edge is the limit: an object on it may sit right at it.
+        if (box && pinned && spot.stop === 'experience' && spot.frame.offsetHeight < window.innerHeight - 1) {
           box = { left: 0, right: window.innerWidth, top: spot.frame.offsetTop, bottom: spot.frame.offsetTop + spot.frame.offsetHeight + 22 };
         }
         shown = p.onScreen && (!box || (p.x >= box.left + 22 && p.x <= box.right - 22 && p.y >= box.top + 22 && p.y <= box.bottom - 22));
-        if (shown) spot.button.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;
+        if (shown) at = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px)`;
       }
-      spot.button.classList.toggle('is-shown', shown);
+      put.push([spot, shown, at]);
+    });
+    put.forEach(([spot, shown, at]) => {
+      if (at && at !== spot.at) {
+        spot.at = at;
+        spot.button.style.transform = at;
+      }
+      if (shown !== spot.shown) {
+        spot.shown = shown;
+        spot.button.classList.toggle('is-shown', shown);
+      }
     });
   };
   scene.onFrame(place);
