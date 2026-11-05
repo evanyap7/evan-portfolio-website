@@ -491,3 +491,101 @@
   #experience .lab-spot.is-read .lab-spot__ring::after { animation: lab-spot-pulse 2.4s var(--ease-out) infinite; opacity: 1; }
   #experience .lab-spot.is-read .lab-spot__ring { transform: scale(1.6); }
 }
+
+/* Type on the room ----------------------------------------------------
+   With no panel the words stand on the scene itself: huge heavy titles in
+   capitals with the one italic serif word, small mono labels, and a faint
+   column grid over the whole room. The labels and the grid are decoration
+   (aria-hidden); they exist only in the lab. */
+.sec-label,
+.grid,
+.hud { display: none; }
+
+:root.lab .sec-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-shadow: 0 0 14px hsl(var(--h) 40% 3% / 0.9);
+}
+:root.lab .sec-label span { color: var(--accent); }
+:root.lab .sec-label::after {
+  content: '';
+  width: 56px;
+  height: 1px;
+  background: var(--line-2);
+}
+:root.lab .band--light .sec-label span { color: var(--accent); }
+
+:root.lab main > .section .title {
+  font-family: "Satoshi", var(--font-sans);
+  font-size: clamp(40px, 7.4vw, 112px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  text-align: left;
+  text-transform: uppercase;
+  text-shadow: 0 0 36px hsl(var(--h) 40% 3% / 0.85), 0 2px 6px hsl(var(--h) 40% 3% / 0.7);
+}
+:root.lab main > .section .title .serif {
+  font-size: 1.04em;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+@media (min-width: 1024px) {
+  /* The grid: four hairlines down the room, two across, a + where they meet.
+     Fixed, so the words slide over it as the camera moves. */
+  :root.lab.door-open .grid {
+    display: block;
+    position: fixed;
+    inset: 0 var(--gutter);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .grid i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: hsl(var(--h) 60% 85% / 0.13);
+  }
+  .grid i:nth-of-type(1) { left: 0; }
+  .grid i:nth-of-type(2) { left: 33.333%; }
+  .grid i:nth-of-type(3) { left: 66.666%; }
+  .grid i:nth-of-type(4) { left: 100%; }
+  .grid b {
+    position: absolute;
+    left: calc(var(--c) * 33.333%);
+    top: calc(var(--r) * 33.333%);
+    width: 13px;
+    height: 13px;
+    margin: -6px 0 0 -6px;
+    background:
+      linear-gradient(hsl(var(--h) 60% 85% / 0.32) 0 0) center / 1px 100% no-repeat,
+      linear-gradient(hsl(var(--h) 60% 85% / 0.32) 0 0) center / 100% 1px no-repeat;
+  }
+
+  /* The readouts run down the right edge: Singapore time, the stop, the way
+     down the page. Vertical, so they sit in the margin beside the words and
+     never over a line of them. */
+  :root.lab.door-open .hud {
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    top: calc(var(--nav) + var(--nav-top) + 32px);
+    right: 40px;
+    bottom: 24px;
+    z-index: 9;
+    writing-mode: vertical-rl;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-shadow: 0 0 12px hsl(var(--h) 40% 3% / 0.9);
+    pointer-events: none;
+  }
+}

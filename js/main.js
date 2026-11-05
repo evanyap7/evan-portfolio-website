@@ -2,6 +2,7 @@ import { CONTACT_EMAIL } from './config.js';
 import { initCopy } from './contact.js';
 import { initCount } from './count.js';
 import { initGate } from './gate.js';
+import { initHud } from './hud.js';
 import { initIndex } from './index.js';
 import { initLab } from './lab.js';
 import { initMenu } from './menu.js';
@@ -42,6 +43,7 @@ function initReels() {
 
 initGate();
 initLab();
+initHud();
 applyContactEmail();
 initMenu();
 initIndex();
