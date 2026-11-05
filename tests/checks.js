@@ -412,7 +412,7 @@ const TITLES = {
   'about-title': 'About me',
   'experience-title': 'My experience',
   'work-title': 'Selected work',
-  'toolkit-title': 'Toolkit',
+  'toolkit-title': 'My toolkit',
   'contact-title': 'Let’s talk',
 };
 

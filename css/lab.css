@@ -589,3 +589,9 @@
     pointer-events: none;
   }
 }
+
+/* Contact reads from the left edge like every other section. */
+:root.lab .contact { text-align: left; }
+:root.lab .contact__email,
+:root.lab .contact__links { justify-content: flex-start; }
+:root.lab .contact .contact__invite { margin-top: 28px; }
