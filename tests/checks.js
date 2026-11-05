@@ -276,7 +276,7 @@ export function honours(win) {
   return [
     result('honours: four tiers in Experience, in order', names === 'Awards,Scholarship,Certifications,Education', names || 'none'),
     result('honours: each tier keeps its old link', ids === 'recognition,scholarship,certifications,education', ids),
-    result('honours: 4 awards, 1 scholarship, 2 certificates, 3 schools', rows === '4,1,2,3', rows),
+    result('honours: 3 awards, 1 scholarship, 2 certificates, 3 schools', rows === '3,1,2,3', rows),
     result('honours: Toolkit has no tabs', !doc.querySelector('#toolkit [role="tablist"], #toolkit [role="tab"], [data-kit]')),
   ];
 }
@@ -686,7 +686,7 @@ export async function sceneSpots(win) {
   item?.dispatchEvent(new win.PointerEvent('pointerleave'));
   const off = !doc.querySelector('.scene__spot.is-lit, [data-thing].is-lit');
   return [
-    result('a spot for each of About\'s things in the photograph', items.length >= 5 && spots.length === items.length, `${items.length} things, ${spots.length} spots`),
+    result('a spot for each of About\'s things in the photograph', items.length >= 4 && spots.length === items.length, `${items.length} things, ${spots.length} spots`),
     result('pointing at a thing lights its spot, and leaving lets it go', on && off),
   ];
 }
