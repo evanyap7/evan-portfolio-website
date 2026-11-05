@@ -330,6 +330,19 @@
   :root.lab .role__points { grid-column: 2; }
   :root.lab .work .work__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
+  /* About sits in the middle of the page, not in the left pane. */
+  :root.lab main > #about {
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+    border-image: linear-gradient(90deg,
+      transparent calc(50% - var(--pane-w) / 2 - 64px),
+      var(--scrim) calc(50% - var(--pane-w) / 2 + 72px),
+      var(--scrim) calc(50% + var(--pane-w) / 2 - 72px),
+      transparent calc(50% + var(--pane-w) / 2 + 64px)) fill 0 / 0 / 0;
+  }
+  :root.lab main > #about > * { margin-inline: auto; }
+  :root.lab #about .about__photo { justify-self: center; }
+
   :root.lab main > .band--light {
     border-image: linear-gradient(90deg,
       transparent 0,
