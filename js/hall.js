@@ -8,7 +8,6 @@
 // With reduced motion every change is instant and nothing loops.
 
 import { whenActive } from './gate.js';
-import { getLab } from './lab.js';
 
 // In order of importance, each project wearing the Mark of the same number.
 // Only EGO has a codename of its own (it is the assistant's name); every other
@@ -137,57 +136,6 @@ function mount(suits) {
   return { root, stage, canvas, hint, mark, name, line, figure, figureLabel, open, suitButtons };
 }
 
-// A link over each suit in its bay, held there as the camera moves: a click on
-// the suit opens its project, as its card does. Real links, so the keyboard
-// and a screen reader have them too. Each is live only while the camera is at
-// Work and the suit lands inside Work's window (never over the panel).
-function linkSuits(found, row, suits) {
-  const root = document.documentElement;
-  const frame = document.querySelector('#work [data-lab-frame]');
-  const links = suits.map((suit, k) => {
-    const link = element('a', 'lab-suit');
-    link.href = suit.href;
-    link.setAttribute('aria-label', `${suit.name}: ${suit.more}`);
-    const name = element('span', 'lab-suit__name', suit.name);
-    name.setAttribute('aria-hidden', 'true');
-    link.append(name);
-    link.dataset.suit = suit.id;
-    document.getElementById('work').append(link);
-    return { link, k, shown: false, at: '' };
-  });
-  found.onFrame(() => {
-    const live = root.dataset.stop === 'work';
-    // Only its left edge counts (the panel's side): the window is as tall as
-    // the screen for the whole hold, but its own box scrolls away with the
-    // section's first screen, and the suits stand past its right edge too.
-    const box = live && frame ? frame.getBoundingClientRect() : null;
-    links.forEach((item) => {
-      let shown = false;
-      if (live) {
-        const { foot, head } = row.ends[item.k];
-        const a = found.project(foot);
-        const b = found.project(head);
-        const height = a.y - b.y;
-        const x = (a.x + b.x) / 2;
-        shown = a.onScreen && b.onScreen && height > 24
-          && (!box || x >= box.left)
-          && b.y >= 0 && a.y <= window.innerHeight;
-        if (shown) {
-          const at = `translate(${Math.round(x)}px, ${Math.round(b.y)}px)`;
-          if (at !== item.at) {
-            item.at = at;
-            item.link.style.transform = at;
-            item.link.style.setProperty('--h', `${Math.round(height)}px`);
-          }
-        }
-      }
-      if (shown !== item.shown) {
-        item.shown = shown;
-        item.link.classList.toggle('is-shown', shown);
-      }
-    });
-  });
-}
 
 export function initHall() {
   const work = document.getElementById('work');
@@ -199,30 +147,13 @@ export function initHall() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ui = mount(suits);
   const others = mountOthers(suits);
-  // In the lab the Hall's panel is pinned while the visitor scrolls through a
-  // hold as long as the row of bays: each stretch of it walks the camera one
-  // bay on (css/hall.css, js/lab.js). The title stays above the hold and
-  // scrolls away, so on a phone the pin has room for the tabs.
-  let hold = null;
-  if (document.documentElement.classList.contains('lab')) {
-    hold = element('div', 'hall-hold');
-    hold.dataset.labHold = '';
-    const pin = element('div', 'hall-pin');
-    title.after(hold);
-    hold.append(pin);
-    pin.append(ui.root);
-    if (others) hold.after(others);
-  } else {
-    title.after(ui.root);
-    if (others) ui.root.after(others);
-  }
+  title.after(ui.root);
+  if (others) ui.root.after(others);
   // The Hall and the list replace the cards; the cards stay in the page for
   // search engines and come back if three.js fails to load.
   work.classList.add('work--hall');
 
   let hall = null;
-  let lab = null; // the lab, once the suits stand in its bays
-  let row = null;
   let current = 0;
   let visible = false;
 
@@ -238,7 +169,6 @@ export function initHall() {
     ui.open.textContent = `${suit.more} →`;
     ui.open.href = suit.href;
     ui.suitButtons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
-    row?.focus(index);
     if (!hall || !hall.ready(suit.spec)) {
       ui.hint.textContent = `Loading Mark ${suit.mark}…`;
     }
@@ -260,8 +190,6 @@ export function initHall() {
     warming = true;
     const link = navigator.connection;
     if (link && (link.saveData || /2g|3g/.test(link.effectiveType ?? ''))) return;
-    // In the lab, every bay's suit stands too, nearest first.
-    row?.warm(suits.map((_, i) => i).sort((a, b) => Math.abs(a - current) - Math.abs(b - current)));
     const order = suits.map((_, i) => suits[(current + 1 + i) % suits.length]);
     order.reduce((chain, next) => chain.then(() => hall?.prepare(next.spec)), Promise.resolve());
   };
@@ -270,38 +198,15 @@ export function initHall() {
   const fail = () => {
     hall?.stop();
     hall = null;
-    row = null;
-    lab = null;
     ui.root.remove();
     others?.remove();
-    hold?.remove();
     work.classList.remove('work--hall');
   };
-  // The lab gone (a lost GPU context) takes the bays with it: the cards return.
-  if (hold) document.addEventListener('lab:failed', fail, { once: true });
-
-  // A tab in the lab walks the camera to that suit's bay. The bays passed on
-  // the way are not picked; the one headed for is, on arrival or soon after.
-  let heading = -1;
-  let headingTimer = 0;
-  // A tab pressed before the suits have joined the lab waits for them.
-  let asked = -1;
-  const headFor = (index) => {
-    heading = index;
-    clearTimeout(headingTimer);
-    headingTimer = setTimeout(() => {
-      heading = -1;
-    }, 1500);
-    lab.goToBay(index);
-  };
-
   ui.suitButtons.forEach((button) => {
     const index = Number(button.dataset.suit);
     const warm = () => hall?.prepare(suits[index].spec);
     button.addEventListener('click', () => {
       select(index);
-      if (lab) headFor(index);
-      else asked = index;
     });
     button.addEventListener('pointerenter', warm);
     button.addEventListener('focus', warm);
@@ -368,12 +273,6 @@ export function initHall() {
     if (!target) return false;
     if (index >= 0 && index !== current) select(index);
     target.scrollIntoView({ block: 'start', behavior: 'instant' });
-    // In the lab the suit's place is its bay along the hold.
-    if (index >= 0 && hold) {
-      getLab().then((found) => {
-        if (found && current === index) found.goToBay(index, { instant: true });
-      });
-    }
     return true;
   };
 
@@ -394,37 +293,7 @@ export function initHall() {
     else hall.stop();
   };
 
-  // In the lab the suits stand in its bays and its one canvas draws them;
-  // scrolling through the hold picks the suit in the bay the camera reaches.
-  const loadLab = (found) => import('./lab/suits.js').then(({ createSuitRow }) => {
-    lab = found;
-    row = createSuitRow(found.scene, suits.map((suit) => suit.spec), { hues: suits.map((suit) => suit.hue) });
-    hall = row.stage;
-    linkSuits(found.scene, row, suits);
-    // The whole row stands from the start, so the bays are never seen empty
-    // as the camera comes down the gallery. Not on a slow or metered link.
-    const link = navigator.connection;
-    if (!(link && (link.saveData || /2g|3g/.test(link.effectiveType ?? '')))) row.warm(suits.map((_, i) => i));
-    found.onBay((index) => {
-      if (heading >= 0 && index !== heading) return;
-      heading = -1;
-      if (index !== current) select(index);
-    });
-    if (asked >= 0) {
-      select(asked);
-      headFor(asked);
-      asked = -1;
-      return;
-    }
-    const standing = Number(document.documentElement.dataset.bay ?? -1);
-    select(standing >= 0 ? standing : current);
-  });
-
   const load = () => {
-    getLab().then((found) => (found ? loadLab(found) : loadHall())).catch(fail);
-  };
-
-  const loadHall = () => {
     import('./hall-scene.js').then(({ createHall }) => {
       hall = createHall(ui.canvas);
       const fit = () => {
@@ -442,14 +311,8 @@ export function initHall() {
     }).catch(fail);
   };
 
-  // In the lab the suits stand in the bays seen from the door, so they load
-  // as soon as the site wakes. Elsewhere, fetch three.js and build the first
-  // core only once Work is near.
+  // Fetch three.js and build the first suit only once Work is near.
   whenActive(() => {
-    if (document.documentElement.classList.contains('lab')) {
-      load();
-      return;
-    }
     if (!('IntersectionObserver' in window)) return;
     const near = new IntersectionObserver((entries) => {
       if (!entries.some((entry) => entry.isIntersecting)) return;

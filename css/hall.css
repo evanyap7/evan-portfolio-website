@@ -272,133 +272,48 @@
   .others__arrow { transition: none; }
 }
 
-/* In the lab --------------------------------------------------------
-   The suits stand in the lab's bays (js/lab/suits.js), drawn by the lab's
-   own canvas. The panel and the tabs are pinned while the
-   visitor scrolls through the hold, one stretch of it per bay, and the
-   stage becomes a see-through hit area fixed over the window the camera
-   frames the bay in: drag, arrows and Enter work on it as before. No
-   ancestor of the stage may take a transform or filter, or it would no
-   longer be fixed to the screen. */
-:root.lab .hall-hold::after {
+/* On the scene ------------------------------------------------------
+   The suit stands in the workshop's shot (js/lab.js): its canvas is see-
+   through, so the room shows round it, with a pool of dark under it to lift
+   it off the photograph. On a wide screen the readouts and the tabs take the
+   text column and the suit stands in the shot to its right. */
+:root.lab .hall__stage::before {
   content: '';
-  display: block;
-  height: calc(6 * 55svh);
+  position: absolute;
+  inset: 4% 8% 0;
+  z-index: -1;
+  background: radial-gradient(closest-side, hsl(205 45% 3% / 0.85), hsl(205 45% 3% / 0.55) 55%, transparent);
+  pointer-events: none;
 }
 
-:root.lab .hall-pin {
-  /* Where the pin sits in the section's flow, so it pins without a jump. */
-  --pin-top: var(--window);
-  position: sticky;
-  top: var(--pin-top);
-  min-height: calc(100svh - var(--pin-top));
-  max-height: calc(100svh - var(--pin-top));
-  padding-bottom: 24px;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-
-:root.lab .hall-pin::-webkit-scrollbar { display: none; }
-
-:root.lab .hall {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-:root.lab .hall__panel { gap: 16px; }
-:root.lab .hall__suits { margin-top: 28px; }
-:root.lab .hall__canvas { display: none; }
-
-:root.lab .hall__stage {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: auto;
-  height: var(--window);
-  max-height: none;
-  aspect-ratio: auto;
-}
-
-/* Only while the camera stands in the row. */
-:root.lab:not([data-bay]) .hall__stage { visibility: hidden; }
-
-@media (max-width: 1023px) {
-  /* A shorter window, so the pinned panel has room under it. The section's
-     pane would cover the window once scrolled, so the pin and the list
-     under it paint their own. */
-  :root.lab main > #work {
-    --window: 40svh;
-    padding-top: var(--window);
-    border-image: none;
-  }
-
-  /* The nav floats over the top of the window, so the suit is framed in what
-     is left under it: the whole suit shows, head included. A landscape phone
-     has no height to spare, and keeps the whole window. */
-  @media (min-height: 560px) {
-    :root.lab main > #work { --window: 44svh; }
-
-    :root.lab #work .lab-frame {
-      top: calc(var(--nav) + var(--nav-top) + 4px);
-      height: calc(var(--window) - var(--nav) - var(--nav-top) - 4px);
-    }
-  }
-
-  :root.lab .work--hall > .work__title,
-  :root.lab .hall-pin,
-  :root.lab .work--hall .others {
-    padding-top: 32px;
-    border-image: linear-gradient(transparent 0, var(--scrim) 40px, var(--scrim) calc(100% - 32px), transparent 100%) fill 0 / 0 / 0 100vw;
-  }
-
-  /* The title and the pin read as one pane, with no gap between them. */
-  :root.lab .work--hall > .work__title { margin-bottom: 0; }
-  :root.lab .hall-pin { padding-top: 24px; }
-
-  :root.lab .work--hall .others {
-    margin-bottom: 0;
-    padding-bottom: 32px;
-  }
-
-  /* The title arrives with the visitor, then sits in the window just above
-     the pin. Once the camera stands in the row (lab.js sets data-bay as the
-     pin sticks) the window is the suit's, so the title gives way. Opacity,
-     not visibility, keeps it the section's heading for a screen reader. */
-  :root.lab[data-bay] .work--hall > .work__title { opacity: 0; }
-
-  @media (prefers-reduced-motion: no-preference) {
-    :root.lab .work--hall > .work__title { transition: opacity 0.35s ease; }
-  }
-
-  /* Tighter, so the tabs fit in the pin under the window. */
-  :root.lab .hall__panel { gap: 12px; }
-  :root.lab .hall__suits { margin-top: 12px; }
-}
+:root.lab .hall__stage { isolation: isolate; }
 
 @media (min-width: 1024px) {
-  :root.lab .hall-pin { --pin-top: max(var(--band-pad), calc(var(--nav) + var(--nav-top) + 40px)); }
+  :root.lab main > #work > .hall {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
 
-  /* The panel has only the pane column here: seven tabs in one row leave a
-     long name no room, so they take two rows of four. */
+  :root.lab .hall__panel { grid-column: 1; grid-row: 1; gap: 16px; }
+
   :root.lab .hall__suits {
+    grid-column: 1;
+    grid-row: 2;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     row-gap: 8px;
-    margin-top: 24px;
+    margin-top: 32px;
   }
 
-  /* The window right of the panel column, as .lab-frame in css/lab.css. */
-  :root.lab .hall__stage {
-    left: calc(max(0px, (100% - var(--wide)) / 2) + var(--gutter) + var(--pane-w) + 32px);
-    right: calc(max(0px, (100% - var(--wide)) / 2) + var(--gutter));
-    height: 100svh;
+  /* The suit stands in the shot right of the column, from the section's
+     top, as large as the screen allows; it scrolls with Work. */
+  :root.lab #work .hall__stage {
+    position: absolute;
+    top: max(var(--band-pad), calc(var(--nav) + var(--nav-top) + 16px));
+    /* The section stops at the page width; the suit may stand past it, into
+       the margin, on a screen wider than that. */
+    --bleed: max(0px, (100vw - 100%) / 2 - var(--gutter));
+    right: calc(var(--gutter) - var(--bleed));
+    width: min(calc(100% + var(--bleed) - var(--gutter) - var(--pane-w) - 24px), calc(100svh - 150px), 860px);
+    max-height: none;
   }
-}
-
-/* A short laptop screen: one line per name keeps both rows in the pin. */
-@media (min-width: 1024px) and (max-height: 780px) {
-  :root.lab .hall__suit-name { -webkit-line-clamp: 1; }
 }
