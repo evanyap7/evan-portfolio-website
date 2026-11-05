@@ -102,7 +102,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 38% 34% at 50% 74%, hsl(205 45% 3% / 0.72), hsl(205 45% 3% / 0.38) 60%, transparent);
+  background: radial-gradient(ellipse 40% 30% at 50% 52%, hsl(205 45% 3% / 0.72), hsl(205 45% 3% / 0.38) 60%, transparent);
 }
 
 /* The clip takes over from its still once it is moving. */
@@ -218,18 +218,15 @@
 
 /* The hero's words lie on the shot itself, with no panel. A soft dark halo
    keeps them on the page's own dark wherever the shot is bright, and the
-   lede, the hero's one sentence to read, takes the reading ink. The
-   callouts' small captions take both. */
+   lede, the hero's one sentence to read, takes the reading ink. */
 :root.lab .hero__name,
 :root.lab .hero__title,
 :root.lab .hero__lede,
-:root.lab .reactor__status,
-:root.lab .hero__creds li {
+:root.lab .reactor__status {
   text-shadow: 0 0 22px hsl(var(--h) 30% 3% / 0.85), 0 1px 3px hsl(var(--h) 30% 3% / 0.9);
 }
 :root.lab .hero__lede,
-:root.lab .reactor__status,
-:root.lab .hero__creds li { color: var(--text-2); }
+:root.lab .reactor__status { color: var(--text-2); }
 
 /* Once the door is open the shot is the picture, so the name steps out of
    its middle: it closes up and settles, smaller, just over the headline,
@@ -246,6 +243,18 @@
     translate: 0 calc(var(--core) * 0.5 - 0.2em);
   }
 }
+
+/* The reactor's stage takes no room in the hero: the headline is the middle
+   of the hero from the first paint, and the page never shifts when the door
+   opens. The reactor is centred in the hero behind it. */
+:root.lab .hero__stage {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  max-width: none;
+}
+
+:root.lab.door-open .hero__stage { pointer-events: none; }
 
 /* Sections: no band fill; a scrim is painted in its place. */
 :root.lab main > .section {
@@ -313,7 +322,7 @@
 
   /* A console column reads from its left edge, and the grids laid out for
      the whole page width take the layouts they use on a tablet. */
-  :root.lab main > .section .title { text-align: left; }
+  :root.lab main > .section .title { text-align: center; }
   :root.lab .about { grid-template-columns: minmax(0, 1fr); }
   /* One column, so the photo no longer holds beside the text: it leads it. */
   :root.lab .about__photo { position: static; justify-self: start; max-width: 320px; }
@@ -443,3 +452,13 @@
 :root.lab .contact__email,
 :root.lab .contact__links { justify-content: flex-start; }
 :root.lab .contact .contact__invite { margin-top: 28px; }
+
+/* Content is centred on its column: the labels, titles and About's words. */
+:root.lab .sec-label,
+:root.lab .about__text,
+:root.lab .about__things-title { text-align: center; }
+:root.lab .about__photo { justify-self: center; }
+:root.lab .about__text { margin-inline: auto; }
+:root.lab .about__things li { text-align: center; }
+:root.lab main > .section .title { text-align: center; }
+:root.lab .sec-label { justify-content: center; }

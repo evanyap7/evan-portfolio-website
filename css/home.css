@@ -59,7 +59,7 @@
 
 .hero__title {
   margin-top: 28px;
-  font-size: clamp(30px, 3.6vw, 54px);
+  font-size: clamp(40px, 6.2vw, 96px);
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: -0.04em;
@@ -71,35 +71,22 @@
 }
 
 .hero__lede {
-  max-width: 36em;
+  max-width: 30em;
+  hyphens: none;
   text-wrap: balance;
-  margin-top: 18px;
+  margin-top: 24px;
   color: var(--muted);
-  font-size: var(--t-lede);
-  line-height: 1.55;
+  font-size: clamp(1.125rem, 1.7vw, 1.65rem);
+  line-height: 1.5;
 }
 
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
-  margin-top: 30px;
-}
-
-.hero__creds {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px 36px;
-  margin-top: 48px;
-  color: var(--dim);
-}
-
-.hero__creds b {
-  margin-right: 0.4em;
-  color: var(--muted);
-  font-weight: 400;
+  gap: 14px;
+  margin-top: 36px;
+  font-size: 1.125rem;
 }
 
 @media (max-width: 719px) {
@@ -131,12 +118,6 @@
     width: 100%;
     max-width: 320px;
   }
-
-  .hero__creds {
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 44px;
-  }
 }
 
 /* Load (or, behind the gate, waking): the name rises either side of the
@@ -155,7 +136,6 @@
   .hero > .reactor__panel { animation-delay: 700ms; }
   .hero > .hero__lede { animation-delay: 620ms; }
   .hero > .hero__actions { animation-delay: 700ms; }
-  .hero > .hero__creds { animation-delay: 780ms; }
 }
 
 /* On a phone, behind the gate, the resume and email were already in place,
