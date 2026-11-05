@@ -28,16 +28,17 @@ const SHOTS = [
     id: 'about',
     name: 'about',
     x: '66%',
+    video: true,
     spots: { barbell: [72, 22], guitar: [82, 58], coffee: [53.5, 60], floorball: [90, 66] },
   },
-  { id: 'work', name: 'work', x: '74%' },
-  { id: 'experience', name: 'exp', x: '80%' },
-  { id: 'toolkit', name: 'kit', x: '62%' },
-  { id: 'contact', name: 'contact', x: '76%' },
+  { id: 'work', name: 'work', x: '74%', video: true },
+  { id: 'experience', name: 'exp', x: '80%', video: true },
+  { id: 'toolkit', name: 'kit', x: '62%', video: true },
+  { id: 'contact', name: 'contact', x: '76%', video: true },
 ];
 const DIR = 'img/scene/';
 // How far a shot has pushed in by the time its section leaves the screen.
-const PUSH = 0.08;
+const PUSH = 0.14;
 // After the reactor's pulse, the room comes up and the reactor steps aside.
 const WAKE_MS = 700;
 const FADE_MS = 400;
@@ -53,7 +54,7 @@ export function initLab() {
   scene.className = 'scene';
   scene.setAttribute('aria-hidden', 'true');
 
-  let video = null;
+  const videos = new Map();
   const spots = new Map();
   stops.forEach((stop, i) => {
     const layer = document.createElement('div');
@@ -77,21 +78,21 @@ export function initLab() {
     img.fetchPriority = i === 0 ? 'high' : 'low';
     frame.append(img);
     if (stop.video && !still) {
-      video = document.createElement('video');
+      const video = document.createElement('video');
       video.className = 'scene__media scene__video';
       video.muted = true;
       video.defaultMuted = true;
       video.loop = true;
       video.playsInline = true;
-      video.preload = 'auto';
+      // Only the shot in view loads and plays; the hero's is wanted at once.
+      video.preload = i === 0 ? 'auto' : 'none';
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
-      // The loop is drawn wider than a phone's screen, so a phone gets the
-      // 1080p clip too: the small one would be stretched soft.
-      const sources = [['hero.webm', 'video/webm'], ['hero.mp4', 'video/mp4']];
-      sources.forEach(([file, type]) => {
+      // The loops are drawn wider than a phone's screen, so a phone gets the
+      // 1080p clips too: a smaller one would be stretched soft.
+      [['webm', 'video/webm'], ['mp4', 'video/mp4']].forEach(([ext, type]) => {
         const source = document.createElement('source');
-        source.src = DIR + file;
+        source.src = `${DIR}${stop.name === 'hero' ? 'hero' : `${stop.name}-loop`}.${ext}`;
         source.type = type;
         video.append(source);
       });
@@ -99,6 +100,7 @@ export function initLab() {
       // play, its still (the same frame) is the shot.
       video.addEventListener('playing', () => layer.classList.add('is-moving'), { once: true });
       frame.append(video);
+      videos.set(i, video);
     }
     Object.entries(stop.spots ?? {}).forEach(([thing, [x, y]]) => {
       const spot = document.createElement('span');
@@ -173,12 +175,13 @@ export function initLab() {
 
   let current = -1;
   let awake = false;
-  // The loop runs only once the site is awake, while the hero's shot is up
-  // and the tab is in view.
+  // A loop runs only once the site is awake, while its shot is up and the
+  // tab is in view.
   const play = () => {
-    if (!video) return;
-    if (awake && !document.hidden && stops[current]?.video) video.play().catch(() => {});
-    else video.pause();
+    videos.forEach((video, i) => {
+      if (awake && !document.hidden && i === current) video.play().catch(() => {});
+      else video.pause();
+    });
   };
 
   const update = () => {
