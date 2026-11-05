@@ -264,12 +264,12 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: no-preference) {
   .js [data-reveal] {
     opacity: 0;
-    filter: blur(6px);
-    transform: translateY(24px);
+    filter: blur(10px);
+    transform: translateY(40px);
     transition:
-      opacity 800ms var(--ease-out) var(--d, 0ms),
-      transform 900ms var(--ease-out) var(--d, 0ms),
-      filter 700ms var(--ease-out) var(--d, 0ms);
+      opacity 1200ms var(--ease-out) var(--d, 0ms),
+      transform 1400ms var(--ease-out) var(--d, 0ms),
+      filter 1100ms var(--ease-out) var(--d, 0ms);
   }
 
   .js [data-reveal].is-visible {
