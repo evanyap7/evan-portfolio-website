@@ -3,7 +3,7 @@
 // a list of { name, pass, detail }. run.js decides which checks run where.
 
 const WIDE = 1024;
-// The walk's order: the door, About, the suits, the trophy shelf, the bench, the office.
+// The sections in page order, each with its shot in the scene.
 const SECTIONS = ['top', 'about', 'work', 'experience', 'toolkit', 'contact'];
 const CARDS = ['website-revamp', 'parallel-match', 'assistant-bot', 'trading-agent', 'research-agent', 'watchpartyyy', 'v-bay', 'others'];
 // The drawing-set palette (paper, desk, ink, accent) and the pastels before it.
@@ -19,19 +19,6 @@ const until = async (test, ms) => {
   for (let t = 0; t < ms && !test(); t += 100) await wait(100);
   return test();
 };
-// Whether this frame can run the lab: WebGL2 and no reduced motion. The test
-// context is released at once so it never counts against the browser's limit.
-const labCapable = (win) => {
-  if (win.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
-  try {
-    const gl = win.document.createElement('canvas').getContext('webgl2');
-    gl?.getExtension('WEBGL_lose_context')?.loseContext();
-    return Boolean(gl);
-  } catch {
-    return false;
-  }
-};
-
 // Six sections in story order, one h1, and headings that never skip a level.
 export function structure(win) {
   const ids = [...win.document.querySelectorAll('main > section')].map((section) => section.id).join(',');
@@ -651,447 +638,132 @@ export async function discovery(win) {
   ];
 }
 
-// The lab: one fixed canvas behind the page, where the frame can run it, and
-// none where it cannot.
-export async function lab(win) {
+// The scene: a photograph of the workshop fixed behind the page, one shot per
+// section. Every browser that runs modules gets it; reduced motion keeps it,
+// still: no clip, no dust, no drift.
+export async function scene(win) {
   const doc = win.document;
   const root = doc.documentElement;
-  if (!labCapable(win)) {
-    return [result('no lab without WebGL2 or with reduced motion', !root.classList.contains('lab') && !doc.querySelector('.lab__canvas'))];
-  }
+  const still = win.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ready = await until(() => root.classList.contains('lab-ready'), 6000);
-  const canvases = doc.querySelectorAll('canvas.lab__canvas');
-  const canvas = canvases[0];
-  const style = canvas && win.getComputedStyle(canvas);
-  const box = canvas?.getBoundingClientRect();
+  const scenes = doc.querySelectorAll('.scene');
+  const el = scenes[0];
+  const style = el && win.getComputedStyle(el);
+  const box = el?.getBoundingClientRect();
   // The visible width. Headless Chrome reports root.clientWidth without the
   // scrollbar it still lays out, so the visual viewport is the honest number.
   const vw = Math.round(win.visualViewport?.width ?? root.clientWidth);
   const vh = root.clientHeight;
+  const shots = [...doc.querySelectorAll('.scene__shot')].map((shot) => shot.dataset.shot).join(',');
+  const moving = Boolean(doc.querySelector('.scene__motes')) && Boolean(doc.querySelector('.scene__video'));
   return [
-    result('lab mode is on', root.classList.contains('lab')),
-    result('one lab canvas', canvases.length === 1, `${canvases.length}`),
-    result('lab canvas is fixed, hidden from readers and lets clicks through',
-      style?.position === 'fixed' && canvas.getAttribute('aria-hidden') === 'true' && style.pointerEvents === 'none',
-      style ? `${style.position} ${canvas.getAttribute('aria-hidden')} ${style.pointerEvents}` : 'missing'),
-    result('lab canvas fills the screen', box && Math.abs(box.width - vw) <= 1 && Math.abs(box.height - vh) <= 1,
+    result('scene is ready within 6 s', ready && root.classList.contains('lab')),
+    result('one scene', scenes.length === 1, `${scenes.length}`),
+    result('scene is fixed, hidden from readers and lets clicks through',
+      style?.position === 'fixed' && el.getAttribute('aria-hidden') === 'true' && style.pointerEvents === 'none',
+      style ? `${style.position} ${el.getAttribute('aria-hidden')} ${style.pointerEvents}` : 'missing'),
+    result('scene fills the screen', box && Math.abs(box.width - vw) <= 1 && Math.abs(box.height - vh) <= 1,
       box ? `${Math.round(box.width)}×${Math.round(box.height)} of ${vw}×${vh}` : 'missing'),
-    result('lab is ready within 6 s', ready),
+    result('a shot for each section, in order', shots === SECTIONS.join(','), shots),
+    result(still ? 'reduced motion: no clip and no dust' : 'the hero clip and the dust are there', still ? !doc.querySelector('.scene__motes, .scene__video') : moving),
   ];
 }
 
-// Scrolling walks the camera: each section is a stop, and the end of the page
-// is the office even when the page is too short to bring Contact to the top.
-export async function labRail(win) {
+// Scrolling changes the shot: each section brings up its own, and the end of
+// the page is Contact's even when the page is too short to bring it to the top.
+export async function sceneStops(win) {
   const doc = win.document;
   const root = doc.documentElement;
-  if (!labCapable(win)) return [result('rail: no lab in this frame', !root.classList.contains('lab'))];
   await until(() => root.classList.contains('lab-ready'), 6000);
   const seen = [];
   for (const id of SECTIONS) {
     doc.getElementById(id).scrollIntoView({ behavior: 'instant' });
     await wait(300);
-    seen.push(`${id}:${root.dataset.stop}`);
+    const on = doc.querySelector('.scene__shot.is-on')?.dataset.shot;
+    seen.push(`${id}:${root.dataset.stop}:${on}`);
   }
-  const missed = seen.filter((pair) => { const [want, got] = pair.split(':'); return want !== got; });
+  const missed = seen.filter((triple) => { const [want, stop, on] = triple.split(':'); return want !== stop || want !== on; });
   win.scrollTo({ top: root.scrollHeight, behavior: 'instant' });
   await wait(300);
   const end = root.dataset.stop;
   win.scrollTo({ top: 0, behavior: 'instant' });
   await wait(100);
   return [
-    result('the camera stops at each section', missed.length === 0, seen.join(' ')),
-    result('the end of the page is the office', end === 'contact', end),
+    result('each section brings up its shot', missed.length === 0, seen.join(' ')),
+    result('the end of the page is Contact', end === 'contact', end),
   ];
 }
 
-// The arc reactor is the lab's door: a first visit finds it shut, and waking
-// the site opens it.
-export async function gateDoor(win) {
+// About's things, pointed at, light their objects in the photograph, and let
+// them go again.
+export async function sceneSpots(win) {
   const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('door: no lab in this frame', !root.classList.contains('lab'))];
+  await until(() => doc.documentElement.classList.contains('lab-ready'), 6000);
+  const items = [...doc.querySelectorAll('[data-thing].has-spot')];
+  const spots = doc.querySelectorAll('.scene__spot');
+  const item = items[0];
+  item?.dispatchEvent(new win.PointerEvent('pointerenter'));
+  const on = doc.querySelectorAll('.scene__spot.is-lit').length === 1 && item?.classList.contains('is-lit');
+  item?.dispatchEvent(new win.PointerEvent('pointerleave'));
+  const off = !doc.querySelector('.scene__spot.is-lit, [data-thing].is-lit');
+  return [
+    result('a spot for each of About\'s things in the photograph', items.length >= 5 && spots.length === items.length, `${items.length} things, ${spots.length} spots`),
+    result('pointing at a thing lights its spot, and leaving lets it go', on && off),
+  ];
+}
+
+// The arc reactor is the scene's door: a first visit finds the room dark, and
+// waking the site brings it up.
+export async function gateDoor(win) {
+  const root = win.document.documentElement;
   await until(() => root.classList.contains('lab-ready') || !root.classList.contains('gated'), 6000);
-  const shut = root.classList.contains('gated') ? root.dataset.door : 'woke before the lab was ready';
+  const shut = root.classList.contains('gated') ? !root.classList.contains('door-open') : 'woke before the scene was ready';
   await holdReactor(win, 1900);
   await wait(1400);
   return [
-    result('door: shut while the site is gated', shut === 'closed', String(shut)),
-    result('door: holding the reactor to full opens it', root.dataset.door === 'open' && root.classList.contains('door-open'), `${root.dataset.door} ${root.classList.contains('door-open')}`),
+    result('door: shut while the site is gated', shut === true, String(shut)),
+    result('door: holding the reactor to full opens it', root.classList.contains('door-open')),
   ];
 }
 
 // A link into the page, or a visitor already let in this session, finds the
-// door already open at the first frame, with the camera at the linked stop.
-export async function labDoor(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('door: no lab in this frame', !root.classList.contains('lab'))];
+// door already open, with the linked section's shot up.
+export async function sceneDoor(win) {
+  const root = win.document.documentElement;
   await until(() => root.classList.contains('lab-ready'), 6000);
-  const first = `${root.dataset.door} ${root.dataset.stop}`;
-  await until(() => root.dataset.stop === 'toolkit', 1000);
+  const first = root.classList.contains('door-open');
+  await until(() => root.dataset.stop === 'toolkit', 1500);
   return [
-    result('door: already open at the first frame', first.startsWith('open '), first),
-    result('door: the camera is at the linked stop', root.dataset.stop === 'toolkit', String(root.dataset.stop)),
+    result('door: already open', first),
+    result('door: the linked section\'s shot is up', root.dataset.stop === 'toolkit', String(root.dataset.stop)),
   ];
 }
 
-// A phone's address bar changing the height mid-scroll keeps the camera where it is.
-export async function labResize(win, frame) {
+// On a wide screen the suit stands in the shot beside the Work column: whole
+// on screen when Work is, and clear of the words.
+export async function hallStage(win) {
   const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('resize: no lab in this frame', !root.classList.contains('lab'))];
-  await until(() => root.classList.contains('lab-ready'), 6000);
+  const stage = doc.querySelector('#work .hall__stage');
+  if (!stage) return [result('hall: the Hall is in Work', false, 'missing')];
+  if (win.innerWidth < WIDE) return [result('hall: the Hall is in Work', shown(stage))];
   doc.getElementById('work').scrollIntoView({ behavior: 'instant' });
   await wait(300);
-  const before = root.dataset.stop;
-  frame.height = '760';
-  await wait(400);
-  const after = root.dataset.stop;
-  return [result('a shorter screen keeps the camera at Work', before === 'work' && after === 'work', `${before} → ${after}`)];
-}
-
-// The address bar showing or hiding mid-travel, just past where the camera
-// turns to the next section, leaves the page where the visitor's thumb left
-// it: no jump back to the section behind.
-export async function labResizeMid(win, frame) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('resize mid-travel: no lab in this frame', !root.classList.contains('lab'))];
-  await until(() => root.classList.contains('lab-ready'), 6000);
-  const frameTurn = () => new Promise((done) => { win.requestAnimationFrame(() => win.requestAnimationFrame(done)); });
-  const at = async (y) => {
-    win.scrollTo({ top: y, behavior: 'instant' });
-    await frameTurn();
-    return root.dataset.stop;
-  };
-  const top = (id) => Math.floor(doc.getElementById(id).getBoundingClientRect().top + win.scrollY);
-  const height = Number(frame.height);
-  await at(top('about'));
-  await wait(1500);
-  const moved = [];
-  for (const [side, change] of [[3, -80], [3, 80], [-3, -80], [-3, 80]]) {
-    frame.height = String(height);
-    await wait(400);
-    let lo = top('about');
-    let hi = top('work');
-    if ((await at(lo)) !== 'about' || (await at(hi)) !== 'work') return [result('resize mid-travel: finds the turn', false, `${await at(lo)} / ${await at(hi)}`)];
-    while (hi - lo > 1) {
-      const mid = Math.floor((lo + hi) / 2);
-      if ((await at(mid)) === 'work') hi = mid;
-      else lo = mid;
-    }
-    await at(hi + side);
-    await wait(300);
-    const before = win.scrollY;
-    frame.height = String(height + change);
-    await wait(500);
-    if (Math.abs(win.scrollY - before) > 2) moved.push(`${side > 0 ? 'after' : 'before'} the turn, ${change > 0 ? 'taller' : 'shorter'}: ${before} → ${win.scrollY}`);
-  }
-  frame.height = String(height);
-  return [result('resize mid-travel: the page stays where it was', moved.length === 0, moved.join('; '))];
-}
-
-// A lost WebGL context (a backgrounded phone tab, a GPU reset) drops to the
-// plain page with its words readable, never a black screen.
-export async function labLost(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('lost: no lab in this frame', !root.classList.contains('lab'))];
-  await until(() => root.classList.contains('lab-ready'), 6000);
-  const canvas = doc.querySelector('.lab__canvas');
-  if (!canvas) return [result('a lost context drops to the plain page', false, 'no lab canvas to lose')];
-  canvas.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();
-  const plain = await until(() => !root.classList.contains('lab') && !doc.querySelector('.lab__canvas'), 1500);
-  const text = doc.querySelector('#about .about__text');
-  const style = text && win.getComputedStyle(text);
-  return [
-    result('a lost context drops to the plain page', plain, `${root.className}`),
-    result('About reads after the drop', text && shown(text) && style.visibility !== 'hidden' && style.display !== 'none'),
-  ];
-}
-
-// A context lost while the visitor stands among the suits leaves Work alive
-// (its cards back) and the visitor still at Work, not somewhere else.
-export async function labLostWork(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('lost at Work: no lab in this frame', !root.classList.contains('lab'))];
-  await until(() => root.classList.contains('lab-ready') && doc.querySelector('.hall__suit[data-suit="0"]'), 6000);
-  doc.getElementById('work').scrollIntoView({ behavior: 'instant' });
-  await wait(1500);
-  doc.querySelector('.hall__suit[data-suit="2"]')?.click();
-  await until(() => root.dataset.bay === '2', 3000);
-  await wait(800);
-  const canvas = doc.querySelector('.lab__canvas');
-  if (!canvas) return [result('lost at Work: drops to the cards', false, 'no lab canvas to lose')];
-  canvas.getContext('webgl2')?.getExtension('WEBGL_lose_context')?.loseContext();
-  await until(() => !root.classList.contains('lab'), 1500);
-  await wait(400);
-  const work = doc.getElementById('work');
-  const grid = work.querySelector('.work__grid');
-  const cards = grid && win.getComputedStyle(grid).display !== 'none' && grid.getBoundingClientRect().height > 0;
-  const box = work.getBoundingClientRect();
-  const inView = box.top < win.innerHeight && box.bottom > 0;
-  return [
-    result('lost at Work: the cards come back', Boolean(cards) && !work.classList.contains('work--hall'), work.className),
-    result('lost at Work: the visitor is still at Work', inView, `top ${Math.round(box.top)}, bottom ${Math.round(box.bottom)}`),
-  ];
-}
-
-// A link to a suit puts the camera at its bay at once; it does not fly the
-// length of the room past every other suit to get there. The camera is read
-// through the page's own lab module (the same instance the page imported).
-export async function labDeepBay(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('deep bay: no lab in this frame', !root.classList.contains('lab'))];
-  await until(() => root.classList.contains('lab-ready'), 6000);
-  const lab = await new win.Function("return import('/js/lab.js')")().then((m) => m.getLab());
-  if (!lab) return [result('deep bay: the lab is up', false)];
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(1500);
-  const camera = lab.scene.camera.position;
-  const start = camera.clone();
-  win.location.hash = '#work-others';
-  for (let i = 0; i < 3; i += 1) await new Promise((done) => { win.requestAnimationFrame(done); });
-  const early = camera.clone();
-  await until(() => root.dataset.bay === '6', 3000);
-  await wait(1500);
-  const end = camera.clone();
-  const left = early.distanceTo(end);
-  const trip = start.distanceTo(end);
-  return [
-    result('deep bay: the link reaches bay VII', root.dataset.bay === '6', String(root.dataset.bay)),
-    result('deep bay: the camera is there from the first frames', left < 0.05 * trip, `${left.toFixed(2)} of ${trip.toFixed(2)} left`),
-  ];
-}
-
-// In the lab the suits stand in a row of bays: a tab walks the camera to its
-// bay, the panel names that suit, and the Hall stays on screen (sticky).
-export async function labBays(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('bays: no lab in this frame', true, 'no lab')];
-  await until(() => root.classList.contains('lab-ready') && doc.querySelector('.hall__suit[data-suit="4"]'), 6000);
-  doc.getElementById('work').scrollIntoView({ behavior: 'instant' });
-  await wait(300);
-  const button = doc.querySelector('.hall__suit[data-suit="4"]');
-  button?.click();
-  await wait(1200);
-  const card = doc.querySelector(`#work-${button?.dataset.id} .work__name`);
-  const name = doc.querySelector('.hall__name')?.textContent.trim();
-  const top = doc.querySelector('.hall')?.getBoundingClientRect().top ?? -1;
-  const bay = root.dataset.bay;
+  const box = stage.getBoundingClientRect();
+  const words = doc.querySelector('.hall__panel').getBoundingClientRect();
+  const title = doc.getElementById('work-title').getBoundingClientRect();
   win.scrollTo({ top: 0, behavior: 'instant' });
   await wait(100);
   return [
-    result('bays: the tab is pressed', button?.getAttribute('aria-pressed') === 'true', String(button?.getAttribute('aria-pressed'))),
-    result('bays: the panel names that suit', Boolean(name) && name === card?.textContent.trim(), `${name} vs ${card?.textContent.trim()}`),
-    result('bays: the Hall stays on screen', top >= 0 && top < win.innerHeight / 2, `top ${Math.round(top)}`),
-    result('bays: the camera is at bay V', bay === '4', String(bay)),
-  ];
-}
-
-// On a narrow screen the window above the pinned panel is the suit's alone
-// once the camera stands in the row: at the first bay the section's title,
-// which sits just above the pin, gives way instead of covering the suit.
-export async function labBayClear(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('bay clear: no lab in this frame', true, 'no lab')];
-  await until(() => root.classList.contains('lab-ready') && doc.querySelector('.hall__suit[data-suit="0"]'), 6000);
-  doc.getElementById('work').scrollIntoView({ behavior: 'instant' });
-  await wait(1500);
-  doc.querySelector('.hall__suit[data-suit="0"]').click();
-  await until(() => root.dataset.bay === '0', 4000);
-  await wait(1200);
-  const title = doc.querySelector('#work > .work__title');
-  const box = title.getBoundingClientRect();
-  const window = doc.querySelector('.hall__stage').getBoundingClientRect();
-  const overlaps = box.bottom > window.top + 1 && box.top < window.bottom - 1
-    && box.right > window.left + 1 && box.left < window.right - 1;
-  const opacity = Number(win.getComputedStyle(title).opacity);
-  const bay = root.dataset.bay;
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
-  return [
-    result('bay clear: the camera is at bay I', bay === '0', String(bay)),
-    result('bay clear: the title leaves the suit its window', !overlaps || opacity < 0.05, `overlap ${overlaps}, opacity ${opacity}`),
-  ];
-}
-
-// A tab pressed before the suits have joined the lab (the visitor got there
-// first) still takes the camera to that suit, not to the bay it scrolled past.
-export async function labEarlyTab(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('early tab: no lab in this frame', true, 'no lab')];
-  await until(() => root.classList.contains('lab-ready') && doc.querySelector('.hall__suit[data-suit="4"]'), 6000);
-  const button = doc.querySelector('.hall__suit[data-suit="4"]');
-  // In one turn, as a finger would: the tab comes into view and is pressed
-  // before the observer that loads the suits has had its say.
-  button.scrollIntoView({ block: 'nearest', behavior: 'instant' });
-  button.click();
-  const there = await until(() => root.dataset.bay === '4', 4000);
-  const bay = root.dataset.bay;
-  const pressed = button.getAttribute('aria-pressed');
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
-  return [
-    result('early tab: the camera reaches bay V', there, String(bay)),
-    result('early tab: the tab stays pressed', pressed === 'true', String(pressed)),
-  ];
-}
-
-// In the lab, Evan stands in the first room as a hologram made from his cut-out
-// portrait; the photo's figure leaves the panel but still reaches screen readers.
-export async function labHolo(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('holo: no lab in this frame', true, 'no lab')];
-  await until(() => root.classList.contains('lab-ready'), 6000);
-  doc.getElementById('about').scrollIntoView({ behavior: 'instant' });
-  await wait(1500);
-  const entry = win.performance.getEntriesByType('resource').find((e) => e.name.endsWith('/img/evan-holo.webp'));
-  const img = doc.querySelector('#about figure img');
-  const style = img && win.getComputedStyle(img);
-  const figure = img?.closest('figure');
-  const box = figure?.getBoundingClientRect();
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
-  return [
-    result('holo: the cut-out portrait loads', entry?.responseStatus === 200, entry ? `status ${entry.responseStatus}` : 'not requested'),
-    result('holo: the photo keeps its alt text for readers', Boolean(img) && img.alt.length > 20 && style.display !== 'none' && style.visibility !== 'hidden', img ? `${style.display} ${style.visibility}` : 'missing'),
-    result('holo: the photo leaves the panel', Boolean(box) && box.width <= 1 && box.height <= 1, box ? `${Math.round(box.width)}×${Math.round(box.height)}` : 'missing'),
-  ];
-}
-
-// The things in the first room (the About list) are real buttons over their
-// objects; each opens a card with the list's own words, and focusing one from
-// elsewhere brings the camera back to the room.
-export async function labSpots(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('spots: no lab in this frame', true, 'no lab')];
-  await until(() => root.classList.contains('lab-ready') && doc.querySelectorAll('#about .lab-spot').length > 0, 6000);
-  doc.getElementById('about').scrollIntoView({ behavior: 'instant' });
-  await wait(600);
-  const want = ['Barbell', 'Floorball stick', 'Coffee machine', 'Guitar', 'Commando beret', 'Hockey stick'];
-  const spots = [...doc.querySelectorAll('#about .lab-spot')];
-  const names = spots.map((b) => (b.getAttribute('aria-label') || b.textContent).trim());
-  const small = spots.filter((b) => { const r = b.getBoundingClientRect(); return r.width < 44 || r.height < 44; });
-  const guitar = spots.find((b) => (b.getAttribute('aria-label') || b.textContent).trim() === 'Guitar');
-  const words = doc.querySelector('[data-things] [data-thing="guitar"] p')?.textContent.trim();
-  guitar?.focus();
-  guitar?.click();
-  await wait(300);
-  const card = doc.querySelector('dialog.lab-card');
-  const open = Boolean(card?.open);
-  const title = card?.querySelector('#lab-card-title')?.textContent.trim();
-  const body = card?.querySelector('.lab-card__body')?.textContent.trim();
-  // What Escape does to a modal dialog (a synthetic key event does not reach
-  // the browser's own handling): a cancel, then the close.
-  if (card?.open) (card.requestClose ? card.requestClose() : card.close());
-  await wait(300);
-  const closed = Boolean(card) && !card.open;
-  const back = doc.activeElement === guitar;
-  doc.getElementById('contact').scrollIntoView({ behavior: 'instant' });
-  await wait(600);
-  const away = root.dataset.stop;
-  spots.find((b) => (b.getAttribute('aria-label') || b.textContent).trim() === 'Barbell')?.focus();
-  const returned = await until(() => root.dataset.stop === 'about', 800);
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
-  return [
-    result('spots: six objects, named from the list', names.length === 6 && want.every((n) => names.includes(n)), names.join(', ') || 'none'),
-    result('spots: each at least 44 × 44', spots.length > 0 && small.length === 0, `${small.length} small`),
-    result('spots: the Guitar card opens', open && title === 'Guitar', `${open} ${title}`),
-    result('spots: the card carries the list’s words', Boolean(words) && body === words, body ?? 'missing'),
-    result('spots: Escape closes it and focus returns', closed && back, `${closed} ${doc.activeElement?.className}`),
-    result('spots: focusing a spot brings the camera back', away === 'contact' && Boolean(returned), `${away} → ${root.dataset.stop}`),
-  ];
-}
-
-// The trophy shelf (Experience): a spot on every plaque, trophy, medal and
-// frame, fourteen in all, each opening that row's own words.
-export async function labShelf(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('shelf: no lab in this frame', true, 'no lab')];
-  await until(() => root.classList.contains('lab-ready') && doc.querySelectorAll('#experience .lab-spot').length > 0, 6000);
-  const spots = [...doc.querySelectorAll('#experience .lab-spot')];
-  const name = (b) => (b.getAttribute('aria-label') || b.textContent).trim();
-  const small = spots.filter((b) => { const r = b.getBoundingClientRect(); return r.width < 44 || r.height < 44; });
-  const want = ['Univers', 'EvanYapFitness', 'The Social Nugget', 'Singapore Army', 'Top 5', '2nd place', 'Nominated', 'Best Combat Unit', '1 of 6'];
-  const names = spots.map(name);
-  const second = spots.find((b) => name(b) === '2nd place');
-  const words = [...doc.querySelectorAll('#recognition dt')].find((dt) => dt.textContent.trim() === '2nd place')?.nextElementSibling?.textContent.trim();
-  second?.focus();
-  await wait(400);
-  // A spot is drawn centred on the point its transform puts it at (the
-  // panel's own margins must not reach it).
-  const off = spots.filter((b) => b.classList.contains('is-shown')).filter((b) => {
-    const r = b.getBoundingClientRect();
-    const m = new win.DOMMatrix(win.getComputedStyle(b).transform);
-    return Math.abs(r.left + r.width / 2 - m.m41) > 1 || Math.abs(r.top + r.height / 2 - m.m42) > 1;
-  });
-  second?.click();
-  await wait(300);
-  const card = doc.querySelector('dialog.lab-card');
-  const open = Boolean(card?.open);
-  const title = card?.querySelector('#lab-card-title')?.textContent.trim();
-  const body = card?.querySelector('.lab-card__body')?.textContent.trim();
-  if (card?.open) card.close();
-  await wait(100);
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
-  return [
-    result('shelf: fourteen spots', spots.length === 14, `${spots.length}`),
-    result('shelf: roles, awards and the scholarship are named', want.every((n) => names.includes(n)), names.join(', ') || 'none'),
-    result('shelf: each at least 44 × 44', spots.length > 0 && small.length === 0, `${small.length} small`),
-    result('shelf: each spot centred on its object', spots.length > 0 && off.length === 0, off.map(name).join(', ') || 'all centred'),
-    result('shelf: the 2nd place card opens with its words', open && title === '2nd place' && Boolean(words) && body === words, `${open} ${title} ${body ?? 'missing'}`),
-  ];
-}
-
-// The shelf stays in reach the whole way down Experience: all fourteen spots
-// are shown mid-scroll, on screen, and on a narrow screen the shelf is a strip
-// pinned under the nav with the row being read lit.
-export async function labShelfHeld(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('shelf held: no lab in this frame', true, 'no lab')];
-  await until(() => root.classList.contains('lab-ready') && doc.querySelectorAll('#experience .lab-spot').length > 0, 6000);
-  const section = doc.getElementById('experience');
-  const narrow = win.innerWidth < 1024;
-  const top = section.getBoundingClientRect().top + win.scrollY;
-  win.scrollTo({ top: top + Math.max(0, section.offsetHeight - win.innerHeight) * 0.5, behavior: 'instant' });
-  await wait(900);
-  const spots = [...doc.querySelectorAll('#experience .lab-spot')];
-  const shown = spots.filter((b) => b.classList.contains('is-shown'));
-  const inside = shown.filter((b) => {
-    const r = b.getBoundingClientRect();
-    const x = r.left + r.width / 2;
-    const y = r.top + r.height / 2;
-    return x >= 0 && x <= win.innerWidth && y >= 0 && y <= win.innerHeight;
-  });
-  const nav = doc.querySelector('.nav')?.getBoundingClientRect();
-  const behindNav = narrow && nav ? shown.filter((b) => { const r = b.getBoundingClientRect(); return r.top + r.height / 2 < nav.bottom; }) : [];
-  const read = doc.querySelectorAll('#experience .is-read').length;
-  const pinned = root.classList.contains('shelf-pinned');
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
-  return [
-    result('shelf held: all fourteen spots shown mid-Experience', shown.length === 14 && inside.length === 14, `${shown.length} shown, ${inside.length} on screen`),
-    result('shelf held: no spot sits behind the nav', behindNav.length === 0, `${behindNav.length} behind`),
-    result(narrow ? 'shelf held: the strip is pinned and one row is lit' : 'shelf held: wide screens light no row by scrolling', narrow ? pinned && read === 2 : read === 0, `pinned ${pinned}, lit ${read}`),
+    result('hall: the suit is whole on screen', box.top >= 0 && box.bottom <= win.innerHeight && box.right <= win.innerWidth && box.width >= 300,
+      `${Math.round(box.left)},${Math.round(box.top)} ${Math.round(box.width)}×${Math.round(box.height)}`),
+    result('hall: the suit stands clear of the words', box.left >= words.right && box.left >= title.right,
+      `suit ${Math.round(box.left)}, panel ${Math.round(words.right)}, title ${Math.round(title.right)}`),
   ];
 }
 
 // Every suit stands fully lit: no render-pass tabs, no pass status, and the
 // hint says only that it can be turned.
-export async function labSuitsLit(win) {
+export async function suitsLit(win) {
   const doc = win.document;
   const stage = doc.querySelector('.hall__stage');
   if (!stage) return [result('suits lit: no hall in this frame', true, 'no hall')];
@@ -1100,97 +772,5 @@ export async function labSuitsLit(win) {
     result('suits lit: no render-pass tabs or status', !doc.querySelector('.hall__pass, .hall__passes, .hall__status'), `${doc.querySelectorAll('.hall__pass').length} tabs`),
     result('suits lit: the hint says only Drag to turn', doc.querySelector('.hall__hint')?.textContent.trim() === 'Drag to turn', doc.querySelector('.hall__hint')?.textContent.trim()),
     result('suits lit: the stage names no pass', !/pass/i.test(stage.getAttribute('aria-label') ?? ''), stage.getAttribute('aria-label')),
-  ];
-}
-
-// In the lab, Toolkit is a workbench: one object per kind of tool, each a
-// spot named for its group, opening that group's tools on a hologram card.
-export async function labBench(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('bench: no lab in this frame', true, 'no lab')];
-  await until(() => root.classList.contains('lab-ready') && doc.querySelectorAll('#toolkit .lab-spot').length > 0, 6000);
-  const spots = [...doc.querySelectorAll('#toolkit .lab-spot')];
-  const name = (b) => (b.getAttribute('aria-label') || b.textContent).trim();
-  const want = ['Languages', 'Frameworks', 'AI and data', 'Cloud and tools', 'Testing', 'Design and modelling'];
-  const names = spots.map(name);
-  const small = spots.filter((b) => { const r = b.getBoundingClientRect(); return r.width < 44 || r.height < 44; });
-  const testing = spots.find((b) => name(b) === 'Testing');
-  testing?.focus();
-  const count = () => spots.filter((b) => b.classList.contains('is-shown')).length;
-  await until(() => count() === 6, 3000);
-  const shown = count();
-  testing?.click();
-  await wait(300);
-  const card = doc.querySelector('dialog.lab-card');
-  const open = Boolean(card?.open);
-  const title = card?.querySelector('#lab-card-title')?.textContent.trim();
-  const tools = [...(card?.querySelectorAll('.lab-card__body li') ?? [])].map((li) => li.textContent.trim().toLowerCase());
-  const holo = Boolean(card?.classList.contains('lab-card--holo'));
-  if (card?.open) card.close();
-  await wait(100);
-  // The same card, opened next by a thing on the shelf, is a plain card again.
-  doc.querySelector('#experience .lab-spot')?.click();
-  await wait(100);
-  const plain = Boolean(card?.open) && !card.classList.contains('lab-card--holo');
-  if (card?.open) card.close();
-  await wait(100);
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
-  return [
-    result('bench: six spots, in the rows\' order', names.length === 6 && want.every((n, i) => names[i] === n), names.join(', ') || 'none'),
-    result('bench: each at least 44 × 44', spots.length > 0 && small.length === 0, `${small.length} small`),
-    result('bench: all six in the window at its stop', shown === 6, `${shown} shown`),
-    result('bench: the Testing card lists its tools', open && title === 'Testing' && ['hegel', 'bombadil', 'property-based testing'].every((t) => tools.includes(t)), `${open} ${title} ${tools.join(', ')}`),
-    result('bench: its card is a hologram', holo, `${holo}`),
-    result('bench: the shelf\'s cards stay plain', plain, `${plain}`),
-  ];
-}
-
-// In the lab, Contact is the office: its panel is the desk screen's own warm
-// UI on a dark warm ground, the footer follows on the same ground, and the
-// address, the copy button and the credits all still read.
-export async function labOffice(win) {
-  const doc = win.document;
-  const root = doc.documentElement;
-  if (!labCapable(win)) return [result('office: no lab in this frame', true, 'no lab')];
-  await until(() => root.classList.contains('lab-ready'), 6000);
-  win.scrollTo({ top: root.scrollHeight, behavior: 'instant' });
-  await until(() => root.dataset.stop === 'contact', 1000);
-  const stop = root.dataset.stop;
-  const rgb = (value) => (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
-  const luminance = ([r, g, b]) => [r, g, b]
-    .map((c) => c / 255)
-    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
-    .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
-  const ratio = (a, b) => {
-    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-    return (hi + 0.05) / (lo + 0.05);
-  };
-  const copy = doc.querySelector('#contact .contact__copy');
-  const copyBox = copy?.getBoundingClientRect();
-  const link = doc.querySelector('#contact [data-contact-link]');
-  const email = (link?.getAttribute('href') ?? '').replace(/^mailto:/, '');
-  const footer = doc.querySelector('.footer');
-  const ground = rgb(win.getComputedStyle(footer).backgroundColor);
-  const probe = doc.createElement('i');
-  probe.style.color = win.getComputedStyle(doc.getElementById('contact')).getPropertyValue('--band');
-  doc.body.append(probe);
-  const panel = rgb(win.getComputedStyle(probe).color);
-  probe.remove();
-  const warm = panel.length === 3 && luminance(panel) < 0.03 && panel[0] > panel[2];
-  const credits = [...doc.querySelectorAll('.footer__credits p, .footer__credits li, .footer__credits a, .footer > .mono, .footer .wordmark')];
-  const worst = credits.map((el) => ({ el, value: ratio(rgb(win.getComputedStyle(el).color), ground) }))
-    .sort((a, b) => a.value - b.value)[0];
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
-  return [
-    result('office: the end of the page is the office', stop === 'contact', String(stop)),
-    result('office: the copy button shows, at least 44 px', Boolean(copy) && !copy.hidden && copyBox.width >= 44 && copyBox.height >= 44,
-      copyBox ? `${copy.hidden ? 'hidden ' : ''}${Math.round(copyBox.width)}×${Math.round(copyBox.height)}` : 'missing'),
-    result('office: the address on the screen is the email', Boolean(email) && link.textContent.trim() === email, `${link?.textContent.trim()} vs ${email}`),
-    result('office: the panel is the screen\'s warm dark ground', warm, panel.join(',')),
-    result('office: the footer is on the same ground', ground.join(',') === panel.join(','), `${ground.join(',')} vs ${panel.join(',')}`),
-    result('office: the credits read at least 4.5:1', Boolean(worst) && worst.value >= 4.5, worst ? `${worst.el.className || worst.el.tagName} ${worst.value.toFixed(2)}:1` : 'none'),
   ];
 }

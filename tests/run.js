@@ -10,7 +10,7 @@ const SIZES = [
 ];
 
 // Checks run on the main page at every size, in this order.
-const ALL = ['structure', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'contrast', 'emDash', 'aboutPhoto', 'proof', 'workTitle', 'workCards', 'titles', 'pointerOnly', 'timeline', 'honours', 'navIndex', 'progress', 'menu', 'copy', 'reactor', 'callouts', 'lab', 'labRail', 'labBays', 'labSuitsLit', 'labHolo', 'labSpots', 'labShelf', 'labShelfHeld', 'labBench', 'labOffice'];
+const ALL = ['structure', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'contrast', 'emDash', 'aboutPhoto', 'proof', 'workTitle', 'workCards', 'titles', 'pointerOnly', 'timeline', 'honours', 'navIndex', 'progress', 'menu', 'copy', 'reactor', 'callouts', 'scene', 'sceneStops', 'sceneSpots', 'hallStage', 'suitsLit'];
 
 // The project pages and the case study, each checked at every size too.
 const PAGES = [
@@ -40,20 +40,9 @@ const EXTRA = [
   { width: 1440, height: 800, src: '/#toolkit', names: ['hashSection'] },
   { width: 1440, height: 800, src: '/#education', names: ['honoursLink'] },
   { width: 393, height: 852, src: '/#certifications', names: ['honoursLink'] },
-  { width: 393, height: 852, src: '/', names: ['labResize'] },
-  { width: 393, height: 852, src: '/', names: ['labResizeMid'] },
-  { width: 393, height: 852, src: '/', names: ['labEarlyTab'] },
-  { width: 393, height: 852, src: '/', names: ['labBayClear'] },
-  { width: 768, height: 1024, src: '/', names: ['labBayClear'] },
-  { width: 1440, height: 800, src: '/', names: ['labBayClear'] },
-  { width: 1440, height: 800, src: '/', names: ['labLost'] },
-  { width: 393, height: 852, src: '/', names: ['labLostWork'] },
-  { width: 1440, height: 800, src: '/', names: ['labDeepBay'] },
-  { width: 393, height: 852, src: '/', names: ['labDeepBay'] },
-  { width: 1440, height: 800, src: '/', names: ['labLostWork'] },
   { width: 1440, height: 800, src: '/', names: ['gateDoor'] },
-  { width: 1440, height: 800, src: '/#toolkit', names: ['labDoor'] },
-  { width: 393, height: 852, src: '/#toolkit', names: ['labDoor'] },
+  { width: 1440, height: 800, src: '/#toolkit', names: ['sceneDoor'] },
+  { width: 393, height: 852, src: '/#toolkit', names: ['sceneDoor'] },
 ];
 
 // A frame that has not loaded, and had its fonts settle, by then is a failure.

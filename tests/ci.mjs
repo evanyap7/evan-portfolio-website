@@ -55,11 +55,12 @@ try {
     code = 2;
   }
 
-  // The lab's fallbacks, each on a fresh page of its own: with reduced motion,
-  // and with three.js failing to load from the CDN. Either way the visitor gets
-  // the plain page, with the Work section showing.
+  // The fallbacks, each on a fresh page of its own: with reduced motion, and
+  // with three.js failing to load from the CDN. The scene needs neither, so
+  // it stays; reduced motion keeps the Hall, and a failed fetch brings back
+  // the Work cards.
   const fallbacks = [
-    { name: 'reduced motion', options: { reducedMotion: 'reduce' }, settle: 1500, shows: '#work .hall, #work .work__grid' },
+    { name: 'reduced motion', options: { reducedMotion: 'reduce' }, settle: 1500, shows: '#work .hall' },
     { name: 'three.js blocked', block: '**/three.module.min.js', settle: 9000, shows: '#work .work__grid' },
   ];
   for (const fallback of fallbacks) {
@@ -80,7 +81,7 @@ try {
         return box.width > 0 && box.height > 0 && getComputedStyle(el).visibility !== 'hidden';
       }),
     }), fallback.shows);
-    const pass = !state.lab && state.shows;
+    const pass = state.lab && state.shows;
     (pass ? console.log : console.error)(`${pass ? 'PASS' : 'FAIL'} fallback, ${fallback.name}: lab ${state.lab}, work shows ${state.shows}`);
     if (!pass && code === 0) code = 1;
     await context.close();
