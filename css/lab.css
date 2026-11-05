@@ -1,51 +1,214 @@
-/* The lab ------------------------------------------------------------
-   One 3D room fixed behind the whole page (js/lab.js). Everything here is
-   under :root.lab, which the head script sets only where the lab can run
-   and js/lab.js removes if it fails, so without it the page is the plain
-   banded page, unchanged.
+/* The scene ----------------------------------------------------------
+   A photograph of the workshop fixed behind the whole page, one shot per
+   section, crossfading as the visitor scrolls (js/lab.js). Everything here
+   is under :root.lab, which the head script sets where modules run, so
+   without it the page is the plain banded page, unchanged.
 
-   The page lies over the room as a console: each section's words sit in a
-   panel, and each section has an empty window (.lab-frame) where the camera
-   frames that section's part of the room. On wide screens the panel is a
-   column down the left and the window fills the right; on narrow ones the
-   window is the top of the section and the panel follows it. */
+   The page's words lie over the shot on a soft dark wash: a column down
+   the left on wide screens, with the shot's subject to its right; on narrow
+   screens the top of each section is left open for the shot. */
 
 :root.lab {
-  /* A link to a section lands on the section's top: that is where the camera
-     arrives at its stop. Each panel keeps its title clear of the nav itself. */
+  /* A link to a section lands on the section's top, where its shot comes up.
+     Each panel keeps its title clear of the nav itself. */
   scroll-padding-top: 0;
   --pane: hsl(var(--h) 30% 6% / 0.86);
   --pane-edge: hsl(var(--h) 60% 60% / 0.25);
   /* What lies behind a section's words: a dark wash that fades to nothing at
-     its edges, so the room shows through and no box is drawn. */
+     its edges, so the shot shows through and no box is drawn. */
   --scrim: hsl(var(--h) 40% 3% / 0.8);
   --pane-pad: 24px;
   --pane-w: 100%;
   --window: 60svh;
 }
 
-/* The page's own near-black stays on <html>, under the canvas; the body
-   lets the room through. */
+/* The page's own near-black stays on <html>, under the scene; the body
+   lets the shot through. */
 :root.lab body { background: transparent; }
 
-:root.lab .lab__canvas {
+.scene { display: none; }
+
+:root.lab .scene {
+  display: block;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  /* The large viewport, so a phone's address bar sliding away never resizes
-     the renderer mid-scroll. */
+  /* The large viewport, so a phone's address bar sliding away never
+     rescales the shot mid-scroll. */
   height: 100lvh;
   z-index: -1;
-  display: block;
+  overflow: hidden;
   pointer-events: none;
+  background: hsl(205 45% 3%);
+  /* The frame below sizes itself from the scene's box. */
+  container-type: size;
 }
 
-/* The hero's words lie on the room itself, with no panel: over the iris's
-   silver ring on wide screens and the lit floor on phones. A soft dark halo
-   keeps them on the page's own dark wherever the room is bright, and the
+/* A shot coming up lies over the one going, which waits for it before it
+   fades, so the crossfade never dips through black. */
+.scene__shot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out) 900ms;
+}
+
+.scene__shot.is-on {
+  z-index: 1;
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+/* The picture at its own shape (2400 x 1357), covering the screen and
+   cropped at --x, as object-fit would; it is a box of its own so what stands
+   in the picture (the spots) moves with it. It pushes in with the scroll
+   (--push), leans away from the pointer (--px, --py, from -1 to 1) and
+   breathes on its own; the 6% over size is the room to do so. */
+.scene__frame {
+  position: absolute;
+  left: var(--x, 50%);
+  top: 50%;
+  width: max(100cqw, 100cqh * 2400 / 1357);
+  height: max(100cqh, 100cqw * 1357 / 2400);
+  translate: calc(-1 * var(--x, 50%) - var(--px, 0) * 18px) calc(-50% - var(--py, 0) * 12px);
+  scale: calc(var(--push, 1) * 1.06);
+  transform-origin: var(--x, 50%) 55%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scene__frame { animation: scene-breathe 26s ease-in-out infinite alternate; }
+  .scene__shot:nth-child(even) .scene__frame { animation-duration: 31s; animation-direction: alternate-reverse; }
+}
+
+@keyframes scene-breathe {
+  from { transform: translate(-0.7%, 0.35%) rotate(-0.15deg); }
+  to { transform: translate(0.7%, -0.35%) rotate(0.15deg); }
+}
+
+.scene__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The clip takes over from its still once it is moving. */
+.scene__video {
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.scene__shot.is-moving .scene__video { opacity: 1; }
+
+/* A light carried over the room by the pointer. */
+.scene__light {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* A torch on a dark room: screen only lifts what it falls on. */
+  background: radial-gradient(circle 30vmax at var(--lx, 50%) var(--ly, 40%), hsl(195 80% 72% / 0.2), hsl(195 80% 72% / 0.07) 40%, transparent 72%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+
+.scene.is-pointing .scene__light { opacity: 1; }
+
+:root[data-stop='contact'] .scene__light {
+  background: radial-gradient(circle 30vmax at var(--lx, 50%) var(--ly, 40%), hsl(36 90% 70% / 0.2), hsl(36 90% 70% / 0.07) 40%, transparent 72%);
+}
+
+.scene__motes {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* A thing in About's list, pointed at, finds its object in the photograph:
+   a ring closes on it and a pool of lamp light comes up round it. */
+.scene__spot {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.scene__spot::before,
+.scene__spot::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 400ms ease, scale 700ms var(--ease-out);
+}
+
+.scene__spot::before {
+  inset: -44px;
+  border: 1px solid hsl(195 95% 78% / 0.9);
+  box-shadow: 0 0 28px hsl(195 95% 60% / 0.55), inset 0 0 22px hsl(195 95% 60% / 0.35);
+  scale: 1.8;
+}
+
+.scene__spot::after {
+  inset: -170px;
+  background: radial-gradient(closest-side, hsl(40 85% 72% / 0.4), hsl(40 85% 72% / 0.1) 55%, transparent);
+  mix-blend-mode: screen;
+  scale: 0.6;
+}
+
+.scene__spot.is-lit::before,
+.scene__spot.is-lit::after { opacity: 1; scale: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .scene__spot.is-lit::before { animation: spot-pulse 1.8s ease-in-out 700ms infinite; }
+}
+
+@keyframes spot-pulse {
+  50% { scale: 1.12; opacity: 0.55; }
+}
+
+:root.lab .about__things .has-spot h4 { transition: color 250ms ease; }
+:root.lab .about__things .has-spot.is-lit h4 { color: var(--accent); }
+
+/* A vignette keeps the edges and the foot dark under the words; and until
+   the site wakes the room is held dark behind the reactor, coming up with
+   its pulse. */
+:root.lab .scene::before,
+:root.lab .scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+:root.lab .scene::before {
+  background:
+    radial-gradient(ellipse 80% 70% at 55% 45%, transparent 45%, hsl(205 45% 3% / 0.6) 100%),
+    linear-gradient(transparent 60%, hsl(205 45% 3% / 0.55));
+}
+
+:root.lab .scene::after {
+  background: hsl(205 45% 3%);
+  opacity: 0.82;
+  transition: opacity 1800ms var(--ease-out);
+}
+
+:root.lab.door-open .scene::after { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene__shot,
+  .scene__spot::before,
+  .scene__spot::after,
+  :root.lab .scene::after { transition-duration: 1ms; }
+}
+
+/* The hero's words lie on the shot itself, with no panel. A soft dark halo
+   keeps them on the page's own dark wherever the shot is bright, and the
    lede, the hero's one sentence to read, takes the reading ink. The
-   callouts' small captions sit on the ring too, so they take both. */
+   callouts' small captions take both. */
 :root.lab .hero__name,
 :root.lab .hero__title,
 :root.lab .hero__lede,
@@ -57,7 +220,7 @@
 :root.lab .reactor__status,
 :root.lab .hero__creds li { color: var(--text-2); }
 
-/* Once the door is open the room is the picture, so the name steps out of
+/* Once the door is open the shot is the picture, so the name steps out of
    its middle: it closes up and settles, smaller, just over the headline,
    like a film's title over its opening shot. A transform, so nothing else
    on the page moves. */
@@ -73,8 +236,6 @@
   }
 }
 
-.lab-frame { display: none; }
-
 /* Sections: no band fill; a scrim is painted in its place. */
 :root.lab main > .section {
   position: relative;
@@ -86,18 +247,7 @@
   border-image: linear-gradient(transparent var(--window), var(--scrim) calc(var(--window) + 72px), var(--scrim) calc(100% - 56px), transparent 100%) fill 0 / 0 / 0 100vw;
 }
 
-:root.lab .lab-frame {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: min(var(--window), 100%);
-  pointer-events: none;
-}
-
-/* Contact is the office, the one warm room, and its panel is the desk
-   screen's UI: walnut-dark ground, cream words, the lamp's amber for the
+/* Contact is the desk by the window, the one warm shot: walnut-dark ground, cream words, the lamp's amber for the
    accent. Every light-band token is redefined, so the pills, the copy button
    and the focus ring follow. The footer is the foot of the same screen. */
 :root.lab .band--light {
@@ -133,7 +283,7 @@
     --pane-w: calc(34rem + 2 * var(--pane-pad));
   }
 
-  /* Every section is at least a screen, so each stop of the walk gets one. */
+  /* Every section is at least a screen, so each shot gets one. */
   :root.lab main > .section {
     min-height: 100svh;
     padding-top: max(var(--band-pad), calc(var(--nav) + var(--nav-top) + 40px));
@@ -145,9 +295,7 @@
       transparent calc(var(--gutter) + var(--pane-w) + 64px)) fill 0 / 0 / 0;
   }
 
-  /* Not the spots (js/lab/spots.js): they are in the section too, and their
-     own margin is what centres them on their objects. */
-  :root.lab main > .section > :not(.lab-frame, .lab-spot) {
+  :root.lab main > .section > * {
     max-width: 34rem;
     margin-left: 0;
   }
@@ -156,6 +304,8 @@
      the whole page width take the layouts they use on a tablet. */
   :root.lab main > .section .title { text-align: left; }
   :root.lab .about { grid-template-columns: minmax(0, 1fr); }
+  /* One column, so the photo no longer holds beside the text: it leads it. */
+  :root.lab .about__photo { position: static; justify-self: start; max-width: 320px; }
   :root.lab .role { grid-template-columns: 9.5rem minmax(0, 1fr); }
   :root.lab .role__points { grid-column: 2; }
   :root.lab .work .work__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -166,13 +316,6 @@
       var(--scrim) calc(var(--gutter) + 72px),
       var(--scrim) calc(var(--gutter) + var(--pane-w) - 48px),
       transparent calc(var(--gutter) + var(--pane-w) + 64px)) fill 0 / 0 / 0;
-  }
-
-  /* The window: the rest of the screen, right of the panel. */
-  :root.lab .lab-frame {
-    left: calc(var(--gutter) + var(--pane-w) + 32px);
-    right: var(--gutter);
-    height: min(100svh, 100%);
   }
 
   /* The foot of the sheet, under the panel column. */
@@ -186,316 +329,10 @@
   }
 }
 
-/* In the lab Evan is the hologram in the room; his photo leaves the panel but
-   stays for screen readers. */
-:root.lab #about .about__photo {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* The things in the room (js/lab/spots.js): each a real button, held over its
-   object each frame. It is invisible and lets clicks through until its object
-   is in its room's window, but stays in the tab order. */
-.lab-spot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 20;
-  width: 44px;
-  height: 44px;
-  margin: -22px 0 0 -22px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: none;
-  color: var(--text);
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s var(--ease-out);
-  will-change: transform;
-}
-.lab-spot.is-shown { opacity: 1; pointer-events: auto; }
-.lab-spot:focus-visible { opacity: 1; outline-offset: 2px; }
-
-/* A suit in its bay is a link to its project (js/hall.js): a clear box held
-   over the suit, sized to it. Its name rises on a plate above on hover. */
-.lab-suit {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 20;
-  width: calc(var(--h, 0px) * 0.5);
-  height: var(--h, 0px);
-  margin-left: calc(var(--h, 0px) * -0.25);
-  color: var(--text);
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  will-change: transform;
-}
-.lab-suit.is-shown { opacity: 1; pointer-events: auto; }
-.lab-suit:focus-visible { opacity: 1; outline: 2px solid var(--accent, #6fd3ff); outline-offset: 4px; border-radius: 12px; }
-.lab-suit__name {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  margin-bottom: 8px;
-  padding: 6px 10px;
-  border: 1px solid var(--pane-edge);
-  border-radius: 8px;
-  background: var(--pane);
-  font: 500 13px/1 var(--font-mono);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  opacity: 0;
-  transform: translate(-50%, 4px);
-  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
-  pointer-events: none;
-}
-.lab-suit:hover .lab-suit__name,
-.lab-suit:focus-visible .lab-suit__name { opacity: 1; transform: translate(-50%, 0); }
-
-/* A lit dot with a ring breathing out from it, the room's blue. */
-.lab-spot__ring {
-  position: absolute;
-  inset: 13px;
-  border-radius: 50%;
-  background: hsl(var(--h) 95% 72% / 0.9);
-  box-shadow: 0 0 0 3px hsl(var(--h) 60% 6% / 0.65), 0 0 14px hsl(var(--h) 95% 72% / 0.8);
-}
-/* The shelf and the page's rows select each other (js/lab.js). */
-.lab-spot__ring { transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out); }
-.lab-spot.is-linked .lab-spot__ring,
-.lab-spot.is-read .lab-spot__ring {
-  transform: scale(1.45);
-  box-shadow: 0 0 0 3px hsl(var(--h) 60% 6% / 0.65), 0 0 26px hsl(var(--h) 95% 72%);
-}
-.lab-spot.is-linked .lab-spot__label,
-.lab-spot.is-read .lab-spot__label { opacity: 1; transform: translate(0, -50%); }
-:root.lab #experience [data-item] {
-  border-radius: 8px;
-  transition: box-shadow 0.25s var(--ease-out);
-}
-:root.lab #experience [data-item].is-linked,
-:root.lab #experience [data-item].is-read {
-  box-shadow: 0 0 0 8px hsl(var(--h) 70% 60% / 0.07), 0 0 0 9px hsl(var(--h) 95% 72% / 0.45);
-}
-
-.lab-spot__ring::after {
-  content: "";
-  position: absolute;
-  inset: -9px;
-  border: 1.5px solid hsl(var(--h) 95% 72% / 0.75);
-  border-radius: 50%;
-  animation: lab-spot-pulse 2.4s var(--ease-out) infinite;
-}
-@keyframes lab-spot-pulse {
-  from { transform: scale(0.55); opacity: 1; }
-  to { transform: scale(1.35); opacity: 0; }
-}
-
-/* Its name, on hover or focus, on a plate to its right. */
-.lab-spot__label {
-  position: absolute;
-  top: 50%;
-  left: 40px;
-  padding: 6px 10px;
-  border: 1px solid var(--pane-edge);
-  border-radius: 8px;
-  background: var(--pane);
-  font: 500 13px/1 var(--font-mono);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  opacity: 0;
-  transform: translate(-4px, -50%);
-  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
-  pointer-events: none;
-}
-.lab-spot:hover .lab-spot__label,
-.lab-spot:focus-visible .lab-spot__label {
-  opacity: 1;
-  transform: translate(0, -50%);
-}
-
-/* The card a thing opens: a console plate over the room, the room still
-   showing round it. On a phone it rises from the foot of the screen. */
-.lab-card {
-  position: fixed;
-  inset: auto 16px 16px 16px;
-  width: auto;
-  max-width: 480px;
-  max-height: min(70svh, 560px);
-  margin: 0 auto;
-  padding: 28px 28px 24px;
-  overflow: auto;
-  border: 1px solid var(--pane-edge);
-  border-radius: var(--radius);
-  /* Opaque: the card often lands over the panel's words. */
-  background: linear-gradient(hsl(var(--h) 30% 9%), hsl(var(--h) 30% 5%));
-  box-shadow: 0 24px 64px hsl(var(--h) 60% 2% / 0.6), inset 0 1px 0 hsl(var(--h) 80% 80% / 0.08);
-  color: var(--text-2);
-}
-.lab-card::backdrop {
-  background: hsl(var(--h) 50% 2% / 0.35);
-}
-.lab-card[open] { animation: lab-card-in 0.32s var(--ease-out); }
-@keyframes lab-card-in {
-  from { opacity: 0; transform: translateY(12px); }
-}
-.lab-card__title {
-  margin: 0 0 12px;
-  font: 500 clamp(24px, 3vw, 30px)/1.15 var(--font-sans);
-  color: var(--text);
-}
-.lab-card__title::before {
-  content: "";
-  display: block;
-  width: 28px;
-  height: 2px;
-  margin-bottom: 16px;
-  background: var(--accent);
-  box-shadow: 0 0 10px var(--accent);
-}
-.lab-card__body p {
-  margin: 0;
-  font-size: 17px;
-  line-height: 1.6;
-}
-.lab-card__body p + p { margin-top: 12px; }
-.lab-card__close {
-  margin-top: 22px;
-  min-height: 44px;
-  padding: 0 18px;
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  background: none;
-  color: var(--text);
-  font: 500 14px/1 var(--font-mono);
-  cursor: pointer;
-}
-.lab-card__close:hover { border-color: var(--accent); }
-
-/* Wide screens: the card stands to the left, over the panel, leaving the
-   window (and the object the camera leans toward) clear. */
-@media (min-width: 900px) {
-  .lab-card {
-    inset: auto auto 48px max(var(--gutter), calc((100vw - var(--wide)) / 2 + var(--gutter)));
-    width: min(440px, 40vw);
-    margin: 0;
-  }
-}
-
-/* The bench's cards are holograms: a blue-edged pane of light with faint scan
-   lines, still opaque enough to read over the panel's words, its tools in two
-   columns with their icons lit. */
-.lab-card--holo {
-  border-color: hsl(var(--h) 95% 72% / 0.55);
-  background:
-    repeating-linear-gradient(hsl(var(--h) 95% 72% / 0.035) 0 1px, transparent 1px 4px),
-    linear-gradient(hsl(var(--h) 60% 11%), hsl(var(--h) 55% 6%));
-  box-shadow:
-    0 0 0 1px hsl(var(--h) 95% 72% / 0.12),
-    0 0 32px hsl(var(--h) 95% 60% / 0.28),
-    0 24px 64px hsl(var(--h) 60% 2% / 0.6),
-    inset 0 0 40px hsl(var(--h) 95% 60% / 0.08);
-}
-.lab-card--holo .lab-card__title { color: hsl(var(--h) 90% 92%); text-shadow: 0 0 18px hsl(var(--h) 95% 65% / 0.45); }
-.lab-card--holo .tools {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 20px;
-  margin: 4px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.lab-card--holo .tools li { min-width: 0; font-size: 16px; }
-.lab-card--holo .tools .icon {
-  flex: none;
-  color: hsl(var(--h) 95% 75%);
-  filter: drop-shadow(0 0 6px hsl(var(--h) 95% 65% / 0.6));
-}
-.lab-card--holo .lab-card__close { border-color: hsl(var(--h) 95% 72% / 0.4); }
-
-@media (prefers-reduced-motion: reduce) {
-  .lab-spot__ring::after,
-  .lab-card[open] { animation: none; }
-}
-
-/* In the lab the list of things is the spots' words, kept for readers (and
-   for the cards) but not shown in the panel. */
-:root.lab .about__things,
-:root.lab .about__things-title {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Narrow screens: the shelf is a strip pinned to the top of the screen for as
-   long as the camera holds in Experience, and the list scrolls under it. The
-   canvas rises over the list, clipped to the strip (the window the camera was
-   framed in at arrival), so the shelf and its things stay in reach. It takes
-   the taps, so the words hidden under it are not touched through it. */
-@media (max-width: 1023px) {
-  :root.lab { --shelf: max(34svh, 270px); }
-  :root.lab main > #experience { --window: var(--shelf); }
-
-  /* The nav floats over the top of the strip, so the shelf is framed in what
-     is left under it, and no object sits behind the nav. */
-  :root.lab #experience .lab-frame {
-    top: calc(var(--nav) + var(--nav-top) + 4px);
-    height: calc(var(--window) - var(--nav) - var(--nav-top) - 4px);
-  }
-
-  :root.lab.shelf-pinned .lab__canvas {
-    z-index: 5;
-    pointer-events: auto;
-    clip-path: inset(0 0 calc(100% - var(--shelf)) 0);
-  }
-
-  /* The strip ends in a soft edge, not a cut through a line of text. */
-  :root.lab.shelf-pinned::after {
-    content: '';
-    position: fixed;
-    top: var(--shelf);
-    left: 0;
-    right: 0;
-    height: 28px;
-    z-index: 6;
-    pointer-events: none;
-    background: linear-gradient(hsl(205 45% 3%), transparent);
-  }
-
-  /* The row being read is lit in the list and on the shelf; a label would run
-     off the side of a phone. */
-  .lab-spot.is-read .lab-spot__label { opacity: 0; }
-
-  /* Fourteen dots on one small shelf: each a small point (the tap area stays
-     44px), the ring breathing only on the one being read. The always-on pulses
-     were fourteen animations on a phone's GPU, and the dots hid the objects. */
-  #experience .lab-spot__ring { inset: 16px; }
-  #experience .lab-spot__ring::after { animation: none; opacity: 0; }
-  #experience .lab-spot.is-read .lab-spot__ring::after { animation: lab-spot-pulse 2.4s var(--ease-out) infinite; opacity: 1; }
-  #experience .lab-spot.is-read .lab-spot__ring { transform: scale(1.6); }
-}
-
-/* Type on the room ----------------------------------------------------
-   With no panel the words stand on the scene itself: huge heavy titles in
+/* Type on the scene ---------------------------------------------------
+   With no panel the words stand on the shot itself: huge heavy titles in
    capitals with the one italic serif word, small mono labels, and a faint
-   column grid over the whole room. The labels and the grid are decoration
+   column grid over the whole scene. The labels and the grid are decoration
    (aria-hidden); they exist only in the lab. */
 .sec-label,
 .grid,
@@ -538,8 +375,8 @@
 }
 
 @media (min-width: 1024px) {
-  /* The grid: four hairlines down the room, two across, a + where they meet.
-     Fixed, so the words slide over it as the camera moves. */
+  /* The grid: four hairlines down the screen, two across, a + where they
+     meet. Fixed, so the words slide over it. */
   :root.lab.door-open .grid {
     display: block;
     position: fixed;

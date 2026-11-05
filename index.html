@@ -50,7 +50,7 @@
 
   <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
   <script>try{if(!location.hash&&!sessionStorage.getItem('portfolio-on')&&'noModule' in HTMLScriptElement.prototype){var d=document.documentElement;d.classList.add('gated');setTimeout(function(){if(!d.classList.contains('gate-ready'))d.classList.remove('gated')},5000)}}catch(e){}</script>
-  <script>try{var d=document.documentElement;if('noModule' in HTMLScriptElement.prototype&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<600)){var g=document.createElement('canvas').getContext('webgl2');if(g){var x=g.getExtension('WEBGL_lose_context');x&&x.loseContext();d.classList.add('lab');setTimeout(function(){if(!d.classList.contains('lab-ready'))d.classList.remove('lab')},8000)}}}catch(e){}</script>
+  <script>try{var d=document.documentElement;if('noModule' in HTMLScriptElement.prototype){d.classList.add('lab');setTimeout(function(){if(!d.classList.contains('lab-ready'))d.classList.remove('lab')},8000)}}catch(e){}</script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -116,7 +116,7 @@
     <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero__stage">
         <p class="hero__name"><span>Evan</span> <span>Yap</span></p>
-        <div class="reactor" data-reactor data-lab-frame="top">
+        <div class="reactor" data-reactor>
           <img class="reactor__poster" src="img/reactor.webp" alt="" width="720" height="720" decoding="async">
           <svg class="reactor__charge" viewBox="0 0 100 100" aria-hidden="true">
             <circle class="reactor__charge-track" cx="50" cy="50" r="48" pathLength="100" />
@@ -152,7 +152,6 @@
     </section>
 
     <section class="section band band--900" id="about" aria-labelledby="about-title">
-      <div class="lab-frame" data-lab-frame="about" aria-hidden="true"></div>
       <p class="sec-label mono" aria-hidden="true"><span>01</span> / About</p>
       <h2 class="title" id="about-title">About <span class="serif">me</span></h2>
       <div class="about">
@@ -188,7 +187,6 @@
     </section>
 
     <section class="section band work" id="work" aria-labelledby="work-title">
-      <div class="lab-frame" data-lab-frame="work" aria-hidden="true"></div>
       <p class="sec-label mono" aria-hidden="true"><span>02</span> / Work</p>
       <h2 class="title work__title" id="work-title">Selected <span class="serif">work</span></h2>
       <ul class="work__grid">
@@ -264,7 +262,6 @@
     </section>
 
     <section class="section band band--900" id="experience" aria-labelledby="experience-title">
-      <div class="lab-frame" data-lab-frame="experience" aria-hidden="true"></div>
       <p class="sec-label mono" aria-hidden="true"><span>03</span> / Experience</p>
       <h2 class="title" id="experience-title">My <span class="serif">experience</span></h2>
       <div class="timeline" data-timeline>
@@ -393,7 +390,6 @@
     </section>
 
     <section class="section band band--850" id="toolkit" aria-labelledby="toolkit-title">
-      <div class="lab-frame" data-lab-frame="toolkit" aria-hidden="true"></div>
       <p class="sec-label mono" aria-hidden="true"><span>04</span> / Toolkit</p>
       <h2 class="title" id="toolkit-title">My <span class="serif">toolkit</span></h2>
       <div class="kit" id="kit-tools">
@@ -534,7 +530,6 @@
     </section>
 
     <section class="section band band--light contact" id="contact" aria-labelledby="contact-title">
-      <div class="lab-frame" data-lab-frame="contact" aria-hidden="true"></div>
       <p class="sec-label mono" aria-hidden="true"><span>05</span> / Contact</p>
       <h2 class="title" id="contact-title">Let’s <span class="serif">talk</span></h2>
       <p class="contact__invite">Have a project in mind, a half-formed idea, or just want to say hi?</p>

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "for f in js/*.js js/lab/*.js tests/*.js tests/*.mjs; do node --check \"$f\" || exit 1; done && node tests/lab-unit.mjs",
+    "check": "for f in js/*.js tests/*.js tests/*.mjs; do node --check \"$f\" || exit 1; done",
     "check:browser": "node tests/ci.mjs",
     "prepare": "husky"
   },
