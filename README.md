@@ -2,21 +2,21 @@
 
 **Live:** <https://www.evanyap.com>
 
-The page is **Tony Stark's lab**. One fixed three.js canvas holds the whole room, and scrolling moves a camera along a rail through the sections (Intro, About, Experience, Selected work, Toolkit, Contact), with a page for each project. Plain HTML, CSS and JavaScript as ES modules: no framework and no build step. The only npm packages are dev tools for the checks. three.js and the fonts load from CDNs. Where WebGL2 is missing, or Reduce Motion is on, the same content shows as an ordinary page.
+The page is **Tony Stark's workshop**. A photograph of the room sits behind the whole page, one shot per section (Intro, About, Selected work, Experience, Toolkit, Contact), and scrolling brings each shot up over the last. The shots lean away from the pointer, a light follows it, and dust hangs in the air and parts round it. There is a page for each project. Plain HTML, CSS and JavaScript as ES modules: no framework and no build step. The only npm packages are dev tools for the checks. three.js and the fonts load from CDNs. With Reduce Motion on, the scene stays but holds still.
 
-![The lab's vault door opening onto Tony Stark's workshop, with a hologram of Evan inside](docs/hero.png)
+![The hero: a corridor of armour bays in the workshop, with Evan's name and headline over it](docs/hero.png)
 
-![The Hall of Armor: a suit in its bay, with the project beside it and the other six suits to pick from](docs/hall.png)
+![The Hall of Armor: a suit standing in the workshop, with its project beside it and the other suits to pick from](docs/hall.png)
 
 ## Highlights
 
-- **A lab you scroll through.** The camera flies a rail through the room. The reactor on the first screen is the door: a first visit finds it shut ("Systems offline"). Press and hold the reactor (or hold Space on it) and it charges; at 100% it fires a pulse and the door opens. It never opens by itself, so the resume and email stay reachable throughout.
+- **A workshop you scroll through.** Each section has its own photograph of the room, which pushes in slowly as the section passes; the hero's is a looping clip. The reactor on the first screen is the door: a first visit finds the room dark ("Systems offline"). Press and hold the reactor (or hold Space on it) and it charges; at 100% it fires a pulse and the room comes up. It never opens by itself, so the resume and email stay reachable throughout.
+- **A room that answers the pointer.** The shot leans away from it, a light follows it, the dust parts round it, and on About each hobby in the list lights its object in the photograph.
 - **Interactive 3D arc reactor** in three.js: powers on with a pulse, hold to charge, drag to spin, highlights follow the pointer.
-- **The Hall of Armor.** Selected work stands in the lab as seven Iron Man suits, each fully lit and drag-to-turn, with its own readouts and the project it stands for. On a phone the whole suit is framed under the nav.
-- **A trophy shelf you can click all the way down Experience.** Fourteen objects (roles, awards, the scholarship) each open a card. On a wide screen the shelf stays clickable down the whole section, and hovering an object selects its row on the page and the other way round. On a phone it pins as a strip at the top while Experience scrolls under it, and the entry being read lights its trophy.
+- **The Hall of Armor.** Selected work is seven Iron Man suits, each a 3D model you drag to turn, standing in the workshop beside the project it stands for.
 - **Looping project diagrams** drawn as inline SVG, played only while on screen, each with a pause button.
 - **Motion with restraint.** Word-by-word title reveals, counting figures, scroll-drawn timeline, cross-page view transitions. With Reduce Motion on, nothing moves.
-- **Tested in the browser.** [`/tests/`](tests/) loads the site at 13 sizes (320px to 1920px) and runs about 7,000 checks: section order, heading levels, no sideways scroll, 44px tap targets, WCAG contrast, focus rings, keyboard paths, the gate, and the lab's camera, suits and shelf.
+- **Tested in the browser.** [`/tests/`](tests/) loads the site at 13 sizes (320px to 1920px) and runs about 6,500 checks: section order, heading levels, no sideways scroll, 44px tap targets, WCAG contrast, focus rings, keyboard paths, the gate, the scene and the suits.
 
 ## How it was built
 
@@ -29,8 +29,8 @@ Scripts are ES modules, so serve over HTTP:
 ```sh
 python3 tests/serve.py 4173      # then open http://localhost:4173 (and /tests/ for the checks)
 npm install                      # once: installs the git hooks and the browser-check runner
-npm run check                    # JavaScript syntax and the lab's unit tests, fast
-npm run check:browser            # the full headless-Chrome suite, about 9 minutes
+npm run check                    # JavaScript syntax, fast
+npm run check:browser            # the full headless-Chrome suite, about 8 minutes
 ```
 
 ## Where things are
@@ -41,7 +41,7 @@ npm run check:browser            # the full headless-Chrome suite, about 9 minut
 | `work/`, `case-studies/` | One page per project, and the trading agent case study |
 | `css/` | `base.css` (tokens), `layout.css`, `home.css`, `project.css`, `figures.css`, `reactor.css` |
 | `js/` | `main.js` starts everything; `reactor*.js` the hero's 3D model; `gate.js`, `motion.js`, `reel.js` + `scenes.js` (diagram player) |
-| `js/lab.js`, `js/lab/` | The lab: the camera rail, room, props, suits, hologram, door and clickable spots |
+| `js/lab.js`, `js/motes.js`, `img/scene/` | The scene: a shot per section, the pointer's lean and light, the dust, About's spots, and the door |
 | `js/hall*.js`, `models/hall/` | The Hall of Armor: the suit picker, its stage and the suit models |
 | `img/`, `resume/` | Icons, logos, share image, resume PDF |
 
