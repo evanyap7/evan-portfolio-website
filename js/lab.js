@@ -33,8 +33,8 @@ const SHOTS = [
   },
   { id: 'work', name: 'work', x: '74%', video: true },
   { id: 'experience', name: 'exp', x: '80%', video: true },
-  { id: 'toolkit', name: 'kit', x: '62%', video: true },
-  { id: 'contact', name: 'contact', x: '76%', video: true },
+  { id: 'toolkit', name: 'kit', x: '62%' },
+  { id: 'contact', name: 'contact', x: '76%' },
 ];
 const DIR = 'img/scene/';
 // How far a shot has pushed in by the time its section leaves the screen.
