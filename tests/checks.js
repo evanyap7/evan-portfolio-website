@@ -735,8 +735,8 @@ export async function hallStage(win) {
   return [
     result('hall: the suit is whole on screen', box.top >= 0 && box.bottom <= win.innerHeight && box.right <= win.innerWidth && box.width >= 300,
       `${Math.round(box.left)},${Math.round(box.top)} ${Math.round(box.width)}×${Math.round(box.height)}`),
-    result('hall: the suit stands clear of the words', box.left >= words.right && box.left >= title.right,
-      `suit ${Math.round(box.left)}, panel ${Math.round(words.right)}, title ${Math.round(title.right)}`),
+    result('hall: the suit stands clear of the words and title', box.left >= words.right && box.top >= title.bottom - 8,
+      `suit ${Math.round(box.left)}, panel ${Math.round(words.right)}, title foot ${Math.round(title.bottom)}, suit top ${Math.round(box.top)}`),
   ];
 }
 

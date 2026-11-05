@@ -298,67 +298,25 @@
 }
 
 @media (min-width: 1024px) {
+  /* Every section is at least a screen, so each shot gets one. The words
+     use the whole page; behind them is a haze that is deepest in the middle
+     of the section and falls away above and below, with no edge to the side. */
   :root.lab {
-    --pane-pad: 40px;
-    --pane-w: calc(34rem + 2 * var(--pane-pad));
+    --scrim: hsl(var(--h) 40% 3% / 0.7);
   }
 
-  /* Every section is at least a screen, so each shot gets one. */
   :root.lab main > .section {
     min-height: 100svh;
     padding-top: max(var(--band-pad), calc(var(--nav) + var(--nav-top) + 40px));
-    padding-left: calc(var(--gutter) + var(--pane-pad));
-    border-image: linear-gradient(90deg,
-      transparent 0,
-      var(--scrim) calc(var(--gutter) + 72px),
-      var(--scrim) calc(var(--gutter) + var(--pane-w) - 48px),
-      transparent calc(var(--gutter) + var(--pane-w) + 64px)) fill 0 / 0 / 0;
+    border-image: linear-gradient(transparent 0, var(--scrim) 220px, var(--scrim) calc(100% - 160px), transparent 100%) fill 0 / 0 / 0 100vw;
   }
-
-  :root.lab main > .section > * {
-    max-width: 34rem;
-    margin-left: 0;
-  }
-
-  /* A console column reads from its left edge, and the grids laid out for
-     the whole page width take the layouts they use on a tablet. */
-  :root.lab main > .section .title { text-align: center; }
-  :root.lab .about { grid-template-columns: minmax(0, 1fr); }
-  /* One column, so the photo no longer holds beside the text: it leads it. */
-  :root.lab .about__photo { position: static; justify-self: start; max-width: 320px; }
-  :root.lab .role { grid-template-columns: 9.5rem minmax(0, 1fr); }
-  :root.lab .role__points { grid-column: 2; }
-  :root.lab .work .work__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-
-  /* About sits in the middle of the page, not in the left pane. */
-  :root.lab main > #about {
-    padding-left: var(--gutter);
-    padding-right: var(--gutter);
-    border-image: linear-gradient(90deg,
-      transparent calc(50% - var(--pane-w) / 2 - 64px),
-      var(--scrim) calc(50% - var(--pane-w) / 2 + 72px),
-      var(--scrim) calc(50% + var(--pane-w) / 2 - 72px),
-      transparent calc(50% + var(--pane-w) / 2 + 64px)) fill 0 / 0 / 0;
-  }
-  :root.lab main > #about > * { margin-inline: auto; }
-  :root.lab #about .about__photo { justify-self: center; }
 
   :root.lab main > .band--light {
-    border-image: linear-gradient(90deg,
-      transparent 0,
-      var(--scrim) calc(var(--gutter) + 72px),
-      var(--scrim) calc(var(--gutter) + var(--pane-w) - 48px),
-      transparent calc(var(--gutter) + var(--pane-w) + 64px)) fill 0 / 0 / 0;
+    --scrim: hsl(28 28% 7% / 0.78);
   }
 
-  /* The foot of the sheet, under the panel column. */
   :root.lab .footer.band {
-    border-image: linear-gradient(90deg, hsl(30 85% 64% / 0.35) 0 1px, var(--band) 0 calc(100% - 1px), hsl(30 85% 64% / 0.35) 0) fill 0 / 0 / 0;
-    width: var(--pane-w);
-    max-width: none;
-    margin-left: calc(max(0px, (100% - var(--wide)) / 2) + var(--gutter));
-    padding-left: var(--pane-pad);
-    padding-right: var(--pane-pad);
+    border-image: linear-gradient(var(--band) 0 0) fill 0 / 0 / 0 100vw;
   }
 }
 
@@ -466,12 +424,15 @@
 :root.lab .contact__links { justify-content: flex-start; }
 :root.lab .contact .contact__invite { margin-top: 28px; }
 
-/* Content is centred on its column: the labels, titles and About's words. */
-:root.lab .sec-label,
-:root.lab .about__text,
-:root.lab .about__things-title { text-align: center; }
-:root.lab .about__photo { justify-self: center; }
-:root.lab .about__text { margin-inline: auto; }
-:root.lab .about__things li { text-align: center; }
-:root.lab main > .section .title { text-align: center; }
-:root.lab .sec-label { justify-content: center; }
+/* On a phone the content is centred on the screen; on wide screens it
+   reads from the left, across the page. */
+@media (max-width: 1023px) {
+  :root.lab .sec-label,
+  :root.lab .about__text,
+  :root.lab .about__things-title { text-align: center; }
+  :root.lab .about__photo { justify-self: center; }
+  :root.lab .about__text { margin-inline: auto; }
+  :root.lab .about__things li { text-align: center; }
+  :root.lab main > .section .title { text-align: center; }
+  :root.lab .sec-label { justify-content: center; }
+}

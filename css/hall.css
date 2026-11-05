@@ -289,31 +289,28 @@
 :root.lab .hall__stage { isolation: isolate; }
 
 @media (min-width: 1024px) {
+  /* Words on the left, the suit standing in the shot on the right, the
+     seven tabs along the foot. */
   :root.lab main > #work > .hall {
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    align-items: center;
   }
 
   :root.lab .hall__panel { grid-column: 1; grid-row: 1; gap: 16px; }
 
+  :root.lab #work .hall__stage {
+    grid-column: 2;
+    grid-row: 1;
+    width: min(100%, calc(100svh - 340px), 620px);
+    justify-self: center;
+    max-height: none;
+  }
+
   :root.lab .hall__suits {
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 2;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     row-gap: 8px;
-    margin-top: 32px;
-  }
-
-  /* The suit stands in the shot right of the column, from the section's
-     top, as large as the screen allows; it scrolls with Work. */
-  :root.lab #work .hall__stage {
-    position: absolute;
-    top: max(var(--band-pad), calc(var(--nav) + var(--nav-top) + 16px));
-    /* The section stops at the page width; the suit may stand past it, into
-       the margin, on a screen wider than that. */
-    --bleed: max(0px, (100vw - 100%) / 2 - var(--gutter));
-    right: calc(var(--gutter) - var(--bleed));
-    width: min(calc(100% + var(--bleed) - var(--gutter) - var(--pane-w) - 24px), calc(100svh - 150px), 860px);
-    max-height: none;
+    margin-top: 24px;
   }
 }
