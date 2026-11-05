@@ -28,7 +28,7 @@ const SHOTS = [
     id: 'about',
     name: 'about',
     x: '66%',
-    spots: { barbell: [72, 22], guitar: [82, 58], beret: [60.5, 60], coffee: [53.5, 60], floorball: [90, 66] },
+    spots: { barbell: [72, 22], guitar: [82, 58], coffee: [53.5, 60], floorball: [90, 66] },
   },
   { id: 'work', name: 'work', x: '74%' },
   { id: 'experience', name: 'exp', x: '80%' },
@@ -45,7 +45,6 @@ const FADE_MS = 400;
 export function initLab() {
   if (!root.classList.contains('lab')) return;
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const narrow = window.matchMedia('(max-width: 719px)').matches;
 
   const stops = SHOTS.map((shot) => ({ ...shot, section: document.getElementById(shot.id) })).filter((s) => s.section);
   if (!stops.length) return;
@@ -69,7 +68,9 @@ export function initLab() {
     img.className = 'scene__media';
     img.alt = '';
     img.decoding = 'async';
-    img.sizes = '100vw';
+    // The frame covers the screen at 16:9, so on a tall phone it is far wider
+    // than the screen: ask for the width it is drawn at, not the screen's.
+    img.sizes = `${Math.ceil(Math.max(window.innerWidth, (window.innerHeight * 16) / 9))}px`;
     img.srcset = `${DIR}${stop.name}-1200.webp 1200w, ${DIR}${stop.name}-2400.webp 2400w, ${DIR}${stop.name}.webp 3840w`;
     img.src = `${DIR}${stop.name}-2400.webp`;
     // The first shot is the one on screen at load; the rest wait their turn.
@@ -85,9 +86,9 @@ export function initLab() {
       video.preload = 'auto';
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
-      const sources = narrow
-        ? [['hero-960.mp4', 'video/mp4']]
-        : [['hero.webm', 'video/webm'], ['hero.mp4', 'video/mp4']];
+      // The loop is drawn wider than a phone's screen, so a phone gets the
+      // 1080p clip too: the small one would be stretched soft.
+      const sources = [['hero.webm', 'video/webm'], ['hero.mp4', 'video/mp4']];
       sources.forEach(([file, type]) => {
         const source = document.createElement('source');
         source.src = DIR + file;

@@ -117,8 +117,20 @@
     font-size: clamp(52px, 16vw, 84px);
   }
 
+  /* The headline leads: the biggest type on the screen, the rest below it. */
   .hero__title {
-    margin-top: 20px;
+    margin-top: 14px;
+    font-size: clamp(46px, 13.4vw, 68px);
+    line-height: 1;
+  }
+
+  .hero__who {
+    font-size: 17px;
+  }
+
+  .hero__lede {
+    font-size: 1.0625rem;
+    margin-top: 18px;
   }
 
   .hero__actions {
@@ -734,3 +746,7 @@ ul.role__points li + li {
   gap: 12px;
   margin-top: 40px;
 }
+
+/* Toolkit on a phone: folded behind a button until asked for. */
+.kit__toggle { margin-bottom: 8px; }
+.kit.is-folded { display: none; }
