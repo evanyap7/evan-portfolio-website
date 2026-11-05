@@ -749,4 +749,5 @@ ul.role__points li + li {
 
 /* Toolkit on a phone: folded behind a button until asked for. */
 .kit__toggle { margin-bottom: 8px; }
+.kit__toggle[hidden] { display: none; }
 .kit.is-folded { display: none; }

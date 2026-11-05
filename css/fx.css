@@ -143,48 +143,6 @@
 @keyframes chip-float { to { translate: 0 -12px; } }
 @keyframes chip-live { 50% { opacity: 0.35; } }
 
-/* The ticker between the hero and About ------------------------------- */
-.ticker { display: none; }
-
-:root.lab .ticker {
-  display: block;
-  position: relative;
-  overflow: hidden;
-  padding: clamp(20px, 3.4vw, 44px) 0;
-  pointer-events: none;
-  background: linear-gradient(transparent, hsl(var(--h) 40% 3% / 0.6) 30%, hsl(var(--h) 40% 3% / 0.6) 70%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-}
-
-:root.lab .ticker__track {
-  display: flex;
-  align-items: center;
-  gap: clamp(22px, 3vw, 52px);
-  width: max-content;
-  white-space: nowrap;
-  will-change: transform;
-}
-
-:root.lab .ticker span {
-  color: transparent;
-  font: 900 clamp(44px, 7.4vw, 108px) / 1 "Satoshi", var(--font-sans);
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-  -webkit-text-stroke: 1.5px hsl(195 80% 88% / 0.55);
-}
-
-:root.lab .ticker span.is-fill {
-  color: var(--text);
-  -webkit-text-stroke: 0;
-}
-
-:root.lab .ticker i {
-  color: var(--accent);
-  font-size: clamp(22px, 3vw, 42px);
-  font-style: normal;
-}
-
 /* The reticle and the click pulse ------------------------------------- */
 .fx-ring,
 .fx-dot,
@@ -267,18 +225,6 @@
   :root.lab .band--light .pill:hover {
     box-shadow: 0 0 0 5px hsl(36 90% 70% / 0.14), 0 12px 44px -10px hsl(36 90% 60% / 0.6);
   }
-
-  :root.lab .tools li {
-    transition: translate 260ms var(--ease-out), color 200ms;
-  }
-
-  :root.lab .tools li:hover {
-    translate: 0 -4px;
-    color: var(--accent);
-  }
-
-  :root.lab .tools li:hover img,
-  :root.lab .tools li:hover svg { filter: drop-shadow(0 0 8px var(--accent)); }
 
   :root.lab .role { transition: background-color 300ms; }
   :root.lab .role:hover { background: linear-gradient(90deg, hsl(var(--h) 60% 80% / 0.06), transparent 70%); }

@@ -1,8 +1,7 @@
 // The page's live layer, on top of the scene (lab.js) and the small motions
 // (motion.js): a reticle that follows the pointer, a pulse where it clicks,
 // buttons that lean in to it, the portrait that tilts under it, labels that
-// decode when they arrive, floating readouts round the portrait, and a ticker
-// that speeds up as the page is scrolled.
+// decode when they arrive, and floating readouts round the portrait.
 //
 // Everything here is decoration and aria-hidden, or changes only text that
 // ends up exactly as it was written. The pointer parts run only with a mouse
@@ -157,53 +156,10 @@ function initChips() {
   });
 }
 
-// Words that run across the page between the hero and About, faster the
-// harder the page is scrolled, and backwards when it is scrolled up.
-function initTicker() {
-  const hero = document.getElementById('top');
-  if (!hero) return;
-  const words = ['AI agents', 'Evals', 'Quant', 'Python', 'TypeScript', 'Tested', 'Shipped', 'Measured'];
-  const strip = make('div', 'ticker');
-  const track = make('div', 'ticker__track');
-  const run = () => words.map((word, i) => `<span class="${i % 2 ? 'is-fill' : ''}">${word}</span><i>✦</i>`).join('');
-  track.innerHTML = run() + run() + run() + run();
-  strip.append(track);
-  hero.after(strip);
-
-  let offset = 0;
-  let drift = 0;
-  let last = window.scrollY;
-  let lastTime = 0;
-  let frame = 0;
-  const step = (now) => {
-    frame = requestAnimationFrame(step);
-    const dt = Math.min(0.05, lastTime ? (now - lastTime) / 1000 : 0);
-    lastTime = now;
-    const moved = window.scrollY - last;
-    last = window.scrollY;
-    drift += (Math.max(-60, Math.min(60, moved)) - drift) * 0.12;
-    offset -= (46 + drift * 22) * dt;
-    const loop = track.scrollWidth / 4;
-    if (loop) offset = ((offset % loop) - loop) % loop;
-    track.style.transform = `translate3d(${offset.toFixed(1)}px, 0, 0) skewX(${(-drift * 0.35).toFixed(2)}deg)`;
-  };
-  new IntersectionObserver(([entry]) => {
-    if (entry.isIntersecting && !frame) {
-      lastTime = 0;
-      last = window.scrollY;
-      frame = requestAnimationFrame(step);
-    } else if (!entry.isIntersecting) {
-      cancelAnimationFrame(frame);
-      frame = 0;
-    }
-  }, { rootMargin: '10% 0px' }).observe(strip);
-}
-
 export function initFx() {
   if (!root.classList.contains('lab') || REDUCE.matches) return;
   initDecode();
   initChips();
-  initTicker();
   if (!FINE.matches) return;
   // Held until the site is awake, so the gate stays the only thing on screen.
   whenActive(() => {
