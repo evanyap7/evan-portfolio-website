@@ -10,14 +10,14 @@
 import { whenActive } from './gate.js';
 
 // In order of importance, each project wearing the Mark of the same number.
-// Only EGO has a codename of its own (it is the assistant's name); every other
+// Only E.G.O has a codename of its own (it is the assistant's name); every other
 // suit goes by its project. `hue` tints the HUD; `spec` is the armour: which
 // model in models/hall/ it is, for a repainted suit the colour its red panels
 // take (base) and its gold panels (accent), and `tone`, the clay's colour in
 // the shaded pass when the base won't do. Every suit wears its own colours.
 const SUITS = [
   { id: 'trading-agent', mark: 'I', hue: 32, spec: { model: 'mark-1', tone: 0x6b5034 } },
-  { id: 'assistant-bot', mark: 'II', code: 'EGO', hue: 4, spec: { model: 'mark-7', tone: 0x9c2219 } },
+  { id: 'assistant-bot', mark: 'II', code: 'E.G.O', hue: 4, spec: { model: 'mark-7', tone: 0x9c2219 } },
   { id: 'research-agent', mark: 'III', hue: 152, spec: { model: 'mark-7-lite', paint: { base: 0x0e7a4c, accent: 0xd7a83a } } },
   // Mark IV wears Manchester United's colours, United red with black trim, and
   // the club's crest on the left of the chest, where a kit's badge sits.

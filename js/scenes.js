@@ -9,7 +9,7 @@ const OK = token('--signal', '#6d86ff');
 const BAD = token('--text', '#fafafa');
 const LINE = token('--muted', '#a1a1a1');
 
-// Personal Assistant Bot: three messages try the cheapest model first. The
+// E.G.O: three messages try the cheapest model first. The
 // third fails there and is passed on, then the routing meter fills to the
 // measured 38 of 39 (97%).
 function chain({ track, pop, fade, draw, travel, jolt, count, ease }) {

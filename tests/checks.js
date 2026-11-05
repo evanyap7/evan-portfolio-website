@@ -5,7 +5,7 @@
 const WIDE = 1024;
 // The sections in page order, each with its shot in the scene.
 const SECTIONS = ['top', 'about', 'work', 'experience', 'toolkit', 'contact'];
-const CARDS = ['website-revamp', 'parallel-match', 'assistant-bot', 'trading-agent', 'research-agent', 'watchpartyyy', 'v-bay', 'others'];
+const CARDS = ['assistant-bot', 'trading-agent', 'website-revamp', 'parallel-match', 'research-agent', 'v-bay', 'watchpartyyy', 'others'];
 // The drawing-set palette (paper, desk, ink, accent) and the pastels before it.
 const OLD_COLOURS = /#(fafaf7|e6e5e0|111214|4f5156|6c6e72|2541e6|ffb7d5|ffd98e|a9ddff|b9f2df|ff8fb1|ffe446|cdf5e6|ff9fb6|3a4a86|9b3158)\b|rgba\(17,\s*18,\s*20|rgba\(37,\s*65,\s*230/i;
 
@@ -395,7 +395,7 @@ export async function copy(win, frame) {
 // screen reader gets must read exactly as written, nothing in a heading may
 // be aria-hidden, and once a title has been seen every word is in place.
 const TITLES = {
-  'hero-title': 'Most AI demos never get tested. Mine have 460+ tests.',
+  'hero-title': 'Most students study AI. I ship it.',
   'about-title': 'About me',
   'experience-title': 'My experience',
   'work-title': 'Selected work',
