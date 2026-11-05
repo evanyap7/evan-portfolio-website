@@ -1,6 +1,7 @@
 import { CONTACT_EMAIL } from './config.js';
 import { initCopy } from './contact.js';
 import { initCount } from './count.js';
+import { initFx } from './fx.js';
 import { initGate } from './gate.js';
 import { initHud } from './hud.js';
 import { initIndex } from './index.js';
@@ -53,6 +54,7 @@ initCount();
 initCopy();
 initReveal();
 initMotion();
+initFx();
 initReactor();
 initHall();
 initReels();
