@@ -4,7 +4,7 @@
 
 The page is **Tony Stark's workshop**. A photograph of the room sits behind the whole page, one shot per section (Intro, About, Selected work, Experience, Toolkit, Contact), and scrolling brings each shot up over the last. The shots lean away from the pointer, a light follows it, and dust hangs in the air and parts round it. There is a page for each project. Plain HTML, CSS and JavaScript as ES modules: no framework and no build step. The only npm packages are dev tools for the checks. three.js and the fonts load from CDNs. With Reduce Motion on, the scene stays but holds still.
 
-![The hero: a corridor of armour bays in the workshop, with Evan's name and headline over it](docs/hero.png)
+![The hero: the workshop corridor with Evan at his desk, his name and headline over it](docs/hero.png)
 
 ![The Hall of Armor: a suit standing in the workshop, with its project beside it and the other suits to pick from](docs/hall.png)
 
