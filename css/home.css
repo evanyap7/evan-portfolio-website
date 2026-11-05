@@ -751,3 +751,6 @@ ul.role__points li + li {
 .kit__toggle { margin-bottom: 8px; }
 .kit__toggle[hidden] { display: none; }
 .kit.is-folded { display: none; }
+
+/* Short statements break between words, never inside one. */
+.about__statement { hyphens: none; -webkit-hyphens: none; }
