@@ -219,7 +219,7 @@
 /* The hero's words lie on the shot itself, with no panel. A soft dark halo
    keeps them on the page's own dark wherever the shot is bright, and the
    lede, the hero's one sentence to read, takes the reading ink. */
-:root.lab .hero__name,
+:root.lab .hero__who,
 :root.lab .hero__title,
 :root.lab .hero__lede,
 :root.lab .reactor__status {

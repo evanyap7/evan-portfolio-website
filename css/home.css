@@ -50,6 +50,7 @@
 .hero__name span:last-child { justify-self: start; }
 
 /* The reactor's canvas reaches past the stage; the text below sits over it. */
+.hero__who,
 .hero__title,
 .hero__lede,
 .hero__actions {
@@ -57,8 +58,15 @@
   z-index: 2;
 }
 
+.hero__who {
+  font-size: clamp(18px, 2vw, 30px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+}
+
 .hero__title {
-  margin-top: 28px;
+  margin-top: 12px;
   font-size: clamp(40px, 6.2vw, 96px);
   font-weight: 600;
   line-height: 1.08;

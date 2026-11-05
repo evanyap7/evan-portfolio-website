@@ -37,7 +37,7 @@ export function initGate() {
   // the site wakes.
   const asleep = [
     ...document.querySelectorAll('.skip-link, .nav, .menu, main > section:not(.hero), .footer'),
-    ...document.querySelectorAll('.hero__name, .reactor__panel, .hero__title, .hero__lede, .hero__creds'),
+    ...document.querySelectorAll('.hero__who, .reactor__panel, .hero__title, .hero__lede'),
   ];
   asleep.forEach((el) => { el.inert = true; });
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
