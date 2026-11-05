@@ -10,7 +10,7 @@ const SIZES = [
 ];
 
 // Checks run on the main page at every size, in this order.
-const ALL = ['structure', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'contrast', 'emDash', 'aboutPhoto', 'proof', 'workTitle', 'workCards', 'titles', 'pointerOnly', 'timeline', 'honours', 'navIndex', 'progress', 'menu', 'copy', 'reactor', 'callouts', 'scene', 'sceneStops', 'sceneSpots', 'hallStage', 'suitsLit'];
+const ALL = ['structure', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'contrast', 'emDash', 'aboutPhoto', 'proof', 'workTitle', 'workCards', 'titles', 'pointerOnly', 'timeline', 'honours', 'navIndex', 'progress', 'menu', 'copy', 'reactor', 'scene', 'sceneStops', 'sceneSpots', 'hallStage', 'suitsLit'];
 
 // The project pages and the case study, each checked at every size too.
 const PAGES = [

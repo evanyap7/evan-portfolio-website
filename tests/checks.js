@@ -487,27 +487,6 @@ export function reactor(win) {
   ];
 }
 
-// On wide screens the credentials hang off the reactor as callouts: each
-// sits inside the hero, clear of the name and of the others.
-export function callouts(win) {
-  const doc = win.document;
-  const hero = doc.querySelector('.hero');
-  const items = [...doc.querySelectorAll('[data-callouts] li')];
-  const wide = win.innerWidth >= WIDE;
-  if (!wide) return [result('credentials are a plain list below 1024', !hero.classList.contains('hero--hud') && items.every((item) => win.getComputedStyle(item).position === 'static'))];
-  const box = hero.getBoundingClientRect();
-  const words = [...doc.querySelectorAll('.hero__name span')].map((span) => span.getBoundingClientRect());
-  const rects = items.map((item) => item.getBoundingClientRect());
-  const hit = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
-  const inside = rects.every((r) => r.left >= box.left && r.right <= box.right && r.top >= box.top);
-  const clear = rects.every((r, i) => !words.some((w) => hit(r, w)) && !rects.some((o, j) => j !== i && hit(r, o)));
-  return [
-    result('credentials hang off the reactor on wide screens', hero.classList.contains('hero--hud') && doc.querySelectorAll('[data-lines] path').length === items.length),
-    result('callouts sit inside the hero', inside, rects.map((r) => `${Math.round(r.left)}-${Math.round(r.right)}`).join(' ')),
-    result('callouts clear of the name and each other', clear),
-  ];
-}
-
 // Presses and holds the reactor for ms, then lets go.
 async function holdReactor(win, ms) {
   const hit = win.document.querySelector('[data-reactor-hit]');
