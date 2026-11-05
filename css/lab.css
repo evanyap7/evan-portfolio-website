@@ -16,6 +16,9 @@
   scroll-padding-top: 0;
   --pane: hsl(var(--h) 30% 6% / 0.86);
   --pane-edge: hsl(var(--h) 60% 60% / 0.25);
+  /* What lies behind a section's words: a dark wash that fades to nothing at
+     its edges, so the room shows through and no box is drawn. */
+  --scrim: hsl(var(--h) 40% 3% / 0.8);
   --pane-pad: 24px;
   --pane-w: 100%;
   --window: 60svh;
@@ -72,7 +75,7 @@
 
 .lab-frame { display: none; }
 
-/* Sections: no band fill; the panel is painted in its place. */
+/* Sections: no band fill; a scrim is painted in its place. */
 :root.lab main > .section {
   position: relative;
   scroll-margin-top: 0;
@@ -80,7 +83,7 @@
   /* Narrow screens: the window is the top of the section, the panel starts
      under it with a hairline and runs to the section's end. */
   padding-top: calc(var(--window) + 32px);
-  border-image: linear-gradient(transparent var(--window), var(--pane-edge) var(--window) calc(var(--window) + 1px), var(--pane) 0) fill 0 / 0 / 0 100vw;
+  border-image: linear-gradient(transparent var(--window), var(--scrim) calc(var(--window) + 72px), var(--scrim) calc(100% - 56px), transparent 100%) fill 0 / 0 / 0 100vw;
 }
 
 :root.lab .lab-frame {
@@ -114,7 +117,8 @@
 }
 
 :root.lab main > .band--light {
-  border-image: linear-gradient(transparent var(--window), hsl(30 85% 64% / 0.35) var(--window) calc(var(--window) + 1px), var(--band) 0) fill 0 / 0 / 0 100vw;
+  --scrim: hsl(28 28% 7% / 0.84);
+  border-image: linear-gradient(transparent var(--window), var(--scrim) calc(var(--window) + 72px), var(--scrim) calc(100% - 56px), transparent 100%) fill 0 / 0 / 0 100vw;
 }
 
 :root.lab .footer.band {
@@ -135,11 +139,10 @@
     padding-top: max(var(--band-pad), calc(var(--nav) + var(--nav-top) + 40px));
     padding-left: calc(var(--gutter) + var(--pane-pad));
     border-image: linear-gradient(90deg,
-      transparent var(--gutter),
-      var(--pane-edge) var(--gutter) calc(var(--gutter) + 1px),
-      var(--pane) 0 calc(var(--gutter) + var(--pane-w) - 1px),
-      var(--pane-edge) 0 calc(var(--gutter) + var(--pane-w)),
-      transparent 0) fill 0 / 0 / 0;
+      transparent 0,
+      var(--scrim) calc(var(--gutter) + 72px),
+      var(--scrim) calc(var(--gutter) + var(--pane-w) - 48px),
+      transparent calc(var(--gutter) + var(--pane-w) + 64px)) fill 0 / 0 / 0;
   }
 
   /* Not the spots (js/lab/spots.js): they are in the section too, and their
@@ -159,11 +162,10 @@
 
   :root.lab main > .band--light {
     border-image: linear-gradient(90deg,
-      transparent var(--gutter),
-      hsl(30 85% 64% / 0.35) var(--gutter) calc(var(--gutter) + 1px),
-      var(--band) 0 calc(var(--gutter) + var(--pane-w) - 1px),
-      hsl(30 85% 64% / 0.35) 0 calc(var(--gutter) + var(--pane-w)),
-      transparent 0) fill 0 / 0 / 0;
+      transparent 0,
+      var(--scrim) calc(var(--gutter) + 72px),
+      var(--scrim) calc(var(--gutter) + var(--pane-w) - 48px),
+      transparent calc(var(--gutter) + var(--pane-w) + 64px)) fill 0 / 0 / 0;
   }
 
   /* The window: the rest of the screen, right of the panel. */

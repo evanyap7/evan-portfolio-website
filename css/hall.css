@@ -352,7 +352,7 @@
   :root.lab .hall-pin,
   :root.lab .work--hall .others {
     padding-top: 32px;
-    border-image: linear-gradient(var(--pane-edge) 0 1px, var(--pane) 0) fill 0 / 0 / 0 100vw;
+    border-image: linear-gradient(transparent 0, var(--scrim) 40px, var(--scrim) calc(100% - 32px), transparent 100%) fill 0 / 0 / 0 100vw;
   }
 
   /* The title and the pin read as one pane, with no gap between them. */
