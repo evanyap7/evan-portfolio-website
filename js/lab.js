@@ -31,7 +31,7 @@ const SHOTS = [
     spots: { barbell: [72, 22], guitar: [82, 58], beret: [60.5, 60], coffee: [53.5, 60], floorball: [90, 66] },
   },
   { id: 'work', name: 'work', x: '74%' },
-  { id: 'experience', name: 'exp', x: '68%' },
+  { id: 'experience', name: 'exp', x: '80%' },
   { id: 'toolkit', name: 'kit', x: '62%' },
   { id: 'contact', name: 'contact', x: '76%' },
 ];
