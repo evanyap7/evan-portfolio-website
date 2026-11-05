@@ -23,12 +23,12 @@ const root = document.documentElement;
 // screen, so a phone leans that way to keep it in frame. `spots` are where
 // each of About's things stands in its photograph, in % of the picture.
 const SHOTS = [
-  { id: 'top', name: 'hero', x: '50%', video: true },
+  { id: 'top', name: 'hero', x: '78%', video: true },
   {
     id: 'about',
     name: 'about',
     x: '66%',
-    spots: { barbell: [73.5, 19], guitar: [60, 66], beret: [72.5, 64], coffee: [81, 65], floorball: [88.8, 88] },
+    spots: { barbell: [72, 22], guitar: [82, 58], beret: [60.5, 60], coffee: [53.5, 60], floorball: [90, 66] },
   },
   { id: 'work', name: 'work', x: '74%' },
   { id: 'experience', name: 'exp', x: '68%' },
@@ -70,8 +70,8 @@ export function initLab() {
     img.alt = '';
     img.decoding = 'async';
     img.sizes = '100vw';
-    img.srcset = `${DIR}${stop.name}-1200.webp 1200w, ${DIR}${stop.name}.webp 2400w`;
-    img.src = `${DIR}${stop.name}.webp`;
+    img.srcset = `${DIR}${stop.name}-1200.webp 1200w, ${DIR}${stop.name}-2400.webp 2400w, ${DIR}${stop.name}.webp 3840w`;
+    img.src = `${DIR}${stop.name}-2400.webp`;
     // The first shot is the one on screen at load; the rest wait their turn.
     img.fetchPriority = i === 0 ? 'high' : 'low';
     frame.append(img);

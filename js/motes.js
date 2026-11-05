@@ -36,7 +36,7 @@ export function createMotes(host) {
   let w = 0;
   let h = 0;
   const size = () => {
-    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
     w = host.clientWidth;
     h = host.clientHeight;
     canvas.width = Math.round(w * dpr);
