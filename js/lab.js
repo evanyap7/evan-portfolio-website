@@ -28,11 +28,10 @@ const SHOTS = [
     id: 'about',
     name: 'about',
     x: '66%',
-    video: true,
     spots: { barbell: [72, 22], guitar: [82, 58], coffee: [53.5, 60], floorball: [90, 66] },
   },
-  { id: 'work', name: 'work', x: '74%', video: true },
-  { id: 'experience', name: 'exp', x: '80%', video: true },
+  { id: 'work', name: 'work', x: '74%' },
+  { id: 'experience', name: 'exp', x: '80%' },
   { id: 'toolkit', name: 'kit', x: '62%' },
   { id: 'contact', name: 'contact', x: '76%' },
 ];
@@ -88,11 +87,9 @@ export function initLab() {
       video.preload = i === 0 ? 'auto' : 'none';
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
-      // The loops are drawn wider than a phone's screen, so a phone gets the
-      // 1080p clips too: a smaller one would be stretched soft.
       [['webm', 'video/webm'], ['mp4', 'video/mp4']].forEach(([ext, type]) => {
         const source = document.createElement('source');
-        source.src = `${DIR}${stop.name === 'hero' ? 'hero' : `${stop.name}-loop`}.${ext}`;
+        source.src = `${DIR}${stop.name}.${ext}`;
         source.type = type;
         video.append(source);
       });
