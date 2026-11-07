@@ -1,7 +1,7 @@
 // The page's live layer, on top of the scene (lab.js) and the small motions
-// (motion.js): a reticle that follows the pointer, a pulse where it clicks,
-// buttons that lean in to it, the portrait that tilts under it, labels that
-// decode when they arrive, and floating readouts round the portrait.
+// (motion.js): a pulse where it clicks, buttons that lean in to it, the
+// portrait that tilts under it, labels that decode when they arrive, and
+// floating readouts round the portrait.
 //
 // Everything here is decoration and aria-hidden, or changes only text that
 // ends up exactly as it was written. The pointer parts run only with a mouse
@@ -59,39 +59,6 @@ function initDecode() {
     });
   }, { rootMargin: '0px 0px -12% 0px' });
   labels.forEach((label) => seen.observe(label));
-}
-
-// A ring that trails the pointer, a dot that is on it, the ring opening over
-// anything that can be pressed or dragged and closing as it is pressed.
-function initReticle() {
-  const ring = make('div', 'fx-ring');
-  const dot = make('div', 'fx-dot');
-  document.body.append(ring, dot);
-  let x = -100;
-  let y = -100;
-  let rx = x;
-  let ry = y;
-  let frame = 0;
-  const follow = () => {
-    rx += (x - rx) * 0.2;
-    ry += (y - ry) * 0.2;
-    ring.style.transform = `translate3d(${rx.toFixed(1)}px, ${ry.toFixed(1)}px, 0)`;
-    frame = Math.abs(x - rx) + Math.abs(y - ry) > 0.2 ? requestAnimationFrame(follow) : 0;
-  };
-  window.addEventListener('pointermove', (event) => {
-    x = event.clientX;
-    y = event.clientY;
-    dot.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-    root.classList.add('fx-pointing');
-    if (!frame) frame = requestAnimationFrame(follow);
-  }, { passive: true });
-  document.addEventListener('pointerover', (event) => {
-    const hot = event.target instanceof Element && event.target.closest('a, button, summary, .hall__stage');
-    ring.classList.toggle('is-hot', Boolean(hot));
-  });
-  window.addEventListener('pointerdown', () => ring.classList.add('is-down'));
-  window.addEventListener('pointerup', () => ring.classList.remove('is-down'));
-  root.addEventListener('pointerleave', () => root.classList.remove('fx-pointing'));
 }
 
 // A click sends a ring out from where it landed, as the reactor's pulse does.
@@ -163,7 +130,6 @@ export function initFx() {
   if (!FINE.matches) return;
   // Held until the site is awake, so the gate stays the only thing on screen.
   whenActive(() => {
-    initReticle();
     initPulse();
     initMagnets();
     document.querySelectorAll('.about__photo').forEach(tilt);

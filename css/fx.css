@@ -143,14 +143,10 @@
 @keyframes chip-float { to { translate: 0 -12px; } }
 @keyframes chip-live { 50% { opacity: 0.35; } }
 
-/* The reticle and the click pulse ------------------------------------- */
-.fx-ring,
-.fx-dot,
+/* The click pulse ----------------------------------------------------- */
 .fx-pulse { display: none; }
 
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  :root.lab .fx-ring,
-  :root.lab .fx-dot,
   :root.lab .fx-pulse {
     display: block;
     position: fixed;
@@ -158,44 +154,6 @@
     left: 0;
     z-index: 80;
     pointer-events: none;
-  }
-
-  :root.lab .fx-ring {
-    width: 38px;
-    height: 38px;
-    margin: -19px 0 0 -19px;
-    border: 1px solid hsl(195 95% 75% / 0.7);
-    border-radius: 50%;
-    box-shadow: 0 0 18px hsl(195 95% 60% / 0.35);
-    opacity: 0;
-    transition: opacity 300ms, scale 260ms var(--ease-out), background-color 260ms, border-color 260ms;
-  }
-
-  :root.lab .fx-dot {
-    width: 6px;
-    height: 6px;
-    margin: -3px 0 0 -3px;
-    border-radius: 50%;
-    background: hsl(195 95% 80%);
-    box-shadow: 0 0 10px hsl(195 95% 70%);
-    opacity: 0;
-    transition: opacity 300ms;
-  }
-
-  :root.lab.fx-pointing .fx-ring,
-  :root.lab.fx-pointing .fx-dot { opacity: 1; }
-
-  :root.lab .fx-ring.is-hot {
-    scale: 1.9;
-    background: hsl(195 95% 70% / 0.08);
-  }
-
-  :root.lab .fx-ring.is-down { scale: 0.7; }
-
-  :root[data-stop='contact'] .fx-ring { border-color: hsl(36 90% 70% / 0.8); box-shadow: 0 0 18px hsl(36 90% 60% / 0.35); }
-  :root[data-stop='contact'] .fx-dot { background: hsl(36 90% 80%); box-shadow: 0 0 10px hsl(36 90% 70%); }
-
-  :root.lab .fx-pulse {
     width: 12px;
     height: 12px;
     margin: -6px 0 0 -6px;
