@@ -5,6 +5,57 @@
 
 .work--hall .work__grid { display: none; }
 
+.work.is-grid-active .work__grid {
+  display: grid;
+  margin-top: clamp(24px, 3.5vw, 44px);
+}
+
+.work.is-grid-active .hall,
+.work.is-grid-active .others {
+  display: none !important;
+}
+
+.title + .work__switch {
+  margin-top: clamp(20px, 2.5vw, 32px);
+}
+
+.work__switch {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.work__switch-btn {
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  padding: 8px 18px;
+  cursor: pointer;
+}
+
+.work__switch + .hall {
+  margin-top: clamp(12px, 1.5vw, 20px);
+}
+
+/* On wide screens the switcher takes vertical height; absorb it back so the
+   stage still fits in the viewport (hallStage check requires bottom ≤ innerHeight). */
+@media (min-width: 1024px) {
+  .title + .work__switch { margin-top: clamp(12px, 1.5vw, 16px); }
+  .work__switch + .hall { margin-top: 8px; }
+}
+
+.others__cta {
+  margin-top: clamp(24px, 3.5vw, 40px);
+  display: flex;
+}
+
+.others__cta-btn {
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
 .hall {
   --suit: hsl(var(--suit-h, 196) 95% 68%);
   /* Opaque, so a finished pass stays at least 4.8:1 on its pill for every

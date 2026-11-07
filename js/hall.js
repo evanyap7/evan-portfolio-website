@@ -88,7 +88,11 @@ function mountOthers(suits) {
     item.append(row);
     list.append(item);
   });
-  root.append(title, list);
+  const cta = element('p', 'others__cta');
+  const ctaBtn = element('button', 'pill others__cta-btn', '⊞ View all 8 projects in full card grid →');
+  ctaBtn.type = 'button';
+  cta.append(ctaBtn);
+  root.append(title, list, cta);
   return root;
 }
 
@@ -101,7 +105,7 @@ function mount(suits) {
   const stage = element('div', 'hall__stage');
   stage.tabIndex = 0;
   stage.setAttribute('role', 'group');
-  stage.setAttribute('aria-label', 'The suit. Left and right arrow keys turn it.');
+  stage.setAttribute('aria-label', '3D model stage. Left and right arrow keys turn it.');
   const canvas = element('canvas', 'hall__canvas');
   canvas.setAttribute('aria-hidden', 'true');
   const hint = element('p', 'hall__hint', HINT);
@@ -127,7 +131,7 @@ function mount(suits) {
     button.type = 'button';
     button.dataset.suit = String(index);
     button.dataset.id = suit.id;
-    button.append(element('span', 'hall__suit-mark', `Mark ${suit.mark}`), element('span', 'hall__suit-name', suit.code ?? suit.name));
+    button.append(element('span', 'hall__suit-mark', `SYS ${suit.mark}`), element('span', 'hall__suit-name', suit.code ?? suit.name));
     picker.append(button);
     return button;
   });
@@ -147,8 +151,42 @@ export function initHall() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ui = mount(suits);
   const others = mountOthers(suits);
-  title.after(ui.root);
+
+  const switcher = element('div', 'work__switch');
+  switcher.setAttribute('role', 'tablist');
+  switcher.setAttribute('aria-label', 'Work layout view');
+
+  const btnHall = element('button', 'pill pill--solid work__switch-btn', '◈ 3D Showcase');
+  btnHall.type = 'button';
+  btnHall.setAttribute('role', 'tab');
+  btnHall.setAttribute('aria-selected', 'true');
+
+  const btnGrid = element('button', 'pill work__switch-btn', '⊞ All Projects (Grid)');
+  btnGrid.type = 'button';
+  btnGrid.setAttribute('role', 'tab');
+  btnGrid.setAttribute('aria-selected', 'false');
+
+  switcher.append(btnHall, btnGrid);
+  title.after(switcher);
+  switcher.after(ui.root);
   if (others) ui.root.after(others);
+
+  const setView = (mode) => {
+    const isGrid = mode === 'grid';
+    work.classList.toggle('is-grid-active', isGrid);
+    btnGrid.classList.toggle('pill--solid', isGrid);
+    btnGrid.setAttribute('aria-selected', String(isGrid));
+    btnHall.classList.toggle('pill--solid', !isGrid);
+    btnHall.setAttribute('aria-selected', String(!isGrid));
+  };
+
+  btnGrid.addEventListener('click', () => setView('grid'));
+  btnHall.addEventListener('click', () => setView('hall'));
+  others?.querySelector('.others__cta-btn')?.addEventListener('click', () => {
+    setView('grid');
+    title.scrollIntoView({ behavior: 'smooth' });
+  });
+
   // The Hall and the list replace the cards; the cards stay in the page for
   // search engines and come back if three.js fails to load.
   work.classList.add('work--hall');
@@ -161,7 +199,7 @@ export function initHall() {
     current = index;
     const suit = suits[index];
     ui.root.style.setProperty('--suit-h', String(suit.hue));
-    ui.mark.textContent = suit.code ? `Mark ${suit.mark} · ${suit.code}` : `Mark ${suit.mark}`;
+    ui.mark.textContent = suit.code ? `SYS ${suit.mark} · ${suit.code}` : `SYS ${suit.mark}`;
     ui.name.textContent = suit.name;
     ui.line.textContent = suit.line;
     ui.figure.textContent = suit.figure;
@@ -170,7 +208,7 @@ export function initHall() {
     ui.open.href = suit.href;
     ui.suitButtons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
     if (!hall || !hall.ready(suit.spec)) {
-      ui.hint.textContent = `Loading Mark ${suit.mark}…`;
+      ui.hint.textContent = `Loading system ${suit.mark}…`;
     }
     if (hall) {
       hall.setSuit(suit.spec, { instant: reduce }).then((shown) => {

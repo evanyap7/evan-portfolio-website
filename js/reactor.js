@@ -100,7 +100,7 @@ export function initReactor() {
 
   if (reduce) {
     hero.classList.add('reactor-still');
-    status.textContent = 'Iron Man’s arc reactor';
+    status.textContent = 'Arc reactor core';
   }
   if (!webgl2() || !('ResizeObserver' in window)) return;
 
