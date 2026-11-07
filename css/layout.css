@@ -33,11 +33,13 @@
   line-height: 1;
   letter-spacing: -0.05em;
   white-space: nowrap;
+  transition: opacity 200ms;
 }
 
 /* The dot is in the reactor's colour. */
 .wordmark__dot {
   color: var(--accent);
+  transition: filter 200ms;
 }
 
 .nav__links {
@@ -64,7 +66,10 @@
 }
 
 @media (hover: hover) {
+  .wordmark:hover { opacity: 0.8; }
+  .wordmark:hover .wordmark__dot { filter: drop-shadow(0 0 6px var(--accent)); }
   .nav__links a:hover { color: var(--text); }
+  .menu__links a:hover { color: var(--text); }
 }
 
 .nav__end {
@@ -149,6 +154,7 @@
   font-size: 34px;
   font-weight: 500;
   letter-spacing: -0.03em;
+  transition: color 200ms;
 }
 
 .menu__links a[aria-current="true"] {

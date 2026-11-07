@@ -352,6 +352,15 @@ html {
   stroke-dasharray: 0.4 1.6;
 }
 
+@media (hover: hover) {
+  .reactor__charge-track {
+    transition: stroke 200ms;
+  }
+  .reactor:hover .reactor__charge-track {
+    stroke: hsl(var(--h) 40% 75% / 0.4);
+  }
+}
+
 .reactor__charge-fill {
   stroke: var(--accent);
   stroke-width: 1.1;

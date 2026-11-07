@@ -86,7 +86,7 @@ function initReticle() {
     if (!frame) frame = requestAnimationFrame(follow);
   }, { passive: true });
   document.addEventListener('pointerover', (event) => {
-    const hot = event.target instanceof Element && event.target.closest('a, button, summary, .hall__stage, [data-tilt]');
+    const hot = event.target instanceof Element && event.target.closest('a, button, summary, .hall__stage');
     ring.classList.toggle('is-hot', Boolean(hot));
   });
   window.addEventListener('pointerdown', () => ring.classList.add('is-down'));

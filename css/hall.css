@@ -121,6 +121,14 @@
   text-underline-offset: 5px;
   text-decoration-color: var(--suit);
   text-decoration-thickness: 2px;
+  transition: color 200ms, text-decoration-color 200ms;
+}
+
+@media (hover: hover) {
+  .hall__open:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
 }
 
 .hall__suits {

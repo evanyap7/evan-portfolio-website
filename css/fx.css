@@ -226,12 +226,9 @@
     box-shadow: 0 0 0 5px hsl(36 90% 70% / 0.14), 0 12px 44px -10px hsl(36 90% 60% / 0.6);
   }
 
-  :root.lab .role { transition: background-color 300ms; }
-  :root.lab .role:hover { background: linear-gradient(90deg, hsl(var(--h) 60% 80% / 0.06), transparent 70%); }
-  :root.lab .role:hover .role__org { color: var(--accent); }
-
-  :root.lab .about__things li { transition: translate 260ms var(--ease-out); }
-  :root.lab .about__things li:hover { translate: 6px 0; }
+  :root.lab .wordmark:hover .wordmark__dot {
+    filter: drop-shadow(0 0 8px hsl(195 95% 70% / 0.8));
+  }
 }
 
 /* The italic word in each title breathes. */
