@@ -123,10 +123,53 @@ function initChips() {
   });
 }
 
+// The hero headline arrives as liquid: an SVG turbulence map displaces the
+// text, and the displacement drains to nothing as the site wakes, leaving
+// sharp, selectable text. The filter is removed at the end so the resting
+// headline is exactly what it was. Touch screens get it too (it is not a
+// pointer effect); only browsers that cannot filter HTML with SVG skip it.
+function initLiquid() {
+  const title = document.querySelector('.hero__title');
+  if (!title || !window.CSS?.supports('filter', 'url(#a)')) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('class', 'fx-liquid');
+  svg.innerHTML = `<filter id="fx-liquid" x="-8%" y="-20%" width="116%" height="140%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.05" numOctaves="2" seed="7" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>`;
+  document.body.append(svg);
+  const turbulence = svg.querySelector('feTurbulence');
+  const displace = svg.querySelector('feDisplacementMap');
+
+  whenActive(() => {
+    const MS = 2200;
+    const FROM = 90;
+    const start = performance.now();
+    title.style.filter = 'url(#fx-liquid)';
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / MS);
+      const left = (1 - t) ** 3;
+      displace.setAttribute('scale', (FROM * left).toFixed(2));
+      // The ripples run vertically too, slowing as the text settles.
+      turbulence.setAttribute('baseFrequency', `${(0.012 + 0.01 * left).toFixed(4)} ${(0.05 + 0.03 * left).toFixed(4)}`);
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        title.style.filter = '';
+        svg.remove();
+      }
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
 export function initFx() {
   if (!root.classList.contains('lab') || REDUCE.matches) return;
   initDecode();
   initChips();
+  initLiquid();
   if (!FINE.matches) return;
   // Held until the site is awake, so the gate stays the only thing on screen.
   whenActive(() => {

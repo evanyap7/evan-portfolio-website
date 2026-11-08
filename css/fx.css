@@ -143,6 +143,14 @@
 @keyframes chip-float { to { translate: 0 -12px; } }
 @keyframes chip-live { 50% { opacity: 0.35; } }
 
+/* The liquid headline's filter lives here (js/fx.js), out of the layout. */
+.fx-liquid {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
 /* The click pulse ----------------------------------------------------- */
 .fx-pulse { display: none; }
 
