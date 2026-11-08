@@ -328,8 +328,21 @@
     mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
   }
 
+  /* Tilts toward the pointer (motion.js sets --rx, --ry). It follows the
+     pointer fast and settles back slowly. */
   .spot:hover {
-    transform: translateY(-3px);
+    transform: perspective(900px) translateY(-3px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition-duration: 120ms, 200ms;
+  }
+
+  /* Chromatic aberration: the big text splits into red and cyan fringes
+     that widen toward the card's edges (--ca). Text-shadow only, so the text
+     itself is untouched. */
+  .spot:hover .work__figure,
+  .spot:hover .work__name {
+    text-shadow:
+      calc(var(--ca, 0) * -2.4px) 0 hsl(0 100% 62% / 0.65),
+      calc(var(--ca, 0) * 2.4px) 0 hsl(190 100% 60% / 0.65);
   }
 
   .spot:hover::before,

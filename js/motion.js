@@ -91,25 +91,41 @@ function initTimeline() {
   }, { rootMargin: '25% 0px' }).observe(line);
 }
 
-// Tracks the pointer over each card for the spotlight in figures.css.
+// Tracks the pointer over each card for the spotlight in figures.css, and
+// for its tilt: --rx/--ry lean the card toward the pointer in 3D, and --ca
+// (0 at the centre, 1 at the corners) splits the card's big text into red and
+// cyan fringes, as a lens does at the edge of its frame.
 function initSpotlight() {
+  const TILT = 9;
   document.querySelectorAll('.work__card').forEach((card) => {
     let frame = 0;
     let x = 0;
     let y = 0;
+    let px = 0;
+    let py = 0;
     card.classList.add('spot');
     card.dataset.pointer = 'fine';
     card.addEventListener('pointermove', (event) => {
       const box = card.getBoundingClientRect();
       x = event.clientX - box.left;
       y = event.clientY - box.top;
+      px = x / box.width - 0.5;
+      py = y / box.height - 0.5;
       if (frame) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
         card.style.setProperty('--mx', `${x}px`);
         card.style.setProperty('--my', `${y}px`);
+        card.style.setProperty('--rx', `${(-py * TILT).toFixed(2)}deg`);
+        card.style.setProperty('--ry', `${(px * TILT).toFixed(2)}deg`);
+        card.style.setProperty('--ca', Math.min(1, Math.hypot(px, py) * 1.6).toFixed(3));
       });
     }, { passive: true });
+    card.addEventListener('pointerleave', () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      ['--rx', '--ry', '--ca'].forEach((name) => card.style.removeProperty(name));
+    });
   });
 }
 
