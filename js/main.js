@@ -1,3 +1,4 @@
+import { initAurora } from './aurora.js';
 import { CONTACT_EMAIL } from './config.js';
 import { initCopy } from './contact.js';
 import { initCount } from './count.js';
@@ -46,6 +47,7 @@ function initReels() {
 
 initGate();
 initLab();
+initAurora();
 initHud();
 applyContactEmail();
 initMenu();
