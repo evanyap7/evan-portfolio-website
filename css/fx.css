@@ -143,23 +143,6 @@
 @keyframes chip-float { to { translate: 0 -12px; } }
 @keyframes chip-live { 50% { opacity: 0.35; } }
 
-/* The aurora (js/aurora.js): light only, so it screens over the scene, above
-   the dark veil that holds the room back behind the gate, and fades in once
-   it is drawing. It is a low-resolution canvas stretched to the screen. */
-:root.lab .scene__aurora {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  width: 100%;
-  height: 100%;
-  mix-blend-mode: screen;
-  opacity: 0;
-  transition: opacity 2400ms ease;
-  pointer-events: none;
-}
-
-:root.lab .scene__aurora.is-live { opacity: 0.85; }
-
 /* The liquid headline's filter lives here (js/fx.js), out of the layout. */
 .fx-liquid {
   position: absolute;
