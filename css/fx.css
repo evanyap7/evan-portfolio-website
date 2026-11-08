@@ -151,6 +151,85 @@
   pointer-events: none;
 }
 
+/* The market strip (js/ticker.js) -------------------------------------
+   Added under the hero only once real quotes have arrived. Two identical
+   tracks run left, the second filling the gap as the first leaves; with
+   reduced motion there is one static, centred row. */
+.ticker {
+  display: flex;
+  overflow: hidden;
+  border-block: 1px solid hsl(var(--h) 60% 90% / 0.08);
+  background: hsl(var(--h) 40% 8% / 0.55);
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  opacity: 0;
+  transition: opacity 800ms var(--ease);
+  -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.ticker.is-in { opacity: 1; }
+
+.ticker__track {
+  display: flex;
+  flex: none;
+  min-width: 100%;
+  align-items: center;
+  justify-content: space-around;
+  gap: clamp(28px, 5vw, 64px);
+  padding: 15px clamp(14px, 2.5vw, 32px);
+}
+
+.ticker__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.ticker__sym { color: var(--text); }
+.ticker__price { font-variant-numeric: tabular-nums; color: var(--text); }
+.ticker__pct { font-variant-numeric: tabular-nums; min-width: 6ch; }
+.ticker__pct:empty { display: none; }
+.ticker__item[data-dir='up'] .ticker__pct { color: hsl(150 80% 62%); }
+.ticker__item[data-dir='down'] .ticker__pct { color: hsl(0 85% 68%); }
+
+.ticker__tag {
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: inset 0 0 0 1px hsl(var(--h) 60% 90% / 0.16);
+}
+
+.ticker__tag--live { color: hsl(150 80% 62%); }
+.ticker__tag--delayed { color: var(--dim); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ticker__track {
+    justify-content: flex-start;
+    animation: ticker-run 38s linear infinite;
+  }
+
+  .ticker__tag--live::before {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-right: 6px;
+    vertical-align: 1px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: chip-live 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes ticker-run {
+  to { transform: translateX(-100%); }
+}
+
 /* The click pulse ----------------------------------------------------- */
 .fx-pulse { display: none; }
 
