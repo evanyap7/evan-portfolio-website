@@ -1,7 +1,6 @@
 // The page's live layer, on top of the scene (lab.js) and the small motions
 // (motion.js): a pulse where it clicks, buttons that lean in to it, the
-// portrait that tilts under it, labels that decode when they arrive, and
-// floating readouts round the portrait.
+// portrait that tilts under it, and floating readouts round the portrait.
 //
 // Everything here is decoration and aria-hidden, or changes only text that
 // ends up exactly as it was written. The pointer parts run only with a mouse
@@ -12,53 +11,12 @@ import { whenActive } from './gate.js';
 const root = document.documentElement;
 const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)');
 const FINE = window.matchMedia('(hover: hover) and (pointer: fine)');
-const GLYPHS = '01<>/\\_[]{}#$%&*+=';
 
 function make(tag, className) {
   const node = document.createElement(tag);
   node.className = className;
   node.setAttribute('aria-hidden', 'true');
   return node;
-}
-
-// A label's letters resolve left to right out of noise, then it is exactly as
-// written. Only text nodes change, so the markup inside stays where it was.
-function decode(node, ms = 650) {
-  const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-  const parts = [];
-  while (walker.nextNode()) {
-    const text = walker.currentNode;
-    if (text.nodeValue.trim()) parts.push([text, text.nodeValue]);
-  }
-  const total = parts.reduce((sum, [, original]) => sum + original.length, 0);
-  const start = performance.now();
-  const tick = (now) => {
-    const done = Math.min(1, (now - start) / ms);
-    let seen = 0;
-    parts.forEach(([text, original]) => {
-      text.nodeValue = [...original]
-        .map((letter, i) => ((seen + i) / total < done || /\s/.test(letter)
-          ? letter
-          : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]))
-        .join('');
-      seen += original.length;
-    });
-    if (done < 1) requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
-}
-
-function initDecode() {
-  const labels = document.querySelectorAll('.sec-label');
-  if (!labels.length) return;
-  const seen = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      seen.unobserve(entry.target);
-      decode(entry.target);
-    });
-  }, { rootMargin: '0px 0px -12% 0px' });
-  labels.forEach((label) => seen.observe(label));
 }
 
 // A click sends a ring out from where it landed, as the reactor's pulse does.
@@ -170,7 +128,6 @@ function initLiquid() {
 
 export function initFx() {
   if (!root.classList.contains('lab') || REDUCE.matches) return;
-  initDecode();
   initChips();
   initLiquid();
   if (!FINE.matches) return;

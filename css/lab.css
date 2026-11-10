@@ -343,36 +343,17 @@
 }
 
 /* Type on the scene ---------------------------------------------------
-   With no panel the words stand on the shot itself: huge heavy titles in
-   capitals with the one italic serif word, small mono labels, and a faint
-   column grid over the whole scene. The labels and the grid are decoration
-   (aria-hidden); they exist only in the lab. */
-.sec-label,
+   With no panel the words stand on the shot itself: heavy titles in
+   capitals with the one italic serif word, a step under the hero's
+   headline so the page reads from the top down, and a faint column grid
+   over the whole scene. The grid is decoration (aria-hidden); it exists
+   only in the lab. */
 .grid,
 .hud { display: none; }
 
-:root.lab .sec-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 18px;
-  color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-shadow: 0 0 14px hsl(var(--h) 40% 3% / 0.9);
-}
-:root.lab .sec-label span { color: var(--accent); }
-:root.lab .sec-label::after {
-  content: '';
-  width: 56px;
-  height: 1px;
-  background: var(--line-2);
-}
-:root.lab .band--light .sec-label span { color: var(--accent); }
-
 :root.lab main > .section .title {
   font-family: "Satoshi", var(--font-sans);
-  font-size: clamp(40px, 7.4vw, 112px);
+  font-size: clamp(38px, 5.4vw, 80px);
   font-weight: 900;
   line-height: 0.9;
   letter-spacing: -0.045em;
@@ -449,12 +430,10 @@
 /* On a phone the content is centred on the screen; on wide screens it
    reads from the left, across the page. */
 @media (max-width: 1023px) {
-  :root.lab .sec-label,
   :root.lab .about__text,
   :root.lab .about__things-title { text-align: center; }
   :root.lab .about__photo { justify-self: center; }
   :root.lab .about__text { margin-inline: auto; }
   :root.lab .about__things li { text-align: center; }
   :root.lab main > .section .title { text-align: center; }
-  :root.lab .sec-label { justify-content: center; }
 }
