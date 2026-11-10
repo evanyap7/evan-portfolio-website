@@ -133,35 +133,33 @@
     margin-top: 18px;
   }
 
+  /* One button, the resume; the email beside it is a plain link, still a
+     full thumb's height. */
   .hero__actions {
-    flex-direction: column;
-    width: 100%;
-    max-width: 320px;
+    align-items: center;
+    gap: 8px 20px;
+    margin-top: 28px;
+  }
+
+  .hero__actions .pill:not(.pill--solid) {
+    padding-inline: 6px;
+    border-color: transparent;
+    text-decoration: underline;
+    text-decoration-color: var(--line-2);
+    text-underline-offset: 0.3em;
   }
 }
 
-/* Load (or, behind the gate, waking): the name rises either side of the
-   reactor as it powers on, then everything under it follows. */
+/* Load: the words rise in under the headline, once. Behind the gate they
+   are already up, so waking does not run it again. */
 @media (prefers-reduced-motion: no-preference) {
-  :root:not(.gated) .hero__name span {
-    animation: rise 1s var(--ease-out) 200ms backwards;
-  }
-
-  .hero__name span:last-child { animation-delay: 300ms; }
-
-  :root:not(.gated) .hero > :not(.hero__stage, .hero__title, .hero__lines) {
+  .hero > :not(.hero__stage, .hero__title, .hero__lines) {
     animation: rise 900ms var(--ease-out) backwards;
   }
 
   .hero > .reactor__panel { animation-delay: 700ms; }
   .hero > .hero__lede { animation-delay: 620ms; }
   .hero > .hero__actions { animation-delay: 700ms; }
-}
-
-/* On a phone, behind the gate, the resume and email were already in place,
-   so they do not rise again when it wakes. */
-@media (prefers-reduced-motion: no-preference) and (max-width: 719px) {
-  .gate-ready .hero > .hero__actions { animation: none; }
 }
 
 /* About ------------------------------------------------------------- */

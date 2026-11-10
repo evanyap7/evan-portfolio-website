@@ -251,8 +251,9 @@
 }
 
 /* The gate (gate.js) --------------------------------------------------- */
-/* Before the site wakes, the page is dark: everything is hidden but the
-   unpowered reactor and the gate's controls under it. The head script in
+/* Before the site wakes, the room is dark: the hero's words, the resume and
+   the email are already up, beside the unpowered reactor and the gate's
+   readout under it; the rest of the page waits. The head script in
    index.html adds `gated` before the first paint. */
 /* The scrollbar's space is kept while the page cannot scroll, so nothing
    shifts sideways when it wakes. */
@@ -269,29 +270,15 @@ html {
 .gated .nav,
 .gated main > section:not(.hero),
 .gated .footer,
-.gated .hero__name,
-.gated .hero > :not(.hero__stage) {
+.gated .reactor__panel {
   visibility: hidden;
   opacity: 0;
 }
 
-/* The resume and email stay in reach behind the gate (gate.js). On wider
-   screens they wait in the top corner, where the nav's resume button will
-   be, since the page cannot scroll yet; on a phone they already sit in view
-   under the gate. */
-.gated .hero > .hero__actions {
-  visibility: visible;
-  opacity: 1;
-}
-
-@media (min-width: 720px) {
-  .gated .hero > .hero__actions {
-    position: fixed;
-    top: 24px;
-    right: var(--gutter);
-    z-index: 3;
-    margin: 0;
-  }
+/* Without the lab (its script failed) the reactor's stage is in the
+   hero's flow, so it keeps room under it for the gate's readout. */
+:root:not(.lab).gated .hero__stage {
+  margin-bottom: 120px;
 }
 
 /* Waking: once the reactor is up, the nav and the rest of the page fade in
@@ -388,14 +375,9 @@ html {
   gap: 6px;
   width: max-content;
   max-width: calc(100vw - 2 * var(--gutter));
-  padding: 12px 22px 14px;
-  border: 1px solid hsl(var(--h) 40% 70% / 0.16);
-  border-radius: 14px;
-  background: hsl(220 25% 5% / 0.78);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
   translate: -50% 0;
   text-align: center;
+  text-shadow: 0 0 18px hsl(var(--h) 30% 3% / 0.9), 0 1px 3px hsl(var(--h) 30% 3% / 0.9);
   transition: opacity 400ms ease;
 }
 

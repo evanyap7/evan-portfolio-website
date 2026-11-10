@@ -124,10 +124,12 @@ function initChips() {
 }
 
 // The hero headline arrives as liquid: an SVG turbulence map displaces the
-// text, and the displacement drains to nothing as the site wakes, leaving
-// sharp, selectable text. The filter is removed at the end so the resting
-// headline is exactly what it was. Touch screens get it too (it is not a
-// pointer effect); only browsers that cannot filter HTML with SVG skip it.
+// text, and the displacement drains to nothing, leaving sharp, selectable
+// text. Behind the gate the headline is already up and sharp, so the
+// reactor's pulse only ripples through it as it passes. The filter is
+// removed at the end so the resting headline is exactly what it was. Touch
+// screens get it too (it is not a pointer effect); only browsers that
+// cannot filter HTML with SVG skip it.
 function initLiquid() {
   const title = document.querySelector('.hero__title');
   if (!title || !window.CSS?.supports('filter', 'url(#a)')) return;
@@ -143,9 +145,10 @@ function initLiquid() {
   const turbulence = svg.querySelector('feTurbulence');
   const displace = svg.querySelector('feDisplacementMap');
 
+  const ripple = root.classList.contains('gated');
   whenActive(() => {
-    const MS = 2200;
-    const FROM = 90;
+    const MS = ripple ? 1400 : 2200;
+    const FROM = ripple ? 28 : 90;
     const start = performance.now();
     title.style.filter = 'url(#fx-liquid)';
     const tick = (now) => {

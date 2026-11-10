@@ -496,8 +496,9 @@ async function holdReactor(win, ms) {
   hit.dispatchEvent(new win.PointerEvent('pointerup', at));
 }
 
-// The gate: a first visit opens dark, with only the reactor, its charge
-// meter and the hint; the rest of the page is hidden and out of reach.
+// The gate: a first visit opens dark, with the reactor, its charge meter and
+// the hint beside the hero's headline, pitch, resume and email, which are up
+// and readable; the rest of the page is hidden and out of reach.
 // Holding the reactor charges it; let go early and it drains, still shut;
 // hold on to 100% and the site wakes, and the session remembers that.
 export async function gate(win) {
@@ -514,7 +515,8 @@ export async function gate(win) {
     result('gate: the hint says to hold the reactor', /hold/i.test(doc.querySelector('.gate__hint')?.textContent ?? '') && shown(doc.querySelector('.gate__hint'))),
     result('gate: nav and sections hidden and inert', hidden(doc.querySelector('.nav')) && doc.querySelector('.nav').inert
       && [...doc.querySelectorAll('main > section:not(.hero)')].every((section) => hidden(section) && section.inert)),
-    result('gate: the headline waits hidden', hidden(doc.querySelector('.hero__title'))),
+    result('gate: the headline and pitch are readable behind the gate', [...doc.querySelectorAll('.hero__title, .hero__lede, .hero__who')]
+      .every((el) => shown(el) && !hidden(el) && !el.closest('[inert]'))),
   ];
   // A short hold charges part way, then drains, and the door stays shut.
   let part = 0;
