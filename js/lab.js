@@ -4,18 +4,22 @@
 // section passes. The hero's shot is a short loop of the room breathing
 // (haze drifting, lights flickering), held still until the site wakes.
 //
-// Every shot lies under a fine film grain. The scene answers the pointer:
-// the shot leans away from it, dust hangs in the air and parts round it
-// (motes.js), and on About each thing in the list lights its object in the
-// photograph.
+// Where the browser has WebGL the shots are drawn in depth (scene-gl.js):
+// the camera leans with the pointer, pushes in past near things faster than
+// far ones, and travels from one shot into the next; the reactor is the dark
+// room's only light until the site wakes. The layers built here are then the
+// fallback, and they still carry what lies over the picture: the film grain,
+// the hero's dark pool and About's spots, where each thing in the list
+// lights its object in the photograph.
 //
 // The head script decides before first paint whether this browser gets the
 // scene (the `lab` class on <html>); without it the page is the plain banded
 // page. Other modules read what this one sets: hud.js reads data-stop, and
-// the reactor (reactor.js, css/reactor.css) steps aside on `door-open`.
+// the reactor (reactor.js, css/reactor.css) steps aside on `door-open`, and
+// `depth` is on <html> while the canvas is the picture.
 
 import { whenActive } from './gate.js';
-import { createMotes } from './motes.js';
+import { createDepthScene, ZOOM } from './scene-gl.js';
 
 const root = document.documentElement;
 
@@ -72,10 +76,9 @@ export function initLab() {
     // The frame covers the screen at 16:9, so on a tall phone it is far wider
     // than the screen: ask for the width it is drawn at, not the screen's.
     img.sizes = `${Math.ceil(Math.max(window.innerWidth, (window.innerHeight * 16) / 9))}px`;
-    img.srcset = `${DIR}${stop.name}-1200.webp 1200w, ${DIR}${stop.name}-2400.webp 2400w, ${DIR}${stop.name}.webp 3840w`;
-    img.src = `${DIR}${stop.name}-2400.webp`;
     // The first shot is the one on screen at load; the rest wait their turn.
     img.fetchPriority = i === 0 ? 'high' : 'low';
+    stop.img = img;
     frame.append(img);
     if (stop.video && !still) {
       const video = document.createElement('video');
@@ -99,6 +102,7 @@ export function initLab() {
       video.addEventListener('playing', () => layer.classList.add('is-moving'), { once: true });
       frame.append(video);
       videos.set(i, video);
+      stop.clip = video;
     }
     Object.entries(stop.spots ?? {}).forEach(([thing, [x, y]]) => {
       const spot = document.createElement('span');
@@ -116,7 +120,29 @@ export function initLab() {
   grain.className = 'scene__grain';
   scene.append(grain);
   document.body.prepend(scene);
-  if (!still) createMotes(scene);
+
+  // The shots in depth. While that canvas is the picture the layers' own
+  // pictures are hidden, and are not fetched: a layer's still is asked for
+  // only when it has to be the picture itself.
+  let current = -1;
+  const paint = (i) => {
+    const { img, name } = stops[i] ?? {};
+    if (!img || img.src) return;
+    img.srcset = `${DIR}${name}-1200.webp 1200w, ${DIR}${name}-2400.webp 2400w, ${DIR}${name}.webp 3840w`;
+    img.src = `${DIR}${name}-2400.webp`;
+  };
+  let drawn = false;
+  const gl = still ? null : createDepthScene(scene, stops.map(({ name, x, clip }) => ({ name, x, video: clip })), {
+    dir: DIR,
+    onActive(on) {
+      drawn = on;
+      scene.classList.toggle('is-gl', on);
+      root.classList.toggle('depth', on);
+      if (!on) paint(current);
+    },
+  });
+  if (gl) scene.style.setProperty('--zoom', ZOOM);
+  else stops.forEach((stop, i) => paint(i));
 
   // A thing in About's list, pointed at, lights its object in the photograph.
   document.querySelectorAll('[data-thing]').forEach((item) => {
@@ -131,8 +157,8 @@ export function initLab() {
     item.addEventListener('pointerleave', () => lit(false));
   });
 
-  // The shot leans away from the pointer, eased.
-  if (!still && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  // The shot leans away from the pointer, eased (the canvas has its own).
+  if (!still && !gl && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
     let tx = 0;
     let ty = 0;
     let x = 0;
@@ -167,7 +193,6 @@ export function initLab() {
     });
   };
 
-  let current = -1;
   let awake = false;
   // A loop runs only once the site is awake, while its shot is up and the
   // tab is in view.
@@ -176,7 +201,9 @@ export function initLab() {
       if (awake && !document.hidden && i === current) video.play().catch(() => {});
       else video.pause();
     });
+    gl?.invalidate();
   };
+  videos.forEach((video) => video.addEventListener('playing', () => gl?.invalidate()));
 
   const update = () => {
     const y = window.scrollY;
@@ -189,25 +216,39 @@ export function initLab() {
     });
     // Behind the gate a phone's sections are out of the flow (reactor.css),
     // so their places say nothing: the hero's shot is the one up.
-    if (root.classList.contains('gated')) at = 0;
+    const gated = root.classList.contains('gated');
+    if (gated) at = 0;
     if (at !== current) {
       stops[current]?.layer.classList.remove('is-on');
       stops[at].layer.classList.add('is-on');
       current = at;
       root.dataset.stop = stops[at].id;
+      if (!drawn) paint(at);
       play();
     }
     if (still) return;
     // How far each section has travelled through the screen: 0 as its top
     // comes in at the foot, 1 as its foot leaves at the top. The hero starts
     // on screen, so it starts at 0 at the top of the page.
-    stops.forEach((stop, i) => {
+    const pushes = stops.map((stop, i) => {
       const { top, height } = places[i];
       const from = i === 0 ? top : top - vh;
       const span = i === 0 ? height : height + vh;
       const p = Math.min(1, Math.max(0, (y - from) / Math.max(1, span)));
       stop.layer.style.setProperty('--push', (1 + PUSH * p).toFixed(4));
+      return PUSH * p;
     });
+    if (!gl) return;
+    // The camera's place along the row of shots: it leaves for the next one
+    // as that section's top comes up the screen, and is there by the time
+    // the top is a quarter of the way down.
+    let f = 0;
+    if (!gated) {
+      places.forEach((place, i) => {
+        if (i) f += Math.min(1, Math.max(0, (y + vh * 0.85 - place.top) / (vh * 0.6)));
+      });
+    }
+    gl.set(f, pushes);
   };
 
   let queued = 0;
@@ -246,6 +287,15 @@ export function initLab() {
     }, delay);
   };
   if (!root.classList.contains('gated')) open(0);
-  else if (root.classList.contains('waking')) open(WAKE_MS);
-  else document.addEventListener('portfolio:waking', () => open(still ? 0 : WAKE_MS), { once: true });
+  else {
+    // `entered` stays: what arrives after the door (the grid, the readouts)
+    // waits a little longer on the visit that came in through it.
+    const enter = () => {
+      root.classList.add('entered');
+      gl?.wake();
+      open(still ? 0 : WAKE_MS);
+    };
+    if (root.classList.contains('waking')) enter();
+    else document.addEventListener('portfolio:waking', enter, { once: true });
+  }
 }
