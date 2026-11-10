@@ -67,7 +67,6 @@
 
 @media (hover: hover) {
   .wordmark:hover { opacity: 0.8; }
-  .wordmark:hover .wordmark__dot { filter: drop-shadow(0 0 6px var(--accent)); }
   .nav__links a:hover { color: var(--text); }
   .menu__links a:hover { color: var(--text); }
 }
