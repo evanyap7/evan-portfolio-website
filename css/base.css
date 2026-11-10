@@ -167,6 +167,11 @@ strong, b {
   outline-offset: 3px;
 }
 
+/* A place focus is handed to (not a control) needs no ring. */
+[tabindex='-1']:focus-visible {
+  outline: none;
+}
+
 /* The accent words: one whole word in the italic serif, a touch larger so
    it sits at the same optical size as the sans around it. */
 .serif {

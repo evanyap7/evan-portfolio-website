@@ -98,6 +98,13 @@ export function initGate() {
     window.setTimeout(() => {
       root.classList.remove('gated');
       root.style.removeProperty('--charge');
+      // In the lab the reactor steps aside once the door opens; a keyboard
+      // that woke it goes on from the headline, not from the top of the page.
+      const title = document.querySelector('.hero__title');
+      if (root.classList.contains('lab') && document.activeElement === hit && title) {
+        title.tabIndex = -1;
+        title.focus({ preventScroll: true });
+      }
       document.dispatchEvent(new Event('portfolio:activate'));
     }, reduce ? 0 : 500);
     window.setTimeout(() => root.classList.remove('waking'), reduce ? 0 : 2400);
