@@ -265,6 +265,20 @@ html {
   overflow: hidden;
 }
 
+/* A phone, its toolbars showing, is too short for the words and the reactor
+   both: there the hero scrolls, and the rest of the page is out of the flow
+   so there is nothing dark to scroll into. */
+@media (max-width: 1023px) {
+  :root.lab.gated body {
+    overflow: visible;
+  }
+
+  :root.lab.gated main > section:not(.hero),
+  :root.lab.gated .footer {
+    display: none;
+  }
+}
+
 .gated .skip-link,
 .gated .progress,
 .gated .nav,
@@ -411,10 +425,71 @@ html {
   opacity: 0;
 }
 
-/* On a phone the name sits under the reactor; while it is hidden it gives
-   up its space, so the gate's controls sit right under the reactor. */
-@media (max-width: 719px) {
-  .gated .hero__name { display: none; }
+/* The gate in the lab ------------------------------------------------
+   The reactor's stage lies over the whole hero (lab.css). On wide screens
+   the words read down the left and the reactor stands to their right, its
+   readout under it; on narrower ones the words come first and the reactor
+   waits at the foot of the screen, under the thumb. These hold until the
+   door opens, so nothing moves while the reactor fades. */
+:root.lab:is(.gated, .gate-ready) .hero {
+  --gate-h: 92px;
+}
+
+@media (min-width: 1024px) {
+  :root.lab:is(.gated, .gate-ready) .hero {
+    --core: clamp(220px, 24vw, 360px);
+    --reactor-x: calc(50% + (min(100%, var(--wide)) - 2 * var(--gutter)) * 0.3);
+  }
+
+  :root.lab:is(.gated, .gate-ready) .reactor {
+    left: var(--reactor-x);
+  }
+
+  :root.lab:is(.gated, .gate-ready) .gate {
+    top: calc(50% + var(--core) * 0.62);
+    left: var(--reactor-x);
+  }
+}
+
+@media (max-width: 1023px) {
+  :root.lab:is(.gated, .gate-ready) .hero {
+    --core: min(148px, 38vw);
+    --gate-h: 66px;
+  }
+
+  /* The meter and the hint say it; the status line stays for screen
+     readers. */
+  :root.lab:is(.gated, .gate-ready) .gate__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  :root.lab:is(.gated, .gate-ready) .reactor {
+    position: absolute;
+    top: calc(100% - 16px - var(--gate-h) - 6px - var(--core) / 2);
+    left: 50%;
+    margin: 0;
+    translate: -50% -50%;
+  }
+
+  :root.lab:is(.gated, .gate-ready) .gate {
+    top: auto;
+    bottom: 16px;
+  }
+
+  /* Room at the foot of the hero for the reactor and its readout; it gives
+     way as the site wakes. */
+  :root.lab .hero {
+    transition: padding-bottom 900ms var(--ease-out);
+  }
+
+  :root.lab.gated .hero {
+    padding-bottom: calc(16px + var(--gate-h) + var(--core) * 1.35);
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

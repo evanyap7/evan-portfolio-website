@@ -190,6 +190,9 @@ export function initLab() {
     places.forEach((place, i) => {
       if (place.top <= y + vh * 0.5) at = i;
     });
+    // Behind the gate a phone's sections are out of the flow (reactor.css),
+    // so their places say nothing: the hero's shot is the one up.
+    if (root.classList.contains('gated')) at = 0;
     if (at !== current) {
       stops[current]?.layer.classList.remove('is-on');
       stops[at].layer.classList.add('is-on');
@@ -233,6 +236,7 @@ export function initLab() {
   document.addEventListener('visibilitychange', play);
   whenActive(() => {
     awake = true;
+    remeasure();
     play();
   });
 

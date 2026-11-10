@@ -256,6 +256,28 @@
 
 :root.lab.door-open .hero__stage { pointer-events: none; }
 
+/* On wide screens the hero reads down the left like every section after
+   it, behind the gate and after, and the shot's subject (and, until the
+   door opens, the reactor) stands to the right. */
+@media (min-width: 1024px) {
+  :root.lab .hero {
+    align-items: flex-start;
+    padding-inline: max(var(--gutter), (100% - var(--wide)) / 2 + var(--gutter));
+    text-align: left;
+  }
+
+  :root.lab .hero > :not(.hero__stage, .hero__lines) {
+    max-width: min(56%, 46rem);
+  }
+
+  :root.lab .hero__lede { max-width: min(56%, 34rem); }
+  :root.lab .hero__actions { justify-content: flex-start; }
+}
+
+/* The reactor's status line has no reactor to speak for here: the gate has
+   its own, and the reactor is gone once the door opens. */
+:root.lab .reactor__panel { display: none; }
+
 /* Sections: no band fill; a scrim is painted in its place. */
 :root.lab main > .section {
   position: relative;
