@@ -16,7 +16,10 @@
   --pane-edge: hsl(var(--h) 60% 60% / 0.25);
   /* What lies behind a section's words: a dark wash that fades to nothing at
      its edges, so the shot shows through and no box is drawn. */
-  --scrim: hsl(var(--h) 40% 3% / 0.8);
+  --scrim: hsl(var(--h) 14% 3% / 0.8);
+  /* The room's own dark: near-black with the faintest warmth, the shadow
+     of a lit workshop rather than a tinted screen. */
+  --room: 30 8% 3%;
   --pane-pad: 24px;
   --pane-w: 100%;
   --window: 60svh;
@@ -40,7 +43,7 @@
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  background: hsl(205 45% 3%);
+  background: hsl(var(--room));
   /* The frame below sizes itself from the scene's box. */
   container-type: size;
 }
@@ -64,7 +67,8 @@
    cropped at --x, as object-fit would; it is a box of its own so what stands
    in the picture (the spots) moves with it. It pushes in with the scroll
    (--push), leans away from the pointer (--px, --py, from -1 to 1) and
-   breathes on its own; the 6% over size is the room to do so. */
+   drifts on its own, as a camera on a slider does, never rolling; the 6%
+   over size is the room to do so. */
 .scene__frame {
   position: absolute;
   left: var(--x, 50%);
@@ -82,27 +86,37 @@
 }
 
 @keyframes scene-breathe {
-  from { transform: translate(-1.2%, 0.6%) rotate(-0.25deg); }
-  to { transform: translate(1.2%, -0.6%) rotate(0.25deg); }
+  from { transform: translate(-0.8%, 0.4%); }
+  to { transform: translate(0.8%, -0.4%); }
 }
 
+/* The grade: the stills came out of the renderer teal through and
+   through. Pulled back towards neutral, with a touch of the lamps' warmth
+   and a little more contrast, they read as one photographed room. */
 .scene__media {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: saturate(0.6) sepia(0.18) contrast(1.08) brightness(0.95);
 }
 
-/* The hero's words are centred over the desk, lamp and chair; a soft dark
-   pool under them keeps them clear of the lit things behind. It belongs to
-   the shot, so it comes and goes with it. */
+/* The hero's words lie over the desk, lamp and chair; a soft dark pool
+   under them keeps them clear of the lit things behind. It belongs to the
+   shot, so it comes and goes with it. */
 .scene__shot[data-shot='top']::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 40% 30% at 50% 52%, hsl(205 45% 3% / 0.72), hsl(205 45% 3% / 0.38) 60%, transparent);
+  background: radial-gradient(ellipse 40% 30% at 50% 52%, hsl(var(--room) / 0.72), hsl(var(--room) / 0.38) 60%, transparent);
+}
+
+@media (min-width: 1024px) {
+  .scene__shot[data-shot='top']::after {
+    background: radial-gradient(ellipse 48% 60% at 22% 50%, hsl(var(--room) / 0.78), hsl(var(--room) / 0.4) 60%, transparent);
+  }
 }
 
 /* The clip takes over from its still once it is moving. */
@@ -113,30 +127,27 @@
 
 .scene__shot.is-moving .scene__video { opacity: 1; }
 
-/* A light carried over the room by the pointer. */
-.scene__light {
+/* Film grain over every shot: the renders are too clean to be
+   photographs, and a fine, still grain is what a camera would leave. */
+.scene__grain {
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* A torch on a dark room: screen only lifts what it falls on. */
-  background: radial-gradient(circle 30vmax at var(--lx, 50%) var(--ly, 40%), hsl(195 80% 72% / 0.2), hsl(195 80% 72% / 0.07) 40%, transparent 72%);
-  mix-blend-mode: screen;
-  opacity: 0;
-  transition: opacity 800ms ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 240px;
+  mix-blend-mode: overlay;
+  opacity: 0.32;
 }
 
-.scene.is-pointing .scene__light { opacity: 1; }
-
-:root[data-stop='contact'] .scene__light {
-  background: radial-gradient(circle 30vmax at var(--lx, 50%) var(--ly, 40%), hsl(36 90% 70% / 0.2), hsl(36 90% 70% / 0.07) 40%, transparent 72%);
-}
-
+/* Dust: only the faintest specks in the light, as a camera catches them. */
 .scene__motes {
   position: absolute;
   inset: 0;
   z-index: 1;
   width: 100%;
   height: 100%;
+  opacity: 0.4;
+  filter: saturate(0.25);
 }
 
 /* A thing in About's list, pointed at, finds its object in the photograph:
@@ -158,8 +169,8 @@
 
 .scene__spot::before {
   inset: -44px;
-  border: 1px solid hsl(195 95% 78% / 0.9);
-  box-shadow: 0 0 28px hsl(195 95% 60% / 0.55), inset 0 0 22px hsl(195 95% 60% / 0.35);
+  border: 1px solid hsl(40 30% 94% / 0.85);
+  box-shadow: 0 0 0 1px hsl(0 0% 0% / 0.35);
   scale: 1.8;
 }
 
@@ -197,12 +208,12 @@
 
 :root.lab .scene::before {
   background:
-    radial-gradient(ellipse 80% 70% at 55% 45%, transparent 45%, hsl(205 45% 3% / 0.6) 100%),
-    linear-gradient(transparent 60%, hsl(205 45% 3% / 0.55));
+    radial-gradient(ellipse 85% 75% at 55% 45%, transparent 40%, hsl(var(--room) / 0.65) 100%),
+    linear-gradient(transparent 62%, hsl(var(--room) / 0.5));
 }
 
 :root.lab .scene::after {
-  background: hsl(205 45% 3%);
+  background: hsl(var(--room));
   opacity: 0.82;
   transition: opacity 1800ms var(--ease-out);
 }

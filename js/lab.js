@@ -4,9 +4,10 @@
 // section passes. The hero's shot is a short loop of the room breathing
 // (haze drifting, lights flickering), held still until the site wakes.
 //
-// The scene answers the pointer: the shot leans away from it, a light
-// follows it, dust hangs in the air and parts round it (motes.js), and on
-// About each thing in the list lights its object in the photograph.
+// Every shot lies under a fine film grain. The scene answers the pointer:
+// the shot leans away from it, dust hangs in the air and parts round it
+// (motes.js), and on About each thing in the list lights its object in the
+// photograph.
 //
 // The head script decides before first paint whether this browser gets the
 // scene (the `lab` class on <html>); without it the page is the plain banded
@@ -111,9 +112,9 @@ export function initLab() {
     stop.layer = layer;
     scene.append(layer);
   });
-  const light = document.createElement('div');
-  light.className = 'scene__light';
-  scene.append(light);
+  const grain = document.createElement('div');
+  grain.className = 'scene__grain';
+  scene.append(grain);
   document.body.prepend(scene);
   if (!still) createMotes(scene);
 
@@ -130,7 +131,7 @@ export function initLab() {
     item.addEventListener('pointerleave', () => lit(false));
   });
 
-  // The shot leans away from the pointer, eased, and the light follows it.
+  // The shot leans away from the pointer, eased.
   if (!still && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
     let tx = 0;
     let ty = 0;
@@ -147,15 +148,11 @@ export function initLab() {
     window.addEventListener('pointermove', (event) => {
       tx = (event.clientX / window.innerWidth) * 2 - 1;
       ty = (event.clientY / window.innerHeight) * 2 - 1;
-      scene.style.setProperty('--lx', `${event.clientX}px`);
-      scene.style.setProperty('--ly', `${event.clientY}px`);
-      scene.classList.add('is-pointing');
       if (!lean) lean = requestAnimationFrame(ease);
     }, { passive: true });
     document.documentElement.addEventListener('pointerleave', () => {
       tx = 0;
       ty = 0;
-      scene.classList.remove('is-pointing');
       if (!lean) lean = requestAnimationFrame(ease);
     });
   }
