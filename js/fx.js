@@ -1,6 +1,6 @@
 // The page's live layer, on top of the scene (lab.js) and the small motions
-// (motion.js): a pulse where it clicks, buttons that lean in to it, the
-// portrait that tilts under it, and floating readouts round the portrait.
+// (motion.js): a pulse where it clicks, buttons that lean in to it, and the
+// headline that arrives as liquid.
 //
 // Everything here is decoration and aria-hidden, or changes only text that
 // ends up exactly as it was written. The pointer parts run only with a mouse
@@ -42,42 +42,6 @@ function initMagnets() {
       pill.style.translate = `${dx.toFixed(1)}px ${dy.toFixed(1)}px`;
     }, { passive: true });
     pill.addEventListener('pointerleave', () => { pill.style.translate = ''; });
-  });
-}
-
-// Tilts toward the pointer in 3D, with a highlight that slides across it.
-function tilt(el) {
-  el.classList.add('tilt');
-  el.dataset.tilt = '';
-  el.addEventListener('pointermove', (event) => {
-    const box = el.getBoundingClientRect();
-    const px = (event.clientX - box.left) / box.width - 0.5;
-    const py = (event.clientY - box.top) / box.height - 0.5;
-    el.style.setProperty('--rx', `${(-py * 12).toFixed(2)}deg`);
-    el.style.setProperty('--ry', `${(px * 14).toFixed(2)}deg`);
-    el.style.setProperty('--gx', `${((px + 0.5) * 100).toFixed(1)}%`);
-    el.style.setProperty('--gy', `${((py + 0.5) * 100).toFixed(1)}%`);
-    el.classList.add('is-tilting');
-  }, { passive: true });
-  el.addEventListener('pointerleave', () => {
-    el.classList.remove('is-tilting');
-    el.style.removeProperty('--rx');
-    el.style.removeProperty('--ry');
-  });
-}
-
-// Readouts that float round the portrait: facts already on the page.
-function initChips() {
-  const photo = document.querySelector('.about__photo');
-  if (!photo) return;
-  [
-    ['SUTD · TEP scholar', 'a'],
-    ['460+ tests', 'b'],
-    ['Top 5 of 100', 'c'],
-  ].forEach(([text, place]) => {
-    const chip = make('span', `about__chip about__chip--${place}`);
-    chip.textContent = text;
-    photo.append(chip);
   });
 }
 
@@ -128,13 +92,11 @@ function initLiquid() {
 
 export function initFx() {
   if (!root.classList.contains('lab') || REDUCE.matches) return;
-  initChips();
   initLiquid();
   if (!FINE.matches) return;
   // Held until the site is awake, so the gate stays the only thing on screen.
   whenActive(() => {
     initPulse();
     initMagnets();
-    document.querySelectorAll('.about__photo').forEach(tilt);
   });
 }

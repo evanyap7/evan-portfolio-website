@@ -636,7 +636,7 @@ export async function scene(win) {
   const vw = Math.round(win.visualViewport?.width ?? root.clientWidth);
   const vh = root.clientHeight;
   const shots = [...doc.querySelectorAll('.scene__shot')].map((shot) => shot.dataset.shot).join(',');
-  const moving = Boolean(doc.querySelector('.scene__motes')) && Boolean(doc.querySelector('.scene__video'));
+  const moving = Boolean(doc.querySelector('.scene__video'));
   return [
     result('scene is ready within 6 s', ready && root.classList.contains('lab')),
     result('one scene', scenes.length === 1, `${scenes.length}`),
@@ -646,7 +646,7 @@ export async function scene(win) {
     result('scene fills the screen', box && Math.abs(box.width - vw) <= 1 && Math.abs(box.height - vh) <= 1,
       box ? `${Math.round(box.width)}×${Math.round(box.height)} of ${vw}×${vh}` : 'missing'),
     result('a shot for each section, in order', shots === SECTIONS.join(','), shots),
-    result(still ? 'reduced motion: no clip and no dust' : 'the hero clip and the dust are there', still ? !doc.querySelector('.scene__motes, .scene__video') : moving),
+    result(still ? 'reduced motion: no clip' : 'the hero clip is there', still ? !doc.querySelector('.scene__video') : moving),
   ];
 }
 

@@ -41,7 +41,7 @@ npm run check:browser            # the full headless-Chrome suite, about 8 minut
 | `work/`, `case-studies/` | One page per project, and the trading agent case study |
 | `css/` | `base.css` (tokens), `layout.css`, `home.css`, `project.css`, `figures.css`, `reactor.css` |
 | `js/` | `main.js` starts everything; `reactor*.js` the hero's 3D model; `gate.js`, `motion.js`, `reel.js` + `scenes.js` (diagram player) |
-| `js/lab.js`, `js/motes.js`, `img/scene/` | The scene: a shot per section, the pointer's lean and light, the dust, About's spots, and the door |
+| `js/lab.js`, `js/scene-gl.js`, `img/scene/` | The scene: a shot per section with its depth map, drawn in depth (the camera's lean, push and travel, the reactor's light), About's spots, and the door |
 | `js/hall*.js`, `models/hall/` | The Hall of Armor: the suit picker, its stage and the suit models |
 | `img/`, `resume/` | Icons, logos, share image, resume PDF |
 
