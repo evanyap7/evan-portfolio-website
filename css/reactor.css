@@ -246,6 +246,23 @@
   transition: opacity 400ms ease, visibility 0s 400ms;
 }
 
+/* The way in: as the site wakes the camera goes through the reactor, which
+   comes up past the screen's edges and is gone before the door's own fade.
+   Where the room is drawn in depth its light runs out from the reactor
+   (js/scene-gl.js), so the screen-wide pulse is not wanted as well. */
+@media (prefers-reduced-motion: no-preference) {
+  :root.lab.waking .reactor {
+    scale: 6;
+    opacity: 0;
+    transition: scale 850ms cubic-bezier(0.6, 0, 0.9, 0.3), opacity 350ms ease 250ms, visibility 0s 850ms;
+  }
+
+  :root.lab.waking .hero__lines,
+  :root.lab.waking .reactor__charge { transition-duration: 150ms, 0s; }
+}
+
+:root.depth .gate-flash { display: none; }
+
 @keyframes draw-line {
   to { stroke-dashoffset: 0; }
 }

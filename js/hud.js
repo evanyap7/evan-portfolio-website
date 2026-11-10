@@ -1,9 +1,13 @@
 // The readouts along the foot of the room (the .hud in index.html): Singapore
 // time, which stop the camera is at, and how far down the page the visitor is.
-// Decoration only; it does nothing on a page without the markup.
+// And, once, the boot readout: three lines typed at the foot of the screen
+// as the reactor wakes the room. Decoration only; it does nothing on a page
+// without the markup.
 
 const NAMES = { top: 'Start', about: 'About', work: 'Work', experience: 'Experience', toolkit: 'Toolkit', contact: 'Contact' };
 const ORDER = Object.keys(NAMES);
+const BOOT = ['ARC REACTOR ONLINE', 'WORKSHOP LIGHTS UP', 'ALL SYSTEMS READY'];
+const BOOT_MS = 2600;
 
 export function initHud() {
   const time = document.querySelector('[data-hud-time]');
@@ -32,4 +36,23 @@ export function initHud() {
   setInterval(tick, 15000);
   new MutationObserver(where).observe(root, { attributes: true, attributeFilter: ['data-stop'] });
   window.addEventListener('scroll', along, { passive: true });
+
+  if (!root.classList.contains('lab') || !root.classList.contains('gated')) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.addEventListener('portfolio:waking', () => {
+    const boot = document.createElement('p');
+    boot.className = 'boot mono';
+    boot.setAttribute('aria-hidden', 'true');
+    BOOT.forEach((line, n) => {
+      const row = document.createElement('span');
+      row.style.setProperty('--n', n);
+      const index = document.createElement('i');
+      index.textContent = String(n + 1).padStart(2, '0');
+      row.append(index, line);
+      boot.append(row);
+    });
+    document.body.append(boot);
+    window.setTimeout(() => boot.classList.add('is-done'), BOOT_MS);
+    window.setTimeout(() => boot.remove(), BOOT_MS + 600);
+  }, { once: true });
 }
