@@ -252,7 +252,7 @@
 /* Motion ------------------------------------------------------------ */
 /* Dragon Tiles' drawing plays once the first time their plate is seen
    (reveal.js adds .is-visible). */
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .is-visible .pair .keys__white rect { animation: key-press 600ms calc(300ms + var(--i) * 220ms) var(--ease-out) both; }
   .is-visible .pair .keys__waves { animation: draw 700ms 1900ms var(--ease) backwards; }
 }
@@ -274,7 +274,7 @@
   display: inline-block;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .split .word__in {
     transition: transform 1000ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 60ms);
   }
@@ -297,7 +297,7 @@
 /* With a mouse or trackpad, motion.js tracks the pointer over a card
    (--mx, --my), and a soft light and a brighter stretch of border follow
    it. The card also lifts 3px. Never on touch screens. */
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+@media (hover: hover) and (pointer: fine) {
   .spot {
     isolation: isolate;
     transition: transform 400ms var(--ease-out), border-color 200ms;
@@ -361,7 +361,7 @@
    cross-document view transitions fade and slide the page, and a work
    card's title morphs into the project page's title (the shared
    view-transition-name below). Others simply navigate. */
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   @view-transition {
     navigation: auto;
   }

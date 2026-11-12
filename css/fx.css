@@ -1,6 +1,6 @@
 /* The live layer (js/fx.js) and the soft shapes. Everything here is under
    :root.lab, so without the lab the page is the plain banded page; the
-   motion is inside prefers-reduced-motion: no-preference. */
+   motion is inside `@media all`: the device's Reduce Motion setting is ignored. */
 
 /* Soft, not boxy -----------------------------------------------------
    Panels are a faint tint with a rounded edge lit from above, not a
@@ -32,7 +32,7 @@
 
 /* The wipe-in no longer clips the ring and readouts that stand outside the
    portrait: its end state opens wider than the figure. */
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .js:root.lab .about__photo[data-reveal],
   :root.lab.js .about__photo[data-reveal] {
     clip-path: inset(0 -100px 100% -100px);
@@ -62,7 +62,7 @@
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   :root.lab .about__photo::before { animation: ring-spin 7s linear infinite; }
 }
 
@@ -81,7 +81,7 @@
 /* The click pulse ----------------------------------------------------- */
 .fx-pulse { display: none; }
 
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+@media (hover: hover) and (pointer: fine) {
   :root.lab .fx-pulse {
     display: block;
     position: fixed;
@@ -105,7 +105,7 @@
 }
 
 /* Small things that answer the pointer -------------------------------- */
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+@media (hover: hover) {
   :root.lab .pill {
     transition: translate 260ms var(--ease-out), background-color 200ms, border-color 200ms, box-shadow 300ms;
   }

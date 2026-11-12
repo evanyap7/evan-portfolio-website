@@ -97,7 +97,7 @@ html {
   background: var(--bg);
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   html { scroll-behavior: smooth; }
 }
 
@@ -252,10 +252,9 @@ h1, h2, h3, h4 {
   color: var(--dim);
 }
 
-/* With Reduce Motion on, nothing moves, not even a colour fade: every
-   change lands at once. The animations themselves are all written inside
-   prefers-reduced-motion: no-preference; this catches the transitions. */
-@media (prefers-reduced-motion: reduce) {
+/* The device's Reduce Motion setting is ignored (the Pause background
+   button is the visitor's control), so this block never matches. */
+@media not all {
   *,
   *::before,
   *::after {
@@ -266,7 +265,7 @@ h1, h2, h3, h4 {
 
 /* Scroll reveal ----------------------------------------------------- */
 /* The hidden state is scoped to .js, so nothing hides if scripts fail. */
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .js [data-reveal] {
     opacity: 0;
     filter: blur(10px);

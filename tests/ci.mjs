@@ -60,7 +60,7 @@ try {
   // it stays; reduced motion keeps the Projects picker, and a failed fetch
   // leaves the Mark's still in place of a live suit.
   const fallbacks = [
-    { name: 'reduced motion', options: { reducedMotion: 'reduce' }, settle: 1500, shows: '#work .opener__name' },
+    { name: 'device asks for reduced motion (ignored)', options: { reducedMotion: 'reduce' }, settle: 1500, shows: '#work .opener__name' },
     { name: 'three.js blocked', block: '**/three.module.min.js', settle: 9000, shows: '#work .opener__suit img', hides: '#work .opener__suit.live' },
   ];
   for (const fallback of fallbacks) {

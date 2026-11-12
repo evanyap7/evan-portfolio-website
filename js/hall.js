@@ -148,7 +148,7 @@ export function initHall() {
   const suits = readCards();
   if (!suits.length) return;
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce = window.matchMedia('not all').matches;
   const ui = mount(suits);
   const others = mountOthers(suits);
 

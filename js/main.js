@@ -34,7 +34,7 @@ function initReels() {
   const reels = document.querySelectorAll('[data-reel]');
   if (!reels.length || !('animate' in Element.prototype)) return;
   if (!window.CSS?.supports('scale', '1')) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia('not all').matches) return;
 
   const observer = new IntersectionObserver((entries) => {
     if (!entries.some((entry) => entry.isIntersecting)) return;

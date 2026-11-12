@@ -37,7 +37,7 @@ const FADE_MS = 400;
 
 export function initLab() {
   if (!root.classList.contains('lab')) return;
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const still = window.matchMedia('not all').matches;
 
   const stops = SHOTS.map((shot) => ({ ...shot, section: document.getElementById(shot.id) })).filter((s) => s.section);
   if (!stops.length) return;

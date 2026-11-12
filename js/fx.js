@@ -9,7 +9,7 @@
 import { whenActive } from './gate.js';
 
 const root = document.documentElement;
-const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)');
+const REDUCE = window.matchMedia('not all');
 const FINE = window.matchMedia('(hover: hover) and (pointer: fine)');
 
 function make(tag, className) {

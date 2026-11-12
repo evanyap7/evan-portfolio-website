@@ -20,7 +20,7 @@ function tagProjectParts() {
 
 export function initReveal() {
   document.documentElement.classList.add('reveal-ready');
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) tagProjectParts();
+  if (!window.matchMedia('not all').matches) tagProjectParts();
   const targets = document.querySelectorAll('[data-reveal]');
   const show = (target) => target.classList.add('is-visible');
 

@@ -8,7 +8,7 @@
 
 import { whenActive } from './gate.js';
 
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce = matchMedia('not all').matches;
 const coarse = matchMedia('(pointer: coarse)').matches;
 const narrow = matchMedia('(max-width: 1023px)');
 const webgl2 = (() => { try { return Boolean(document.createElement('canvas').getContext('webgl2')); } catch { return false; } })();

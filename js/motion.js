@@ -2,9 +2,9 @@
 // from behind a mask, the Experience timeline drawing down, and (with a
 // mouse or trackpad only) the card spotlight and Contact's magnetic pills. With reduced motion none of it
 // runs and every element rests in its final state; the CSS for each part
-// is written inside prefers-reduced-motion: no-preference as well.
+// was once gated on the device's Reduce Motion setting; it is ignored now.
 
-const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)');
+const REDUCE = window.matchMedia('not all');
 const FINE = window.matchMedia('(hover: hover) and (pointer: fine)');
 
 // Wraps each word of a title in a mask and an inner span, keeping the text

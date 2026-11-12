@@ -94,7 +94,7 @@
 }
 
 /* The name catches the light of each pulse. */
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .hero.is-pulsed .hero__name {
     animation: name-flash 1100ms var(--ease-out);
   }
@@ -205,7 +205,7 @@
   text-transform: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   :root:not(.gated) .hero--hud .hero__creds li {
     animation: fade 700ms ease backwards;
     animation-delay: calc(1300ms + var(--n, 0) * 150ms);
@@ -250,7 +250,7 @@
    comes up past the screen's edges and is gone before the door's own fade.
    Where the room is drawn in depth its light runs out from the reactor
    (js/scene-gl.js), so the screen-wide pulse is not wanted as well. */
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   :root.lab.waking .reactor {
     scale: 6;
     opacity: 0;
@@ -509,7 +509,7 @@ html {
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .gated:not(.waking) .gate {
     animation: fade 900ms ease 400ms backwards;
   }

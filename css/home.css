@@ -152,7 +152,7 @@
 
 /* Load: the words rise in under the headline, once. Behind the gate they
    are already up, so waking does not run it again. */
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .hero > :not(.hero__stage, .hero__title, .hero__lines) {
     animation: rise 900ms var(--ease-out) backwards;
   }
@@ -257,7 +257,7 @@
 
 /* The photo is wiped in from the top the first time it is seen, rather
    than faded like the rest. */
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .js .about__photo[data-reveal] {
     opacity: 1;
     transform: none;
@@ -589,7 +589,7 @@ ul.role__points li + li {
   .work__card:hover .work__arrow { transform: translateX(4px); }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .work__grid > li:nth-child(3n + 2) { transition-delay: 80ms; }
   .work__grid > li:nth-child(3n) { transition-delay: 160ms; }
 }

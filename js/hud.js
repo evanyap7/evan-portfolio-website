@@ -9,7 +9,7 @@ const BOOT_MS = 2600;
 export function initHud() {
   const root = document.documentElement;
   if (!root.classList.contains('lab') || !root.classList.contains('gated')) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia('not all').matches) return;
   document.addEventListener('portfolio:waking', () => {
     const boot = document.createElement('p');
     boot.className = 'boot mono';

@@ -15,7 +15,7 @@ export function initDeck() {
   if (!hero || !about) return;
 
   const root = document.documentElement;
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const still = window.matchMedia('not all').matches;
   const pinned = window.matchMedia('(min-width: 1024px) and (min-height: 700px)');
   const narrow = window.matchMedia('(max-width: 1023px)');
   const opener = document.querySelector('#work .opener');

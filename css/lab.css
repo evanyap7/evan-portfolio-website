@@ -80,7 +80,7 @@
   transform-origin: var(--x, 50%) 55%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .scene__frame { animation: scene-breathe 18s ease-in-out infinite alternate; }
   .scene__shot:nth-child(even) .scene__frame { animation-duration: 23s; animation-direction: alternate-reverse; }
 }
@@ -201,7 +201,7 @@
 .scene__spot.is-lit::before,
 .scene__spot.is-lit::after { opacity: 1; scale: 1; }
 
-@media (prefers-reduced-motion: no-preference) {
+@media all {
   .scene__spot.is-lit::before { animation: spot-pulse 1.8s ease-in-out 700ms infinite; }
 }
 
@@ -237,7 +237,7 @@
 
 :root.lab.door-open .scene::after { opacity: 0; }
 
-@media (prefers-reduced-motion: reduce) {
+@media not all {
   .scene__shot,
   .scene__spot::before,
   .scene__spot::after,
@@ -455,7 +455,7 @@
 :root.lab { --boot: 0ms; }
 :root.lab.entered { --boot: 1000ms; }
 
-@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1024px) {
   :root.lab.door-open .grid i {
     transform-origin: 50% 0;
     animation: grid-draw 1100ms var(--ease-out) backwards;

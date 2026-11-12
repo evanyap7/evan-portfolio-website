@@ -36,7 +36,7 @@ export function initProjects() {
   if (!chapter || !stage || !name || !marksBox) return;
 
   const root = document.documentElement;
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const still = window.matchMedia('not all').matches;
   const narrow = window.matchMedia('(max-width: 1023px)');
   const $ = (id) => document.getElementById(id);
   const fig = chapter.querySelector('.opener__suit');

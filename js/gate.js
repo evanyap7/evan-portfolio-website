@@ -35,7 +35,7 @@ export function initGate() {
   if (!gate || !hit || !root.classList.contains('gated')) return;
   root.classList.add('gate-ready');
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce = window.matchMedia('not all').matches;
   const status = gate.querySelector('[data-gate-status]');
   const meter = gate.querySelector('[data-gate-meter]');
   // The rest of the page is out of reach until the site wakes. The hero's

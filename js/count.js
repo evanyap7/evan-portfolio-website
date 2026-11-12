@@ -29,7 +29,7 @@ function count(node) {
 }
 
 export function initCount() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia('not all').matches) return;
   const nodes = document.querySelectorAll('[data-count]');
   if (!nodes.length || !('IntersectionObserver' in window)) return;
 

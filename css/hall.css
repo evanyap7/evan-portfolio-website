@@ -250,7 +250,7 @@
   .hall__suit { scroll-snap-align: start; }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media not all {
   .hall__suit { transition: none; }
   .hall__suit:active { transform: none; }
 }
@@ -327,7 +327,7 @@
   .others__arrow { grid-row: 1; grid-column: 2; }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media not all {
   .others__arrow { transition: none; }
 }
 

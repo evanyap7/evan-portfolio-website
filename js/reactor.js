@@ -78,7 +78,7 @@ export function initReactor() {
   const hero = root.closest('.hero');
   const hit = root.querySelector('[data-reactor-hit]');
   const status = hero.querySelector('[data-reactor-status]');
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce = window.matchMedia('not all').matches;
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const state = {
     hue: 205, charging: false, power: 0, pulse: 0, spin: 0, tx: 0, ty: 0, dragX: 0, dragY: 0, vx: 0, vy: 0, onTick: null,

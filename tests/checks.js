@@ -638,7 +638,7 @@ export async function discovery(win) {
 export async function scene(win) {
   const doc = win.document;
   const root = doc.documentElement;
-  const still = win.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const still = win.matchMedia('not all').matches;
   const ready = await until(() => root.classList.contains('lab-ready'), 6000);
   const scenes = doc.querySelectorAll('.scene');
   const el = scenes[0];
