@@ -2,7 +2,7 @@
 
 **Live:** <https://www.evanyap.com>
 
-An Iron Man themed portfolio, built as **Editions**: the home page is a deck of paper sheets that slide up over a dark hero. Projects are seven suits, one per project, each a 3D model you drag to turn. Every project has its own page, and four of them (E.G.O, the research agent, Parallel Match and the Univers revamp) carry a full write-up: overview, how it works, trade-offs, evidence with its limits, my part, stack and links. Plain HTML, CSS and JavaScript as ES modules: no framework and no build step. The only npm packages are dev tools for the checks. three.js and the fonts load from CDNs. With Reduce Motion on, the scene stays but holds still.
+An Iron Man themed portfolio, built as **Editions**: the home page is a deck of paper sheets that slide up over a dark hero. Projects are seven suits, one per project, each a 3D model you drag to turn. Every project has its own page, and four of them (E.G.O, the research agent, Parallel Match and the Univers revamp) carry a full write-up: overview, how it works, trade-offs, evidence with its limits, my part, stack and links. Plain HTML, CSS and JavaScript as ES modules: no framework and no build step. The only npm packages are dev tools for the checks. three.js and the fonts load from CDNs. The site animates whatever the device's Reduce Motion setting says; the Pause background button stops the scene.
 
 ![The hero: the Hall of Armor behind Evan's name and headline, with the section rail along the bottom](docs/hero.png)
 
@@ -16,7 +16,7 @@ An Iron Man themed portfolio, built as **Editions**: the home page is a deck of 
 - **The reactor is the door.** A first visit finds the room dark ("Systems offline"). Press and hold the reactor (or hold Space on it) and it charges; at 100% the room comes up. It never opens by itself, so the resume and email stay reachable throughout.
 - **A room that answers the pointer.** A shot per section that leans away from the cursor, a light that follows it and dust that parts round it.
 - **Looping project diagrams** drawn as inline SVG, played only while on screen, each with a pause button.
-- **Tested in the browser.** [`/tests/`](tests/) loads the site at 13 sizes (320px to 1920px) and runs about 6,600 checks: section order, heading levels, no sideways scroll, 44px tap targets, WCAG contrast, focus rings, keyboard paths, the gate, the scene, the picker and the project pages. It also runs with Reduce Motion on and with three.js blocked.
+- **Tested in the browser.** [`/tests/`](tests/) loads the site at 13 sizes (320px to 1920px) and runs about 6,600 checks: section order, heading levels, no sideways scroll, 44px tap targets, WCAG contrast, focus rings, keyboard paths, the gate, the scene, the picker and the project pages. It also runs with the device asking for Reduce Motion (ignored) and with three.js blocked.
 
 ## How it was built
 
