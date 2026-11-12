@@ -57,11 +57,11 @@ try {
 
   // The fallbacks, each on a fresh page of its own: with reduced motion, and
   // with three.js failing to load from the CDN. The scene needs neither, so
-  // it stays; reduced motion keeps the Hall, and a failed fetch brings back
-  // the Work cards.
+  // it stays; reduced motion keeps the Projects picker, and a failed fetch
+  // leaves the Mark's still in place of a live suit.
   const fallbacks = [
-    { name: 'reduced motion', options: { reducedMotion: 'reduce' }, settle: 1500, shows: '#work .hall' },
-    { name: 'three.js blocked', block: '**/three.module.min.js', settle: 9000, shows: '#work .work__grid' },
+    { name: 'reduced motion', options: { reducedMotion: 'reduce' }, settle: 1500, shows: '#work .opener__name' },
+    { name: 'three.js blocked', block: '**/three.module.min.js', settle: 9000, shows: '#work .opener__suit img', hides: '#work .opener__suit.live' },
   ];
   for (const fallback of fallbacks) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 800 }, ...fallback.options });
@@ -69,20 +69,21 @@ try {
     const tab = await context.newPage();
     if (fallback.block) await tab.route(fallback.block, (route) => route.abort());
     await tab.goto(`http://localhost:${PORT}/`);
-    // The Hall fetches three.js only once Work is near, and only a failed
-    // fetch brings the cards back, so go to Work as a visitor would.
+    // The suits fetch three.js only once Projects is near, so go there as a
+    // visitor would.
     await tab.waitForTimeout(500);
     await tab.evaluate(() => document.getElementById('work').scrollIntoView({ behavior: 'instant' }));
     await tab.waitForTimeout(fallback.settle);
-    const state = await tab.evaluate((selector) => ({
+    const state = await tab.evaluate(([selector, gone]) => ({
       lab: document.documentElement.classList.contains('lab'),
       shows: [...document.querySelectorAll(selector)].some((el) => {
         const box = el.getBoundingClientRect();
         return box.width > 0 && box.height > 0 && getComputedStyle(el).visibility !== 'hidden';
       }),
-    }), fallback.shows);
-    const pass = state.lab && state.shows;
-    (pass ? console.log : console.error)(`${pass ? 'PASS' : 'FAIL'} fallback, ${fallback.name}: lab ${state.lab}, work shows ${state.shows}`);
+      clear: !gone || !document.querySelector(gone),
+    }), [fallback.shows, fallback.hides ?? '']);
+    const pass = state.lab && state.shows && state.clear;
+    (pass ? console.log : console.error)(`${pass ? 'PASS' : 'FAIL'} fallback, ${fallback.name}: lab ${state.lab}, work shows ${state.shows}, nothing it should hide ${state.clear}`);
     if (!pass && code === 0) code = 1;
     await context.close();
   }

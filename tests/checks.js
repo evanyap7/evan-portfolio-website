@@ -3,9 +3,17 @@
 // a list of { name, pass, detail }. run.js decides which checks run where.
 
 const WIDE = 1024;
-// The sections in page order, each with its shot in the scene.
+// The sections in page order. Only the hero has a shot in the scene; the rest
+// are sheets laid over it.
 const SECTIONS = ['top', 'about', 'work', 'experience', 'toolkit', 'contact'];
 const CARDS = ['assistant-bot', 'trading-agent', 'website-revamp', 'parallel-match', 'research-agent', 'v-bay', 'watchpartyyy', 'others'];
+// The Mark each old card link (#work-<slug>) picks in the Projects picker
+// (js/projects.js), and the Mark shown first.
+const MARK_OF = {
+  'trading-agent': 0, 'assistant-bot': 1, 'research-agent': 2, 'parallel-match': 3,
+  'website-revamp': 4, 'v-bay': 5, watchpartyyy: 6, others: 6,
+};
+const FIRST_MARK = 1;
 // The drawing-set palette (paper, desk, ink, accent) and the pastels before it.
 const OLD_COLOURS = /#(fafaf7|e6e5e0|111214|4f5156|6c6e72|2541e6|ffb7d5|ffd98e|a9ddff|b9f2df|ff8fb1|ffe446|cdf5e6|ff9fb6|3a4a86|9b3158)\b|rgba\(17,\s*18,\s*20|rgba\(37,\s*65,\s*230/i;
 
@@ -77,7 +85,7 @@ export function fonts(win) {
 // it is measured by that area.
 export function targets(win) {
   if (win.innerWidth >= WIDE) return [];
-  const selector = '.nav a, .nav button, .menu a, .pill, .work__card, .hall__suit, .others__row, [data-copy], .contact__address, .back, .next, .footer a';
+  const selector = '.nav a, .nav button, .menu a, .pill, .work__card, .index__cell, .marks button, .pause, .cta, .inter__next, [data-copy], .contact__address, .back, .next, .footer a';
   // Layout sizes, so a rise animation's transform mid-flight cannot round a
   // 44px pill down to 43.99.
   const small = [...win.document.querySelectorAll(selector)].filter(shown).filter((el) => el.offsetWidth < 44 || el.offsetHeight < 44);
@@ -120,9 +128,9 @@ export function palette(win) {
 }
 
 // Every text grey passes 4.5:1 on every surface it sits on, computed from
-// the tokens: the four dark-band greys on black, the two band greys and the
-// head of a card; the inverted Contact band's greys on off-white, and its
-// dark pills; and the focus ring at 3:1 on both.
+// the tokens: the four greys on the ink sheets, their bands and the head of
+// a card; the titanium paper sheets' greys and accent on the paper, and
+// their dark pills; and the focus ring at 3:1 on both.
 export function contrast(win) {
   const doc = win.document;
   const rgb = (value) => {
@@ -160,24 +168,18 @@ export function contrast(win) {
   pair('focus ring on --card-top', dark('--focus'), dark('--card-top'), 3);
   pair('solid pill text', dark('--bg'), dark('--text'), 4.5);
 
-  const band = doc.querySelector('.band--light');
-  if (band) {
-    const light = tokens(band);
-    ['--text', '--text-2', '--muted', '--dim'].forEach((fg) => pair(`light band ${fg}`, light(fg), light('--band'), 4.5));
-    pair('light band solid pill text', light('--bg'), light('--text'), 4.5);
-    pair('light band focus ring', light('--focus'), light('--band'), 3);
-    const shownBg = win.getComputedStyle(band).borderImageSource;
-    const painted = (shownBg.match(/rgba?\([^)]*\)/g) || []).map((c) => c.match(/[\d.]+/g).slice(0, 3).map(Number));
-    if (doc.documentElement.classList.contains('lab')) {
-      // In the lab Contact is the office's warm screen: its panel is painted
-      // in the band's own (dark) --band.
-      const own = rgb(light('--band')).join(',');
-      out.push(result('Contact is the office screen, painted in its own --band', band.id === 'contact' && painted.some((c) => c.join(',') === own), shownBg.slice(0, 80)));
-    } else {
-      const pale = painted.some((c) => c.every((v) => v >= 230));
-      out.push(result('Contact is the light band', band.id === 'contact' && pale, shownBg.slice(0, 60)));
-    }
-  }
+  const sheet = doc.querySelector('.slab--paper');
+  if (!sheet) return [...out, result('paper sheets present', false)];
+  const paper = tokens(sheet);
+  ['--text', '--text-2', '--muted', '--dim', '--accent'].forEach((fg) => pair(`paper ${fg}`, paper(fg), paper('--bg'), 4.5));
+  pair('paper solid pill text', paper('--bg'), paper('--text'), 4.5);
+  pair('paper focus ring', paper('--focus'), paper('--bg'), 3);
+  // The sheets alternate as designed: About, Experience and Contact on paper,
+  // Toolkit and the Projects chapter on ink.
+  const papers = [...doc.querySelectorAll('main > .slab--paper')].map((s) => s.id).join(',');
+  out.push(result('paper sheets are About, Experience and Contact', papers === 'about,experience,contact', papers));
+  const painted = rgb(win.getComputedStyle(doc.getElementById('contact')).backgroundColor).join(',');
+  out.push(result('Contact is painted in the paper', painted === rgb(paper('--bg')).join(','), painted));
   return out;
 }
 
@@ -198,30 +200,40 @@ export function aboutPhoto(win) {
   ];
 }
 
-// The cards meet "Selected work" at its baseline at most: they may cover the
-// descender zone, never the letters. A zero-size inline-block at the end of
-// the title sits on its (last line's) baseline.
-export function workTitle(win) {
-  const title = win.document.getElementById('work-title');
-  // With the Hall up, it stands in for the cards.
-  const grid = win.document.querySelector('#work.work--hall .hall') ?? win.document.querySelector('#work .work__grid');
-  if (!title || !grid) return [result('Selected work title readable', false, 'missing')];
-  const probe = win.document.createElement('span');
-  probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-  title.append(probe);
-  const baseline = probe.getBoundingClientRect().top;
-  probe.remove();
-  const top = grid.getBoundingClientRect().top;
-  return [result('cards sit at or below the title baseline', top >= baseline - 0.5, `cards ${top.toFixed(1)} vs baseline ${baseline.toFixed(1)}`)];
+// The Projects chapter: one h2 titled Projects, a picker of seven Marks with
+// one pressed, the Mark's name whole on its stage, and the light sheet's link
+// to the project's page, which exists.
+export async function opener(win) {
+  const doc = win.document;
+  const title = doc.getElementById('work-title');
+  const buttons = [...doc.querySelectorAll('#work .marks button')];
+  const pressed = buttons.filter((b) => b.getAttribute('aria-pressed') === 'true');
+  const stage = doc.querySelector('#work .opener__stage');
+  const name = doc.getElementById('p-name');
+  const cta = doc.querySelector('#work .paper .cta');
+  const code = cta ? await win.fetch(cta.href, { cache: 'no-store' }).then((response) => response.status, () => 0) : 0;
+  const s = stage?.getBoundingClientRect();
+  const n = name?.getBoundingClientRect();
+  return [
+    result('Projects: one chapter, titled Projects', title?.tagName === 'H2' && title.textContent.trim() === 'Projects' && Boolean(title.closest('#work')), title?.textContent),
+    result('Projects: seven Marks in the picker, one pressed', buttons.length === 7 && pressed.length === 1, `${buttons.length} marks, ${pressed.length} pressed`),
+    result('Projects: the Mark\'s name sits whole on its stage', Boolean(s && n) && n.left >= s.left - 1 && n.right <= s.right + 1 && name.scrollWidth <= name.clientWidth + 1,
+      n ? `name ${Math.round(n.left)}–${Math.round(n.right)} in stage ${Math.round(s.left)}–${Math.round(s.right)}` : 'missing'),
+    result('Projects: the sheet links to a project page that exists', code === 200, cta?.getAttribute('href')),
+  ];
 }
 
-// Six cards, each one link to a page that exists, named by its title, and
-// keeping its #work-… id so old links land on it.
+// The old cards stay in the page as the list of every project: what shows
+// without the picker's script, and where #work-… ids still live. Each is one
+// link to a page that exists, named by its title.
 export async function workCards(win) {
   const doc = win.document;
   const cards = [...doc.querySelectorAll('#work .work__card')];
   const ids = cards.map((card) => card.id.replace('work-', '')).join(',');
+  const list = doc.querySelector('#work .paper__all');
+  const picking = doc.documentElement.classList.contains('marks-on');
   const out = [
+    result('the list of every project hides while the picker runs', Boolean(list) && (!picking || !shown(list)), picking ? 'picker on' : 'no picker'),
     result('eight work cards, in order', ids === CARDS.join(','), ids),
     result('cards hold no nested links or buttons', cards.every((card) => !card.querySelector('a, button'))),
     result('cards hold a counting figure', cards.every((card) => card.querySelector('.work__figure [data-count]'))),
@@ -296,9 +308,8 @@ export async function honoursLink(win) {
   return [result(`#${id} lands on its tier in Experience`, Boolean(tier?.closest('#experience')) && shown(tier) && top >= 0 && top < win.innerHeight, `top ${Math.round(top)}`)];
 }
 
-// An old project link such as #work-trading-agent lands on that card. With
-// the Hall up it picks that suit and lands on the Hall, or on the project's
-// Other projects row if it has no suit.
+// An old project link such as #work-trading-agent picks that project's Mark
+// and lands on the Projects chapter. Without the picker it lands on the card.
 export async function deepLink(win) {
   // Give the browser time to start the jump before waiting for it to settle.
   await wait(800);
@@ -310,16 +321,18 @@ export async function deepLink(win) {
   const doc = win.document;
   const id = win.location.hash.slice(1);
   const key = id.replace(/^work-/, '');
-  const card = doc.getElementById(id);
-  if (!doc.querySelector('#work.work--hall')) {
+  if (!doc.documentElement.classList.contains('marks-on')) {
+    const card = doc.getElementById(id);
     const top = card?.getBoundingClientRect().top ?? -1;
     return [result(`#${id} lands on its card`, card?.matches('.work__card') && top >= 0 && top < win.innerHeight / 2, `top ${Math.round(top)}`)];
   }
-  const button = doc.querySelector(`.hall__suit[data-id="${key}"]`);
-  const target = button ? doc.querySelector('.hall') : doc.querySelector(`.others__row[data-for="${key}"]`);
-  const top = target?.getBoundingClientRect().top ?? -1;
-  const picked = !button || button.getAttribute('aria-pressed') === 'true';
-  return [result(`#${id} lands on its ${button ? 'suit' : 'row'}`, Boolean(target) && picked && top >= 0 && top < win.innerHeight / 2, `top ${Math.round(top)}`)];
+  const want = MARK_OF[key];
+  const button = doc.querySelector(`#work .marks button[data-mark="${want}"]`);
+  const top = doc.getElementById('work').getBoundingClientRect().top;
+  return [
+    result(`#${id} picks Mark ${want + 1}`, button?.getAttribute('aria-pressed') === 'true', button?.textContent.trim()),
+    result(`#${id} lands on Projects`, top > -2 && top < win.innerHeight / 2, `top ${Math.round(top)}`),
+  ];
 }
 
 // The nav marks the section on screen.
@@ -395,17 +408,17 @@ export async function copy(win, frame) {
 // screen reader gets must read exactly as written, nothing in a heading may
 // be aria-hidden, and once a title has been seen every word is in place.
 const TITLES = {
-  'hero-title': 'Most students study AI. I ship it.',
+  'hero-title': 'Evan Yap',
   'about-title': 'About me',
   'experience-title': 'My experience',
-  'work-title': 'Selected work',
+  'work-title': 'Projects',
   'toolkit-title': 'My toolkit',
   'contact-title': 'Let’s talk',
 };
 
 export async function titles(win) {
   const doc = win.document;
-  const heads = [...doc.querySelectorAll('.hero__title, .title, .project__title')];
+  const heads = [...doc.querySelectorAll('.hero__title, .title, .project__title, #work-title')];
   const read = (el) => el.textContent.replace(/\s+/g, ' ').trim();
   const out = [
     result('titles: nothing inside a title is aria-hidden', heads.every((head) => !head.querySelector('[aria-hidden]'))),
@@ -515,7 +528,7 @@ export async function gate(win) {
     result('gate: the hint says to hold the reactor', /hold/i.test(doc.querySelector('.gate__hint')?.textContent ?? '') && shown(doc.querySelector('.gate__hint'))),
     result('gate: nav and sections hidden and inert', hidden(doc.querySelector('.nav')) && doc.querySelector('.nav').inert
       && [...doc.querySelectorAll('main > section:not(.hero)')].every((section) => hidden(section) && section.inert)),
-    result('gate: the headline and pitch are readable behind the gate', [...doc.querySelectorAll('.hero__title, .hero__lede, .hero__who')]
+    result('gate: the name and pitch are readable behind the gate', [...doc.querySelectorAll('.hero__title, .hero__lede')]
       .every((el) => shown(el) && !hidden(el) && !el.closest('[inert]'))),
   ];
   // A short hold charges part way, then drains, and the door stays shut.
@@ -619,9 +632,9 @@ export async function discovery(win) {
   ];
 }
 
-// The scene: a photograph of the workshop fixed behind the page, one shot per
-// section. Every browser that runs modules gets it; reduced motion keeps it,
-// still: no clip, no dust, no drift.
+// The scene: a photograph of the workshop fixed behind the hero; the other
+// sections are sheets laid over it. Every browser that runs modules gets it;
+// reduced motion keeps it, still: no clip, no drift.
 export async function scene(win) {
   const doc = win.document;
   const root = doc.documentElement;
@@ -645,51 +658,50 @@ export async function scene(win) {
       style ? `${style.position} ${el.getAttribute('aria-hidden')} ${style.pointerEvents}` : 'missing'),
     result('scene fills the screen', box && Math.abs(box.width - vw) <= 1 && Math.abs(box.height - vh) <= 1,
       box ? `${Math.round(box.width)}×${Math.round(box.height)} of ${vw}×${vh}` : 'missing'),
-    result('a shot for each section, in order', shots === SECTIONS.join(','), shots),
+    result('one shot, the hero\'s', shots === 'top', shots),
     result(still ? 'reduced motion: no clip' : 'the hero clip is there', still ? !doc.querySelector('.scene__video') : moving),
   ];
 }
 
-// Scrolling changes the shot: each section brings up its own, and the end of
-// the page is Contact's even when the page is too short to bring it to the top.
-export async function sceneStops(win) {
+// The hero's loop can be paused, and played again, from a button in the hero.
+export async function scenePause(win) {
   const doc = win.document;
-  const root = doc.documentElement;
-  await until(() => root.classList.contains('lab-ready'), 6000);
-  const seen = [];
-  for (const id of SECTIONS) {
-    doc.getElementById(id).scrollIntoView({ behavior: 'instant' });
-    await wait(300);
-    const on = doc.querySelector('.scene__shot.is-on')?.dataset.shot;
-    seen.push(`${id}:${root.dataset.stop}:${on}`);
-  }
-  const missed = seen.filter((triple) => { const [want, stop, on] = triple.split(':'); return want !== stop || want !== on; });
-  win.scrollTo({ top: root.scrollHeight, behavior: 'instant' });
-  await wait(300);
-  const end = root.dataset.stop;
-  win.scrollTo({ top: 0, behavior: 'instant' });
-  await wait(100);
+  await until(() => doc.documentElement.classList.contains('lab-ready'), 6000);
+  const button = doc.querySelector('[data-scene-pause]');
+  const video = doc.querySelector('.scene__video');
+  if (!video) return [result('pause: no clip, so no button', !button || button.hidden)];
+  if (!button) return [result('pause: the hero has a pause button', false, 'missing')];
+  const shownFirst = shown(button) && !button.hidden;
+  button.click();
+  await wait(150);
+  const held = button.getAttribute('aria-pressed') === 'true' && video.paused && /play/i.test(button.textContent);
+  button.click();
+  await until(() => !video.paused, 1500);
+  const back = button.getAttribute('aria-pressed') === 'false' && /pause/i.test(button.textContent);
   return [
-    result('each section brings up its shot', missed.length === 0, seen.join(' ')),
-    result('the end of the page is Contact', end === 'contact', end),
+    result('pause: the button is shown in the hero', shownFirst && Boolean(button.closest('#top'))),
+    result('pause: pressing it holds the clip', held, `pressed ${button.getAttribute('aria-pressed')}, paused ${video.paused}`),
+    result('pause: pressing again lets it play', back && !video.paused, `paused ${video.paused}`),
   ];
 }
 
-// About's things, pointed at, light their objects in the photograph, and let
-// them go again.
-export async function sceneSpots(win) {
+// Once a sheet covers the hero its clip stops; back at the top it plays.
+export async function sceneCover(win) {
   const doc = win.document;
-  await until(() => doc.documentElement.classList.contains('lab-ready'), 6000);
-  const items = [...doc.querySelectorAll('[data-thing].has-spot')];
-  const spots = doc.querySelectorAll('.scene__spot');
-  const item = items[0];
-  item?.dispatchEvent(new win.PointerEvent('pointerenter'));
-  const on = doc.querySelectorAll('.scene__spot.is-lit').length === 1 && item?.classList.contains('is-lit');
-  item?.dispatchEvent(new win.PointerEvent('pointerleave'));
-  const off = !doc.querySelector('.scene__spot.is-lit, [data-thing].is-lit');
+  const root = doc.documentElement;
+  await until(() => root.classList.contains('lab-ready'), 6000);
+  const video = doc.querySelector('.scene__video');
+  doc.getElementById('experience').scrollIntoView({ behavior: 'instant' });
+  const covered = await until(() => root.classList.contains('hero-covered'), 1500);
+  await wait(100);
+  const stopped = !video || video.paused;
+  win.scrollTo({ top: 0, behavior: 'instant' });
+  const uncovered = await until(() => !root.classList.contains('hero-covered'), 1500);
+  const playing = !video || await until(() => !video.paused, 1500);
   return [
-    result('a spot for each of About\'s things in the photograph', items.length >= 4 && spots.length === items.length, `${items.length} things, ${spots.length} spots`),
-    result('pointing at a thing lights its spot, and leaving lets it go', on && off),
+    result('cover: a sheet over the hero marks it covered', covered),
+    result('cover: the hero clip stops while covered', stopped),
+    result('cover: back at the top it is uncovered and plays', uncovered && playing, `paused ${video?.paused}`),
   ];
 }
 
@@ -708,50 +720,54 @@ export async function gateDoor(win) {
 }
 
 // A link into the page, or a visitor already let in this session, finds the
-// door already open, with the linked section's shot up.
+// door already open, with the hero's shot up.
 export async function sceneDoor(win) {
   const root = win.document.documentElement;
   await until(() => root.classList.contains('lab-ready'), 6000);
   const first = root.classList.contains('door-open');
-  await until(() => root.dataset.stop === 'toolkit', 1500);
   return [
     result('door: already open', first),
-    result('door: the linked section\'s shot is up', root.dataset.stop === 'toolkit', String(root.dataset.stop)),
+    result('door: the hero\'s shot is up', root.dataset.stop === 'top', String(root.dataset.stop)),
   ];
 }
 
-// On a wide screen the suit stands in the shot beside the Work column: whole
-// on screen when Work is, and clear of the words.
-export async function hallStage(win) {
+// On a wide screen the suit's stage is whole on screen when the Projects
+// chapter is; on a phone it is shown in the stacked layout.
+export async function openerStage(win) {
   const doc = win.document;
-  const stage = doc.querySelector('#work .hall__stage');
-  if (!stage) return [result('hall: the Hall is in Work', false, 'missing')];
-  if (win.innerWidth < WIDE) return [result('hall: the Hall is in Work', shown(stage))];
+  const stage = doc.querySelector('#work .opener__stage');
+  if (!stage) return [result('stage: the suit\'s stage is in Projects', false, 'missing')];
+  if (win.innerWidth < WIDE) return [result('stage: the suit\'s stage is in Projects', shown(stage))];
   doc.getElementById('work').scrollIntoView({ behavior: 'instant' });
   await wait(300);
   const box = stage.getBoundingClientRect();
-  const words = doc.querySelector('.hall__panel').getBoundingClientRect();
-  const title = doc.getElementById('work-title').getBoundingClientRect();
   win.scrollTo({ top: 0, behavior: 'instant' });
   await wait(100);
   return [
-    result('hall: the suit is whole on screen', box.top >= 0 && box.bottom <= win.innerHeight && box.right <= win.innerWidth && box.width >= 300,
+    result('stage: the suit is whole on screen', box.top >= -1 && box.bottom <= win.innerHeight + 1 && box.right <= win.innerWidth && box.width >= 300,
       `${Math.round(box.left)},${Math.round(box.top)} ${Math.round(box.width)}×${Math.round(box.height)}`),
-    result('hall: the suit stands clear of the words and title', box.left >= words.right && box.top >= title.bottom - 8,
-      `suit ${Math.round(box.left)}, panel ${Math.round(words.right)}, title foot ${Math.round(title.bottom)}, suit top ${Math.round(box.top)}`),
   ];
 }
 
-// Every suit stands fully lit: no render-pass tabs, no pass status, and the
-// hint says only that it can be turned.
-export async function suitsLit(win) {
+// The picker: the hint says only that the suit can be turned; choosing a Mark
+// names it, says so to a screen reader, and presses the same Mark in the rail.
+export async function picker(win) {
   const doc = win.document;
-  const stage = doc.querySelector('.hall__stage');
-  if (!stage) return [result('suits lit: no hall in this frame', true, 'no hall')];
-  await until(() => doc.querySelector('.hall__hint')?.textContent.trim() === 'Drag to turn', 6000);
+  const button = doc.querySelector('#work .marks button[data-mark="3"]');
+  if (!button) return [result('picker: Mark IV is in the picker', false, 'missing')];
+  const hint = doc.querySelector('.opener__hint')?.textContent.trim();
+  button.click();
+  const named = await until(() => doc.getElementById('p-name')?.textContent.trim() === 'Parallel Match', 2000);
+  const status = doc.getElementById('p-status')?.textContent.trim();
+  const rail = [...doc.querySelectorAll('[data-rail-marks] button')];
+  const railPressed = rail.filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.dataset.mark).join(',');
+  const pressed = [...doc.querySelectorAll('#work .marks button[aria-pressed="true"]')].map((b) => b.dataset.mark).join(',');
+  doc.querySelector(`#work .marks button[data-mark="${FIRST_MARK}"]`)?.click();
+  await until(() => doc.getElementById('p-name')?.textContent.trim() === 'E.G.O', 2000);
   return [
-    result('suits lit: no render-pass tabs or status', !doc.querySelector('.hall__pass, .hall__passes, .hall__status'), `${doc.querySelectorAll('.hall__pass').length} tabs`),
-    result('suits lit: the hint says only Drag to turn', doc.querySelector('.hall__hint')?.textContent.trim() === 'Drag to turn', doc.querySelector('.hall__hint')?.textContent.trim()),
-    result('suits lit: the stage names no pass', !/pass/i.test(stage.getAttribute('aria-label') ?? ''), stage.getAttribute('aria-label')),
+    result('picker: the hint says only Drag to turn, no render passes', hint === 'Drag to turn' && !doc.querySelector('.hall__pass'), hint),
+    result('picker: choosing Mark IV names it', named && pressed === '3', `${doc.getElementById('p-name')?.textContent.trim()} (pressed ${pressed})`),
+    result('picker: a screen reader is told which Mark', status === 'Mark IV, Parallel Match', status),
+    result('picker: the rail presses the same Mark', rail.length === 0 || railPressed === '3', railPressed),
   ];
 }
