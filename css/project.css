@@ -231,3 +231,90 @@
   padding-top: 40px;
   border-top: 1px solid var(--line);
 }
+
+/* The write-up sections ---------------------------------------------- */
+/* Plain prose at a readable measure, short lists, and a facts list that
+   stacks on a phone instead of squeezing a table. */
+.prose {
+  max-width: 36em;
+  color: var(--text-2);
+  font-size: var(--t-body);
+  line-height: 1.7;
+}
+
+.prose strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.prose ul,
+.prose ol {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding-left: 1.2em;
+}
+
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li::marker { color: var(--muted); }
+
+.prose h3 {
+  margin: 28px 0 8px;
+  color: var(--text);
+  font-size: var(--t-card);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.facts {
+  display: grid;
+  max-width: 40em;
+}
+
+.facts > div {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+  gap: 4px 24px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.facts > div:first-child { border-top: 0; padding-top: 0; }
+
+.facts dt {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.facts dd {
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.more {
+  max-width: 36em;
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.more > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 48px;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+}
+
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary::after { content: "+"; color: var(--muted); font-size: 20px; }
+.more[open] > summary::after { content: "\2212"; }
+.more > :not(summary) { padding-bottom: 8px; }
+
+@media (max-width: 719px) {
+  .facts > div { grid-template-columns: minmax(0, 1fr); }
+  .project__body.rows > div { padding: 36px 0; }
+}
