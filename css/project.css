@@ -318,3 +318,25 @@
   .facts > div { grid-template-columns: minmax(0, 1fr); }
   .project__body.rows > div { padding: 36px 0; }
 }
+
+/* More motion ---------------------------------------------------------- */
+/* Each write-up heading draws a line in as its row scrolls into view, the
+   big figures rise, and the next-project arrow keeps nudging. */
+.project__body h2 { position: relative; }
+.project__body h2::after { content: ""; display: block; width: 36px; height: 2px; margin-top: 12px; background: currentColor; opacity: 0.5; transform-origin: left; }
+@supports (animation-timeline: view()) {
+  .project__body h2::after { animation: draw linear both; animation-timeline: view(); animation-range: entry 10% entry 80%; }
+  @keyframes draw { from { scale: 0 1; } to { scale: 1 1; } }
+  .project__body.rows > div > :not(h2) { animation: lift linear both; animation-timeline: view(); animation-range: entry 0% entry 45%; }
+  @keyframes lift { from { translate: 0 28px; } to { translate: 0 0; } }
+  .stats > div { animation: lift linear both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
+  .stats > div { border-top-color: var(--line); }
+}
+.stats > div { position: relative; }
+.stats > div::before { content: ""; position: absolute; left: 0; top: -1px; height: 1px; width: 30%; background: hsl(var(--h, 200) 90% 60%); animation: sweep 5s ease-in-out infinite; }
+.stats > div:nth-child(2)::before { animation-delay: -1.2s; }
+.stats > div:nth-child(3)::before { animation-delay: -2.4s; }
+.stats > div:nth-child(4)::before { animation-delay: -3.6s; }
+@keyframes sweep { 0% { translate: 0 0; opacity: 0; } 15%, 70% { opacity: 1; } 100% { translate: 230% 0; opacity: 0; } }
+.next .arrow, .next [aria-hidden="true"] { display: inline-block; animation: nudge 1.8s ease-in-out infinite; }
+@keyframes nudge { 0%, 100% { translate: 0 0; } 50% { translate: 8px 0; } }
