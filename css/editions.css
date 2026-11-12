@@ -140,7 +140,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .slab.contact .title { font-size: clamp(64px, 12vw, 220px); }
 
 /* Projects: the chapter opener (dark) ----------------------------------- */
-.opener { position: relative; display: grid; grid-template-rows: auto auto 1fr auto; min-height: 100svh; background: var(--ink); overflow: clip; isolation: isolate; }
+.opener { position: relative; display: grid; grid-template-rows: auto auto auto 1fr auto; min-height: 100svh; background: var(--ink); overflow: clip; isolation: isolate; }
 .opener__bar { display: flex; justify-content: space-between; gap: 16px; padding: 18px var(--pad); border-bottom: 1px solid var(--hair-soft); color: var(--muted); }
 .opener__where > * { display: inline; margin: 0; font: inherit; letter-spacing: inherit; }
 .opener__where h2, #p-mark { color: var(--text); }
