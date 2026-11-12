@@ -173,6 +173,8 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .opener__suit.live:active { cursor: grabbing; }
 .opener__suit.live canvas { opacity: 1; }
 .opener__suit.live img, .opener__suit.forming img, .opener__suit.nostill img { opacity: 0; }
+.opener__invite { margin: 0; padding: 14px var(--pad); line-height: 1.5; color: var(--muted); font-size: 12px; letter-spacing: 0.04em; text-wrap: balance; border-bottom: 1px solid var(--hair-soft); }
+.opener__invite b { color: var(--text); font-weight: 600; }
 .opener__hint { position: absolute; left: 50%; bottom: 3%; margin: 0; translate: -50% 0; white-space: nowrap; color: var(--muted); font-size: 11px; opacity: 0; transition: opacity 0.5s; pointer-events: none; }
 .opener__suit.live .opener__hint { opacity: 1; }
 .opener__suit.turned .opener__hint { opacity: 0; }
@@ -288,7 +290,11 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
   .stat { position: static; align-content: start; min-width: 0; max-width: none; padding: 10px 12px 11px; box-shadow: none; }
   .stat b { font-size: 26px; }
   .stat span { font-size: 11px; letter-spacing: 0.02em; }
-  .opener__foot { grid-template-columns: 1fr; }
+  /* One thing at a time: the figures and the blurb are the first lines of the
+     sheet right below, so the opener keeps only the picker, the name and the suit. */
+  .opener .stat, .opener__foot { display: none; }
+  .opener { min-height: 0; }
+  .opener__stage { padding-bottom: 24px; }
   .paper__grid { grid-template-columns: 1fr; }
   .paper__head { position: static; }
   .points li { grid-template-columns: 40px minmax(0, 1fr); }
