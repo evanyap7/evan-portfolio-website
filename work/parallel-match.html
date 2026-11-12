@@ -118,7 +118,20 @@
       <div class="reel__scene reel__scene--plate"><img src="/img/previews/parallel-match-viewer.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The analyst view. Two pitches replay the same moment side by side, the original and the alternate timeline, above a panel naming the 56th-minute penalty and the Law it falls under. All clubs and players are synthetic."></div>
     </figure>
     <div class="rows project__body">
-      <div><h2 class="mono">Overview</h2><div><p class="project__summary">Tap a borderline call, such as a penalty, and the screen splits into the real match and a what-if one, with the change in win chance. Every club and player is synthetic.</p></div></div>
+      <div><h2 class="mono">Overview</h2><div class="prose">
+        <p class="project__summary">Tap a borderline call, such as a penalty, and the screen splits into the real match and a what-if one, with the change in win chance. Every club and player is synthetic.</p>
+        <p>It was our entry to the Microsoft x Premier League "Inside the Game" developer hackathon. A fan taps a contestable moment (a foul, offside, card, penalty or substitution) and asks "what if that wasn't a foul?". There is a demo video under two minutes, and the live demo needs no login.</p>
+      </div></div>
+      <div><h2 class="mono">How "what if" works</h2><div class="prose">
+        <ol>
+          <li><strong>Seed.</strong> Every match is generated from a seed, so a replay is exactly repeatable.</li>
+          <li><strong>Replay</strong> to the chosen moment.</li>
+          <li><strong>Change one thing:</strong> flip the call, the card, a goal or a substitution.</li>
+          <li><strong>Roll out hundreds of pairs.</strong> The original and altered match share the same random numbers, so the difference between them is the change, not luck.</li>
+          <li><strong>Report with uncertainty.</strong> The answer comes with a 95% interval and one alternate timeline to watch.</li>
+        </ol>
+        <p>A second, independent opinion comes from precedent in the season itself, and the response says so when the two disagree.</p>
+      </div></div>
       <div><h2 class="mono">What I built</h2><div><ul class="items">
           <li>
             <h3 class="item__name">Simulator and what-if engine</h3>
@@ -139,6 +152,32 @@
       <div class="reel__scene reel__scene--plate"><img src="/img/previews/parallel-match-comparison.webp" width="1440" height="900" loading="lazy" decoding="async" alt="The comparison panel. Westfield Rangers’ win chance falls 14.4 points with a 95% interval of 10.7 to 18.1, shown as a win-probability chart for both timelines beside a table of outcome shares."></div>
     </figure>
     <div class="rows project__body">
+      <div><h2 class="mono">The Match Desk</h2><div class="prose">
+        <p>A producer plans the recap and three agents write it: a narrator, a law explainer and a historian. A fact-checker then verifies it, an editor repairs what it flags, and a recap writer finishes.</p>
+        <p>The rule that makes it trustworthy: <strong>all numbers and moment-finding stay in plain code</strong>. Agents only phrase them. Guardrails reject output that contains a number not in the facts, or wording that judges officials, and a test swaps one number to check that only the fact-checker catches it.</p>
+      </div></div>
+      <div><h2 class="mono">Evidence</h2><dl class="facts">
+        <div><dt>Realism</dt><dd>Over 360 simulated matches: 2.78 goals, 27.4 shots, 82% pass accuracy, 24.4 fouls and 3.2 yellow cards per match. All 16 metrics fall inside approximate top-flight ranges. That is a sanity band, not measured truth.</dd></div>
+        <div><dt>Speed</dt><dd>A full match simulates in about 60 ms. Featured moments are precomputed at 500 rollouts and return in about a second. A fresh fork on the single-CPU deployed API takes about 25 seconds, so the demo points you to featured moments first.</dd></div>
+        <div><dt>Languages</dt><dd>18 interface languages, with Arabic laid out right to left. A test fails if any language misses a key.</dd></div>
+      </dl></div>
+      <div><h2 class="mono">Limits</h2><div class="prose">
+        <p>All data is synthetic, so the alternate timeline is a simulation, not a prediction of real football, and every number carries its uncertainty. The model works at the level of events, not physics. Precedent compares different matches, so it carries confounding, and the paired simulation is the cleaner estimate. The agents describe decisions against the Law of the Game and never say that a referee or player got it wrong.</p>
+      </div></div>
+      <div><h2 class="mono">The team and my part</h2><div class="prose">
+        <p>A team of three. The lines below are from the repository's blame history: lines still in the code, not lines ever written.</p>
+        <ul>
+          <li><strong>Me:</strong> the simulator and fork engine (about 3,600 lines), the Match Desk, translation, and most of the front end as it stands (about 10,400 of 12,500 lines), built on Uwais's viewer.</li>
+          <li><strong>Jiawei:</strong> the phrasing agents, the guardrails, the Foundry and Agent Framework provider, the MCP history server and the Azure deployment.</li>
+          <li><strong>Uwais:</strong> the first React match viewer, its API adapter and the demo handoff.</li>
+        </ul>
+      </div></div>
+      <div><h2 class="mono">The Microsoft stack</h2><dl class="facts">
+        <div><dt>Agent Framework and Azure AI Foundry</dt><dd>The four agents, with managed identity, guardrails and a template fallback. Live.</dd></div>
+        <div><dt>MCP</dt><dd>Season precedent served as tools. Live.</dd></div>
+        <div><dt>Azure Container Apps</dt><dd>Four apps: front end, simulator API, agents API and the MCP server, in Japan East. Live.</dd></div>
+        <div><dt>Microsoft Fabric</dt><dd>Season tables and the precedent query in SQL. Ready, but not loaded for this submission.</dd></div>
+      </dl></div>
       <div><h2 class="mono">Stack</h2><p class="stack">Python · React · TypeScript · Microsoft Agent Framework · Azure AI Foundry · MCP · Azure Container Apps</p></div>
       <div><h2 class="mono">Links</h2><p class="links">
           <a class="pill pill--solid" href="https://youtu.be/Qt4DRwWWmOo" target="_blank" rel="noopener">Demo video <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
