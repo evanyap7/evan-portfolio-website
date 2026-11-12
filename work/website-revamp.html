@@ -81,9 +81,38 @@
       <div class="reel__scene reel__scene--plate"><img src="/img/previews/website-revamp.webp" width="1440" height="900" loading="lazy" decoding="async" alt="A redesigned corporate homepage with a large headline beside a live operations dashboard. Company branding is redacted."></div>
     </figure>
     <div class="rows project__body">
-      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A nine-page interactive redesign of Univers’ website, with no framework and no build step. Top 5 worldwide, pitched live to the CEO.</p></div></div>
+      <div><h2 class="mono">Overview</h2><div class="prose">
+        <p class="project__summary">A nine-page interactive redesign of Univers' website, with no framework and no build step. Top 5 of 100 entries, pitched live to the CEO.</p>
+        <p>I built it for Univers' Corporate Website Revamp Challenge in September 2026, during my internship there. Univers sits between heavy operational technology (energy grids, ports, smart buildings) and cloud intelligence, and the brief was a homepage that shows both. It is an unofficial concept redesign: the copy and brand material come from the public Univers site and its brand guidelines.</p>
+      </div></div>
+      <div><h2 class="mono">The pages</h2><dl class="facts">
+        <div><dt>Home</dt><dd>A headline beside a live operations dashboard, over an interactive three-dimensional node mesh.</dd></div>
+        <div><dt>Platform</dt><dd>The architecture of Univers' EnOS platform.</dd></div>
+        <div><dt>Sectors and clients</dt><dd>Who Univers serves, and its clients and partners.</dd></div>
+        <div><dt>Sustainability, trust and compliance</dt><dd>Pages for the buyer who asks about both before signing.</dd></div>
+        <div><dt>Calculator and simulator</dt><dd>An operational impact calculator and a live operations simulator, built as tools an executive can play with.</dd></div>
+        <div><dt>Lab</dt><dd>An interactive playground, described below.</dd></div>
+      </dl></div>
+      <div><h2 class="mono">Things to try</h2><div class="prose"><ul>
+        <li><strong>Interactive mesh.</strong> A Three.js scene of connected endpoints with depth, glow and camera parallax. The nodes drift, link up and spring away from your cursor.</li>
+        <li><strong>Electric drag trail.</strong> Click and drag anywhere to leave a neon ribbon with physics-driven sparks.</li>
+        <li><strong>Odometer counters.</strong> Each digit of a statistic scrolls like a mechanical ticker, and hover or click rolls it again.</li>
+        <li><strong>3D card tilt</strong> with a specular flashlight that follows the pointer.</li>
+        <li><strong>Interactive Lab.</strong> A grid stress test that spikes the telemetry and resolves in 11 ms, a sound engine built on the Web Audio API with no audio files, and three background modes.</li>
+      </ul></div></div>
+      <div><h2 class="mono">Decisions and trade-offs</h2><div class="prose"><ul>
+        <li><strong>No framework, on purpose.</strong> No React, no Tailwind, no build step and nothing to install. First paint is instant, and anyone can run it with a static file server.</li>
+        <li><strong>3D that can fail safely.</strong> Three.js loads with a single dynamic import from a CDN. If it is blocked, the site still runs, minus the background.</li>
+        <li><strong>One i18n engine for seven languages</strong> (English, German, French, Japanese, Dutch, Norwegian and Chinese), written from scratch instead of a library.</li>
+        <li><strong>On brand.</strong> Univers' own palette, Inter with tabular figures for numbers and JetBrains Mono for telemetry.</li>
+        <li><strong>A real endpoint.</strong> The demo-booking form posts to a Vercel serverless function that validates business contact details and formats each request as a CSV record.</li>
+      </ul></div></div>
+      <div><h2 class="mono">Result</h2><div class="prose">
+        <p>It reached the Top 5 of 100 entries and I pitched it live to the CEO. This is a concept redesign, not the official Univers website, and the company's trademarks belong to their owners.</p>
+      </div></div>
       <div><h2 class="mono">Stack</h2><p class="stack">Vanilla JavaScript · Three.js (WebGL) · CSS · Web Audio API · Vercel serverless functions</p></div>
       <div><h2 class="mono">Links</h2><p class="links">
+          <a class="pill" href="https://univers-homepage-revamp.vercel.app/" target="_blank" rel="noopener">Live site <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
           <a class="pill" href="https://github.com/evanyap7/univers-homepage-revamp" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
         </p></div>
     </div>
