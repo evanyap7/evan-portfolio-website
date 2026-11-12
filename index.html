@@ -37,9 +37,9 @@
   <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/figures.css">
   <link rel="stylesheet" href="css/reactor.css">
-  <link rel="stylesheet" href="css/hall.css">
   <link rel="stylesheet" href="css/lab.css">
   <link rel="stylesheet" href="css/fx.css">
+  <link rel="stylesheet" href="css/editions.css">
   <script type="importmap">
     {
       "imports": {
@@ -70,27 +70,27 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <span class="progress" aria-hidden="true" data-progress></span>
 
-  <header class="nav">
-    <a class="wordmark" href="#top" aria-label="Evan Yap, back to top">evan<span class="wordmark__dot">.</span></a>
-    <nav class="nav__links" aria-label="Primary">
-      <a href="#about">About</a>
-      <a href="#work">Work</a>
-      <a href="#experience">Experience</a>
-      <a href="#toolkit">Toolkit</a>
-      <a href="#contact">Contact</a>
-    </nav>
-    <div class="nav__end">
-      <a class="pill pill--solid nav__resume" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume
-        <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
-      <button class="pill nav__menu" type="button" aria-expanded="false" aria-controls="menu"
-        data-menu-button>Menu</button>
+  <header class="nav rail">
+    <a class="rail__name" href="#top" aria-label="Evan Yap, back to top">Evan Yap</a>
+    <div class="rail__mid">
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#about" title="About"><span aria-hidden="true">00</span><span class="visually-hidden">About</span></a>
+        <a href="#work" title="Projects"><span aria-hidden="true">01</span><span class="visually-hidden">Projects</span></a>
+        <a href="#experience" title="Experience"><span aria-hidden="true">02</span><span class="visually-hidden">Experience</span></a>
+        <a href="#toolkit" title="Toolkit"><span aria-hidden="true">03</span><span class="visually-hidden">Toolkit</span></a>
+        <a href="#contact" title="Contact"><span aria-hidden="true">04</span><span class="visually-hidden">Contact</span></a>
+      </nav>
+      <div class="rail__marks" role="group" aria-label="Projects, by Mark" data-rail-marks></div>
     </div>
+    <span class="rail__year" aria-hidden="true">Edition 2026</span>
+    <button class="pill nav__menu" type="button" aria-expanded="false" aria-controls="menu"
+      data-menu-button>Menu</button>
   </header>
 
   <nav class="menu" id="menu" aria-label="Menu" hidden data-menu>
     <ul class="menu__links">
       <li><a href="#about">About</a></li>
-      <li><a href="#work">Selected work</a></li>
+      <li><a href="#work">Projects</a></li>
       <li><a href="#experience">Experience</a></li>
       <li><a href="#toolkit">Toolkit</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -101,17 +101,6 @@
       <a class="pill" href="#contact" data-contact-link data-contact-text>Email</a>
     </p>
   </nav>
-
-  <div class="grid" aria-hidden="true">
-    <i></i><i></i><i></i><i></i>
-    <b style="--c:0;--r:1"></b><b style="--c:1;--r:1"></b><b style="--c:2;--r:1"></b><b style="--c:3;--r:1"></b>
-    <b style="--c:0;--r:2"></b><b style="--c:1;--r:2"></b><b style="--c:2;--r:2"></b><b style="--c:3;--r:2"></b>
-  </div>
-  <p class="hud mono" aria-hidden="true">
-    <span data-hud-time>SGT --:--</span>
-    <span data-hud-stop>00 / Start</span>
-    <span data-hud-scroll>000 / 100</span>
-  </p>
 
   <main id="main">
     <section class="hero" id="top" aria-labelledby="hero-title">
@@ -134,219 +123,450 @@
       <div class="reactor__panel">
         <p class="reactor__status mono" data-reactor-status aria-hidden="true"></p>
       </div>
-      <p class="hero__who">Evan Yap</p>
-      <h1 class="hero__title" id="hero-title">Most students study AI. I <span class="serif">ship</span> it.</h1>
-      <p class="hero__lede">Engineering student at SUTD and AI consultant intern at Univers, with 460+ tests behind my projects.
-        Looking for AI, software engineering and quant internships.</p>
-      <p class="hero__actions">
-        <a class="pill pill--solid" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Download resume
-          <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
-        <a class="pill" href="#contact" data-contact-link data-contact-text>Email me</a>
-      </p>
+      <div class="box">
+        <div class="box__top mono">
+          <span>Portfolio · Edition 2026</span>
+          <span>Engineering student, SUTD · AI consultant intern, Univers</span>
+          <button class="pause" type="button" aria-pressed="false" data-scene-pause hidden>Pause background</button>
+        </div>
+        <div class="box__mid">
+          <h1 class="hero__title" id="hero-title">Evan Yap</h1>
+          <p class="hero__lede">Most students study AI. I <span class="serif">ship</span> it.</p>
+          <p class="hero__actions">
+            <a class="pill pill--solid" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Download resume
+              <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
+            <a class="pill" href="#contact" data-contact-link data-contact-text>Email me</a>
+          </p>
+        </div>
+        <ol class="index" aria-label="Sections">
+          <li><a class="index__cell" href="#about"><b>00</b><span>About</span></a></li>
+          <li><a class="index__cell" href="#work"><b>01</b><span>Projects <small>Marks I–VII</small></span></a></li>
+          <li><a class="index__cell" href="#experience"><b>02</b><span>Experience</span></a></li>
+          <li><a class="index__cell" href="#toolkit"><b>03</b><span>Toolkit</span></a></li>
+          <li><a class="index__cell" href="#contact"><b>04</b><span>Contact</span></a></li>
+        </ol>
+      </div>
     </section>
 
-    <section class="section band band--900" id="about" aria-labelledby="about-title">
-      <h2 class="title" id="about-title">About <span class="serif">me</span></h2>
-      <div class="about">
-        <figure class="card about__photo" data-reveal>
-          <img src="img/evan-600.jpg" srcset="img/evan-600.jpg 600w, img/evan.jpg 1000w"
-            sizes="(min-width: 1024px) 400px, (min-width: 720px) 420px, calc(100vw - 40px)" width="600" height="803"
-            loading="lazy" decoding="async"
-            alt="Evan Yap smiling, in a navy suit and burgundy tie, standing in an office.">
-        </figure>
-        <div class="about__text" data-reveal>
-          <p class="about__statement">I ship AI agents, then <span class="serif">measure</span> whether they work.</p>
-          <p>I’m an engineering student at SUTD and an AI consultant intern at Univers, one of six TEP scholars working toward a Master’s in Technology Entrepreneurship. I build agents that act on real data, then try to break them.</p>
-          <p>My trading system lets strategies propose and plain code decide: it checks, sizes and risk-limits every order. I tested four ideas for an edge, a Claude agent included. None beat holding the index, so I paused live trading and kept the evidence.</p>
-          <p>I’m looking for AI, software engineering and quant internships, where being right matters more than being fast. For availability, contact me.</p>
-          <dl class="proof">
-            <div><dt>tests across my projects</dt><dd><span data-count>460+</span></dd></div>
-            <div><dt>test messages routed correctly, E.G.O</dt><dd><span data-count>38/39</span></dd></div>
-            <div><dt>of 100 in a corporate website challenge</dt><dd><span data-count>Top 5</span></dd></div>
-            <div><dt>place in a hackathon, V-Bẫy</dt><dd><span data-count>2nd</span></dd></div>
-          </dl>
-          <h3 class="about__things-title mono">Off the clock</h3>
-          <ul class="about__things" data-things>
-            <li data-thing="barbell"><h4>Lifting</h4><p>Powerlifter and certified personal trainer.</p></li>
-            <li data-thing="floorball"><h4>Floorball</h4><p>Captain of SUTD’s men’s team.</p></li>
-            <li data-thing="guitar"><h4>Guitar</h4><p>Worship team guitarist at church.</p></li>
-            <li data-thing="coffee"><h4>Kopi</h4><p>Fuel. Every day.</p></li>
-          </ul>
+    <section class="slab slab--paper" id="about" aria-labelledby="about-title">
+      <p class="slab__bar mono" aria-hidden="true"><b>00</b> · About</p>
+      <div class="slab__in">
+        <h2 class="title" id="about-title">About <span class="serif">me</span></h2>
+        <div class="about">
+          <figure class="card about__photo" data-reveal>
+            <img src="img/evan-600.jpg" srcset="img/evan-600.jpg 600w, img/evan.jpg 1000w"
+              sizes="(min-width: 1024px) 400px, (min-width: 720px) 420px, calc(100vw - 40px)" width="600" height="803"
+              loading="lazy" decoding="async"
+              alt="Evan Yap smiling, in a navy suit and burgundy tie, standing in an office.">
+          </figure>
+          <div class="about__text" data-reveal>
+            <p class="about__statement">I ship AI agents, then <span class="serif">measure</span> whether they work.</p>
+            <p>I’m an engineering student at SUTD and an AI consultant intern at Univers, one of six TEP scholars working toward a Master’s in Technology Entrepreneurship. I build agents that act on real data, then try to break them.</p>
+            <p>My trading system lets strategies propose and plain code decide: it checks, sizes and risk-limits every order. I tested four ideas for an edge, a Claude agent included. None beat holding the index, so I paused live trading and kept the evidence.</p>
+            <p>I’m looking for AI, software engineering and quant internships, where being right matters more than being fast. For availability, contact me.</p>
+            <dl class="proof">
+              <div><dt>tests across my projects</dt><dd><span data-count>460+</span></dd></div>
+              <div><dt>test messages routed correctly, E.G.O</dt><dd><span data-count>38/39</span></dd></div>
+              <div><dt>of 100 in a corporate website challenge</dt><dd><span data-count>Top 5</span></dd></div>
+              <div><dt>place in a hackathon, V-Bẫy</dt><dd><span data-count>2nd</span></dd></div>
+            </dl>
+            <h3 class="about__things-title mono">Off the clock</h3>
+            <ul class="about__things" data-things>
+              <li data-thing="barbell"><h4>Lifting</h4><p>Powerlifter and certified personal trainer.</p></li>
+              <li data-thing="floorball"><h4>Floorball</h4><p>Captain of SUTD’s men’s team.</p></li>
+              <li data-thing="guitar"><h4>Guitar</h4><p>Worship team guitarist at church.</p></li>
+              <li data-thing="coffee"><h4>Kopi</h4><p>Fuel. Every day.</p></li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="section band work" id="work" aria-labelledby="work-title">
-      <h2 class="title work__title" id="work-title">Selected <span class="serif">work</span></h2>
-      <ul class="work__grid">
-        <li data-reveal><a class="card work__card" id="work-assistant-bot" href="work/assistant-bot.html"
-            aria-labelledby="name-assistant-bot more-assistant-bot">
-            <span class="mono label">Full-stack · 2026</span>
-            <span class="work__figure"><span data-count>97%</span><small>routed correctly</small></span>
-            <h3 class="work__name vt-assistant-bot" id="name-assistant-bot">E.G.O</h3>
-            <p class="work__line">Everything Gets Optimised: a multi-agent personal assistant on Telegram orchestrating financial tracking, calendar scheduling, and daily workflows.</p>
-            <span class="work__more" id="more-assistant-bot">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
-          </a></li>
-        <li data-reveal><a class="card work__card" id="work-trading-agent" href="case-studies/trading-agent.html"
-            aria-labelledby="name-trading-agent more-trading-agent">
-            <span class="mono label">Developer · 2026</span>
-            <span class="work__figure"><span data-count>4</span><small>studies</small></span>
-            <h3 class="work__name vt-trading-agent" id="name-trading-agent">Systematic Trading System</h3>
-            <p class="work__line">Strategies only propose; deterministic code checks every order. Four ideas for an edge, none beat the index.</p>
-            <span class="work__more" id="more-trading-agent">Read the case study <span class="work__arrow" aria-hidden="true">→</span></span>
-          </a></li>
-        <li data-reveal><a class="card work__card" id="work-website-revamp" href="work/website-revamp.html"
-            aria-labelledby="name-website-revamp more-website-revamp">
-            <span class="mono label">Top 5 · Frontend · 2026</span>
-            <span class="work__figure"><span data-count>9</span><small>pages</small></span>
-            <h3 class="work__name vt-website-revamp" id="name-website-revamp">Corporate Website Revamp Challenge</h3>
-            <p class="work__line">Nine pages, no framework, Three.js and seven languages. Top 5 of 100, pitched live to the CEO.</p>
-            <span class="work__more" id="more-website-revamp">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
-          </a></li>
-        <li data-reveal><a class="card work__card" id="work-parallel-match" href="work/parallel-match.html"
-            aria-labelledby="name-parallel-match more-parallel-match">
-            <span class="mono label">Team of 3 · Hackathon · 2026</span>
-            <span class="work__figure"><span data-count>29→15%</span><small>win chance</small></span>
-            <h3 class="work__name vt-parallel-match" id="name-parallel-match">Parallel Match</h3>
-            <p class="work__line">I built the simulator and what-if engine: 500 paired simulations with shared random numbers show what one refereeing call was worth.</p>
-            <span class="work__more" id="more-parallel-match">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
-          </a></li>
-        <li data-reveal><a class="card work__card" id="work-research-agent" href="work/research-agent.html"
-            aria-labelledby="name-research-agent more-research-agent">
-            <span class="mono label">Full-stack · 2026</span>
-            <span class="work__figure"><span data-count>0–100</span><small>rating</small></span>
-            <h3 class="work__name vt-research-agent" id="name-research-agent">Decarbonisation Research Agent</h3>
-            <p class="work__line">Answers only from what it retrieved. A finding that cites a source it never fetched is dropped in code.</p>
-            <span class="work__more" id="more-research-agent">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
-          </a></li>
-        <li data-reveal><a class="card work__card" id="work-v-bay" href="work/v-bay.html"
-            aria-labelledby="name-v-bay more-v-bay">
-            <span class="mono label">2nd place · Strategy · 2026</span>
-            <span class="work__figure"><span data-count>$350M</span><small>TAM</small></span>
-            <h3 class="work__name vt-v-bay" id="name-v-bay">Project V-Bẫy</h3>
-            <p class="work__line">An AI honeypot against voice-phishing rings. I sized the $350M market and built the model.</p>
-            <span class="work__more" id="more-v-bay">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
-          </a></li>
-        <li data-reveal><a class="card work__card" id="work-watchpartyyy" href="work/watchpartyyy.html"
-            aria-labelledby="name-watchpartyyy more-watchpartyyy">
-            <span class="mono label">Developer · Extension · 2026</span>
-            <span class="work__figure"><span data-count>3</span><small>synced controls</small></span>
-            <h3 class="work__name vt-watchpartyyy" id="name-watchpartyyy">WatchPartyyy</h3>
-            <p class="work__line">Pause Netflix and it pauses for your friends too.</p>
-            <span class="work__more" id="more-watchpartyyy">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
-          </a></li>
-        <li data-reveal><a class="card work__card" id="work-others" href="work/others.html"
-            aria-labelledby="name-others more-others">
-            <span class="mono label">Design engineering · 2026</span>
-            <span class="work__figure"><span data-count>Nominated</span><small>best storytelling</small></span>
-            <h3 class="work__name vt-others" id="name-others">Dragon Tiles</h3>
-            <p class="work__line">An outdoor piano sculpture, from CAD to physical prototype.</p>
-            <span class="work__more" id="more-others">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
-          </a></li>
-      </ul>
+    <section class="chapter" id="work" aria-labelledby="work-title">
+      <div class="opener">
+        <div class="opener__bar mono">
+          <div class="opener__where"><span aria-hidden="true">01 · </span><h2 id="work-title">Projects</h2><span aria-hidden="true"> · </span><span id="p-mark">Mark II of VII</span></div>
+          <span id="p-role" data-p>Full-stack · 2026</span>
+        </div>
+        <div class="marks" role="group" aria-label="Choose a project" data-marks></div>
+        <p class="visually-hidden" role="status" id="p-status"></p>
+        <div class="opener__stage">
+          <h3 class="opener__name" id="p-name" data-p>E.G.O</h3>
+          <figure class="opener__suit" data-drift="-0.06" data-tint="4" data-line="40" data-suit='{"model":"mark-7","tone":10232345}'>
+            <img src="img/suit-ii.webp" alt="" width="470" height="850" loading="lazy" decoding="async">
+            <canvas aria-hidden="true"></canvas>
+            <figcaption class="opener__hint mono" aria-hidden="true">Drag to turn</figcaption>
+          </figure>
+          <canvas class="opener__code" aria-hidden="true"></canvas>
+          <p class="stat stat--a" data-drift="-0.14" data-p><b>38/39</b><span>test messages routed correctly</span></p>
+          <p class="stat stat--b" data-drift="-0.12" data-p><b>37</b><span>intents, each with a Zod schema</span></p>
+          <p class="stat stat--c" data-drift="-0.1" data-p><b>~74%</b><span>lower latency than sequential parsing</span></p>
+        </div>
+        <div class="opener__foot">
+          <p id="p-blurb" data-p>A Telegram assistant that turns text, voice notes or photos into actions. A three-model chain tries the cheapest model first.</p>
+          <span class="swatch mono" data-p><i></i><i></i><span id="p-paint">Crimson and gold</span></span>
+        </div>
+      </div>
+
+      <div class="paper">
+        <div class="paper__grid">
+          <div class="paper__head" data-reveal>
+            <div data-p>
+              <span class="mono" id="p-label">II · E.G.O</span>
+              <p class="paper__line" id="p-line">Everything Gets Optimised.</p>
+              <p id="p-sub">Text, a voice note or a photo goes in. An action comes out.</p>
+              <div class="ctas" id="p-links"><a class="cta" href="work/assistant-bot.html">Read the case study <span aria-hidden="true">→</span></a></div>
+            </div>
+          </div>
+          <div data-reveal>
+            <div data-p>
+              <ol class="points" id="p-rows">
+                <li><span class="mono">01</span><h4>A three-model chain</h4><p>The cheapest model is tried first.</p></li>
+                <li><span class="mono">02</span><h4>37 intents</h4><p>Each one is validated by a Zod schema.</p></li>
+                <li><span class="mono">03</span><h4>38 of 39 routed correctly</h4><p>My own set of 39 test messages, November 2026.</p></li>
+                <li><span class="mono">04</span><h4>About 74% lower latency</h4><p>Against sequential parsing: 6 receipts, mean of 3 runs.</p></li>
+              </ol>
+              <ul class="stack" id="p-stack" aria-label="Stack">
+                <li>Next.js</li><li>TypeScript</li><li>Vercel AI SDK</li><li>Claude</li><li>Gemini (voice notes)</li><li>Perplexity Sonar</li><li>Google Cloud Pub/Sub</li><li>Gmail, Sheets and Calendar APIs</li><li>Zod</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- Every project as a plain link: what a browser without the picker
+             shows, and what a crawler follows. The picker hides it. -->
+        <div class="paper__all">
+          <h3 class="paper__all-title mono">All projects</h3>
+          <ul class="work__grid">
+            <li data-reveal><a class="card work__card" id="work-assistant-bot" href="work/assistant-bot.html"
+                aria-labelledby="name-assistant-bot more-assistant-bot">
+                <span class="mono label">Full-stack · 2026</span>
+                <span class="work__figure"><span data-count>97%</span><small>routed correctly</small></span>
+                <h3 class="work__name vt-assistant-bot" id="name-assistant-bot">E.G.O</h3>
+                <p class="work__line">Everything Gets Optimised: a multi-agent personal assistant on Telegram orchestrating financial tracking, calendar scheduling, and daily workflows.</p>
+                <span class="work__more" id="more-assistant-bot">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
+              </a></li>
+            <li data-reveal><a class="card work__card" id="work-trading-agent" href="case-studies/trading-agent.html"
+                aria-labelledby="name-trading-agent more-trading-agent">
+                <span class="mono label">Developer · 2026</span>
+                <span class="work__figure"><span data-count>4</span><small>studies</small></span>
+                <h3 class="work__name vt-trading-agent" id="name-trading-agent">Systematic Trading System</h3>
+                <p class="work__line">Strategies only propose; deterministic code checks every order. Four ideas for an edge, none beat the index.</p>
+                <span class="work__more" id="more-trading-agent">Read the case study <span class="work__arrow" aria-hidden="true">→</span></span>
+              </a></li>
+            <li data-reveal><a class="card work__card" id="work-website-revamp" href="work/website-revamp.html"
+                aria-labelledby="name-website-revamp more-website-revamp">
+                <span class="mono label">Top 5 · Frontend · 2026</span>
+                <span class="work__figure"><span data-count>9</span><small>pages</small></span>
+                <h3 class="work__name vt-website-revamp" id="name-website-revamp">Corporate Website Revamp Challenge</h3>
+                <p class="work__line">Nine pages, no framework, Three.js and seven languages. Top 5 of 100, pitched live to the CEO.</p>
+                <span class="work__more" id="more-website-revamp">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
+              </a></li>
+            <li data-reveal><a class="card work__card" id="work-parallel-match" href="work/parallel-match.html"
+                aria-labelledby="name-parallel-match more-parallel-match">
+                <span class="mono label">Team of 3 · Hackathon · 2026</span>
+                <span class="work__figure"><span data-count>29→15%</span><small>win chance</small></span>
+                <h3 class="work__name vt-parallel-match" id="name-parallel-match">Parallel Match</h3>
+                <p class="work__line">I built the simulator and what-if engine: 500 paired simulations with shared random numbers show what one refereeing call was worth.</p>
+                <span class="work__more" id="more-parallel-match">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
+              </a></li>
+            <li data-reveal><a class="card work__card" id="work-research-agent" href="work/research-agent.html"
+                aria-labelledby="name-research-agent more-research-agent">
+                <span class="mono label">Full-stack · 2026</span>
+                <span class="work__figure"><span data-count>0–100</span><small>rating</small></span>
+                <h3 class="work__name vt-research-agent" id="name-research-agent">Decarbonisation Research Agent</h3>
+                <p class="work__line">Answers only from what it retrieved. A finding that cites a source it never fetched is dropped in code.</p>
+                <span class="work__more" id="more-research-agent">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
+              </a></li>
+            <li data-reveal><a class="card work__card" id="work-v-bay" href="work/v-bay.html"
+                aria-labelledby="name-v-bay more-v-bay">
+                <span class="mono label">2nd place · Strategy · 2026</span>
+                <span class="work__figure"><span data-count>$350M</span><small>TAM</small></span>
+                <h3 class="work__name vt-v-bay" id="name-v-bay">Project V-Bẫy</h3>
+                <p class="work__line">An AI honeypot against voice-phishing rings. I sized the $350M market and built the model.</p>
+                <span class="work__more" id="more-v-bay">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
+              </a></li>
+            <li data-reveal><a class="card work__card" id="work-watchpartyyy" href="work/watchpartyyy.html"
+                aria-labelledby="name-watchpartyyy more-watchpartyyy">
+                <span class="mono label">Developer · Extension · 2026</span>
+                <span class="work__figure"><span data-count>3</span><small>synced controls</small></span>
+                <h3 class="work__name vt-watchpartyyy" id="name-watchpartyyy">WatchPartyyy</h3>
+                <p class="work__line">Pause Netflix and it pauses for your friends too.</p>
+                <span class="work__more" id="more-watchpartyyy">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
+              </a></li>
+            <li data-reveal><a class="card work__card" id="work-others" href="work/others.html"
+                aria-labelledby="name-others more-others">
+                <span class="mono label">Design engineering · 2026</span>
+                <span class="work__figure"><span data-count>Nominated</span><small>best storytelling</small></span>
+                <h3 class="work__name vt-others" id="name-others">Dragon Tiles</h3>
+                <p class="work__line">An outdoor piano sculpture, from CAD to physical prototype.</p>
+                <span class="work__more" id="more-others">Read more <span class="work__arrow" aria-hidden="true">→</span></span>
+              </a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="inter">
+        <p class="inter__line" id="n-line" data-reveal>Answers only from what it <span class="serif">retrieved</span>.</p>
+        <a class="inter__next" href="#work" id="n-link"><span class="mono" id="n-mark">Next project · III</span><strong id="n-name">Decarbonisation Research Agent</strong><span class="mono" aria-hidden="true">Suit up →</span></a>
+      </div>
     </section>
 
-    <section class="section band band--900" id="experience" aria-labelledby="experience-title">
-      <h2 class="title" id="experience-title">My <span class="serif">experience</span></h2>
-      <div class="timeline" data-timeline>
-        <span class="timeline__fill" aria-hidden="true"></span>
-      <ol class="roles">
-        <li class="role" data-reveal data-item="univers">
-          <p class="role__dates mono">Aug 2026 – now</p>
-          <div class="role__who">
-            <h3 class="role__org"><img class="role__logo" src="img/logos/univers.svg" alt="Univers" width="104"
-                height="22"></h3>
-            <p class="role__title">Intern, AI Business Consultant · Aviation, Transportation, Logistics</p>
+    <section class="slab slab--paper" id="experience" aria-labelledby="experience-title">
+      <p class="slab__bar mono" aria-hidden="true"><b>02</b> · Experience</p>
+      <div class="slab__in">
+        <h2 class="title" id="experience-title">My <span class="serif">experience</span></h2>
+        <div class="timeline" data-timeline>
+          <span class="timeline__fill" aria-hidden="true"></span>
+        <ol class="roles">
+          <li class="role" data-reveal data-item="univers">
+            <p class="role__dates mono">Aug 2026 – now</p>
+            <div class="role__who">
+              <h3 class="role__org"><img class="role__logo" src="img/logos/univers.svg" alt="Univers" width="104"
+                  height="22"></h3>
+              <p class="role__title">Intern, AI Business Consultant · Aviation, Transportation, Logistics</p>
+            </div>
+            <ul class="role__points">
+              <li>Built an ESG research agent that checks client sustainability claims against retrieved sources only, and drops in code any finding that cites a page it never fetched. Demoed to the Senior Director, who approved it for further work.</li>
+              <li>Built an HVAC consumption model that estimated a client’s energy use to within 2–3 percentage points of observed ranges, giving the team a defensible baseline for the client’s energy assumptions.</li>
+              <li>Ranked AI and energy-management use cases on impact, data availability, feasibility and effort, and wrote them up as business cases and roadmaps for the Senior Director and clients.</li>
+              <li>Placed Top 5 of 100 in the company’s website revamp challenge and pitched the redesign live to the CEO.</li>
+            </ul>
+          </li>
+          <li class="role" data-reveal data-item="fitness">
+            <p class="role__dates mono">Sept 2024 – Jan 2026</p>
+            <div class="role__who">
+              <h3 class="role__org">EvanYapFitness</h3>
+              <p class="role__title">Founder</p>
+            </div>
+            <ul class="role__points">
+              <li>Grew an online coaching business to 30 paying clients and 2.2k followers, at 10k average views per post.</li>
+              <li>Cut programming time per client by 50% with an AI-assisted workflow.</li>
+            </ul>
+          </li>
+        </ol>
+        <h3 class="roles__earlier mono">Earlier</h3>
+        <ol class="roles roles--earlier">
+          <li class="role" data-reveal data-item="nugget">
+            <p class="role__dates mono">Dec 2024 – Mar 2025</p>
+            <div class="role__who">
+              <h4 class="role__org">The Social Nugget</h4>
+              <p class="role__title">Digital Marketing Intern</p>
+            </div>
+            <p class="role__points">Turned reach, click-through and A/B results into reports that shaped the content calendar.</p>
+          </li>
+        </ol>
+        </div>
+        <div class="honours" data-shelf>
+          <div class="honours__group" id="recognition">
+            <h3 class="honours__tier mono">Awards</h3>
+            <dl class="rows rows--named">
+              <div data-item="top5">
+                <dt>Top 5</dt>
+                <dd>Corporate Website Revamp Challenge, 2026. Pitched live to the CEO.</dd>
+              </div>
+              <div data-item="second">
+                <dt>2nd place</dt>
+                <dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge Hackathon, 2026, with Project V-Bẫy.</dd>
+              </div>
+              <div data-item="nominated">
+                <dt>Nominated</dt>
+                <dd>Best Storytelling and Execution, 03.007 Innovating with Design and AI, for Dragon Tiles.</dd>
+              </div>
+            </dl>
           </div>
-          <ul class="role__points">
-            <li>Built an ESG research agent that checks client sustainability claims against retrieved sources only, and drops in code any finding that cites a page it never fetched. Demoed to the Senior Director, who approved it for further work.</li>
-            <li>Built an HVAC consumption model that estimated a client’s energy use to within 2–3 percentage points of observed ranges, giving the team a defensible baseline for the client’s energy assumptions.</li>
-            <li>Ranked AI and energy-management use cases on impact, data availability, feasibility and effort, and wrote them up as business cases and roadmaps for the Senior Director and clients.</li>
-            <li>Placed Top 5 of 100 in the company’s website revamp challenge and pitched the redesign live to the CEO.</li>
-          </ul>
-        </li>
-        <li class="role" data-reveal data-item="fitness">
-          <p class="role__dates mono">Sept 2024 – Jan 2026</p>
-          <div class="role__who">
-            <h3 class="role__org">EvanYapFitness</h3>
-            <p class="role__title">Founder</p>
+          <div class="honours__group" id="scholarship">
+            <h3 class="honours__tier mono">Scholarship</h3>
+            <dl class="rows rows--named">
+              <div data-item="scholarship">
+                <dt>1 of 6</dt>
+                <dd>SUTD Technology Entrepreneurship Programme Scholarship.</dd>
+              </div>
+            </dl>
           </div>
-          <ul class="role__points">
-            <li>Grew an online coaching business to 30 paying clients and 2.2k followers, at 10k average views per post.</li>
-            <li>Cut programming time per client by 50% with an AI-assisted workflow.</li>
-          </ul>
-        </li>
-      </ol>
-      <h3 class="roles__earlier mono">Earlier</h3>
-      <ol class="roles roles--earlier">
-        <li class="role" data-reveal data-item="nugget">
-          <p class="role__dates mono">Dec 2024 – Mar 2025</p>
-          <div class="role__who">
-            <h4 class="role__org">The Social Nugget</h4>
-            <p class="role__title">Digital Marketing Intern</p>
+          <div class="honours__group" id="certifications">
+            <h3 class="honours__tier mono">Certifications</h3>
+            <dl class="rows rows--named">
+              <div data-item="vertex">
+                <dt><img class="honours__logo" src="img/logos/google-cloud.svg" alt="" width="24" height="24" loading="lazy">Prompt Design in Vertex AI, 2024</dt>
+                <dd>Google Cloud skill badge. <a class="text-link"
+                    href="https://www.credly.com/badges/3ff0ec8a-ee9e-4176-8f15-516fcbd9c2e9" target="_blank"
+                    rel="noopener">Credential <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a
+                      new tab)</span></a></dd>
+              </div>
+              <div data-item="cpt">
+                <dt><img class="honours__logo honours__logo--wide" src="img/logos/ncsf.webp" alt="" width="220" height="84" loading="lazy">Certified Personal Trainer, 2025</dt>
+                <dd>NCCPT-CPT, National Council on Strength and Fitness.</dd>
+              </div>
+            </dl>
           </div>
-          <p class="role__points">Turned reach, click-through and A/B results into reports that shaped the content calendar.</p>
-        </li>
-      </ol>
+          <div class="honours__group" id="education">
+            <h3 class="honours__tier mono">Education</h3>
+            <dl class="rows rows--named">
+              <div data-item="sutd">
+                <dt><img class="honours__logo honours__logo--sutd" src="img/logos/sutd.svg" alt="" width="200" height="78">Singapore University of
+                  Technology and Design</dt>
+                <dd>B.Eng. Engineering Systems and Design and M.Sc. Technology Entrepreneurship, expected May 2030.</dd>
+              </div>
+              <div data-item="vinuni">
+                <dt><img class="honours__logo honours__logo--white" src="img/logos/vinuni.webp" alt="" width="350" height="214" loading="lazy">VinUniversity</dt>
+                <dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge course, May 2026.</dd>
+              </div>
+              <div data-item="vjc">
+                <dt><img class="honours__logo honours__logo--round" src="img/logos/vjc.webp" alt="" width="266" height="266" loading="lazy">Victoria Junior College</dt>
+                <dd>GCE A-Levels, 2021–2022. Vice-captain, boys’ hockey; first runners-up, 2022 National School Games.
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
       </div>
-      <div class="honours" data-shelf>
-        <div class="honours__group" id="recognition">
-          <h3 class="honours__tier mono">Awards</h3>
-          <dl class="rows rows--named">
-            <div data-item="top5">
-              <dt>Top 5</dt>
-              <dd>Corporate Website Revamp Challenge, 2026. Pitched live to the CEO.</dd>
+    </section>
+
+    <section class="slab slab--ink" id="toolkit" aria-labelledby="toolkit-title">
+      <p class="slab__bar mono" aria-hidden="true"><b>03</b> · Toolkit</p>
+      <div class="slab__in">
+        <h2 class="title" id="toolkit-title">My <span class="serif">toolkit</span></h2>
+        <button class="kit__toggle pill" type="button" data-kit-toggle aria-expanded="false" aria-controls="kit-tools" hidden>Show the full toolkit <span aria-hidden="true">↓</span></button>
+        <div class="kit" id="kit-tools">
+          <dl class="rows">
+            <div>
+              <dt class="mono">Languages</dt>
+              <dd>
+                <ul class="tools">
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#python" />
+                    </svg>Python</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#typescript" />
+                    </svg>TypeScript</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#javascript" />
+                    </svg>JavaScript</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#cplusplus" />
+                    </svg>C++</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#c" />
+                    </svg>C</li>
+                  <li>SQL</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#html5" />
+                    </svg>HTML</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#css3" />
+                    </svg>CSS</li>
+                </ul>
+              </dd>
             </div>
-            <div data-item="second">
-              <dt>2nd place</dt>
-              <dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge Hackathon, 2026, with Project V-Bẫy.</dd>
+            <div>
+              <dt class="mono">Frameworks</dt>
+              <dd>
+                <ul class="tools">
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#nextdotjs" />
+                    </svg>Next.js</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#react" />
+                    </svg>React</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#nodedotjs" />
+                    </svg>Node.js</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#tailwindcss" />
+                    </svg>Tailwind CSS</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#threedotjs" />
+                    </svg>Three.js</li>
+                  <li>Vercel AI SDK</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#zod" />
+                    </svg>Zod</li>
+                  <li>FastAPI</li>
+                  <li>Pydantic</li>
+                  <li>REST APIs</li>
+                  <li>OAuth 2.0</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#telegram" />
+                    </svg>Telegram Bot API</li>
+                </ul>
+              </dd>
             </div>
-            <div data-item="nominated">
-              <dt>Nominated</dt>
-              <dd>Best Storytelling and Execution, 03.007 Innovating with Design and AI, for Dragon Tiles.</dd>
+            <div>
+              <dt class="mono">AI and data</dt>
+              <dd>
+                <ul class="tools">
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#anthropic" />
+                    </svg>Claude API</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#googlegemini" />
+                    </svg>Google Gemini</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#perplexity" />
+                    </svg>Perplexity Sonar</li>
+                  <li>LLM agents</li>
+                  <li>Tool calling</li>
+                  <li>Multi-agent orchestration</li>
+                  <li>NumPy</li>
+                  <li>pandas</li>
+                  <li>Walk-forward backtesting</li>
+                  <li>Prompt engineering</li>
+                  <li>Data analysis</li>
+                  <li>Excel and Sheets</li>
+                </ul>
+              </dd>
             </div>
-          </dl>
-        </div>
-        <div class="honours__group" id="scholarship">
-          <h3 class="honours__tier mono">Scholarship</h3>
-          <dl class="rows rows--named">
-            <div data-item="scholarship">
-              <dt>1 of 6</dt>
-              <dd>SUTD Technology Entrepreneurship Programme Scholarship.</dd>
+            <div>
+              <dt class="mono">Cloud and tools</dt>
+              <dd>
+                <ul class="tools">
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#vercel" />
+                    </svg>Vercel</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#git" />
+                    </svg>Git</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#github" />
+                    </svg>GitHub</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#googlecloud" />
+                    </svg>Google Cloud</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#gmail" />
+                    </svg><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#googlecalendar" />
+                    </svg><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#googlesheets" />
+                    </svg>Gmail, Calendar and Sheets APIs</li>
+                </ul>
+              </dd>
             </div>
-          </dl>
-        </div>
-        <div class="honours__group" id="certifications">
-          <h3 class="honours__tier mono">Certifications</h3>
-          <dl class="rows rows--named">
-            <div data-item="vertex">
-              <dt><img class="honours__logo" src="img/logos/google-cloud.svg" alt="" width="24" height="24" loading="lazy">Prompt Design in Vertex AI, 2024</dt>
-              <dd>Google Cloud skill badge. <a class="text-link"
-                  href="https://www.credly.com/badges/3ff0ec8a-ee9e-4176-8f15-516fcbd9c2e9" target="_blank"
-                  rel="noopener">Credential <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a
-                    new tab)</span></a></dd>
+            <div>
+              <dt class="mono">Testing</dt>
+              <dd>
+                <ul class="tools">
+                  <li>Hegel</li>
+                  <li>Bombadil</li>
+                  <li>Property-based testing</li>
+                  <li>pytest</li>
+                  <li>GitHub Actions CI</li>
+                </ul>
+              </dd>
             </div>
-            <div data-item="cpt">
-              <dt><img class="honours__logo honours__logo--wide" src="img/logos/ncsf.webp" alt="" width="220" height="84" loading="lazy">Certified Personal Trainer, 2025</dt>
-              <dd>NCCPT-CPT, National Council on Strength and Fitness.</dd>
-            </div>
-          </dl>
-        </div>
-        <div class="honours__group" id="education">
-          <h3 class="honours__tier mono">Education</h3>
-          <dl class="rows rows--named">
-            <div data-item="sutd">
-              <dt><img class="honours__logo honours__logo--sutd" src="img/logos/sutd.svg" alt="" width="200" height="78">Singapore University of
-                Technology and Design</dt>
-              <dd>B.Eng. Engineering Systems and Design and M.Sc. Technology Entrepreneurship, expected May 2030.</dd>
-            </div>
-            <div data-item="vinuni">
-              <dt><img class="honours__logo honours__logo--white" src="img/logos/vinuni.webp" alt="" width="350" height="214" loading="lazy">VinUniversity</dt>
-              <dd>Entrepreneurial Solutions to Vietnam’s Grand Challenge course, May 2026.</dd>
-            </div>
-            <div data-item="vjc">
-              <dt><img class="honours__logo honours__logo--round" src="img/logos/vjc.webp" alt="" width="266" height="266" loading="lazy">Victoria Junior College</dt>
-              <dd>GCE A-Levels, 2021–2022. Vice-captain, boys’ hockey; first runners-up, 2022 National School Games.
+            <div>
+              <dt class="mono">Design and modelling</dt>
+              <dd>
+                <ul class="tools">
+                  <li>Grasshopper</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#rhinoceros" />
+                    </svg>Rhino 3D</li>
+                  <li><svg class="icon" aria-hidden="true">
+                      <use href="img/icons.svg#blender" />
+                    </svg>Blender</li>
+                  <li>CAD</li>
+                </ul>
               </dd>
             </div>
           </dl>
@@ -354,182 +574,36 @@
       </div>
     </section>
 
-    <section class="section band band--850" id="toolkit" aria-labelledby="toolkit-title">
-      <h2 class="title" id="toolkit-title">My <span class="serif">toolkit</span></h2>
-      <button class="kit__toggle pill" type="button" data-kit-toggle aria-expanded="false" aria-controls="kit-tools" hidden>Show the full toolkit <span aria-hidden="true">↓</span></button>
-      <div class="kit" id="kit-tools">
-        <dl class="rows">
-          <div>
-            <dt class="mono">Languages</dt>
-            <dd>
-              <ul class="tools">
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#python" />
-                  </svg>Python</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#typescript" />
-                  </svg>TypeScript</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#javascript" />
-                  </svg>JavaScript</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#cplusplus" />
-                  </svg>C++</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#c" />
-                  </svg>C</li>
-                <li>SQL</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#html5" />
-                  </svg>HTML</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#css3" />
-                  </svg>CSS</li>
-              </ul>
-            </dd>
-          </div>
-          <div>
-            <dt class="mono">Frameworks</dt>
-            <dd>
-              <ul class="tools">
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#nextdotjs" />
-                  </svg>Next.js</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#react" />
-                  </svg>React</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#nodedotjs" />
-                  </svg>Node.js</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#tailwindcss" />
-                  </svg>Tailwind CSS</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#threedotjs" />
-                  </svg>Three.js</li>
-                <li>Vercel AI SDK</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#zod" />
-                  </svg>Zod</li>
-                <li>FastAPI</li>
-                <li>Pydantic</li>
-                <li>REST APIs</li>
-                <li>OAuth 2.0</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#telegram" />
-                  </svg>Telegram Bot API</li>
-              </ul>
-            </dd>
-          </div>
-          <div>
-            <dt class="mono">AI and data</dt>
-            <dd>
-              <ul class="tools">
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#anthropic" />
-                  </svg>Claude API</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#googlegemini" />
-                  </svg>Google Gemini</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#perplexity" />
-                  </svg>Perplexity Sonar</li>
-                <li>LLM agents</li>
-                <li>Tool calling</li>
-                <li>Multi-agent orchestration</li>
-                <li>NumPy</li>
-                <li>pandas</li>
-                <li>Walk-forward backtesting</li>
-                <li>Prompt engineering</li>
-                <li>Data analysis</li>
-                <li>Excel and Sheets</li>
-              </ul>
-            </dd>
-          </div>
-          <div>
-            <dt class="mono">Cloud and tools</dt>
-            <dd>
-              <ul class="tools">
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#vercel" />
-                  </svg>Vercel</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#git" />
-                  </svg>Git</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#github" />
-                  </svg>GitHub</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#googlecloud" />
-                  </svg>Google Cloud</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#gmail" />
-                  </svg><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#googlecalendar" />
-                  </svg><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#googlesheets" />
-                  </svg>Gmail, Calendar and Sheets APIs</li>
-              </ul>
-            </dd>
-          </div>
-          <div>
-            <dt class="mono">Testing</dt>
-            <dd>
-              <ul class="tools">
-                <li>Hegel</li>
-                <li>Bombadil</li>
-                <li>Property-based testing</li>
-                <li>pytest</li>
-                <li>GitHub Actions CI</li>
-              </ul>
-            </dd>
-          </div>
-          <div>
-            <dt class="mono">Design and modelling</dt>
-            <dd>
-              <ul class="tools">
-                <li>Grasshopper</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#rhinoceros" />
-                  </svg>Rhino 3D</li>
-                <li><svg class="icon" aria-hidden="true">
-                    <use href="img/icons.svg#blender" />
-                  </svg>Blender</li>
-                <li>CAD</li>
-              </ul>
-            </dd>
-          </div>
-        </dl>
+    <section class="slab slab--paper contact" id="contact" aria-labelledby="contact-title">
+      <p class="slab__bar mono" aria-hidden="true"><b>04</b> · Contact</p>
+      <div class="slab__in">
+        <h2 class="title" id="contact-title">Let’s <span class="serif">talk</span></h2>
+        <p class="contact__invite">Hiring for AI, software engineering or quant? Email me and I’ll show you the tests.</p>
+        <p class="contact__email">
+          <a class="contact__address" href="#contact" data-contact-link><span data-contact-text>Email me</span></a>
+          <button class="pill contact__copy" type="button" data-copy hidden>Copy</button>
+          <span class="visually-hidden" role="status" data-copy-status></span>
+        </p>
+        <p class="contact__links">
+          <a class="pill pill--solid" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener"><svg class="icon"
+              aria-hidden="true">
+              <use href="img/icons.svg#line-document" />
+            </svg>Resume <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new
+              tab)</span></a>
+          <a class="pill pill--solid" href="https://github.com/evanyap7" target="_blank" rel="noopener"><svg class="icon"
+              aria-hidden="true">
+              <use href="img/icons.svg#social-github" />
+            </svg>GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+          <a class="pill pill--solid" href="https://www.linkedin.com/in/evanyapzhikai/" target="_blank"
+            rel="noopener"><svg class="icon" aria-hidden="true">
+              <use href="img/icons.svg#social-linkedin" />
+            </svg>LinkedIn <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        </p>
       </div>
-    </section>
-
-    <section class="section band band--light contact" id="contact" aria-labelledby="contact-title">
-      <h2 class="title" id="contact-title">Let’s <span class="serif">talk</span></h2>
-      <p class="contact__invite">Hiring for AI, software engineering or quant? Email me and I’ll show you the tests.</p>
-      <p class="contact__email">
-        <a class="contact__address" href="#contact" data-contact-link><span data-contact-text>Email me</span></a>
-        <button class="pill contact__copy" type="button" data-copy hidden>Copy</button>
-        <span class="visually-hidden" role="status" data-copy-status></span>
-      </p>
-      <p class="contact__links">
-        <a class="pill pill--solid" href="resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener"><svg class="icon"
-            aria-hidden="true">
-            <use href="img/icons.svg#line-document" />
-          </svg>Resume <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new
-            tab)</span></a>
-        <a class="pill pill--solid" href="https://github.com/evanyap7" target="_blank" rel="noopener"><svg class="icon"
-            aria-hidden="true">
-            <use href="img/icons.svg#social-github" />
-          </svg>GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-        <a class="pill pill--solid" href="https://www.linkedin.com/in/evanyapzhikai/" target="_blank"
-          rel="noopener"><svg class="icon" aria-hidden="true">
-            <use href="img/icons.svg#social-linkedin" />
-          </svg>LinkedIn <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-      </p>
     </section>
   </main>
 
-  <footer class="footer band band--light">
+  <footer class="footer">
     <p class="mono">© 2026 Evan Yap</p>
     <a class="wordmark" href="#top" aria-label="Evan Yap, back to top">evan<span class="wordmark__dot">.</span></a>
   </footer>

@@ -1,6 +1,7 @@
 import { CONTACT_EMAIL } from './config.js';
 import { initCopy } from './contact.js';
 import { initCount } from './count.js';
+import { initDeck } from './deck.js';
 import { initFx } from './fx.js';
 import { initGate } from './gate.js';
 import { initHud } from './hud.js';
@@ -9,9 +10,10 @@ import { initKit } from './kit.js';
 import { initLab } from './lab.js';
 import { initMenu } from './menu.js';
 import { initMotion } from './motion.js';
+import { initProjects } from './projects.js';
 import { initReactor } from './reactor.js';
-import { initHall } from './hall.js';
 import { initReveal } from './reveal.js';
+import { initSuit } from './suit.js';
 
 // Every page loads this one script. Each part looks for its own markup and
 // does nothing on a page without it.
@@ -56,5 +58,9 @@ initReveal();
 initMotion();
 initFx();
 initReactor();
-initHall();
+// The suit listens for the picker's choice, so it is set up first: a link to
+// one project picks its Mark as the picker starts.
+initSuit();
+initProjects();
+initDeck();
 initReels();

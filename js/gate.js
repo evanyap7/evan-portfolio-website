@@ -42,7 +42,7 @@ export function initGate() {
   // words, the resume and the email are not: they are the first screen.
   const asleep = [
     ...document.querySelectorAll('.skip-link, .nav, .menu, main > section:not(.hero), .footer'),
-    ...document.querySelectorAll('.reactor__panel'),
+    ...document.querySelectorAll('.reactor__panel, .hero .box__top, .hero .index'),
   ];
   asleep.forEach((el) => { el.inert = true; });
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';

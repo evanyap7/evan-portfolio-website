@@ -1,44 +1,32 @@
-// The scene: a photograph of the workshop fixed behind the whole page, one
-// shot per section. As the visitor scrolls, the section in view brings its
-// shot up over the last one, and each shot pushes in slowly while its
-// section passes. The hero's shot is a short loop of the room breathing
-// (haze drifting, lights flickering), held still until the site wakes.
+// The scene: a photograph of the workshop fixed behind the hero, which
+// pushes in slowly as the hero passes. It is a short loop of the room
+// breathing (haze drifting, lights flickering), held still until the site
+// wakes, paused while a sheet covers the hero (deck.js sends `deck:cover`),
+// and paused for good by the hero's "Pause background" button.
 //
-// Where the browser has WebGL the shots are drawn in depth (scene-gl.js):
-// the camera leans with the pointer, pushes in past near things faster than
-// far ones, and travels from one shot into the next; the reactor is the dark
-// room's only light until the site wakes. The layers built here are then the
-// fallback, and they still carry what lies over the picture: the film grain,
-// the hero's dark pool and About's spots, where each thing in the list
-// lights its object in the photograph.
+// Where the browser has WebGL the shot is drawn in depth (scene-gl.js): the
+// camera leans with the pointer and pushes in past near things faster than
+// far ones; the reactor is the dark room's only light until the site wakes.
+// The layer built here is then the fallback, and it still carries what lies
+// over the picture: the film grain and the hero's dark pool.
 //
 // The head script decides before first paint whether this browser gets the
-// scene (the `lab` class on <html>); without it the page is the plain banded
-// page. Other modules read what this one sets: hud.js reads data-stop, and
-// the reactor (reactor.js, css/reactor.css) steps aside on `door-open`, and
-// `depth` is on <html> while the canvas is the picture.
+// scene (the `lab` class on <html>); without it the page is the plain page.
+// Other modules read what this one sets: the reactor (reactor.js,
+// css/reactor.css) steps aside on `door-open`, and `depth` is on <html>
+// while the canvas is the picture.
 
 import { whenActive } from './gate.js';
 import { createDepthScene, ZOOM } from './scene-gl.js';
 
 const root = document.documentElement;
 
-// Each section's shot. `x` is where a narrow screen's crop is centred: the
-// stills keep their subject right of centre, clear of the words on a wide
-// screen, so a phone leans that way to keep it in frame. `spots` are where
-// each of About's things stands in its photograph, in % of the picture.
+// The hero's shot. `x` is where a narrow screen's crop is centred: the still
+// keeps its subject right of centre, clear of the words on a wide screen, so
+// a phone leans that way to keep it in frame. The other sections are sheets
+// (css/editions.css) and have no shot of their own.
 const SHOTS = [
-  { id: 'top', name: 'hero', x: '78%', video: true },
-  {
-    id: 'about',
-    name: 'about',
-    x: '66%',
-    spots: { barbell: [72, 22], guitar: [82, 58], coffee: [53.5, 60], floorball: [90, 66] },
-  },
-  { id: 'work', name: 'work', x: '74%' },
-  { id: 'experience', name: 'exp', x: '80%' },
-  { id: 'toolkit', name: 'kit', x: '62%' },
-  { id: 'contact', name: 'contact', x: '76%' },
+  { id: 'top', name: 'hero', x: '68%', video: true },
 ];
 const DIR = 'img/scene/';
 // How far a shot has pushed in by the time its section leaves the screen.
@@ -59,14 +47,12 @@ export function initLab() {
   scene.setAttribute('aria-hidden', 'true');
 
   const videos = new Map();
-  const spots = new Map();
   stops.forEach((stop, i) => {
     const layer = document.createElement('div');
     layer.className = 'scene__shot';
     layer.dataset.shot = stop.id;
     layer.style.setProperty('--x', stop.x);
-    // The picture at its own shape, cropped by the screen: whatever stands in
-    // it (the spots) moves with it.
+    // The picture at its own shape, cropped by the screen.
     const frame = document.createElement('div');
     frame.className = 'scene__frame';
     const img = document.createElement('img');
@@ -104,14 +90,6 @@ export function initLab() {
       videos.set(i, video);
       stop.clip = video;
     }
-    Object.entries(stop.spots ?? {}).forEach(([thing, [x, y]]) => {
-      const spot = document.createElement('span');
-      spot.className = 'scene__spot';
-      spot.style.left = `${x}%`;
-      spot.style.top = `${y}%`;
-      frame.append(spot);
-      spots.set(thing, spot);
-    });
     layer.append(frame);
     stop.layer = layer;
     scene.append(layer);
@@ -144,19 +122,6 @@ export function initLab() {
   if (gl) scene.style.setProperty('--zoom', ZOOM);
   else stops.forEach((stop, i) => paint(i));
 
-  // A thing in About's list, pointed at, lights its object in the photograph.
-  document.querySelectorAll('[data-thing]').forEach((item) => {
-    const spot = spots.get(item.dataset.thing);
-    if (!spot) return;
-    item.classList.add('has-spot');
-    const lit = (on) => {
-      spot.classList.toggle('is-lit', on);
-      item.classList.toggle('is-lit', on);
-    };
-    item.addEventListener('pointerenter', () => lit(true));
-    item.addEventListener('pointerleave', () => lit(false));
-  });
-
   // The shot leans away from the pointer, eased (the canvas has its own).
   if (!still && !gl && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
     let tx = 0;
@@ -184,26 +149,46 @@ export function initLab() {
   }
 
   // Each section's place in the page, measured again whenever the layout
-  // changes.
+  // changes. The hero is first and may be pinned (sticky), where its box
+  // says where it is stuck, not where it starts: it starts at the top.
   let places = [];
   const measure = () => {
-    places = stops.map(({ section }) => {
+    places = stops.map(({ section }, i) => {
       const box = section.getBoundingClientRect();
-      return { top: box.top + window.scrollY, height: box.height };
+      return { top: i === 0 ? 0 : box.top + window.scrollY, height: box.height };
     });
   };
 
   let awake = false;
-  // A loop runs only once the site is awake, while its shot is up and the
-  // tab is in view.
+  let covered = false;
+  let held = false;
+  // A loop runs only once the site is awake, while its shot is up, the hero
+  // is not under a sheet, the tab is in view and the visitor has not paused it.
   const play = () => {
     videos.forEach((video, i) => {
-      if (awake && !document.hidden && i === current) video.play().catch(() => {});
+      if (awake && !document.hidden && !covered && !held && i === current) video.play().catch(() => {});
       else video.pause();
     });
     gl?.invalidate();
   };
   videos.forEach((video) => video.addEventListener('playing', () => gl?.invalidate()));
+  document.addEventListener('deck:cover', (event) => {
+    covered = Boolean(event.detail);
+    play();
+  });
+
+  // The hero's own control for the loop: anything that moves on its own for
+  // more than five seconds can be paused.
+  const pause = document.querySelector('[data-scene-pause]');
+  if (pause && videos.size) {
+    pause.hidden = false;
+    pause.addEventListener('click', () => {
+      held = !held;
+      pause.textContent = held ? 'Play background' : 'Pause background';
+      pause.setAttribute('aria-pressed', String(held));
+      play();
+    });
+  }
 
   const update = () => {
     const y = window.scrollY;
