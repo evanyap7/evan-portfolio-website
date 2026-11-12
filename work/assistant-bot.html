@@ -115,11 +115,49 @@
     </svg>
     </figure>
     <div class="rows project__body">
-      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A Telegram assistant that turns text, voice notes or photos into actions. A three-model chain tries the cheapest model first.</p></div></div>
-      <div><h2 class="mono">Stack</h2><p class="stack">Next.js · TypeScript · Vercel AI SDK · Claude · Gemini (voice notes) · Perplexity Sonar · Google Cloud Pub/Sub · Gmail, Sheets and Calendar APIs · Zod</p></div>
+      <div><h2 class="mono">Overview</h2><div class="prose">
+        <p class="project__summary">One Telegram chat that runs my day. I type or send a voice note, and E.G.O logs the expense, books the meeting, coaches the lift and chases the to-do.</p>
+        <p>No app switching and no forms. A message like "log lunch $14 and move my 3pm to 4" becomes two tool calls and one reply, and both changes can be undone.</p>
+      </div></div>
+      <div><h2 class="mono">What it does</h2><dl class="facts">
+        <div><dt>Finance</dt><dd>Apple Pay taps and DBS PayLah! and Grab emails log and categorise themselves. It handles 15+ currencies, bill splitting with an IOU ledger, budgets with pacing alerts and CSV export.</dd></div>
+        <div><dt>Workout coach</dt><dd>Reads today's session from a 90-day powerlifting programme, walks me through it set by set and starts a rest timer after each one. I log with "100 x 5", or swap and drop exercises in plain language.</dd></div>
+        <div><dt>Calendar</dt><dd>Routes events to personal or work, finds free slots, reschedules in plain language and turns a schedule screenshot into up to 30 events, retrying through Google's rate limits.</dd></div>
+        <div><dt>To-dos and briefs</dt><dd>"Remind me to call John" nags every 30 minutes until it is done. There is a morning agenda, an evening recap and a weekly spending report.</dd></div>
+        <div><dt>Email, memory, search</dt><dd>Inbox triage, voice-drafted replies, encrypted notes and web answers with citations.</dd></div>
+      </dl></div>
+      <div><h2 class="mono">How it works</h2><div class="prose">
+        <ol>
+          <li><strong>A fast path first.</strong> Slash commands, buttons, cron jobs and plain "weight x reps" logging skip the model entirely.</li>
+          <li><strong>Haiku classifies.</strong> Anything else goes to the cheapest model to work out what was asked.</li>
+          <li><strong>Sonnet orchestrates.</strong> It picks typed tools for finance, workouts, calendar, to-dos, email and search. Opus is the last resort for hard cases.</li>
+          <li><strong>Tools do the work.</strong> They read and write Google Sheets, Calendar and Gmail, then reply with an undo button.</li>
+        </ol>
+        <p>Voice notes are transcribed by Gemini first and then routed like text. Photos, such as a schedule screenshot, go through the same chain. It runs on Vercel as stateless functions, with state held in Google Sheets and six scheduled jobs for briefs, reminders, the rest timer, recurring items and cleanup.</p>
+      </div></div>
+      <div><h2 class="mono">Decisions and trade-offs</h2><div class="prose"><ul>
+        <li><strong>Skip the model where I can.</strong> Anything predictable is plain code, which is faster and costs nothing.</li>
+        <li><strong>Cheapest model first.</strong> A single Haiku call costs about $0.001 against about $0.021 for Sonnet and $0.042 for Opus, and a credits command warns me at 10% and 5% balance.</li>
+        <li><strong>Safe by design.</strong> A single-user allowlist, verified webhooks, Zod-validated tool inputs, confirmation tokens for destructive actions, soft deletes and an undo on every change.</li>
+        <li><strong>Stateless on purpose.</strong> Keeping state in Google Sheets means cold-start serverless functions are fine and I can inspect or edit my data by hand.</li>
+      </ul></div></div>
+      <div><h2 class="mono">Evidence</h2><div class="prose">
+        <dl class="facts">
+          <div><dt>Routing</dt><dd>38 of 39 messages picked the right tool (97%), re-run on 2 November 2026 against the live models. The miss was "what's the capital of Australia?", which the model answered itself instead of searching.</dd></div>
+          <div><dt>Classifier speed</dt><dd>Median 2.1 seconds over 63 calls, with a 95th percentile of 5.1 seconds.</dd></div>
+          <div><dt>Parallel sync</dt><dd>Parsing 6 receipts in parallel instead of one after another cut the time by about 74% (mean of 3 runs).</dd></div>
+        </dl>
+        <details class="more"><summary>Limits of these numbers</summary>
+          <p>The 39 messages are my own set, not an independent benchmark, and the check is which tool is chosen, not whether the tool then does the right thing. The per-call prices compare single calls on each model; how often a message falls through from Haiku to Sonnet or Opus has not been measured, so I do not claim what the whole chain costs.</p>
+        </details>
+      </div></div>
+      <div><h2 class="mono">How I built it</h2><div class="prose">
+        <p>I built it solo as a full-stack developer, and I used AI coding assistants including Claude Code. The instructions they work from live in the repo, and the tests are how I check their work: there are suites for the orchestrator, workout sessions, bill splitting, calendar batching and memory, plus the routing eval and benchmark scripts.</p>
+      </div></div>
+      <div><h2 class="mono">Stack</h2><p class="stack">Next.js · TypeScript · Vercel AI SDK · Claude (Haiku, Sonnet, Opus) · Gemini (voice notes) · Perplexity Sonar · Google Cloud Pub/Sub · Gmail, Sheets and Calendar APIs · Zod</p></div>
       <div><h2 class="mono">Links</h2><p class="links">
           <a class="pill" href="https://github.com/evanyap7/telegram-personal-assistant" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
-          <a class="pill" href="https://github.com/evanyap7/telegram-personal-assistant/tree/main/scripts" target="_blank" rel="noopener">Benchmarks and tests <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+          <a class="pill" href="https://github.com/evanyap7/telegram-personal-assistant/blob/main/docs/benchmarks.md" target="_blank" rel="noopener">Benchmarks <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
         </p></div>
     </div>
     <a class="card next" href="/case-studies/trading-agent.html">
