@@ -113,9 +113,44 @@
     </svg>
     </figure>
     <div class="rows project__body">
-      <div><h2 class="mono">Overview</h2><div><p class="project__summary">A research tool for Univers’ energy engineers. It answers only from the pages it retrieved, as a cited brief or a verdict on an ESG claim, and drops any finding that cites a source it never fetched.</p></div></div>
+      <div><h2 class="mono">Overview</h2><div class="prose">
+        <p class="project__summary">A research tool for energy engineers and decarbonisation consultants. It answers only from the pages it retrieved, as a cited brief or a verdict on an ESG claim, and drops any finding that cites a source it never fetched.</p>
+        <p>I built it during my internship at Univers. It is live, and anyone can try it without logging in.</p>
+      </div></div>
+      <div><h2 class="mono">What it does</h2><dl class="facts">
+        <div><dt>Facility due diligence</dt><dd>Ask about a client facility and get a cited brief: a summary, findings with a confidence level, and a list of limitations.</dd></div>
+        <div><dt>ESG claim check</dt><dd>Paste a claim and get a verdict (verified, refuted or unverified), a 0 to 100 truth rating, and the evidence for and against.</dd></div>
+        <div><dt>Practice areas</dt><dd>Presets for ports and terminals, HVAC and chiller plants, commercial real estate, SBTi targets, and renewables and microgrids.</dd></div>
+      </dl></div>
+      <div><h2 class="mono">How it works</h2><div class="prose">
+        <ol>
+          <li><strong>Validate.</strong> The question and any URLs are checked with Zod, and private or cloud-metadata addresses are blocked.</li>
+          <li><strong>Find sources.</strong> If I paste URLs, it uses those. If not, it searches the web and research databases, adding official-domain queries for known organisations.</li>
+          <li><strong>Fetch.</strong> It ranks the results and fetches up to five in parallel, reading HTML and PDFs, and keeps the first four readable ones as S1 to S4.</li>
+          <li><strong>Answer from them only.</strong> The model gets those sources as untrusted context and writes the brief or verdict.</li>
+          <li><strong>Check the output.</strong> Any finding that cites an unknown source is dropped in code before it reaches the screen.</li>
+        </ol>
+      </div></div>
+      <div><h2 class="mono">Decisions and trade-offs</h2><div class="prose"><ul>
+        <li><strong>Evidence only.</strong> The grounding rule is enforced in code, not left to the prompt, so a made-up citation cannot reach the reader.</li>
+        <li><strong>Pages are data, not instructions.</strong> Text inside a retrieved page is treated as reference material, and instructions in it are ignored.</li>
+        <li><strong>Bounded.</strong> A 6 second fetch timeout and size caps keep one slow or huge page from stalling an answer.</li>
+        <li><strong>Limitations are part of the schema.</strong> Every response has to say what the evidence does not cover.</li>
+        <li><strong>Free-tier friendly.</strong> It runs on Groq's open model with a Gemini fallback, so the demo costs little to keep live.</li>
+      </ul></div></div>
+      <div><h2 class="mono">What I do not claim</h2><div class="prose">
+        <p>Verdict accuracy and calibration are not measured yet, so this page makes no accuracy claim. The truth rating is the model's judgement, not a calibrated probability. Nothing guarantees a source is official either, which is why the interface lists every source for the reader to judge.</p>
+        <p>An evaluation harness is in the repo, but it needs 40 to 60 claims that I label myself, and none are labelled yet. Until then I check citations by hand from its spot-check list.</p>
+      </div></div>
+      <div><h2 class="mono">What is next</h2><div class="prose">
+        <p>An allowlist mode, the labelled claim set for the evaluation, page caching with freshness timestamps, Markdown and PDF export, and saved history.</p>
+      </div></div>
+      <div><h2 class="mono">How I built it</h2><div class="prose">
+        <p>I built it as the full-stack developer, with AI coding assistants including Claude Code. The tests are how I check their work: they cover source handling, including property-based tests, and the evaluation scoring.</p>
+      </div></div>
       <div><h2 class="mono">Stack</h2><p class="stack">Next.js · React · TypeScript · Tailwind CSS · Vercel AI SDK · Groq (gpt-oss-120b) with Gemini fallback · Zod · Cheerio · pdf-parse</p></div>
       <div><h2 class="mono">Links</h2><p class="links">
+          <a class="pill" href="https://approved-research-agent.vercel.app" target="_blank" rel="noopener">Live demo <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
           <a class="pill" href="https://github.com/evanyap7/ai-research-agent" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
         </p></div>
     </div>
