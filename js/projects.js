@@ -107,7 +107,7 @@ export function initProjects() {
     }));
     $('p-stack').replaceChildren(...p.stack.map((item) => el('li', item)));
     $('p-stack').hidden = !p.stack.length;
-    $('n-line').replaceChildren(next.line[0], el('span', next.line[1], 'serif'), next.line[2]);
+    $('n-line').replaceChildren(next.line.join(''));
     $('n-mark').textContent = `Next project · ${next.mark}`;
     $('n-name').textContent = next.name;
     fig?.classList.toggle('nostill', !p.still);
