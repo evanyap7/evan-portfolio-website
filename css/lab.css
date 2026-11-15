@@ -372,7 +372,7 @@
 
 /* Type on the scene ---------------------------------------------------
    With no panel the words stand on the shot itself: heavy titles in
-   capitals with the one italic serif word, a step under the hero's
+   capitals, a step under the hero's
    headline so the page reads from the top down, and a faint column grid
    over the whole scene. The grid is decoration (aria-hidden); it exists
    only in the lab. */
@@ -388,12 +388,6 @@
   text-align: left;
   text-transform: uppercase;
   text-shadow: 0 0 36px hsl(var(--h) 40% 3% / 0.85), 0 2px 6px hsl(var(--h) 40% 3% / 0.7);
-}
-:root.lab main > .section .title .serif {
-  font-size: 1.04em;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  text-transform: none;
 }
 
 @media (min-width: 1024px) {

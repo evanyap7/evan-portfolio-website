@@ -234,7 +234,7 @@
   .section { --band-pad: 120px; }
 }
 
-/* The section titles: one word in the italic serif. */
+/* The section titles. */
 .title {
   font-size: var(--t-title);
   font-weight: 600;
@@ -242,11 +242,6 @@
   letter-spacing: -0.05em;
   text-align: center;
   overflow-wrap: break-word;
-}
-
-.title .serif {
-  padding-right: 0.04em;
-  letter-spacing: -0.02em;
 }
 
 .title + * {

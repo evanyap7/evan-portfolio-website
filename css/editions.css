@@ -51,7 +51,6 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .box__mid { align-self: end; min-width: 0; padding: var(--pad); padding-bottom: clamp(20px, 3vw, 44px); }
 #top .hero__title { margin: 0 0 0 -0.04em; font: 900 clamp(64px, 13vw, 232px)/0.84 var(--display); letter-spacing: -0.055em; color: var(--text); text-wrap: nowrap; }
 #top .hero__lede { max-width: 18ch; margin: clamp(16px, 2vw, 28px) 0 0; font: 500 clamp(22px, 2.5vw, 38px)/1.12 var(--font-sans); letter-spacing: -0.02em; color: var(--text); }
-#top .hero__lede .serif { font-size: 1.14em; line-height: 0.9; }
 #top .hero__actions { justify-content: flex-start; margin-top: clamp(20px, 2.4vw, 32px); font-size: 17px; }
 
 .index { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--hair); }
@@ -120,7 +119,6 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .slab__in { padding: clamp(56px, 8vw, 120px) var(--pad) calc(var(--air) + var(--sheet)); }
 .slab__in > :not(.title) { max-width: 1280px; }
 .slab .title { font: 900 clamp(44px, 7vw, 112px)/0.9 var(--display); letter-spacing: -0.05em; color: var(--text); text-align: left; text-wrap: balance; }
-.slab .title .serif { font-weight: 400; line-height: 0.8; }
 
 /* About, Experience and Contact on paper -------------------------------- */
 .about__photo { top: 32px; justify-self: start; }
@@ -225,7 +223,6 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 /* Projects: the interlude (dark) ---------------------------------------- */
 .inter { position: relative; z-index: 3; display: grid; gap: clamp(40px, 7vw, 96px); margin-top: calc(-1 * var(--sheet)); padding-top: clamp(96px, 14vw, 220px); padding-bottom: var(--sheet); background: var(--ink); border-radius: var(--sheet) var(--sheet) 0 0; box-shadow: 0 -24px 60px hsl(var(--h) 60% 1% / 0.26); }
 .inter__line { margin: 0; padding-inline: var(--pad); font: 900 clamp(44px, 8.4vw, 150px)/0.9 var(--display); letter-spacing: -0.05em; color: var(--text); text-wrap: balance; }
-.inter__line .serif { font-size: 1.12em; font-weight: 400; line-height: 0.8; }
 .inter__next { display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: baseline; padding: 22px var(--pad); border-block: 1px solid var(--hair-soft); text-decoration: none; color: var(--text-2); transition: background-color 0.25s, color 0.25s; }
 .inter__next:hover, .inter__next:focus-visible { background: var(--text); color: var(--bg); }
 .inter__next strong { font: 500 clamp(22px, 2.4vw, 34px)/1.1 var(--font-sans); letter-spacing: -0.02em; }

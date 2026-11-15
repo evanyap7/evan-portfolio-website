@@ -74,10 +74,6 @@
   text-wrap: balance;
 }
 
-.hero__title .serif {
-  font-size: 1.1em;
-}
-
 .hero__lede {
   max-width: 30em;
   hyphens: none;

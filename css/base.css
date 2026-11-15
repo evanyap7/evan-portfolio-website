@@ -50,7 +50,6 @@
 
   --font-sans: "Instrument Sans", "Instrument Sans Fallback", "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
 
   --nav: 64px;       /* the floating nav's height */
   --nav-top: 16px;   /* its distance from the top of the screen */
@@ -170,17 +169,6 @@ strong, b {
 /* A place focus is handed to (not a control) needs no ring. */
 [tabindex='-1']:focus-visible {
   outline: none;
-}
-
-/* The accent words: one whole word in the italic serif, a touch larger so
-   it sits at the same optical size as the sans around it. */
-.serif {
-  color: var(--accent);
-  font-family: var(--font-serif);
-  font-size: 1.14em;
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: 0;
 }
 
 /* No paragraph ends on one word alone; headings split into even lines. */
