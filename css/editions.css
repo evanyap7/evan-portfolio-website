@@ -88,7 +88,6 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .rail__marks:empty { display: none; }
 .rail__marks button { height: 26px; background: none; border: 0; cursor: pointer; }
 .rail__marks button[aria-pressed="true"] { color: var(--text); box-shadow: inset 0 0 0 1px var(--hair); }
-.rail__year { writing-mode: vertical-rl; rotate: 180deg; font: 500 11px/1 var(--font-mono); letter-spacing: 0.08em; color: var(--muted); }
 .menu { padding-top: calc(var(--bar) + 24px); }
 
 /* Sheets --------------------------------------------------------------- */
@@ -277,7 +276,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 
   .nav.rail { inset: 0 0 auto 0; grid-template-columns: 1fr auto; grid-template-rows: none; align-items: center; justify-items: start; width: auto; height: var(--bar); padding: 0 8px 0 16px; border-right: 0; border-bottom: 1px solid var(--hair-soft); translate: 0 -100%; }
   .rail__name { display: inline-flex; align-items: center; min-height: 44px; padding: 0; writing-mode: horizontal-tb; rotate: none; }
-  .rail__mid, .rail__year { display: none; }
+  .rail__mid { display: none; }
   .nav.rail .nav__menu { justify-self: end; min-height: 44px; padding: 0 16px; font-size: 15px; }
 
   .opener { min-height: 92svh; }
