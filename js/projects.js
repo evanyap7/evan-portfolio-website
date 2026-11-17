@@ -89,7 +89,6 @@ export function initProjects() {
     chapter.style.setProperty('--suit', p.colours[0]);
     chapter.style.setProperty('--suit-2', p.colours[1] || p.colours[0]);
     if (swatches[1]) swatches[1].hidden = !p.colours[1];
-    $('p-label').textContent = `${p.mark} · ${p.name}`;
     $('p-line').textContent = p.line.join('');
     $('p-sub').textContent = p.sub;
     $('p-links').replaceChildren(...p.links.map(([text, href]) => {
@@ -100,9 +99,9 @@ export function initProjects() {
       a.append(arrow);
       return a;
     }));
-    $('p-rows').replaceChildren(...p.rows.map(([head, body], i) => {
+    $('p-rows').replaceChildren(...p.rows.map(([head, body]) => {
       const li = el('li');
-      li.append(el('span', String(i + 1).padStart(2, '0'), 'mono'), el('h4', head), el('p', body));
+      li.append(el('h4', head), el('p', body));
       return li;
     }));
     $('p-stack').replaceChildren(...p.stack.map((item) => el('li', item)));

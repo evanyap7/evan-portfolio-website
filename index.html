@@ -74,11 +74,11 @@
     <a class="rail__name" href="#top" aria-label="Evan Yap, back to top">Evan Yap</a>
     <div class="rail__mid">
       <nav class="nav__links" aria-label="Primary">
-        <a href="#about" title="About"><span aria-hidden="true">00</span><span class="visually-hidden">About</span></a>
-        <a href="#work" title="Projects"><span aria-hidden="true">01</span><span class="visually-hidden">Projects</span></a>
-        <a href="#experience" title="Experience"><span aria-hidden="true">02</span><span class="visually-hidden">Experience</span></a>
-        <a href="#toolkit" title="Toolkit"><span aria-hidden="true">03</span><span class="visually-hidden">Toolkit</span></a>
-        <a href="#contact" title="Contact"><span aria-hidden="true">04</span><span class="visually-hidden">Contact</span></a>
+        <a href="#about">About</a>
+        <a href="#work">Projects</a>
+        <a href="#experience">Experience</a>
+        <a href="#toolkit">Toolkit</a>
+        <a href="#contact">Contact</a>
       </nav>
       <div class="rail__marks" role="group" aria-label="Projects, by Mark" data-rail-marks></div>
     </div>
@@ -137,17 +137,16 @@
           </p>
         </div>
         <ol class="index" aria-label="Sections">
-          <li><a class="index__cell" href="#about"><b>00</b><span>About</span></a></li>
-          <li><a class="index__cell" href="#work"><b>01</b><span>Projects <small>Marks I–VII</small></span></a></li>
-          <li><a class="index__cell" href="#experience"><b>02</b><span>Experience</span></a></li>
-          <li><a class="index__cell" href="#toolkit"><b>03</b><span>Toolkit</span></a></li>
-          <li><a class="index__cell" href="#contact"><b>04</b><span>Contact</span></a></li>
+          <li><a class="index__cell" href="#about"><span>About</span></a></li>
+          <li><a class="index__cell" href="#work"><span>Projects <small>Marks I–VII</small></span></a></li>
+          <li><a class="index__cell" href="#experience"><span>Experience</span></a></li>
+          <li><a class="index__cell" href="#toolkit"><span>Toolkit</span></a></li>
+          <li><a class="index__cell" href="#contact"><span>Contact</span></a></li>
         </ol>
       </div>
     </section>
 
     <section class="slab slab--paper" id="about" aria-labelledby="about-title">
-      <p class="slab__bar mono" aria-hidden="true"><b>00</b> · About</p>
       <div class="slab__in">
         <h2 class="title" id="about-title">About me</h2>
         <div class="about">
@@ -183,7 +182,7 @@
     <section class="chapter" id="work" aria-labelledby="work-title">
       <div class="opener">
         <div class="opener__bar mono">
-          <div class="opener__where"><span aria-hidden="true">01 · </span><h2 id="work-title">Projects</h2><span aria-hidden="true"> · </span><span id="p-mark">Mark II of VII</span></div>
+          <div class="opener__where"><h2 id="work-title">Projects</h2><span aria-hidden="true"> · </span><span id="p-mark">Mark II of VII</span></div>
           <span id="p-role" data-p>Full-stack · 2026</span>
         </div>
         <p class="opener__invite mono">Feel free to browse my projects. I&rsquo;d start with <b>E.G.O</b>.</p>
@@ -211,7 +210,6 @@
         <div class="paper__grid">
           <div class="paper__head" data-reveal>
             <div data-p>
-              <span class="mono" id="p-label">II · E.G.O</span>
               <p class="paper__line" id="p-line">Everything Gets Optimised.</p>
               <p id="p-sub">Text, a voice note or a photo goes in. An action comes out.</p>
               <div class="ctas" id="p-links"><a class="cta" href="work/assistant-bot.html">Read the case study <span aria-hidden="true">→</span></a></div>
@@ -220,10 +218,10 @@
           <div data-reveal>
             <div data-p>
               <ol class="points" id="p-rows">
-                <li><span class="mono">01</span><h4>A three-model chain</h4><p>The cheapest model is tried first.</p></li>
-                <li><span class="mono">02</span><h4>37 intents</h4><p>Each one is validated by a Zod schema.</p></li>
-                <li><span class="mono">03</span><h4>38 of 39 routed correctly</h4><p>My own set of 39 test messages, November 2026.</p></li>
-                <li><span class="mono">04</span><h4>About 74% lower latency</h4><p>Against sequential parsing: 6 receipts, mean of 3 runs.</p></li>
+                <li><h4>A three-model chain</h4><p>The cheapest model is tried first.</p></li>
+                <li><h4>37 intents</h4><p>Each one is validated by a Zod schema.</p></li>
+                <li><h4>38 of 39 routed correctly</h4><p>My own set of 39 test messages, November 2026.</p></li>
+                <li><h4>About 74% lower latency</h4><p>Against sequential parsing: 6 receipts, mean of 3 runs.</p></li>
               </ol>
               <ul class="stack" id="p-stack" aria-label="Stack">
                 <li>Next.js</li><li>TypeScript</li><li>Vercel AI SDK</li><li>Claude</li><li>Gemini (voice notes)</li><li>Perplexity Sonar</li><li>Google Cloud Pub/Sub</li><li>Gmail, Sheets and Calendar APIs</li><li>Zod</li>
@@ -311,7 +309,6 @@
     </section>
 
     <section class="slab slab--paper" id="experience" aria-labelledby="experience-title">
-      <p class="slab__bar mono" aria-hidden="true"><b>02</b> · Experience</p>
       <div class="slab__in">
         <h2 class="title" id="experience-title">My experience</h2>
         <div class="timeline" data-timeline>
@@ -422,7 +419,6 @@
     </section>
 
     <section class="slab slab--ink" id="toolkit" aria-labelledby="toolkit-title">
-      <p class="slab__bar mono" aria-hidden="true"><b>03</b> · Toolkit</p>
       <div class="slab__in">
         <h2 class="title" id="toolkit-title">My toolkit</h2>
         <button class="kit__toggle pill" type="button" data-kit-toggle aria-expanded="false" aria-controls="kit-tools" hidden>Show the full toolkit <span aria-hidden="true">↓</span></button>
@@ -574,7 +570,6 @@
     </section>
 
     <section class="slab slab--paper contact" id="contact" aria-labelledby="contact-title">
-      <p class="slab__bar mono" aria-hidden="true"><b>04</b> · Contact</p>
       <div class="slab__in">
         <h2 class="title" id="contact-title">Let’s talk</h2>
         <p class="contact__invite">Hiring for AI, software engineering or quant? Email me and I’ll show you the tests.</p>

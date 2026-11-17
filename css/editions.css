@@ -55,10 +55,9 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 
 .index { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--hair); }
 .index li + li { border-left: 1px solid var(--hair); }
-.index__cell { display: grid; gap: 22px; align-content: space-between; height: 100%; min-height: 112px; padding: 12px 14px 14px; text-decoration: none; color: var(--text-2); transition: background-color 0.25s, color 0.25s; }
+.index__cell { display: grid; align-content: end; height: 100%; min-height: 112px; padding: 12px 14px 14px; text-decoration: none; color: var(--text-2); transition: background-color 0.25s, color 0.25s; }
 .index__cell:hover, .index__cell:focus-visible { background: var(--text); color: var(--bg); }
 .index__cell:focus-visible, .inter__next:focus-visible { outline-color: var(--bg); outline-offset: -5px; }
-.index b { font: 500 14px/1 var(--font-sans); font-variant-numeric: tabular-nums; }
 .index__cell > span { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; justify-content: space-between; font: 500 clamp(17px, 1.5vw, 22px)/1.15 var(--font-sans); letter-spacing: -0.015em; }
 .index small { font: 400 15px/1.2 var(--font-sans); color: var(--muted); }
 
@@ -80,7 +79,10 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .rail__name { writing-mode: vertical-rl; rotate: 180deg; padding: 6px 12px; font: 900 20px/1 var(--display); letter-spacing: -0.03em; color: var(--text); text-decoration: none; }
 .rail__mid { display: grid; align-content: center; justify-items: center; gap: 12px; }
 .rail .nav__links { display: grid; gap: 2px; font-size: inherit; }
-.rail .nav__links a, .rail__marks button { display: grid; place-items: center; width: 44px; height: 30px; min-height: 0; padding: 0; font: 500 14px/1 var(--font-sans); font-variant-numeric: tabular-nums; color: var(--muted); text-decoration: none; border-radius: 4px; transition: color 0.2s, background-color 0.2s; }
+.rail .nav__links a, .rail__marks button { display: grid; place-items: center; width: 44px; height: 30px; min-height: 0; padding: 0; font: 500 14px/1 var(--font-sans); color: var(--muted); text-decoration: none; border-radius: 4px; transition: color 0.2s, background-color 0.2s; }
+/* The sections by name, set up the rail like its name above them. */
+.rail .nav__links a { width: 32px; height: auto; padding: 10px 0; writing-mode: vertical-rl; rotate: 180deg; }
+@media (max-height: 760px) { .rail .rail__marks { display: none; } }
 .rail .nav__links a:hover, .rail__marks button:hover { color: var(--text); }
 .rail .nav__links a[aria-current="true"] { color: var(--bg); background: var(--text); }
 .rail__marks { display: grid; gap: 2px; padding-top: 12px; border-top: 1px solid var(--hair-soft); }
@@ -114,8 +116,6 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
   color: var(--text-2);
   color-scheme: light;
 }
-.slab__bar { display: flex; gap: 0.6em; margin: 0; padding: 18px var(--pad); border-bottom: 1px solid var(--line); color: var(--dim); }
-.slab__bar b { color: var(--text); font-weight: 500; }
 .slab__in { padding: clamp(56px, 8vw, 120px) var(--pad) calc(var(--air) + var(--sheet)); }
 .slab__in > :not(.title) { max-width: 1280px; }
 .slab .title { font: 900 clamp(44px, 7vw, 112px)/0.9 var(--display); letter-spacing: -0.05em; color: var(--text); text-align: left; text-wrap: balance; }
@@ -200,10 +200,9 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .paper__line { margin: 14px 0 0; font: 900 clamp(40px, 5vw, 80px)/0.92 var(--display); letter-spacing: -0.045em; color: var(--text); text-wrap: balance; }
 #p-sub { max-width: 36ch; margin: 20px 0 0; }
 .points { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--hair-paper); }
-.points li { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 6px 16px; padding: 22px 0 24px; border-bottom: 1px solid var(--hair-paper); }
-.points .mono { padding-top: 7px; }
+.points li { display: grid; gap: 6px; padding: 22px 0 24px; border-bottom: 1px solid var(--hair-paper); }
 .points h4 { margin: 0; font: 600 clamp(21px, 1.9vw, 27px)/1.18 var(--font-sans); letter-spacing: -0.02em; color: var(--text); }
-.points p { grid-column: 2; max-width: 52ch; margin: 0; font-size: 18px; line-height: 1.45; }
+.points p { max-width: 52ch; margin: 0; font-size: 18px; line-height: 1.45; }
 .stack { display: flex; flex-wrap: wrap; gap: 6px; margin: 28px 0 0; padding: 0; list-style: none; }
 .stack[hidden] { display: none; }
 .stack li { padding: 8px 13px; border: 1px solid var(--hair-paper); border-radius: 999px; font: 500 14px/1.2 var(--font-sans); color: var(--text); }
@@ -267,7 +266,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
   .index li:nth-child(-n+2) { border-top: 0; }
   .index li:nth-child(even) { border-left: 1px solid var(--hair); }
   .index li:last-child { grid-column: 1 / -1; }
-  .index__cell { grid-template-columns: 34px 1fr; gap: 8px; align-items: baseline; min-height: 48px; padding: 13px 12px 14px; }
+  .index__cell { min-height: 48px; padding: 13px 12px 14px; }
   .box__top span + span { display: none; }
   .pause { margin: -12px 0; padding: 12px 14px; }
 
@@ -293,7 +292,6 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
   .opener__stage { padding-bottom: 24px; }
   .paper__grid { grid-template-columns: 1fr; }
   .paper__head { position: static; }
-  .points li { grid-template-columns: 40px minmax(0, 1fr); }
   .paper__all .work__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .inter__next { grid-template-columns: auto 1fr; }
   .inter__next span:last-child { display: none; }
