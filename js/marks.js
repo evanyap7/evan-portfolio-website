@@ -54,6 +54,7 @@ export const MARKS = [
     stack: ['Market sizing', 'Stakeholder interviews', 'Financial modelling in Excel', 'B2G and B2B go-to-market'],
     links: [['Read the case study', 'work/v-bay.html']] },
   { mark: 'VII', name: 'Other builds', role: 'Extension · Design engineering · 2026', hue: 218, spec: { model: 'mark-7', paint: { base: 0x1b3a78, accent: 0x8fa3bd, metal: 0.75, rough: 0.38 } }, colours: ['#1b3a78', '#8fa3bd'], paint: 'Navy and steel',
+    art: { file: 'builds.svg', focus: '39% 50%' },
     chips: [['3', 'controls kept in lockstep: play, pause and seek'], ['3', 'extension scripts, each with one job'], ['0', 'video streams touched']],
     blurb: 'WatchPartyyy is a Chrome extension that syncs play, pause and seek for friends watching Netflix together. Dragon Tiles is an oversized interactive outdoor piano sculpture at Sports@Buona Vista.',
     line: ['Pause Netflix and it pauses for your ', 'friends', ' too.'], sub: 'And an outdoor piano sculpture, from CAD to physical prototype.',
