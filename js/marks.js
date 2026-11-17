@@ -46,6 +46,7 @@ export const MARKS = [
     stack: ['Vanilla JavaScript', 'Three.js (WebGL)', 'CSS', 'Web Audio API', 'Vercel serverless functions'],
     links: [['Read the case study', 'work/website-revamp.html']] },
   { mark: 'VI', name: 'Project V-Bẫy', role: '2nd place · Strategy · 2026', hue: 44, spec: { model: 'mark-50', tone: 0x2e2f35, paint: { base: 0x1d1e22, accent: 0xd3a339, metal: 0.7, rough: 0.35 } }, colours: ['#1d1e22', '#d3a339'], paint: 'Black and gold',
+    art: { file: 'vbay.svg', focus: '39% 50%' },
     chips: [['$350M', 'total addressable market by 2027'], ['$7.5M', 'serviceable obtainable market'], ['24–36', 'months to projected break-even']],
     blurb: 'An AI-driven telecom honeypot to expose voice-phishing networks, built for Vietnam’s Grand Challenge Hackathon. I sized the market, built the financial model and pitched four investors.',
     line: ['An AI honeypot against voice-phishing ', 'rings', '.'], sub: 'I sized the $350M market and built the model.',
