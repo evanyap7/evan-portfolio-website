@@ -276,6 +276,8 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
   .opener__bar > span:last-child { display: none; }
   .marks button { place-items: center; align-content: center; min-height: 48px; padding: 0; text-align: center; }
   .marks span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  /* Seven numerals in 320px: edge to edge, so each stays a full thumb wide. */
+  @media (max-width: 359px) { .marks { gap: 0; padding: 0; } }
   .opener__stage { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; place-items: stretch; align-content: start; padding: 32px 16px 16px; }
   .opener__name { grid-column: 1 / -1; }
   .opener__suit { position: relative; left: auto; top: auto; grid-column: 1 / -1; justify-self: center; width: 270px; max-height: none; margin-top: -28px; margin-bottom: -20px; translate: none; }
