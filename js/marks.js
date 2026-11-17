@@ -38,6 +38,7 @@ export const MARKS = [
     stack: ['Python', 'React', 'TypeScript', 'Microsoft Agent Framework', 'Azure AI Foundry', 'MCP', 'Azure Container Apps'],
     links: [['Read the case study', 'work/parallel-match.html']] },
   { mark: 'V', name: 'Corporate Website Revamp Challenge', role: 'Top 5 · Frontend · 2026', hue: 268, spec: { model: 'mark-7-lite', paint: { base: 0x5b2ba3, accent: 0x9aa1ad } }, colours: ['#5b2ba3', '#9aa1ad'], paint: 'Purple and silver',
+    art: { file: 'revamp.svg', focus: '39% 50%' },
     chips: [['Top 5', 'finalist against senior solution architects worldwide'], ['7', 'languages from one custom i18n engine'], ['3', 'executive tools: ROI modeler, ops simulator, live counters']],
     blurb: 'A nine-page interactive redesign of Univers’ website, with no framework and no build step. Top 5 worldwide, pitched live to the CEO.',
     line: ['Nine pages, no ', 'framework', '.'], sub: 'Three.js and seven languages. Top 5 of 100, pitched live to the CEO.',
