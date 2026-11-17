@@ -30,6 +30,7 @@ export const MARKS = [
     stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Vercel AI SDK', 'Groq (gpt-oss-120b) with Gemini fallback', 'Zod', 'Cheerio', 'pdf-parse'],
     links: [['Read the case study', 'work/research-agent.html']] },
   { mark: 'IV', name: 'Parallel Match', role: 'Team of 3 · Hackathon · 2026', hue: 356, spec: { model: 'mark-50', tone: 0xb3141a, paint: { base: 0xda291c, accent: 0x111214, metal: 0.55, rough: 0.4 }, badge: { name: 'crest-mufc', x: 0.12, y: 1.6, size: 0.13 } }, colours: ['#da291c', '#111214'], paint: 'United red and black',
+    art: { file: 'match.svg', focus: '46% 50%' },
     chips: [['15%', 'win chance after removing one penalty (was 29%)'], ['500', 'paired simulations behind each answer'], ['18', 'interface languages, one right to left']],
     blurb: 'Tap a borderline call, such as a penalty, and the screen splits into the real match and a what-if one, with the change in win chance. Every club and player is synthetic.',
     line: ['What one refereeing call was ', 'worth', '.'], sub: 'I built the simulator and what-if engine: 500 paired simulations with shared random numbers.',
