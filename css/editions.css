@@ -139,7 +139,9 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 /* Each Mark brings its paint: the opener's ground and its figures darken
    it, the interlude (the door to the next Mark) wears the next one's whole,
    and they cross-fade when the Mark changes. */
-.opener { position: relative; display: grid; grid-template-rows: auto auto auto 1fr auto; min-height: 100svh; background: color-mix(in oklab, var(--suit) 22%, var(--ink)); overflow: clip; isolation: isolate; transition: background-color 0.6s var(--ease-out); }
+/* One column held to the opener's width: a long name, measured at the last
+   Mark's size, must not widen the stage it is being fitted to. */
+.opener { position: relative; display: grid; grid-template-rows: auto auto auto 1fr auto; grid-template-columns: minmax(0, 1fr); min-height: 100svh; background: color-mix(in oklab, var(--suit) 22%, var(--ink)); overflow: clip; isolation: isolate; transition: background-color 0.6s var(--ease-out); }
 .opener__bar { display: flex; justify-content: space-between; gap: 16px; padding: 18px var(--pad); color: var(--muted); }
 .opener__where > * { display: inline; margin: 0; font: inherit; letter-spacing: inherit; }
 .opener__where h2, #p-mark { color: var(--text); }
