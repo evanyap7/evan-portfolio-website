@@ -22,6 +22,7 @@ export const MARKS = [
     stack: ['Next.js', 'TypeScript', 'Vercel AI SDK', 'Claude', 'Gemini (voice notes)', 'Perplexity Sonar', 'Google Cloud Pub/Sub', 'Gmail, Sheets and Calendar APIs', 'Zod'],
     links: [['Read the case study', 'work/assistant-bot.html']] },
   { mark: 'III', name: 'Decarbonisation Research Agent', role: 'Full-stack · 2026', hue: 152, spec: { model: 'mark-7-lite', paint: { base: 0x0e7a4c, accent: 0xd7a83a } }, colours: ['#0e7a4c', '#d7a83a'], paint: 'Green and gold',
+    art: { file: 'research.svg', focus: '39% 50%' },
     chips: [['2', 'modes: research brief and claim verification'], ['3', 'verdicts, each with a 0–100 truth rating'], ['5', 'preset practice areas, from ports to renewables']],
     blurb: 'A research tool for Univers’ energy engineers. It answers only from the pages it retrieved, as a cited brief or a verdict on an ESG claim, and drops any finding that cites a source it never fetched.',
     line: ['Answers only from what it ', 'retrieved', '.'], sub: 'A finding that cites a source it never fetched is dropped in code.',
