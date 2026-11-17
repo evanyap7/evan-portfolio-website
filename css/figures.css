@@ -86,7 +86,6 @@
   width: 100%;
   height: auto;
   aspect-ratio: 480 / 320;
-  border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--card) radial-gradient(rgba(255, 255, 255, 0.09) 0.8px, transparent 0.8px) 0 0 / 16px 16px;
 }
