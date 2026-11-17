@@ -42,6 +42,8 @@ export function initProjects() {
   const fig = chapter.querySelector('.opener__suit');
   const stats = [...chapter.querySelectorAll('.stat')];
   const swatches = [...chapter.querySelectorAll('.swatch i')];
+  const art = $('p-art');
+  const artImg = art?.querySelector('img');
   let current = FIRST;
   let swapTimer = 0;
 
@@ -91,6 +93,15 @@ export function initProjects() {
     // The interlude carries the next project's line, so it wears its paint.
     chapter.style.setProperty('--suit-next', next.colours[0]);
     if (swatches[1]) swatches[1].hidden = !p.colours[1];
+    // The plate behind the suit, if this Mark has one.
+    if (art && artImg) {
+      art.hidden = !p.art;
+      if (p.art) {
+        const src = `img/art/${p.art.file}`;
+        if (!artImg.src.endsWith(src)) artImg.src = src;
+        artImg.style.objectPosition = p.art.focus || '';
+      }
+    }
     $('p-line').textContent = p.line.join('');
     $('p-sub').textContent = p.sub;
     $('p-links').replaceChildren(...p.links.map(([text, href]) => {

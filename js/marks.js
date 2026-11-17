@@ -2,7 +2,9 @@
 // shows them. Copy and figures are the case studies' own. `spec` is the suit
 // the Hall draws (hall-scene.js), `hue` the tint of the code that forms it,
 // `chips` the three figures on the stage, `line` the tagline in three parts
-// (the middle one is set in the serif).
+// (the middle one is set in the serif). `art` is the plate behind the suit,
+// drawn from the project's own material: its file in img/art and where to
+// centre the crop on a narrow screen.
 export const MARKS = [
   { mark: 'I', name: 'Systematic Trading System', role: 'Developer · 2026', hue: 32, spec: { model: 'mark-1', tone: 0x6b5034 }, colours: ['#6b5034'], paint: 'Raw iron',
     chips: [['279', 'automated tests, run in CI on every push'], ['4', 'ideas tested for an edge'], ['0.65', 'best deflated Sharpe ratio; the bar was about 0.95']],
@@ -11,6 +13,7 @@ export const MARKS = [
     rows: [['279 automated tests', 'Run in CI on every push.'], ['4 ideas tested for an edge', 'Each against holding the index.'], ['0.65 deflated Sharpe ratio', 'The best across the classic quant signals, against a bar of about 0.95.']],
     stack: [], links: [['Read the case study', 'case-studies/trading-agent.html']] },
   { mark: 'II', name: 'E.G.O', role: 'Full-stack · 2026', hue: 4, spec: { model: 'mark-7', tone: 0x9c2219 }, colours: ['#9c2219', 'hsl(42 62% 55%)'], paint: 'Crimson and gold', still: true,
+    art: { file: 'ego.svg', focus: '0% 50%' },
     chips: [['38/39', 'test messages routed correctly'], ['37', 'intents, each with a Zod schema'], ['~74%', 'lower latency than sequential parsing']],
     blurb: 'A Telegram assistant that turns text, voice notes or photos into actions. A three-model chain tries the cheapest model first.',
     line: ['Everything Gets ', 'Optimised', '.'], sub: 'Text, a voice note or a photo goes in. An action comes out.',
