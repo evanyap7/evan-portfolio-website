@@ -27,7 +27,6 @@
 :root.lab .about__photo img {
   display: block;
   border-radius: inherit;
-  box-shadow: 0 40px 80px -40px hsl(0 0% 0% / 0.85), 0 0 0 1px hsl(0 0% 100% / 0.1);
 }
 
 /* The wipe-in no longer clips the ring and readouts that stand outside the

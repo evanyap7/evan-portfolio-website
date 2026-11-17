@@ -298,19 +298,18 @@
   a.card:hover { border-color: var(--line-2); }
 }
 
-/* Hairline rows ----------------------------------------------------- */
-/* A label column beside its value, one row per fact. */
-.rows {
-  border-top: 1px solid var(--line);
-}
-
+/* Rows --------------------------------------------------------------- */
+/* A label column beside its value, one row per fact, set apart by space. */
 .rows > div,
 .rows > li {
   display: grid;
   grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
   gap: 8px 32px;
-  padding: 24px 0;
-  border-bottom: 1px solid var(--line);
+  padding: 28px 0;
+}
+
+.rows > :first-child {
+  padding-top: 0;
 }
 
 .rows dt.mono {
