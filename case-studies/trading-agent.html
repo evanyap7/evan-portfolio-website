@@ -32,7 +32,7 @@
 
   <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
 </head>
-<body>
+<body data-mark="i">
   <a class="skip-link" href="#main">Skip to content</a>
   <span class="progress" aria-hidden="true" data-progress></span>
 
@@ -71,12 +71,12 @@
       <h1 class="project__title vt-trading-agent case__title">I built a trading system, tested four ideas for an edge, and found none.</h1>
       <p class="mono label">Case study · Systematic Trading System · Python</p>
       <p class="project__lede">A trading system for a small Webull Singapore account, where no model can size or place an order. I tested four ideas for an edge on it, including a Claude agent. None beat holding the S&amp;P 500, so I paused live trading with the kill switch.</p>
+      <dl class="stats">
+        <div><dt>Automated tests, run in CI on every push</dt><dd><span data-count>279</span></dd></div>
+        <div><dt>Ideas tested for an edge, each against holding the index</dt><dd><span data-count>4</span></dd></div>
+        <div><dt>Best deflated Sharpe ratio across the classic quant signals, against a bar of about 0.95</dt><dd><span data-count>0.65</span></dd></div>
+      </dl>
     </header>
-    <dl class="stats">
-      <div><dt>Automated tests, run in CI on every push</dt><dd><span data-count>279</span></dd></div>
-      <div><dt>Ideas tested for an edge, each against holding the index</dt><dd><span data-count>4</span></dd></div>
-      <div><dt>Best deflated Sharpe ratio across the classic quant signals, against a bar of about 0.95</dt><dd><span data-count>0.65</span></dd></div>
-    </dl>
     <figure class="card reel project__figure" data-reel="ledger">
     <figcaption class="reel__bar">
     <span class="reel__name">Idea to ledger</span>
@@ -229,9 +229,8 @@
       </p>
   <p class="case__fine">An engineering project, not investment advice. Backtest results do not predict live performance.</p>
     </article>
-    <a class="card next" href="/work/research-agent.html">
-      <span class="mono label">Next project</span>
-      <span class="next__title">Decarbonisation Research Agent <span aria-hidden="true">→</span></span>
+    <a class="next" data-mark="iii" href="/work/research-agent.html">
+      <span class="next__title"><span><span class="next__pre">Next</span> Decarbonisation Research Agent</span> <span aria-hidden="true">→</span></span>
     </a>
   </main>
 

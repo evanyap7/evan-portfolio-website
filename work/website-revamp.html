@@ -31,7 +31,7 @@
 
   <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
 </head>
-<body>
+<body data-mark="v">
 
   <a class="skip-link" href="#main">Skip to content</a>
   <span class="progress" aria-hidden="true" data-progress></span>
@@ -69,16 +69,17 @@
     <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
     <header class="project__head">
       <h1 class="project__title vt-website-revamp">Corporate Website Revamp Challenge</h1>
+      <p class="project__lede">A nine-page interactive redesign of Univers’ website, built with no framework and no build step.</p>
       <p class="mono label">Top 5 · Frontend developer · Sept 2026</p>
+      <dl class="stats">
+        <div><dt>Finalist against senior solution architects worldwide</dt><dd><span data-count>Top 5</span></dd></div>
+        <div><dt>Languages from one custom i18n engine</dt><dd><span data-count>7</span></dd></div>
+        <div><dt>Executive tools: ROI modeler, ops simulator, live counters</dt><dd><span data-count>3</span></dd></div>
+      </dl>
     </header>
-    <dl class="stats">
-      <div><dt>Finalist against senior solution architects worldwide</dt><dd><span data-count>Top 5</span></dd></div>
-      <div><dt>Languages from one custom i18n engine</dt><dd><span data-count>7</span></dd></div>
-      <div><dt>Executive tools: ROI modeler, ops simulator, live counters</dt><dd><span data-count>3</span></dd></div>
-    </dl>
     <figure class="card reel project__figure">
       <figcaption class="reel__bar"><span class="reel__name">Homepage, branding redacted</span></figcaption>
-      <div class="reel__scene reel__scene--plate"><img src="/img/previews/website-revamp.webp" width="1440" height="900" loading="lazy" decoding="async" alt="A redesigned corporate homepage with a large headline beside a live operations dashboard. Company branding is redacted."></div>
+      <div class="reel__scene reel__scene--plate"><img src="/img/previews/website-revamp.webp" width="1440" height="900" decoding="async" alt="A redesigned corporate homepage with a large headline beside a live operations dashboard. Company branding is redacted."></div>
     </figure>
     <div class="rows project__body">
       <div><h2 class="mono">Overview</h2><div class="prose">
@@ -116,9 +117,8 @@
           <a class="pill" href="https://github.com/evanyap7/univers-homepage-revamp" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
         </p></div>
     </div>
-    <a class="card next" href="/work/parallel-match.html">
-      <span class="mono label">Next project</span>
-      <span class="next__title">Parallel Match <span aria-hidden="true">→</span></span>
+    <a class="next" data-mark="iv" href="/work/parallel-match.html">
+      <span class="next__title"><span><span class="next__pre">Next</span> Parallel Match</span> <span aria-hidden="true">→</span></span>
     </a>
   </main>
 
