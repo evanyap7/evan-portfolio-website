@@ -481,8 +481,11 @@
   display: grid;
   gap: 7px;
   color: var(--text-2);
-  font-size: 11px;
+  /* The one HUD moment left: the suit's boot lines, typed as the room wakes. */
+  font-family: var(--font-mono);
+  font-size: 12px;
   letter-spacing: 0.18em;
+  text-transform: uppercase;
   text-shadow: 0 0 12px hsl(var(--h) 40% 3% / 0.9);
   pointer-events: none;
   transition: opacity 500ms ease;

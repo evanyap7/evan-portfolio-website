@@ -58,9 +58,9 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .index__cell { display: grid; gap: 22px; align-content: space-between; height: 100%; min-height: 112px; padding: 12px 14px 14px; text-decoration: none; color: var(--text-2); transition: background-color 0.25s, color 0.25s; }
 .index__cell:hover, .index__cell:focus-visible { background: var(--text); color: var(--bg); }
 .index__cell:focus-visible, .inter__next:focus-visible { outline-color: var(--bg); outline-offset: -5px; }
-.index b { font: 500 13px/1 var(--font-mono); letter-spacing: 0.08em; }
+.index b { font: 500 14px/1 var(--font-sans); font-variant-numeric: tabular-nums; }
 .index__cell > span { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; justify-content: space-between; font: 500 clamp(17px, 1.5vw, 22px)/1.15 var(--font-sans); letter-spacing: -0.015em; }
-.index small { font: 500 12px/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.index small { font: 400 15px/1.2 var(--font-sans); color: var(--muted); }
 
 /* Behind the gate the hero is the name and the reactor: the box's frame, its
    label bar and the index arrive with the rest of the page. */
@@ -80,7 +80,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .rail__name { writing-mode: vertical-rl; rotate: 180deg; padding: 6px 12px; font: 900 20px/1 var(--display); letter-spacing: -0.03em; color: var(--text); text-decoration: none; }
 .rail__mid { display: grid; align-content: center; justify-items: center; gap: 12px; }
 .rail .nav__links { display: grid; gap: 2px; font-size: inherit; }
-.rail .nav__links a, .rail__marks button { display: grid; place-items: center; width: 44px; height: 30px; min-height: 0; padding: 0; font: 500 12px/1 var(--font-mono); letter-spacing: 0.06em; color: var(--muted); text-decoration: none; border-radius: 4px; transition: color 0.2s, background-color 0.2s; }
+.rail .nav__links a, .rail__marks button { display: grid; place-items: center; width: 44px; height: 30px; min-height: 0; padding: 0; font: 500 14px/1 var(--font-sans); font-variant-numeric: tabular-nums; color: var(--muted); text-decoration: none; border-radius: 4px; transition: color 0.2s, background-color 0.2s; }
 .rail .nav__links a:hover, .rail__marks button:hover { color: var(--text); }
 .rail .nav__links a[aria-current="true"] { color: var(--bg); background: var(--text); }
 .rail__marks { display: grid; gap: 2px; padding-top: 12px; border-top: 1px solid var(--hair-soft); }
@@ -149,7 +149,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .marks button { display: grid; gap: 10px; align-content: space-between; min-width: 0; min-height: 70px; padding: 11px 12px 12px; text-align: left; font: inherit; color: var(--muted); background: none; border: 0; border-left: 1px solid var(--hair-soft); cursor: pointer; transition: background-color 0.25s, color 0.25s; }
 .marks button:first-child { border-left: 0; }
 .marks button:focus-visible { outline-offset: -3px; }
-.marks b { font: 500 13px/1 var(--font-mono); letter-spacing: 0.08em; }
+.marks b { font: 600 15px/1 var(--font-sans); }
 .marks span { font: 500 14px/1.15 var(--font-sans); letter-spacing: -0.01em; overflow-wrap: break-word; }
 .marks button:hover { color: var(--text); background: hsl(var(--h) 60% 85% / 0.07); }
 .marks button[aria-pressed="true"] { color: var(--bg); background: var(--text); }
@@ -170,16 +170,16 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .opener__suit.live:active { cursor: grabbing; }
 .opener__suit.live canvas { opacity: 1; }
 .opener__suit.live img, .opener__suit.forming img, .opener__suit.nostill img { opacity: 0; }
-.opener__invite { margin: 0; padding: 14px var(--pad); line-height: 1.5; color: var(--muted); font-size: 12px; letter-spacing: 0.04em; text-wrap: balance; border-bottom: 1px solid var(--hair-soft); }
+.opener__invite { margin: 0; padding: 14px var(--pad); line-height: 1.5; color: var(--muted); font-size: 15px; text-wrap: balance; border-bottom: 1px solid var(--hair-soft); }
 .opener__invite b { color: var(--text); font-weight: 600; }
-.opener__hint { position: absolute; left: 50%; bottom: 3%; margin: 0; translate: -50% 0; white-space: nowrap; color: var(--muted); font-size: 11px; opacity: 0; transition: opacity 0.5s; pointer-events: none; }
+.opener__hint { position: absolute; left: 50%; bottom: 3%; margin: 0; translate: -50% 0; white-space: nowrap; color: var(--muted); font-size: 14px; opacity: 0; transition: opacity 0.5s; pointer-events: none; }
 .opener__suit.live .opener__hint { opacity: 1; }
 .opener__suit.turned .opener__hint { opacity: 0; }
 /* The code that flies in and becomes the suit, across the whole stage. */
 .opener__code { position: absolute; inset: 0; z-index: 1; display: block; width: 100%; height: 100%; pointer-events: none; }
 .stat { position: absolute; z-index: 2; display: grid; gap: 4px; min-width: 168px; max-width: 250px; margin: 0; padding: 14px 16px 15px; background: hsl(var(--h) 30% 8%); border: 1px solid var(--hair); border-radius: 10px; color: var(--muted); box-shadow: 0 24px 60px hsl(var(--h) 60% 2% / 0.6); }
 .stat b { font: 900 clamp(30px, 3.4vw, 50px)/0.95 var(--display); letter-spacing: -0.04em; color: var(--text); }
-.stat span { font: 500 12px/1.3 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; }
+.stat span { font: 400 15px/1.3 var(--font-sans); }
 .stat--a { left: 12%; top: 14%; }
 .stat--b { right: 6%; top: 13%; }
 .stat--c { left: 18%; bottom: 10%; }
@@ -285,7 +285,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
   .opener__suit { position: relative; left: auto; top: auto; grid-column: 1 / -1; justify-self: center; width: 270px; max-height: none; margin-top: -28px; margin-bottom: -20px; translate: none; }
   .stat { position: static; align-content: start; min-width: 0; max-width: none; padding: 10px 12px 11px; box-shadow: none; }
   .stat b { font-size: 26px; }
-  .stat span { font-size: 11px; letter-spacing: 0.02em; }
+  .stat span { font-size: 14px; }
   /* One thing at a time: the figures and the blurb are the first lines of the
      sheet right below, so the opener keeps only the picker, the name and the suit. */
   .opener .stat, .opener__foot { display: none; }

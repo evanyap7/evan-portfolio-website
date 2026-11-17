@@ -26,12 +26,9 @@
   gap: 12px;
   min-height: 28px;
   padding: 0 4px;
-  color: var(--dim);
-  font-family: var(--font-mono);
-  font-size: var(--t-mono);
+  color: var(--muted);
+  font-size: var(--t-small);
   line-height: 1.4;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
 
 .reel__name {
@@ -181,11 +178,8 @@
 
 .reel__text--note {
   fill: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 400;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .reel__text--note.reel__text--bad { fill: var(--text); }

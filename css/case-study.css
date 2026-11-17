@@ -120,12 +120,9 @@
 }
 
 .flow__label {
-  color: var(--dim);
-  font-family: var(--font-mono);
-  font-size: var(--t-mono);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
 }
 
 .flow__steps {
@@ -186,12 +183,9 @@
 }
 
 .case__table thead th {
-  color: var(--dim);
-  font-family: var(--font-mono);
-  font-size: var(--t-mono);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: var(--muted);
+  font-size: var(--t-small);
+  font-weight: 500;
 }
 
 .case__table tbody th {

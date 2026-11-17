@@ -226,14 +226,15 @@ h1, h2, h3, h4 {
   fill: currentColor;
 }
 
-/* Labels, dates and small print. */
+/* Labels, dates and small print: the text face, in sentence case. The class
+   keeps its old name so the markup does not churn. */
 .mono {
-  font-family: var(--font-mono);
-  font-size: var(--t-mono);
+  font-family: var(--font-sans);
+  font-size: var(--t-small);
   font-weight: 400;
   line-height: 1.5;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .label {
