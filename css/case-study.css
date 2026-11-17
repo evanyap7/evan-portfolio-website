@@ -33,9 +33,7 @@
 }
 
 .case__body h2 {
-  margin-top: 80px;
-  padding-top: 28px;
-  border-top: 1px solid var(--line);
+  margin-top: 104px;
   font-size: 34px;
   font-weight: 600;
   line-height: 1.2;
@@ -60,9 +58,8 @@
 
 .case__body code {
   padding: 1px 6px;
-  border: 1px solid var(--line);
   border-radius: 6px;
-  background: var(--card);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text);
   font-family: var(--font-mono);
   font-size: 0.86em;
@@ -114,7 +111,6 @@
 
 .flow__lane {
   padding: 18px 20px;
-  border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--card);
 }
@@ -143,15 +139,16 @@
   color: var(--dim);
 }
 
+/* Steps are filled chips; the one model step takes the signal blue. */
 .flow__step {
   padding: 4px 12px;
-  border: 1px solid var(--line-2);
   border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
   font-size: var(--t-small);
 }
 
 .flow__step--model {
-  border-color: var(--signal);
+  background: color-mix(in oklab, var(--signal) 22%, transparent);
   color: var(--signal);
 }
 
@@ -159,7 +156,6 @@
   margin-top: 24px;
   overflow-x: auto;
   padding: 8px;
-  border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--card);
 }
