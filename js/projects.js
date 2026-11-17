@@ -88,6 +88,8 @@ export function initProjects() {
     $('p-paint').textContent = p.paint;
     chapter.style.setProperty('--suit', p.colours[0]);
     chapter.style.setProperty('--suit-2', p.colours[1] || p.colours[0]);
+    // The interlude carries the next project's line, so it wears its paint.
+    chapter.style.setProperty('--suit-next', next.colours[0]);
     if (swatches[1]) swatches[1].hidden = !p.colours[1];
     $('p-line').textContent = p.line.join('');
     $('p-sub').textContent = p.sub;
