@@ -7,6 +7,7 @@
 // centre the crop on a narrow screen.
 export const MARKS = [
   { mark: 'I', name: 'Systematic Trading System', role: 'Developer · 2026', hue: 32, spec: { model: 'mark-1', tone: 0x6b5034 }, colours: ['#6b5034'], paint: 'Raw iron',
+    art: { file: 'trading.svg', focus: '37% 50%' },
     chips: [['279', 'automated tests, run in CI on every push'], ['4', 'ideas tested for an edge'], ['0.65', 'best deflated Sharpe ratio; the bar was about 0.95']],
     blurb: 'A trading system for a small Webull Singapore account, where no model can size or place an order. I tested four ideas for an edge on it, including a Claude agent. None beat holding the S&P 500, so I paused live trading with the kill switch.',
     line: ['Four ideas for an edge. ', 'None', ' beat the index.'], sub: 'Strategies only propose; deterministic code checks every order.',
