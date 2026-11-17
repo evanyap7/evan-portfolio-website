@@ -243,11 +243,19 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 8px 24px;
-  font-size: clamp(36px, 7vw, 96px);
+  font-size: clamp(32px, 7vw, 96px);
   font-weight: 600;
   line-height: 1.02;
   letter-spacing: -0.04em;
   text-wrap: balance;
+}
+
+/* A long name breaks rather than push the arrow off a narrow screen. */
+.next__title > :first-child {
+  min-width: 0;
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .next__pre {
@@ -287,6 +295,10 @@
   .stats > div:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
   .project__lede { font-size: 20px; }
+
+  /* A name too long for one line takes the width; the arrow drops below it. */
+  .next__title { flex-wrap: wrap; }
+  .next__title > [aria-hidden] { margin-left: auto; }
 
   .stats dd {
     font-size: 40px;
