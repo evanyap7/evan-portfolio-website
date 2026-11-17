@@ -455,7 +455,11 @@ html {
 @media (min-width: 1024px) {
   :root.lab:is(.gated, .gate-ready) .hero {
     --core: clamp(220px, 24vw, 360px);
-    --reactor-x: calc(50% + (min(100%, var(--wide)) - 2 * var(--gutter)) * 0.3);
+    /* The ring (about 0.44 of --core across its radius) ends as far in from
+       the right as the name starts from the left: the box's inset plus its
+       padding, both --pad (editions.css). On a smaller screen the hint under
+       it is the wider of the two (about 284px), and it keeps that margin. */
+    --reactor-x: calc(100% - 2 * var(--pad) - max(var(--core) * 0.44, 142px));
   }
 
   :root.lab:is(.gated, .gate-ready) .reactor {
