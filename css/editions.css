@@ -250,6 +250,19 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
   #top { position: sticky; top: 0; }
   .opener { position: sticky; top: 0; height: 100svh; }
 }
+/* The track (projects.js marks the page `marks-track` on such a screen):
+   one sheet per Mark, each sliding up over the pinned opener. While a sheet
+   covers it the opener changes to the next Mark, which the gap after the
+   sheet then shows whole for a moment (--dwell) before the next sheet comes.
+   A sheet is a little taller than the screen, so the change has room to
+   happen out of sight. */
+.paper--more, .paper__mark { display: none; }
+.marks-track .paper__mark { display: block; }
+.marks-track #work { --dwell: 40vh; }
+.marks-track #work .paper { min-height: 124vh; border-radius: var(--sheet); }
+.marks-track #work .paper:not(.paper--more) { margin-top: var(--dwell); }
+.marks-track #work .paper--more { display: block; margin-top: calc(100vh + var(--dwell)); }
+.marks-track #work .inter { display: none; }
 
 /* Wide: the rail stands at the left, and the sheets clear it ------------- */
 @media (min-width: 1024px) {

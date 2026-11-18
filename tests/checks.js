@@ -328,7 +328,8 @@ export async function deepLink(win) {
   }
   const want = MARK_OF[key];
   const button = doc.querySelector(`#work .marks button[data-mark="${want}"]`);
-  const top = doc.getElementById('work').getBoundingClientRect().top;
+  // The opener, not the chapter: on the track a Mark's place is far down it.
+  const top = doc.querySelector('#work .opener').getBoundingClientRect().top;
   return [
     result(`#${id} picks Mark ${want + 1}`, button?.getAttribute('aria-pressed') === 'true', button?.textContent.trim()),
     result(`#${id} lands on Projects`, top > -2 && top < win.innerHeight / 2, `top ${Math.round(top)}`),
