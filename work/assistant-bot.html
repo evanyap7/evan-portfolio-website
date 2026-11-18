@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>E.G.O | Evan Yap</title>
-  <meta name="description" content="E.G.O, Everything Gets Optimised: an autonomous multi-agent personal assistant on Telegram. An event-driven architecture orchestrating expenses, calendars, workouts, bill splitting and email from text, voice notes or photos. A three-model chain tries the cheapest model first.">
+  <meta name="description" content="E.G.O, Everything Gets Optimised: an autonomous multi-agent personal assistant on Telegram. An event-driven architecture orchestrating expenses, calendars, workouts, bill splitting and email from text, voice notes or photos, and lets friends book my free time. A three-model chain tries the cheapest model first.">
   <meta name="theme-color" content="#04070a">
   <meta property="og:title" content="E.G.O | Evan Yap">
-  <meta property="og:description" content="E.G.O, Everything Gets Optimised: an autonomous multi-agent personal assistant on Telegram. An event-driven architecture orchestrating expenses, calendars, workouts, bill splitting and email from text, voice notes or photos. A three-model chain tries the cheapest model first.">
+  <meta property="og:description" content="E.G.O, Everything Gets Optimised: an autonomous multi-agent personal assistant on Telegram. An event-driven architecture orchestrating expenses, calendars, workouts, bill splitting and email from text, voice notes or photos, and lets friends book my free time. A three-model chain tries the cheapest model first.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.evanyap.com/work/assistant-bot">
   <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
@@ -124,6 +124,7 @@
         <div><dt>Finance</dt><dd>Apple Pay taps and DBS PayLah! and Grab emails log and categorise themselves. It handles 15+ currencies, bill splitting with an IOU ledger, budgets with pacing alerts and CSV export.</dd></div>
         <div><dt>Workout coach</dt><dd>Reads today's session from a 90-day powerlifting programme, walks me through it set by set and starts a rest timer after each one. I log with "100 x 5", or swap and drop exercises in plain language.</dd></div>
         <div><dt>Calendar</dt><dd>Routes events to personal or work, finds free slots, reschedules in plain language and turns a schedule screenshot into up to 30 events, retrying through Google's rate limits.</dd></div>
+        <div><dt>Friend scheduling</dt><dd>Friends can message the bot to ask when I'm free and request a slot. I get an Approve or Decline button, and an approved slot goes straight into my calendar. They only ever see free time, never what I'm busy with. The model reads their message but never my calendar, and code computes the slots from start and end times alone.</dd></div>
         <div><dt>To-dos and briefs</dt><dd>"Remind me to call John" nags every 30 minutes until it is done. There is a morning agenda, an evening recap and a weekly spending report.</dd></div>
         <div><dt>Email, memory, search</dt><dd>Inbox triage, voice-drafted replies, encrypted notes and web answers with citations.</dd></div>
       </dl></div>
@@ -139,7 +140,7 @@
       <div><h2 class="mono">Decisions and trade-offs</h2><div class="prose"><ul>
         <li><strong>Skip the model where I can.</strong> Anything predictable is plain code, which is faster and costs nothing.</li>
         <li><strong>Cheapest model first.</strong> A single Haiku call costs about $0.001 against about $0.021 for Sonnet and $0.042 for Opus, and a credits command warns me at 10% and 5% balance.</li>
-        <li><strong>Safe by design.</strong> A single-user allowlist, verified webhooks, Zod-validated tool inputs, confirmation tokens for destructive actions, soft deletes and an undo on every change.</li>
+        <li><strong>Safe by design.</strong> Only I get the full assistant. Friends I approve get a limited guest mode that works in private chats only and is rate-limited, and anyone not approved fails closed. It also has verified webhooks, Zod-validated tool inputs, confirmation tokens for destructive actions, soft deletes and an undo on every change.</li>
         <li><strong>Stateless on purpose.</strong> Keeping state in Google Sheets means cold-start serverless functions are fine and I can inspect or edit my data by hand.</li>
       </ul></div></div>
       <div><h2 class="mono">Evidence</h2><div class="prose">
