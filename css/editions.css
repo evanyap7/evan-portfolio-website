@@ -209,7 +209,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .paper__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(24px, 5vw, 96px); padding: var(--air) var(--pad) calc(var(--air) + var(--sheet)); }
 .paper__head { position: sticky; top: 32px; align-self: start; }
 .paper__line { margin: 14px 0 0; font: 900 clamp(40px, 5vw, 80px)/0.92 var(--display); letter-spacing: -0.045em; color: var(--text); text-wrap: balance; }
-#p-sub { max-width: 36ch; margin: 20px 0 0; }
+.paper__sub { max-width: 36ch; margin: 20px 0 0; }
 .points { display: grid; gap: clamp(28px, 3vw, 40px); margin: 0; padding: 0; list-style: none; }
 .points li { display: grid; gap: 6px; }
 .points h4 { margin: 0; font: 600 clamp(21px, 1.9vw, 27px)/1.18 var(--font-sans); letter-spacing: -0.02em; color: var(--text); }
