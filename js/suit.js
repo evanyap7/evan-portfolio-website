@@ -392,6 +392,16 @@ function mountSuit(fig) {
     fig.classList.add('turned');
     hall.turn((event.key === 'ArrowLeft' ? -1 : 1) * 0.3);
   });
+  // Scrolling past the suit walks round it: about half a turn for each Mark
+  // on the track (projects.js). A jump (a Mark picked) is not a walk.
+  const TURN_PER_SCROLL = 0.0015;
+  let lastY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const dy = window.scrollY - lastY;
+    lastY = window.scrollY;
+    if (!hall || !formed || grab || !visible || Math.abs(dy) > window.innerHeight) return;
+    hall.turn(dy * TURN_PER_SCROLL);
+  }, { passive: true });
 
   // Fetch when the opener is near; assemble once enough of the figure shows.
   const near = new IntersectionObserver((entries) => {
