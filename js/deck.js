@@ -19,7 +19,7 @@ export function initDeck() {
   const pinned = window.matchMedia('(min-width: 1024px) and (min-height: 700px)');
   const narrow = window.matchMedia('(max-width: 1023px)');
   const opener = document.querySelector('#work .opener');
-  const paper = document.querySelector('#work .paper');
+  const work = document.getElementById('work') || document.createElement('section');
   const stage = document.querySelector('#work .opener__stage');
   const drifters = still ? [] : [...document.querySelectorAll('[data-drift]')];
   let covered = null;
@@ -33,7 +33,16 @@ export function initDeck() {
 
     const pin = pinned.matches && !still;
     hero.style.setProperty('--cover', (pin ? unit(1 - top / vh) : 0).toFixed(3));
-    const cover = pin && paper ? unit(1 - paper.getBoundingClientRect().top / vh) : 0;
+    // How much of the screen the chapter's sheets cover: on the track
+    // (projects.js) one sheet after another slides over the opener and away.
+    let cover = 0;
+    if (pin) {
+      for (const sheet of work.querySelectorAll('.paper, .inter')) {
+        const r = sheet.getBoundingClientRect();
+        if (r.height) cover += Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0)) / vh;
+      }
+      cover = unit(cover);
+    }
     opener?.style.setProperty('--cover', cover.toFixed(3));
 
     // Once About's top has reached the top of the screen the hero is out of
