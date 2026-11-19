@@ -61,7 +61,7 @@ export function initLab() {
     img.decoding = 'async';
     // The frame covers the screen at 16:9, so on a tall phone it is far wider
     // than the screen: ask for the width it is drawn at, not the screen's.
-    img.sizes = `${Math.ceil(Math.max(window.innerWidth, (window.innerHeight * 16) / 9))}px`;
+    img.sizes = `${Math.min(Math.ceil(Math.max(window.innerWidth, (window.innerHeight * 16) / 9)), window.matchMedia('(max-width: 820px)').matches ? 1200 : 4000)}px`;
     // The first shot is the one on screen at load; the rest wait their turn.
     img.fetchPriority = i === 0 ? 'high' : 'low';
     stop.img = img;
@@ -108,8 +108,10 @@ export function initLab() {
   const paint = (i) => {
     const { img, name } = stops[i] ?? {};
     if (!img || img.src) return;
-    img.srcset = `${DIR}${name}-1200.webp 1200w, ${DIR}${name}-2400.webp 2400w, ${DIR}${name}.webp 3840w`;
-    img.src = `${DIR}${name}-2400.webp`;
+    // A phone never needs the 3840 wide file (up to 940 KB) and starts on the 1200.
+    const phone = window.matchMedia('(max-width: 820px), (pointer: coarse)').matches;
+    img.srcset = phone ? `${DIR}${name}-1200.webp 1200w` : `${DIR}${name}-1200.webp 1200w, ${DIR}${name}-2400.webp 2400w, ${DIR}${name}.webp 3840w`;
+    img.src = `${DIR}${name}-${phone ? 1200 : 2400}.webp`;
   };
   let drawn = false;
   const gl = still ? null : createDepthScene(scene, stops.map(({ name, x, clip }) => ({ name, x, video: clip })), {

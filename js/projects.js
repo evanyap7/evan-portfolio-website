@@ -104,6 +104,8 @@ export function initProjects() {
   const render = (p) => {
     const next = MARKS[(MARKS.indexOf(p) + 1) % MARKS.length];
     $('p-mark').textContent = `Mark ${p.mark} of VII`;
+    const now = $('p-now');
+    if (now) now.textContent = `${p.mark} / VII · ${p.name}`;
     $('p-role').textContent = p.role;
     name.textContent = p.name;
     stats.forEach((stat, i) => {
