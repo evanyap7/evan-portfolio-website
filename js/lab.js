@@ -77,9 +77,11 @@ export function initLab() {
       video.preload = i === 0 ? 'auto' : 'none';
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
-      [['webm', 'video/webm'], ['mp4', 'video/mp4']].forEach(([ext, type]) => {
+      // A phone gets the small hero clip (251 KB, not 1.1 MB).
+      const small = i === 0 && stop.name === 'hero' && window.matchMedia('(max-width: 820px)').matches;
+      (small ? [['mp4', 'video/mp4']] : [['webm', 'video/webm'], ['mp4', 'video/mp4']]).forEach(([ext, type]) => {
         const source = document.createElement('source');
-        source.src = `${DIR}${stop.name}.${ext}`;
+        source.src = `${DIR}${stop.name}${small ? '-960' : ''}.${ext}`;
         source.type = type;
         video.append(source);
       });

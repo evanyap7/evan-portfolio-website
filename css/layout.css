@@ -10,7 +10,7 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 16px;
-  width: calc(100% - 2 * var(--gutter));
+  width: calc(100% - 2 * max(var(--gutter), env(safe-area-inset-left), env(safe-area-inset-right)));
   max-width: 1120px;
   height: var(--nav);
   margin: var(--nav-top) auto 0;

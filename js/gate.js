@@ -154,8 +154,11 @@ export function initGate() {
     } catch {
       // A pointer the browser no longer tracks; the press still counts.
     }
+    // A finger that drifts must not become a page pan, which cancels the hold.
+    if (event.pointerType === 'touch') hit.style.touchAction = 'none';
     start();
   });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((type) => hit.addEventListener(type, () => { hit.style.touchAction = ''; }));
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((type) => hit.addEventListener(type, stop));
   hit.addEventListener('contextmenu', (event) => { if (!awake) event.preventDefault(); });
   hit.addEventListener('keydown', (event) => {

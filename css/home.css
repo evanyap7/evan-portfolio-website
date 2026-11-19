@@ -669,6 +669,9 @@ ul.role__points li + li {
 }
 
 .text-link {
+  display: inline-block;
+  padding-block: 11px;
+  margin-block: -11px;
   color: var(--text);
   text-decoration: underline;
   text-decoration-color: var(--line-2);
@@ -736,3 +739,11 @@ ul.role__points li + li {
 
 /* Short statements break between words, never inside one. */
 .about__statement { hyphens: none; -webkit-hyphens: none; }
+
+/* A phone on its side: 390px tall or less, so the hero hugs its content
+   instead of filling a screen it cannot fit, and the name stops at the height. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hero { min-height: 0; padding-block: 16px; }
+  .hero { --core: clamp(120px, 38vh, 180px); }
+  .hero__name { font-size: clamp(40px, 15vh, 64px); }
+}
