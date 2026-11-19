@@ -13,7 +13,7 @@ import { createSuitStage } from './hall-stage.js';
 const VIEW = 2.85; // world units across the canvas
 
 export function createHall(canvas) {
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !window.matchMedia('(pointer: coarse)').matches, powerPreference: 'high-performance' });
   renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   const coarse = window.matchMedia('(pointer: coarse)').matches;

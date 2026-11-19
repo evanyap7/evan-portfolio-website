@@ -14,7 +14,9 @@ const VERY_SLOW = 45;
 export function startingLevel(levels) {
   const cores = navigator.hardwareConcurrency || 8;
   const memory = navigator.deviceMemory || 8;
-  const weak = cores <= 2 || memory <= 2 ? 2 : cores <= 4 || memory <= 4 ? 1 : 0;
+  // iOS reports neither memory nor a useful core count, so a phone starts a rung down.
+  const phone = window.matchMedia('(pointer: coarse)').matches ? 1 : 0;
+  const weak = Math.max(phone, cores <= 2 || memory <= 2 ? 2 : cores <= 4 || memory <= 4 ? 1 : 0);
   return Math.min(weak, levels.length - 1);
 }
 

@@ -348,3 +348,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
   .slab .title { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
   @keyframes rise { from { clip-path: inset(0 0 100% 0); translate: 0 30px; } to { clip-path: inset(-10% -5% -10% -5%); translate: 0 0; } }
 }
+
+/* Small muted text over photographs reads as the body colour, not the muted grey. */
+.opener__hint, .index small { color: var(--text-2); }
+.index__cell:hover small, .index__cell:focus-visible small { color: inherit; }

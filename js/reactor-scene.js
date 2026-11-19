@@ -142,7 +142,7 @@ function addLight(material) {
 }
 
 export function createReactor(canvas, state) {
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !window.matchMedia('(pointer: coarse)').matches, powerPreference: 'high-performance' });
   // Cleared to nothing, so the hero's name shows through behind the reactor;
   // the bloom stays additive over it.
   renderer.setClearColor(0x000000, 0);

@@ -109,7 +109,12 @@ export function initReactor() {
   canvas.setAttribute('aria-hidden', 'true');
   root.prepend(canvas);
 
-  import('./reactor-scene.js').then(({ createReactor }) => {
+  // On a phone the three.js scene waits for an idle moment, so it does not
+  // compete with the first paint while the gate is shut.
+  const idle = window.matchMedia('(pointer: coarse)').matches && 'requestIdleCallback' in window
+    ? new Promise((resolve) => requestIdleCallback(resolve, { timeout: 1500 }))
+    : Promise.resolve();
+  idle.then(() => import('./reactor-scene.js')).then(({ createReactor }) => {
     scene = createReactor(canvas, state);
     const size = () => {
       const box = canvas.getBoundingClientRect();
