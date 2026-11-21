@@ -42,15 +42,6 @@
   transition: opacity 500ms;
 }
 
-/* Beside the reactor, the name tucks in behind its rim. The still has a
-   background of its own, so this waits for the live model. */
-@media (min-width: 720px) {
-  .hero__stage:has(.reactor.is-live) .hero__name {
-    z-index: 0;
-    column-gap: calc(var(--core) * 0.7);
-  }
-}
-
 /* The reactor itself is the button: hold to charge, let go to pulse. */
 .reactor__hit {
   position: absolute;
@@ -93,9 +84,9 @@
   pointer-events: none;
 }
 
-/* The name catches the light of each pulse. */
+/* The name catches the light of each pulse the visitor fires. */
 @media all {
-  .hero.is-pulsed .hero__name {
+  .hero.is-pulsed .hero__title {
     animation: name-flash 1100ms var(--ease-out);
   }
 }
@@ -106,236 +97,37 @@
   }
 }
 
-/* The status line, under the reactor. */
-.reactor__panel {
+/* The line under the reactor: a quiet hint at rest, the charge while held. */
+.reactor__status {
   position: relative;
   z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  margin-top: 14px;
-}
-
-.reactor__status {
+  margin: 0;
   color: var(--muted);
   text-align: center;
-}
-
-/* At rest the line is empty, but it keeps its line so the hero does not move
-   when it speaks while charging. */
-.reactor__status:empty {
-  min-height: 1lh;
-}
-
-@media (max-width: 719px) {
-  /* The reactor joins the column above the name; its canvas overhangs the
-     sides, and the hero clips it. */
-  .reactor {
-    position: relative;
-    top: auto;
-    left: auto;
-    order: -1;
-    flex: none;
-    margin: calc(var(--core) * -0.25) 0;
-    translate: none;
-  }
-
-  .reactor__panel {
-    margin-top: 12px;
-  }
-}
-
-/* Callouts: on wide screens the credentials hang off the reactor's rim on
-   leader lines; reactor.js places each one. */
-.hero__lines {
-  display: none;
-}
-
-.hero--hud .hero__lines {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
   pointer-events: none;
-}
-
-.hero__lines path {
-  fill: none;
-  stroke: var(--line-2);
-  stroke-width: 1;
-}
-
-.hero__lines rect {
-  fill: var(--accent);
-}
-
-/* No rise for the list itself here: a moving list would carry the
-   callouts placed inside it. */
-.hero--hud .hero__creds {
-  margin: 0;
-  animation: none;
-}
-
-.hero--hud .hero__creds li {
-  position: absolute;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  max-width: 15em;
-  font-size: 11.5px;
-  text-align: left;
-}
-
-.hero--hud .hero__creds li.is-left {
-  align-items: flex-end;
-  text-align: right;
-}
-
-.hero--hud .hero__creds b {
-  margin: 0;
-  color: var(--text);
-  font: 500 26px/1 var(--font-sans);
-  letter-spacing: -0.03em;
-  text-transform: none;
-}
-
-@media all {
-  :root:not(.gated) .hero--hud .hero__creds li {
-    animation: fade 700ms ease backwards;
-    animation-delay: calc(1300ms + var(--n, 0) * 150ms);
-  }
-
-  .hero--hud .hero__creds li:nth-child(2) { --n: 1; }
-  .hero--hud .hero__creds li:nth-child(3) { --n: 2; }
-
-  :root:not(.gated) .hero__lines:not(.is-drawn) path {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation: draw-line 800ms var(--ease) forwards;
-    animation-delay: calc(1000ms + var(--i) * 150ms);
-  }
-
-  :root:not(.gated) .hero__lines:not(.is-drawn) rect {
-    animation: fade 400ms ease backwards;
-    animation-delay: calc(1000ms + var(--i) * 150ms);
-  }
 }
 
 @keyframes fade {
   from { opacity: 0; }
 }
 
-/* In the lab (js/lab.js) the reactor is the heart of the door. Once the
-   door has opened, the reactor and the callouts' leader lines go with it,
-   over 400 ms, and the room behind is the hero. The credentials stay. */
-:root.lab .reactor,
-:root.lab .hero__lines {
-  transition: opacity 400ms ease, visibility 0s 0s;
-}
-
-:root.lab.door-open .reactor,
-:root.lab.door-open .hero__lines {
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 400ms ease, visibility 0s 400ms;
-}
-
-/* The way in: as the site wakes the camera goes through the reactor, which
-   comes up past the screen's edges and is gone before the door's own fade.
-   Where the room is drawn in depth its light runs out from the reactor
-   (js/scene-gl.js), so the screen-wide pulse is not wanted as well. */
-@media all {
-  :root.lab.waking .reactor {
-    scale: 6;
-    opacity: 0;
-    transition: scale 850ms cubic-bezier(0.6, 0, 0.9, 0.3), opacity 350ms ease 250ms, visibility 0s 850ms;
-  }
-
-  :root.lab.waking .hero__lines,
-  :root.lab.waking .reactor__charge { transition-duration: 150ms, 0s; }
-}
-
-:root.depth .gate-flash { display: none; }
-
-@keyframes draw-line {
-  to { stroke-dashoffset: 0; }
-}
-
-/* The gate (gate.js) --------------------------------------------------- */
-/* Before the site wakes, the room is dark: the hero's words, the resume and
-   the email are already up, beside the unpowered reactor and the gate's
-   readout under it; the rest of the page waits. The head script in
-   index.html adds `gated` before the first paint. */
-/* The scrollbar's space is kept while the page cannot scroll, so nothing
-   shifts sideways when it wakes. */
+/* The scrollbar's space is always kept, so nothing shifts sideways when a
+   sheet (the menu) stops the page scrolling. */
 html {
   scrollbar-gutter: stable;
 }
 
-.gated body {
-  overflow: hidden;
-}
-
-/* A phone, its toolbars showing, is too short for the words and the reactor
-   both: there the hero scrolls, and the rest of the page is out of the flow
-   so there is nothing dark to scroll into. */
-@media (max-width: 1023px) {
-  :root.lab.gated body {
-    overflow: visible;
-  }
-
-  :root.lab.gated main > section:not(.hero),
-  :root.lab.gated .footer {
-    display: none;
-  }
-}
-
-.gated .skip-link,
-.gated .progress,
-.gated .nav,
-.gated main > section:not(.hero),
-.gated .footer,
-.gated .reactor__panel {
-  visibility: hidden;
-  opacity: 0;
-}
-
-/* Without the lab (its script failed) the reactor's stage is in the
-   hero's flow, so it keeps room under it for the gate's readout. */
-:root:not(.lab).gated .hero__stage {
-  margin-bottom: 120px;
-}
-
-/* Waking: once the reactor is up, the nav and the rest of the page fade in
-   (the hero's own parts rise, in home.css). */
-.waking .nav,
-.waking main > section:not(.hero),
-.waking .footer {
-  transition: opacity 900ms ease 500ms;
-}
-
-/* Held at the gate, the still brightens with the charge (the live model
-   powers up by itself, in reactor-scene.js). */
-.gated .reactor__poster {
-  filter: brightness(calc(0.16 + 0.84 * var(--charge, 0))) saturate(calc(0.4 + 0.6 * var(--charge, 0)));
-}
-
+/* The still dims a little at rest and comes up with the charge; the live
+   model powers up by itself (reactor-scene.js). */
 .reactor__poster {
   transition: filter 1200ms ease;
 }
 
-.gated.charging .reactor__poster {
-  transition: none;
-}
-
 /* The charge ring: a thin track round the reactor, and a fill that runs
-   round it from the top as the visitor holds on. Only behind the gate. */
+   round it from the top while the visitor holds on (reactor.js sets
+   --charge on the reactor). */
 .reactor__charge {
   position: absolute;
   top: 50%;
@@ -351,13 +143,8 @@ html {
   transition: opacity 400ms ease;
 }
 
-.gated .reactor__charge {
+.reactor.is-charging .reactor__charge {
   opacity: 1;
-}
-
-.waking .reactor__charge {
-  opacity: 0;
-  transition-duration: 900ms;
 }
 
 .reactor__charge circle {
@@ -370,15 +157,6 @@ html {
   stroke-dasharray: 0.4 1.6;
 }
 
-@media (hover: hover) {
-  .reactor__charge-track {
-    transition: stroke 200ms;
-  }
-  .reactor:hover .reactor__charge-track {
-    stroke: hsl(var(--h) 40% 75% / 0.4);
-  }
-}
-
 .reactor__charge-fill {
   stroke: var(--accent);
   stroke-width: 1.1;
@@ -387,153 +165,12 @@ html {
   stroke-dashoffset: calc(100 - 100 * var(--charge, 0));
 }
 
-.gated .reactor__hit {
-  cursor: pointer;
-}
-
-.gate {
-  display: none;
-}
-
-.gated .gate {
-  position: absolute;
-  top: calc(100% + 12px);
-  left: 50%;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  width: max-content;
-  max-width: calc(100vw - 2 * var(--gutter));
-  translate: -50% 0;
-  text-align: center;
-  text-shadow: 0 0 18px hsl(var(--h) 30% 3% / 0.9), 0 1px 3px hsl(var(--h) 30% 3% / 0.9);
-  transition: opacity 400ms ease;
-}
-
-.waking .gate {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.gate__meter {
-  font-size: 1.5rem;
-  letter-spacing: 0.08em;
-  color: hsl(var(--h) 100% calc(55% + 30% * var(--charge, 0)));
-  font-variant-numeric: tabular-nums;
-}
-
-.gate__status {
-  color: var(--muted);
-}
-
-.gate__hint {
-  color: var(--text);
-}
-
-/* The pulse that lets the visitor in: the reactor's light, over everything. */
-.gate-flash {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  background: radial-gradient(circle at 50% 50%, hsl(var(--h) 100% 96%), hsl(var(--h) 100% 60% / 0.6) 35%, transparent 75%);
-  pointer-events: none;
-  opacity: 0;
-}
-
-/* The gate in the lab ------------------------------------------------
-   The reactor's stage lies over the whole hero (lab.css). On wide screens
-   the words read down the left and the reactor stands to their right, its
-   readout under it; on narrower ones the words come first and the reactor
-   waits at the foot of the screen, under the thumb. These hold until the
-   door opens, so nothing moves while the reactor fades. */
-:root.lab:is(.gated, .gate-ready) .hero {
-  --gate-h: 92px;
-}
-
-@media (min-width: 1024px) {
-  :root.lab:is(.gated, .gate-ready) .hero {
-    --core: clamp(220px, 24vw, 360px);
-    /* The ring (about 0.44 of --core across its radius) ends as far in from
-       the right as the name starts from the left: the box's inset plus its
-       padding, both --pad (editions.css). On a smaller screen the hint under
-       it is the wider of the two (about 284px), and it keeps that margin. */
-    --reactor-x: calc(100% - 2 * var(--pad) - max(var(--core) * 0.44, 142px));
+@media (hover: hover) {
+  .reactor__charge {
+    transition: opacity 200ms ease;
   }
 
-  :root.lab:is(.gated, .gate-ready) .reactor {
-    left: var(--reactor-x);
+  .reactor:hover .reactor__charge {
+    opacity: 1;
   }
-
-  :root.lab:is(.gated, .gate-ready) .gate {
-    top: calc(50% + var(--core) * 0.62);
-    left: var(--reactor-x);
-  }
-}
-
-@media (max-width: 1023px) {
-  :root.lab:is(.gated, .gate-ready) .hero {
-    --core: min(148px, 38vw);
-    --gate-h: 66px;
-  }
-
-  /* The meter and the hint say it; the status line stays for screen
-     readers. */
-  :root.lab:is(.gated, .gate-ready) .gate__status {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  :root.lab:is(.gated, .gate-ready) .reactor {
-    position: absolute;
-    top: calc(100% - 16px - var(--gate-h) - 6px - var(--core) / 2);
-    left: 50%;
-    margin: 0;
-    translate: -50% -50%;
-  }
-
-  :root.lab:is(.gated, .gate-ready) .gate {
-    top: auto;
-    bottom: 16px;
-  }
-
-  /* Room at the foot of the hero for the reactor and its readout; it gives
-     way as the site wakes. */
-  :root.lab .hero {
-    transition: padding-bottom 900ms var(--ease-out);
-  }
-
-  :root.lab.gated .hero {
-    padding-bottom: calc(16px + var(--gate-h) + var(--core) * 1.35);
-  }
-}
-
-@media all {
-  .gated:not(.waking) .gate {
-    animation: fade 900ms ease 400ms backwards;
-  }
-
-  /* Until the first press the hint breathes, so the way in is plain. */
-  .gated:not(.charging) .gate__hint {
-    animation: breathe 2.4s ease-in-out 1.4s infinite;
-  }
-
-  /* Near full the reactor strains: the ring trembles. */
-  .gated.charging .reactor__charge {
-    animation: strain 90ms linear infinite;
-  }
-}
-
-@keyframes breathe {
-  50% { opacity: 0.45; }
-}
-
-@keyframes strain {
-  25% { translate: calc(-50% + 0.6px * var(--charge, 0)) -50%; }
-  75% { translate: calc(-50% - 0.6px * var(--charge, 0)) calc(-50% + 0.4px * var(--charge, 0)); }
 }

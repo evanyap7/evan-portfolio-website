@@ -47,6 +47,17 @@ export function initLab() {
   scene.setAttribute('aria-hidden', 'true');
 
   const videos = new Map();
+  // The hero's clip is fetched once the page has loaded and the first
+  // picture is up (or a few seconds on, whatever happened to it).
+  let pictured;
+  const shown = new Promise((resolve) => { pictured = resolve; });
+  const loaded = Promise.all([
+    new Promise((resolve) => {
+      if (document.readyState === 'complete') resolve();
+      else window.addEventListener('load', () => resolve(), { once: true });
+    }),
+    Promise.race([shown, new Promise((resolve) => { window.setTimeout(resolve, 4000); })]),
+  ]);
   stops.forEach((stop, i) => {
     const layer = document.createElement('div');
     layer.className = 'scene__shot';
@@ -73,18 +84,29 @@ export function initLab() {
       video.defaultMuted = true;
       video.loop = true;
       video.playsInline = true;
-      // Only the shot in view loads and plays; the hero's is wanted at once.
-      video.preload = i === 0 ? 'auto' : 'none';
+      // Only the shot in view loads and plays. Even the hero's waits for the
+      // page to finish loading: its first frame is the still, so until then
+      // the still is the shot, and the clip does not take the bandwidth the
+      // first screen needs.
+      video.preload = 'none';
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
-      // A phone gets the small hero clip (251 KB, not 1.1 MB).
+      // A phone gets the small hero clip (255 KB, not 1.1 MB).
       const small = i === 0 && stop.name === 'hero' && window.matchMedia('(max-width: 820px)').matches;
-      (small ? [['mp4', 'video/mp4']] : [['webm', 'video/webm'], ['mp4', 'video/mp4']]).forEach(([ext, type]) => {
+      const sources = (small ? [['mp4', 'video/mp4']] : [['webm', 'video/webm'], ['mp4', 'video/mp4']]).map(([ext, type]) => {
         const source = document.createElement('source');
         source.src = `${DIR}${stop.name}${small ? '-960' : ''}.${ext}`;
         source.type = type;
-        video.append(source);
+        return source;
       });
+      if (i === 0) {
+        loaded.then(() => {
+          video.preload = 'auto';
+          video.append(...sources);
+        });
+      } else {
+        video.append(...sources);
+      }
       // The clip shows only once it is moving; until then, or if it cannot
       // play, its still (the same frame) is the shot.
       video.addEventListener('playing', () => layer.classList.add('is-moving'), { once: true });
@@ -103,7 +125,8 @@ export function initLab() {
 
   // The shots in depth. While that canvas is the picture the layers' own
   // pictures are hidden, and are not fetched: a layer's still is asked for
-  // only when it has to be the picture itself.
+  // only when it has to be the picture itself, with no canvas or once the
+  // canvas has given up (scene-gl.js says so even if it never drew).
   let current = -1;
   const paint = (i) => {
     const { img, name } = stops[i] ?? {};
@@ -112,19 +135,26 @@ export function initLab() {
     const phone = window.matchMedia('(max-width: 820px), (pointer: coarse)').matches;
     img.srcset = phone ? `${DIR}${name}-1200.webp 1200w` : `${DIR}${name}-1200.webp 1200w, ${DIR}${name}-2400.webp 2400w, ${DIR}${name}.webp 3840w`;
     img.src = `${DIR}${name}-${phone ? 1200 : 2400}.webp`;
+    img.decode().then(pictured, pictured);
   };
-  let drawn = false;
+  let flat = false;
   const gl = still ? null : createDepthScene(scene, stops.map(({ name, x, clip }) => ({ name, x, video: clip })), {
     dir: DIR,
     onActive(on) {
-      drawn = on;
+      if (on) pictured();
       scene.classList.toggle('is-gl', on);
       root.classList.toggle('depth', on);
-      if (!on) paint(current);
+      if (!on) {
+        flat = true;
+        paint(current);
+      }
     },
   });
   if (gl) scene.style.setProperty('--zoom', ZOOM);
-  else stops.forEach((stop, i) => paint(i));
+  else {
+    flat = true;
+    stops.forEach((stop, i) => paint(i));
+  }
 
   // The shot leans away from the pointer, eased (the canvas has its own).
   if (!still && !gl && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
@@ -212,7 +242,7 @@ export function initLab() {
       stops[at].layer.classList.add('is-on');
       current = at;
       root.dataset.stop = stops[at].id;
-      if (!drawn) paint(at);
+      if (flat) paint(at);
       play();
     }
     if (still) return;

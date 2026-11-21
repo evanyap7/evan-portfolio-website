@@ -116,18 +116,38 @@ function compile(gl, type, source) {
   const shader = gl.createShader(type);
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader) || 'shader');
   return shader;
 }
 
-function picture(src) {
+// A picture ready to upload. Where it can, the browser decodes it off the
+// main thread first (createImageBitmap), so the upload is a copy and not a
+// decode in the middle of a frame; otherwise an <img> does.
+function element(src, priority) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.decoding = 'async';
+    img.fetchPriority = priority;
     img.onload = () => resolve(img);
     img.onerror = reject;
     img.src = src;
   });
+}
+
+async function picture(src, priority = 'auto') {
+  if (!('createImageBitmap' in window)) return element(src, priority);
+  let blob;
+  try {
+    const response = await fetch(src, { priority });
+    if (!response.ok) throw new Error(`${response.status} ${src}`);
+    blob = await response.blob();
+  } catch {
+    return element(src, priority);
+  }
+  try {
+    return await createImageBitmap(blob);
+  } catch {
+    return element(src, priority);
+  }
 }
 
 // `stops` are lab.js's: { name, x: '78%', video? }. `onActive(bool)` says
@@ -137,31 +157,49 @@ export function createDepthScene(host, stops, { dir, onActive }) {
   canvas.className = 'scene__gl';
   let gl;
   let uniforms;
+  let program;
+  let vert;
+  let frag;
+  // The shaders are compiled now but not asked about until the first
+  // frame: asking at once makes the page wait for the GPU to finish them,
+  // while by the time the pictures are in they are long done.
   try {
     gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' });
     if (!gl) return null;
-    const program = gl.createProgram();
-    gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, VERT));
-    gl.attachShader(program, compile(gl, gl.FRAGMENT_SHADER, FRAG));
+    program = gl.createProgram();
+    vert = compile(gl, gl.VERTEX_SHADER, VERT);
+    frag = compile(gl, gl.FRAGMENT_SHADER, FRAG);
+    gl.attachShader(program, vert);
+    gl.attachShader(program, frag);
     gl.bindAttribLocation(program, 0, 'p');
     gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null;
-    gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  } catch {
+    return null;
+  }
+  // Once, before the first draw: false if the program did not build.
+  const link = () => {
+    if (uniforms) return true;
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      const log = gl.getShaderInfoLog(vert) || gl.getShaderInfoLog(frag) || gl.getProgramInfoLog(program);
+      if (log) console.warn('scene-gl:', log);
+      return false;
+    }
+    gl.useProgram(program);
     uniforms = Object.fromEntries(
       ['uColA', 'uDepA', 'uColB', 'uDepB', 'uRes', 'uFrame', 'uLean', 'uA', 'uB', 'uMix', 'uLight', 'uDark', 'uIris', 'uBlur']
         .map((name) => [name, gl.getUniformLocation(program, name)]));
     ['uColA', 'uDepA', 'uColB', 'uDepB'].forEach((name, unit) => gl.uniform1i(uniforms[name], unit));
-  } catch {
-    return null;
-  }
+    return true;
+  };
   host.prepend(canvas);
 
   const n = stops.length;
   const big = gl.getParameter(gl.MAX_TEXTURE_SIZE) >= 2400;
+  const phone = window.matchMedia('(max-width: 820px), (pointer: coarse)').matches;
   const reactor = document.querySelector('[data-reactor]');
   const shots = stops.map((stop) => ({ name: stop.name, video: stop.video, x: parseFloat(stop.x) / 100, state: 'none', col: null, dep: null, clip: null }));
 
@@ -201,11 +239,14 @@ export function createDepthScene(host, stops, { dir, onActive }) {
     active = on;
     onActive(on);
   };
+  // Said even if the canvas never drew: lab.js then shows its own stills.
   const fail = () => {
+    if (lost) return;
     lost = true;
     cancelAnimationFrame(raf);
     raf = 0;
-    setActive(false);
+    active = false;
+    onActive(false);
   };
   canvas.addEventListener('webglcontextlost', (event) => {
     event.preventDefault();
@@ -218,12 +259,18 @@ export function createDepthScene(host, stops, { dir, onActive }) {
     const shot = shots[i];
     if (!shot || shot.state !== 'none') return;
     shot.state = 'loading';
+    // A phone draws the 1200 wide still, as lab.js's own layer does (74 KB,
+    // not 184 KB): its clip, 960 wide, is what it shows once awake anyway.
     const drawn = Math.max(width, (height * 16) / 9) * scale;
-    const size = big && drawn > 1300 ? 2400 : 1200;
-    Promise.all([picture(`${dir}${shot.name}-${size}.webp`), picture(`${dir}${shot.name}-depth.webp`)]).then(([col, dep]) => {
+    const size = big && !phone && drawn > 1300 ? 2400 : 1200;
+    // The first shot is on screen at load; the rest wait their turn.
+    const priority = i === 0 ? 'high' : 'low';
+    Promise.all([picture(`${dir}${shot.name}-${size}.webp`, priority), picture(`${dir}${shot.name}-depth.webp`, priority)]).then(([col, dep]) => {
       if (lost || shot.state !== 'loading') return;
       shot.col = texture(col);
       shot.dep = texture(dep);
+      col.close?.();
+      dep.close?.();
       shot.state = 'ready';
       invalidate();
     }).catch(fail);
@@ -404,6 +451,10 @@ export function createDepthScene(host, stops, { dir, onActive }) {
     if (!ready(from)) {
       setActive(false);
       if (busy) raf = requestAnimationFrame(frame);
+      return;
+    }
+    if (!link()) {
+      fail();
       return;
     }
     const b = ready(to) ? to : from;

@@ -65,7 +65,6 @@ try {
   ];
   for (const fallback of fallbacks) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 800 }, ...fallback.options });
-    await context.addInitScript(() => { try { sessionStorage.setItem('portfolio-on', '1'); } catch { /* gated then */ } });
     const tab = await context.newPage();
     if (fallback.block) await tab.route(fallback.block, (route) => route.abort());
     await tab.goto(`http://localhost:${PORT}/`);

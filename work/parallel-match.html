@@ -37,7 +37,7 @@
     <nav class="nav__links" aria-label="Primary">
       <a href="/#about">About</a>
       <a href="/#experience">Experience</a>
-      <a href="/#work">Work</a>
+      <a href="/#work">Projects</a>
       <a href="/#toolkit">Toolkit</a>
       <a href="/#contact">Contact</a>
     </nav>
@@ -51,7 +51,7 @@
     <ul class="menu__links">
       <li><a href="/#about">About</a></li>
       <li><a href="/#experience">Experience</a></li>
-      <li><a href="/#work">Selected work</a></li>
+      <li><a href="/#work">Projects</a></li>
       <li><a href="/#toolkit">Toolkit</a></li>
       <li><a href="/#contact">Contact</a></li>
     </ul>
@@ -62,7 +62,7 @@
   </nav>
 
   <main id="main" class="project">
-    <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
+    <a class="back" href="/#work"><span aria-hidden="true">←</span> All projects</a>
     <header class="project__head">
       <h1 class="project__title vt-parallel-match">Parallel Match</h1>
       <p class="project__lede">A what-if engine for football: change one refereeing call and replay the rest of the match hundreds of times.</p>
@@ -124,7 +124,7 @@
           <li><strong>Seed.</strong> Every match is generated from a seed, so a replay is exactly repeatable.</li>
           <li><strong>Replay</strong> to the chosen moment.</li>
           <li><strong>Change one thing:</strong> flip the call, the card, a goal or a substitution.</li>
-          <li><strong>Roll out hundreds of pairs.</strong> The original and altered match share the same random numbers, so the difference between them is the change, not luck.</li>
+          <li><strong>Roll out hundreds of pairs.</strong> The original and altered match share the same random numbers, so any gap between them comes from the change.</li>
           <li><strong>Report with uncertainty.</strong> The answer comes with a 95% interval and one alternate timeline to watch.</li>
         </ol>
         <p>A second, independent opinion comes from precedent in the season itself, and the response says so when the two disagree.</p>
@@ -132,11 +132,11 @@
       <div><h2 class="mono">What I built</h2><div><ul class="items">
           <li>
             <h3 class="item__name">Simulator and what-if engine</h3>
-            <p class="item__text">Replays a match to one moment, changes the call and plays the rest hundreds of times. Each pair shares its random numbers, so the difference is the call, not luck.</p>
+            <p class="item__text">Replays a match to one moment, changes the call and plays the rest hundreds of times. Each pair shares its random numbers, which keeps luck out of the comparison.</p>
           </li>
           <li>
             <h3 class="item__name">Agent desk</h3>
-            <p class="item__text">Agents draft the commentary and the Law explanation, and a fact-checker verifies every number. All numbers come from code, never from a model.</p>
+            <p class="item__text">Agents draft the commentary and the Law explanation, and a fact-checker verifies every number. Every number comes from code.</p>
           </li>
           <li>
             <h3 class="item__name">API and 18-language interface</h3>
@@ -151,7 +151,7 @@
     <div class="rows project__body">
       <div><h2 class="mono">The Match Desk</h2><div class="prose">
         <p>A producer plans the recap and three agents write it: a narrator, a law explainer and a historian. A fact-checker then verifies it, an editor repairs what it flags, and a recap writer finishes.</p>
-        <p>The rule that makes it trustworthy: <strong>all numbers and moment-finding stay in plain code</strong>. Agents only phrase them. Guardrails reject output that contains a number not in the facts, or wording that judges officials, and a test swaps one number to check that only the fact-checker catches it.</p>
+        <p><strong>All numbers and moment-finding stay in plain code</strong>, and the agents only put them into words. Guardrails reject output that contains a number not in the facts, or wording that judges officials, and a test swaps one number to check that only the fact-checker catches it.</p>
       </div></div>
       <div><h2 class="mono">Evidence</h2><dl class="facts">
         <div><dt>Realism</dt><dd>Over 360 simulated matches: 2.78 goals, 27.4 shots, 82% pass accuracy, 24.4 fouls and 3.2 yellow cards per match. All 16 metrics fall inside approximate top-flight ranges. That is a sanity band, not measured truth.</dd></div>

@@ -142,9 +142,7 @@
 /* The shots in depth (js/scene-gl.js): one canvas under the layers. While
    it is drawing, the layers' own pictures are hidden and the layers carry
    only what lies over the picture (the pool, the spots); their frames hold
-   still at the canvas's own zoom, so a spot stays on its object. The canvas
-   also keeps the room dark behind the gate, so the scene's own dark steps
-   aside. */
+   still at the canvas's own zoom, so a spot stays on its object. */
 .scene__gl {
   position: absolute;
   inset: 0;
@@ -250,37 +248,8 @@
 :root.lab .hero__lede,
 :root.lab .reactor__status { color: var(--text-2); }
 
-/* Once the door is open the shot is the picture, so the name steps out of
-   its middle: it closes up and settles, smaller, just over the headline,
-   like a film's title over its opening shot. A transform, so nothing else
-   on the page moves. */
-@media (min-width: 720px) {
-  :root.lab .hero__name {
-    transition: scale 1400ms var(--ease-out), translate 1400ms var(--ease-out), column-gap 1400ms var(--ease-out);
-  }
-
-  :root.lab.door-open .hero__name {
-    column-gap: 0.26em;
-    scale: 0.42;
-    translate: 0 calc(var(--core) * 0.5 - 0.2em);
-  }
-}
-
-/* The reactor's stage takes no room in the hero: the headline is the middle
-   of the hero from the first paint, and the page never shifts when the door
-   opens. The reactor is centred in the hero behind it. */
-:root.lab .hero__stage {
-  position: absolute;
-  inset: 0;
-  height: auto;
-  max-width: none;
-}
-
-:root.lab.door-open .hero__stage { pointer-events: none; }
-
 /* On wide screens the hero reads down the left like every section after
-   it, behind the gate and after, and the shot's subject (and, until the
-   door opens, the reactor) stands to the right. */
+   it, and the shot's subject and the reactor stand to the right. */
 @media (min-width: 1024px) {
   :root.lab .hero {
     align-items: flex-start;
@@ -288,17 +257,13 @@
     text-align: left;
   }
 
-  :root.lab .hero > :not(.hero__stage, .hero__lines) {
+  :root.lab .hero > :not(.hero__stage) {
     max-width: min(56%, 46rem);
   }
 
   :root.lab .hero__lede { max-width: min(56%, 34rem); }
   :root.lab .hero__actions { justify-content: flex-start; }
 }
-
-/* The reactor's status line has no reactor to speak for here: the gate has
-   its own, and the reactor is gone once the door opens. */
-:root.lab .reactor__panel { display: none; }
 
 /* Sections: no band fill; a scrim is painted in its place. */
 :root.lab main > .section {
@@ -463,45 +428,6 @@
 
 @keyframes grid-draw {
   from { transform: scaleY(0); }
-}
-
-/* The boot readout (js/hud.js): three lines typed at the foot of the screen
-   while the room comes up, then gone. */
-.boot {
-  position: fixed;
-  left: max(var(--gutter), env(safe-area-inset-left));
-  bottom: max(24px, env(safe-area-inset-bottom));
-  z-index: 9;
-  display: grid;
-  gap: 7px;
-  color: var(--text-2);
-  /* The one HUD moment left: the suit's boot lines, typed as the room wakes. */
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  text-shadow: 0 0 12px hsl(var(--h) 40% 3% / 0.9);
-  pointer-events: none;
-  transition: opacity 500ms ease;
-}
-
-.boot.is-done { opacity: 0; }
-
-.boot span {
-  width: max-content;
-  clip-path: inset(0 100% 0 0);
-  animation: boot-type 420ms steps(20) forwards;
-  animation-delay: calc(200ms + var(--n) * 480ms);
-}
-
-.boot i {
-  margin-right: 1.2em;
-  color: var(--accent);
-  font-style: normal;
-}
-
-@keyframes boot-type {
-  to { clip-path: inset(0); }
 }
 
 /* Contact reads from the left edge like every other section. */

@@ -9,7 +9,7 @@ const EASE = 0.085;  // of the way still to go, each frame at 60 frames a second
 
 // Whether something under the pointer would take this wheel itself.
 const scrollsItself = (node, dy) => {
-  for (let el = node; el && el !== document.body && el !== document.documentElement; el = el.parentElement) {
+  for (let el = node instanceof Element ? node : null; el && el !== document.body && el !== document.documentElement; el = el.parentElement) {
     const { overflowY } = getComputedStyle(el);
     if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight + 1) {
       if (dy < 0 ? el.scrollTop > 0 : el.scrollTop + el.clientHeight < el.scrollHeight - 1) return true;
@@ -47,8 +47,8 @@ export function initGlide() {
 
   window.addEventListener('wheel', (event) => {
     if (event.defaultPrevented || event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-    // Behind the gate, under the open menu, or wherever the page is held still.
-    if (root.classList.contains('gated') || getComputedStyle(root).overflowY === 'hidden') return;
+    // Under the open menu, or wherever the page is held still.
+    if (getComputedStyle(root).overflowY === 'hidden') return;
     if (scrollsItself(event.target, event.deltaY)) return;
     let dy = event.deltaY;
     if (event.deltaMode === 1) dy *= 16;

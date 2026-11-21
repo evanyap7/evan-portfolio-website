@@ -7,7 +7,7 @@
   <meta name="description" content="Case study: a trading system where no model can place or size an order. I tested four ideas for an edge, including a Claude agent, out of sample and corrected for luck. None beat holding the index.">
   <meta name="theme-color" content="#04070a">
   <meta property="og:title" content="I built a trading system to find an edge. It found none.">
-  <meta property="og:description" content="A case study in building a risk-bounded trading system and testing honestly whether it has an edge. It does not.">
+  <meta property="og:description" content="How I built a trading system with hard risk limits, tested four ideas for an edge on it, and found none.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.evanyap.com/case-studies/trading-agent">
   <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
@@ -37,7 +37,7 @@
     <nav class="nav__links" aria-label="Primary">
       <a href="/#about">About</a>
       <a href="/#experience">Experience</a>
-      <a href="/#work">Work</a>
+      <a href="/#work">Projects</a>
       <a href="/#toolkit">Toolkit</a>
       <a href="/#contact">Contact</a>
     </nav>
@@ -51,7 +51,7 @@
     <ul class="menu__links">
       <li><a href="/#about">About</a></li>
       <li><a href="/#experience">Experience</a></li>
-      <li><a href="/#work">Selected work</a></li>
+      <li><a href="/#work">Projects</a></li>
       <li><a href="/#toolkit">Toolkit</a></li>
       <li><a href="/#contact">Contact</a></li>
     </ul>
@@ -62,7 +62,7 @@
   </nav>
 
   <main id="main" class="project case">
-    <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
+    <a class="back" href="/#work"><span aria-hidden="true">←</span> All projects</a>
     <header class="project__head">
       <h1 class="project__title vt-trading-agent case__title">I built a trading system, tested four ideas for an edge, and found none.</h1>
       <p class="mono label">Case study · Systematic Trading System · Python</p>
@@ -119,7 +119,7 @@
       <ul class="case__list">
         <li><strong>What I built.</strong> A swing-trading system where the agent may only <em>propose</em>. Deterministic code verifies, sizes and risk-checks every idea, and a ledger records each step.</li>
         <li><strong>What I found.</strong> No edge in any of four ideas. Claude did not beat a free rule and cost about $27 a year, so I removed it.</li>
-        <li><strong>The uncomfortable part.</strong> The momentum rule returned +66.8% against SPY's +70.1% from 2022 to 2026, at about half the drawdown. I report that as the result, and live trading stays paused.</li>
+        <li><strong>The closest result.</strong> The momentum rule returned +66.8% against SPY's +70.1% from 2022 to 2026, at about half the drawdown. I report that as the result, and live trading stays paused.</li>
       </ul>
 
       <h2>How it is built</h2>
@@ -163,7 +163,7 @@
       <ul class="case__list">
         <li><strong>The proposer cannot size or send an order.</strong> An independent verifier rejects anything ungrounded or without edge after costs, and size is capped at 2% risk per trade.</li>
         <li><strong>The risk limits are a file the agent cannot write.</strong> They change only through a human git commit.</li>
-        <li><strong>Execution never retries blindly.</strong> An ambiguous broker answer is resolved by asking the broker, not by resending.</li>
+        <li><strong>Execution never retries blindly.</strong> If the broker’s answer is unclear, it asks the broker again before resending anything.</li>
         <li><strong>The audit trail is tamper-evident, and the kill switch is a file.</strong> Editing the hash-chained ledger breaks the chain, and creating <code>state/KILL</code> stops new orders.</li>
       </ul>
 
@@ -185,7 +185,7 @@
         </table>
       </div>
 
-      <h3 class="case__sub">How I kept a negative result trustworthy</h3>
+      <h3 class="case__sub">How I tested it</h3>
       <ul class="case__list">
         <li><strong>No lookahead, and a test for it.</strong> It rewrites the future of a price series and checks that no past signal moves.</li>
         <li><strong>Walk-forward selection.</strong> Settings are chosen on two years of data and scored only on the next six months.</li>
@@ -200,7 +200,7 @@
         <table>
           <caption class="visually-hidden">Backtest results for 2024: Claude agent, momentum baseline and SPY buy-and-hold</caption>
           <thead>
-            <tr><th scope="col">2024</th><th scope="col">Claude agent</th><th scope="col">Momentum baseline</th><th scope="col">SPY buy-and-hold</th></tr>
+            <tr><th scope="col">2024</th><th scope="col">Claude agent</th><th scope="col">Momentum</th><th scope="col">SPY</th></tr>
           </thead>
           <tbody>
             <tr><th scope="row">Net return</th><td>+20.32%</td><td>+24.71%</td><td>+25.59%</td></tr>
@@ -210,13 +210,13 @@
         </table>
       </div>
 
-      <p>Its Sharpe lead of 0.03 is noise and its win rate was lower, so I removed the model and kept the harness that told me the truth. Caveat: one bull-market year, one run.</p>
+      <p>Its Sharpe lead of 0.03 is noise and its win rate was lower, so I removed the model and kept the test harness. It was one bull-market year and one run.</p>
 
-      <h2>A mistake worth reporting</h2>
+      <h2>A bug in my first comparison</h2>
       <p>My first comparison was invalid. The harness never loaded the API key, so every call failed and the backtester swallowed each error as "no trade", printing a fake 0% win rate. It now aborts if an agent only produces errors.</p>
 
       <h2>Where it stands</h2>
-      <p>It placed its first real orders on 23 September 2026, one share at a time. I paused live trading with the kill switch on 1 October. I would rather say that plainly than tune until a chart looks good.</p>
+      <p>It placed its first real orders on 23 September 2026, one share at a time. I paused live trading with the kill switch on 1 October.</p>
 
       <p class="links case__links">
         <a class="pill" href="https://github.com/evanyap7/evans-trading-agent" target="_blank" rel="noopener">Source on GitHub <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>

@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Decarbonisation Research Agent | Evan Yap</title>
-  <meta name="description" content="A research tool for energy engineers and decarbonisation consultants. It answers only from the reports and PDFs it retrieved, as a cited brief or a verdict on an ESG claim.">
+  <meta name="description" content="A research tool for energy engineers and decarbonisation consultants. It answers only from the pages and PDFs it retrieved, as a cited brief or a verdict on an ESG claim.">
   <meta name="theme-color" content="#04070a">
   <meta property="og:title" content="Decarbonisation Research Agent | Evan Yap">
-  <meta property="og:description" content="A research tool for energy engineers and decarbonisation consultants. It answers only from the reports and PDFs it retrieved, as a cited brief or a verdict on an ESG claim.">
+  <meta property="og:description" content="A research tool for energy engineers and decarbonisation consultants. It answers only from the pages and PDFs it retrieved, as a cited brief or a verdict on an ESG claim.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.evanyap.com/work/research-agent">
   <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
@@ -37,7 +37,7 @@
     <nav class="nav__links" aria-label="Primary">
       <a href="/#about">About</a>
       <a href="/#experience">Experience</a>
-      <a href="/#work">Work</a>
+      <a href="/#work">Projects</a>
       <a href="/#toolkit">Toolkit</a>
       <a href="/#contact">Contact</a>
     </nav>
@@ -51,7 +51,7 @@
     <ul class="menu__links">
       <li><a href="/#about">About</a></li>
       <li><a href="/#experience">Experience</a></li>
-      <li><a href="/#work">Selected work</a></li>
+      <li><a href="/#work">Projects</a></li>
       <li><a href="/#toolkit">Toolkit</a></li>
       <li><a href="/#contact">Contact</a></li>
     </ul>
@@ -62,10 +62,10 @@
   </nav>
 
   <main id="main" class="project">
-    <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
+    <a class="back" href="/#work"><span aria-hidden="true">←</span> All projects</a>
     <header class="project__head">
       <h1 class="project__title vt-research-agent">Decarbonisation Research Agent</h1>
-      <p class="project__lede">A research tool for energy engineers that answers only from the reports it retrieved, as a cited brief or a verdict on an ESG claim.</p>
+      <p class="project__lede">A research tool for energy engineers that answers only from pages it fetched, as a cited brief or a verdict on an ESG claim.</p>
       <p class="mono label">Full-stack developer · Aug 2026</p>
       <dl class="stats">
         <div><dt>Modes: research brief and claim verification</dt><dd><span data-count>2</span></dd></div>
@@ -111,7 +111,7 @@
     </figure>
     <div class="rows project__body">
       <div><h2 class="mono">Overview</h2><div class="prose">
-        <p class="project__summary">A research tool for energy engineers and decarbonisation consultants. It answers only from the pages it retrieved, as a cited brief or a verdict on an ESG claim, and drops any finding that cites a source it never fetched.</p>
+        <p class="project__summary">Any finding that cites a source it never fetched is dropped before you see it.</p>
         <p>I built it during my internship at Univers. It is live, and anyone can try it without logging in.</p>
       </div></div>
       <div><h2 class="mono">What it does</h2><dl class="facts">
@@ -129,11 +129,11 @@
         </ol>
       </div></div>
       <div><h2 class="mono">Decisions and trade-offs</h2><div class="prose"><ul>
-        <li><strong>Evidence only.</strong> The grounding rule is enforced in code, not left to the prompt, so a made-up citation cannot reach the reader.</li>
-        <li><strong>Pages are data, not instructions.</strong> Text inside a retrieved page is treated as reference material, and instructions in it are ignored.</li>
-        <li><strong>Bounded.</strong> A 6 second fetch timeout and size caps keep one slow or huge page from stalling an answer.</li>
+        <li><strong>Code enforces the evidence rule.</strong> The prompt alone can’t stop a made-up citation, so code drops it before the reader sees it.</li>
+        <li><strong>It ignores instructions inside pages.</strong> Text inside a retrieved page is treated as reference material only.</li>
+        <li><strong>Timeouts and size caps.</strong> A 6 second fetch timeout and size caps keep one slow or huge page from stalling an answer.</li>
         <li><strong>Limitations are part of the schema.</strong> Every response has to say what the evidence does not cover.</li>
-        <li><strong>Free-tier friendly.</strong> It runs on Groq's open model with a Gemini fallback, so the demo costs little to keep live.</li>
+        <li><strong>Cheap to keep live.</strong> It runs on Groq's open model with a Gemini fallback, so the demo costs little to keep live.</li>
       </ul></div></div>
       <div><h2 class="mono">What I do not claim</h2><div class="prose">
         <p>Verdict accuracy and calibration are not measured yet, so this page makes no accuracy claim. The truth rating is the model's judgement, not a calibrated probability. Nothing guarantees a source is official either, which is why the interface lists every source for the reader to judge.</p>
@@ -143,7 +143,7 @@
         <p>An allowlist mode, the labelled claim set for the evaluation, page caching with freshness timestamps, Markdown and PDF export, and saved history.</p>
       </div></div>
       <div><h2 class="mono">How I built it</h2><div class="prose">
-        <p>I built it as the full-stack developer, with AI coding assistants including Claude Code. The tests are how I check their work: they cover source handling, including property-based tests, and the evaluation scoring.</p>
+        <p>I built it as the full-stack developer, with AI coding assistants including Claude Code. I check their work with tests: they cover source handling, including property-based tests, and the evaluation scoring.</p>
       </div></div>
       <div><h2 class="mono">Stack</h2><p class="stack">Next.js · React · TypeScript · Tailwind CSS · Vercel AI SDK · Groq (gpt-oss-120b) with Gemini fallback · Zod · Cheerio · pdf-parse</p></div>
       <div><h2 class="mono">Links</h2><p class="links">

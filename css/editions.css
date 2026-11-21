@@ -39,21 +39,38 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
     linear-gradient(90deg, hsl(var(--h) 45% 3% / 0.6) 0%, transparent 55%); }
 /* The next sheet's shadow: the hero and the opener darken as they are covered. */
 #top::after, .opener::after { content: ""; position: absolute; inset: 0; z-index: 3; background: var(--ink); opacity: calc(var(--cover, 0) * 0.72); pointer-events: none; }
-/* The reactor's stage lies over the whole hero, so the box keeps its place. */
-#top .hero__stage { position: absolute; inset: 0; height: auto; max-width: none; }
-#top > .reactor__panel { display: none; }
+/* The arc reactor is a toy in the hero, never in the way: it takes the
+   room the box leaves free (the 1fr row), and is sized from that room, so it
+   never pushes the name or the index. On a wide screen it stands to the right
+   of the name; narrower, it sits above it. Too little room and it goes. */
 :root.lab #top > .box { max-width: none; }
 
-.box { position: relative; z-index: 2; display: grid; grid-template-rows: auto 1fr auto; min-width: 0; scale: calc(1 - var(--cover, 0) * 0.04); transform-origin: 50% 35%; }
+.box { position: relative; z-index: 2; display: grid; grid-template-rows: auto 1fr auto auto; grid-template-columns: minmax(0, 1fr); min-width: 0; scale: calc(1 - var(--cover, 0) * 0.04); transform-origin: 50% 35%; }
 .box__top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px var(--pad); color: var(--text); }
 .box__top span:first-child { margin-right: auto; }
 .pause { white-space: nowrap; margin: -8px 0; padding: 7px 11px; font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--text); background: hsl(0 0% 100% / 0.1); border: 0; border-radius: 6px; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
 .pause:hover { background: var(--text); color: var(--bg); }
-.box__mid { align-self: end; min-width: 0; padding: var(--pad); padding-bottom: clamp(20px, 3vw, 44px); }
+#top .hero__stage { position: relative; z-index: 2; grid-row: 2; display: grid; place-items: center; align-content: center; gap: 10px; min-height: 0; max-width: none; height: auto; margin: 0; container-type: size; pointer-events: none; }
+#top .hero__stage .reactor { --core: min(clamp(104px, 30vw, 150px), 64cqh); position: relative; top: auto; left: auto; translate: none; width: calc(var(--core) * 1.5); margin: calc(var(--core) * -0.25); }
+#top .reactor__hit { pointer-events: auto; }
+/* A short stage keeps the reactor and drops its line; too short for a 44px
+   button, the reactor goes and the words keep the room. */
+@container (max-height: 150px) {
+  #top .hero__stage .reactor { --core: min(clamp(104px, 30vw, 150px), 92cqh); }
+  #top .hero__stage .reactor__status { display: none; }
+}
+@container (max-height: 52px) { #top .hero__stage > * { display: none; } }
+@media (min-width: 1024px) {
+  #top .hero__stage { grid-row: 2 / 4; grid-column: 1; justify-self: end; width: 40%; }
+  #top .hero__stage .reactor { --core: min(clamp(170px, 17vw, 260px), 56cqh); }
+}
+.box__mid { grid-row: 3; align-self: end; min-width: 0; padding: var(--pad); padding-bottom: clamp(20px, 3vw, 44px); }
 #top .hero__title { margin: 0 0 0 -0.04em; font: 900 clamp(64px, 13vw, 232px)/0.84 var(--display); letter-spacing: -0.055em; color: var(--text); text-wrap: nowrap; }
 #top .hero__lede { max-width: 18ch; margin: clamp(16px, 2vw, 28px) 0 0; font: 500 clamp(22px, 2.5vw, 38px)/1.12 var(--font-sans); letter-spacing: -0.02em; color: var(--text); }
 #top .hero__actions { justify-content: flex-start; margin-top: clamp(20px, 2.4vw, 32px); font-size: 17px; }
 
+#top .box > * { grid-column: 1; }
+#top .index { grid-row: 4; }
 .index { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
 .index__cell { display: grid; align-content: end; height: 100%; min-height: 112px; padding: 12px 14px 14px; text-decoration: none; color: var(--text-2); transition: background-color 0.25s, color 0.25s; }
 .index__cell:hover, .index__cell:focus-visible { background: var(--text); color: var(--bg); }
@@ -61,21 +78,12 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .index__cell > span { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; justify-content: space-between; font: 500 clamp(17px, 1.5vw, 22px)/1.15 var(--font-sans); letter-spacing: -0.015em; }
 .index small { font: 400 15px/1.2 var(--font-sans); color: var(--muted); }
 
-/* Behind the gate the hero is the name and the reactor: the box's frame, its
-   label bar and the index arrive with the rest of the page. */
-/* Behind the gate the box lets presses through to the reactor under it, all
-   but its two actions: the résumé and the email stay in reach before waking. */
-.gated #top .box { border-color: transparent; pointer-events: none; }
-.gated #top .hero__actions a { pointer-events: auto; }
-.gated #top .box__top, .gated #top .index { visibility: hidden; opacity: 0; }
-.waking #top .box__top, .waking #top .index { transition: opacity 900ms ease 500ms; }
 
 /* Rail ---------------------------------------------------------------- */
 .nav.rail { position: fixed; inset: 0 auto 0 0; z-index: 10; display: grid; grid-template-columns: none; grid-template-rows: auto 1fr auto; justify-items: center; width: var(--rail); max-width: none; height: auto; margin: 0; padding: 18px 0;
   border: 0; border-radius: 0; background: var(--ink); box-shadow: none;
   translate: -100% 0; visibility: hidden; transition: translate 0.5s var(--ease-out), visibility 0s 0.5s, opacity 900ms ease 500ms; }
 .docked .nav.rail, .menu-open .nav.rail { translate: none; visibility: visible; transition-delay: 0s; }
-.gated .nav.rail { visibility: hidden; }
 .rail__name { writing-mode: vertical-rl; rotate: 180deg; padding: 6px 12px; font: 900 20px/1 var(--display); letter-spacing: -0.03em; color: var(--text); text-decoration: none; }
 .rail__mid { display: grid; align-content: center; justify-items: center; gap: 12px; }
 .rail .nav__links { display: grid; gap: 2px; font-size: inherit; }
@@ -127,7 +135,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 :root.lab .slab .about__photo { justify-self: start; }
 :root.lab .slab--paper .about__photo::before { filter: brightness(0.5) saturate(1.5); }
 :root.lab :is(.slab--paper, .paper) .card:not(.about__photo) { background: var(--card); box-shadow: none; }
-.slab--paper .role__logo { filter: brightness(0); }
+.slab--paper .role__logo, .slab--paper .honours__logo--mono { filter: brightness(0); }
 .slab--paper .honours__logo--sutd, .slab--paper .honours__logo--white { filter: none; }
 .honours__group { scroll-margin-top: 24px; }
 #toolkit .kit, #toolkit .kit__toggle { margin-top: clamp(40px, 5vw, 72px); }
@@ -283,14 +291,18 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 @media (max-width: 1023px) {
   :root:root { scroll-padding-top: var(--bar); }
   #top .hero__title { font-size: clamp(64px, 19vw, 132px); }
-  /* The reactor waits at the foot of the hero, over where the index will be. */
-  .gated #top { padding-bottom: calc(var(--pad) + 110px); }
   .index { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .index li:last-child { grid-column: 1 / -1; }
   .index__cell { min-height: 48px; padding: 13px 12px 14px; }
   .box__top span + span { display: none; }
   .pause { margin: -12px 0; padding: 12px 14px; }
-
+}
+@media (max-width: 599px) {
+  .box__top { align-items: start; padding-block: 14px; }
+  .box__top span:first-child { font-size: 0.8125rem; line-height: 1.4; max-width: 30ch; }
+  .pause { margin-block: -6px; }
+}
+@media (max-width: 1023px) {
   .nav.rail { inset: 0 0 auto 0; grid-template-columns: 1fr auto; grid-template-rows: none; align-items: center; justify-items: start; width: auto; height: var(--bar); padding: 0 8px 0 16px; border-right: 0; translate: 0 -100%; }
   .rail__name { display: inline-flex; align-items: center; min-height: 44px; padding: 0; writing-mode: horizontal-tb; rotate: none; }
   .rail__mid { display: none; }
@@ -323,6 +335,34 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 }
 @media (max-width: 719px) {
   .paper__all .work__grid { grid-template-columns: 1fr; }
+
+  /* Projects on a phone: the picker is a row of named chips that scrolls
+     sideways (the cut-off chip at the edge says there are more), and the
+     first screen holds what a reader came for: the name, the three figures
+     beside a smaller suit, and the one-line summary. The plate behind is
+     dimmed so no words sit on a busy picture. */
+  .opener__invite { padding-block: 12px 10px; }
+  .marks-on .marks { display: flex; gap: 8px; padding: 2px var(--pad) 6px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scroll-padding-inline: var(--pad); scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+  .marks::-webkit-scrollbar { display: none; }
+  .marks button { flex: none; display: flex; align-items: center; gap: 8px; min-width: 48px; max-width: 11rem; min-height: 48px; padding: 6px 14px; text-align: left; color: var(--text-2); background: hsl(0 0% 100% / 0.06); box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.14); border-radius: 999px; scroll-snap-align: start; }
+  .marks b { flex: none; font-size: 14px; color: var(--muted); }
+  .marks button[aria-pressed="true"] b { color: inherit; }
+  .marks span { position: static; width: auto; height: auto; overflow: visible; clip-path: none; font-size: 14px; line-height: 1.15; }
+  .marks-on .marks__now { display: none; }
+
+  .opener__art { -webkit-mask-image: linear-gradient(to bottom, transparent 36%, #000 48%, #000 68%, transparent 80%); mask-image: linear-gradient(to bottom, transparent 36%, #000 48%, #000 68%, transparent 80%); }
+  .opener__art img { opacity: 0.22; }
+  .opener__stage { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 8px 12px; align-items: stretch; padding: 20px var(--pad) 4px; }
+  .opener__name { text-align: left; text-wrap: balance; }
+  .opener__suit { grid-column: 1; grid-row: 2 / span 3; justify-self: stretch; align-self: center; width: 100%; margin: 0; }
+  .opener__hint { font-size: 13px; }
+  .opener .stat { display: grid; grid-column: 2; align-content: center; padding: 10px 12px; }
+  .opener .stat[hidden] { display: none; }
+  .stat b { font-size: 24px; }
+  .stat span { hyphens: manual; }
+  .opener .opener__foot { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 12px var(--pad) 28px; }
+  .opener__foot p { font-size: 16px; line-height: 1.45; }
 }
 
 /* The portrait settles in: it fades up out of a soft blur and eases down from

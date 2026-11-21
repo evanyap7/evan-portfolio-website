@@ -25,12 +25,15 @@ const PAGES = [
 ];
 const PAGE_CHECKS = ['titles', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'emDash', 'projectPage', 'figureText', 'menu'];
 
-// One-off runs: a size, a URL and the checks to run there.
+// One-off runs: a size, a URL and the checks to run there. The `gate*`
+// runs keep their old names but now check the opposite: the site is open on
+// load and the reactor is an optional toy that blocks nothing.
 const EXTRA = [
   ...PAGES.flatMap((src) => SIZES.map(([width, height]) => ({ width, height, src, names: PAGE_CHECKS }))),
   { width: 1440, height: 800, src: '/', names: ['gate'] },
   { width: 393, height: 852, src: '/', names: ['gate'] },
   { width: 1440, height: 800, src: '/', names: ['gateKeys'] },
+  { width: 393, height: 852, src: '/', names: ['gateKeys'] },
   { width: 1440, height: 800, src: '/', names: ['gateWaits'] },
   { width: 393, height: 852, src: '/', names: ['gateWaits'] },
   { width: 1440, height: 800, src: '/', names: ['discovery'] },
@@ -94,14 +97,6 @@ function record(size, result, results) {
 
 async function run({ width, height, src, names }, results) {
   const label = `${width}×${height}${src === '/' ? '' : ` ${src}`}`;
-  // Frames share this page's session, so every run starts with the site
-  // already woken, except the runs that check the gate itself.
-  try {
-    if (names.some((name) => name.startsWith('gate'))) sessionStorage.removeItem('portfolio-on');
-    else sessionStorage.setItem('portfolio-on', '1');
-  } catch {
-    // Without storage every frame is gated; the gate's own checks still run.
-  }
   const frame = await load(width, height, src);
   if (!frame) {
     record(label, { name: 'load timed out', pass: false, detail: `after ${LOAD_TIMEOUT} ms` }, results);

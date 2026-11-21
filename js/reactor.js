@@ -1,16 +1,19 @@
-// The hero's arc reactor, page side. The 3D model (reactor-scene.js, with
-// three.js from the CDN in the import map) loads after the page, over a
-// still of itself, and only where WebGL2 works; otherwise the still stays.
-// Hold the reactor (pointer, or Space/Enter on its button) to charge it,
-// and let go to fire a pulse; drag it to spin it; with a mouse it also
-// turns to face the pointer. With reduced motion the reactor is a fully
-// powered still. On wide screens the hero's credentials hang off the reactor
-// as callouts on leader lines; narrower, they stay a plain list.
+// The hero's arc reactor, page side: a toy beside the name, never in the
+// way. The 3D model (reactor-scene.js, with three.js from the CDN in the
+// import map) loads after the page, over a still of itself, and only where
+// WebGL2 works; otherwise the still stays. Hold the reactor (pointer, or
+// Space/Enter on its button) to charge it, and let go to fire a pulse; drag
+// it to spin it; with a mouse it also turns to face the pointer. With
+// reduced motion the reactor is a fully powered still.
 
-import { whenActive } from './gate.js';
+import { CHARGE_S } from './gate.js';
 
 const LINES = ['Pulse away.', 'Repulsor fired.', 'Systems nominal.', 'Again?', 'Nice one.'];
-const WIDE = 1024;
+// At rest the line under the reactor says what it does.
+const HINT = 'Hold to charge';
+// Left alone it gives itself a small pulse a few times, then rests.
+const NUDGES = 2;
+const NUDGE_MS = 7000;
 
 const clamp = (value, lo, hi) => Math.min(hi, Math.max(lo, value));
 
@@ -20,56 +23,6 @@ function webgl2() {
   } catch {
     return false;
   }
-}
-
-// Places each credential at the end of a leader line from the reactor's rim.
-function initCallouts(hero, core) {
-  const list = hero.querySelector('[data-callouts]');
-  const lines = hero.querySelector('[data-lines]');
-  if (!list || !lines) return;
-  const items = [...list.children];
-
-  const layout = () => {
-    const wide = window.innerWidth >= WIDE;
-    hero.classList.toggle('hero--hud', wide);
-    if (!wide) {
-      lines.replaceChildren();
-      items.forEach((item) => item.removeAttribute('style'));
-      return;
-    }
-    const box = hero.getBoundingClientRect();
-    const rim = core.getBoundingClientRect();
-    const r = rim.width / 2;
-    const cx = rim.left - box.left + r;
-    const cy = rim.top - box.top + r;
-    lines.setAttribute('viewBox', `0 0 ${box.width.toFixed(1)} ${box.height.toFixed(1)}`);
-    let marks = '';
-    items.forEach((item, i) => {
-      const a = (Number(item.dataset.angle) * Math.PI) / 180;
-      const sx = Math.sign(Math.cos(a));
-      const sy = Math.sign(Math.sin(a));
-      const px = cx + r * 0.97 * Math.cos(a);
-      const py = cy + r * 0.97 * Math.sin(a);
-      const ex = px + sx * r * 0.3;
-      const ey = py + sy * r * 0.3;
-      const end = ex + sx * 36;
-      const left = sx < 0;
-      item.classList.toggle('is-left', left);
-      item.style.top = `${(ey - item.offsetHeight / 2).toFixed(1)}px`;
-      item.style.left = left ? '' : `${(end + 10).toFixed(1)}px`;
-      item.style.right = left ? `${(box.width - end + 10).toFixed(1)}px` : '';
-      marks += `<path pathLength="1" style="--i:${i}" d="M${px.toFixed(1)} ${py.toFixed(1)}L${ex.toFixed(1)} ${ey.toFixed(1)}H${end.toFixed(1)}"/>`
-        + `<rect style="--i:${i}" x="${(px - 2.5).toFixed(1)}" y="${(py - 2.5).toFixed(1)}" width="5" height="5"/>`;
-    });
-    lines.innerHTML = marks;
-  };
-
-  layout();
-  document.fonts?.ready.then(layout);
-  new ResizeObserver(layout).observe(hero);
-  // The lines draw in once the site is awake; a later relayout (a resize,
-  // a phone's address bar) redraws them in place without replaying that.
-  whenActive(() => setTimeout(() => lines.classList.add('is-drawn'), 2400));
 }
 
 export function initReactor() {
@@ -82,26 +35,17 @@ export function initReactor() {
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const state = {
     hue: 205, charging: false, power: 0, pulse: 0, spin: 0, tx: 0, ty: 0, dragX: 0, dragY: 0, vx: 0, vy: 0, onTick: null,
-    // Behind the gate (gate.js) it sleeps, dark, until the visitor wakes it.
-    awake: !document.documentElement.classList.contains('gated'),
+    awake: true,
   };
   let scene = null;
-  document.addEventListener('portfolio:waking', () => {
-    state.awake = true;
-    state.pulse = 1;
-    if (reduce) scene?.poweredOn();
-  }, { once: true });
-  // Held at the gate, it charges with the gate's meter.
-  document.addEventListener('gate:charge', (event) => {
-    if (!state.awake) state.charging = event.detail;
-  });
-
-  if ('ResizeObserver' in window) initCallouts(hero, hit);
 
   if (reduce) {
     hero.classList.add('reactor-still');
-    status.textContent = 'Arc reactor core';
+    if (status) status.textContent = 'Arc reactor core';
+    return;
   }
+
+  interact();
   if (!webgl2() || !('ResizeObserver' in window)) return;
 
   const canvas = document.createElement('canvas');
@@ -109,11 +53,12 @@ export function initReactor() {
   canvas.setAttribute('aria-hidden', 'true');
   root.prepend(canvas);
 
-  // On a phone the three.js scene waits for an idle moment, so it does not
-  // compete with the first paint while the gate is shut.
-  const idle = window.matchMedia('(pointer: coarse)').matches && 'requestIdleCallback' in window
-    ? new Promise((resolve) => requestIdleCallback(resolve, { timeout: 1500 }))
-    : Promise.resolve();
+  // The three.js scene waits for page load and then an idle moment, so its
+  // CDN requests never compete with the first screen. The poster shows meanwhile.
+  const loaded = document.readyState === 'complete' ? Promise.resolve()
+    : new Promise((resolve) => window.addEventListener('load', resolve, { once: true }));
+  const idle = loaded.then(() => new Promise((resolve) => ('requestIdleCallback' in window
+    ? requestIdleCallback(resolve, { timeout: 2000 }) : setTimeout(resolve, 200))));
   idle.then(() => import('./reactor-scene.js')).then(({ createReactor }) => {
     scene = createReactor(canvas, state);
     const size = () => {
@@ -125,72 +70,85 @@ export function initReactor() {
     scene.setHue(state.hue);
     canvas.addEventListener('webglcontextlost', () => {
       scene.stop();
+      scene = null;
       root.classList.remove('is-live');
     });
     root.classList.add('is-live');
-    if (reduce) {
-      scene.poweredOn();
-      return;
-    }
     run(scene);
   }).catch(() => canvas.remove());
 
-  // Renders only while the hero is on screen and the tab is visible.
+  // Renders only while the reactor is on screen and the tab is visible.
   function run(live) {
     let seen = false;
-    // In the lab the reactor goes with the door, and draws nothing after.
-    const gone = () => document.documentElement.classList.contains('door-open');
-    const toggle = () => (seen && !document.hidden && !gone() ? live.start() : live.stop());
+    const toggle = () => (seen && !document.hidden ? live.start() : live.stop());
     new IntersectionObserver(([entry]) => {
       seen = entry.isIntersecting;
       toggle();
     }).observe(root);
     document.addEventListener('visibilitychange', toggle);
-    document.addEventListener('lab:door-open', toggle);
-    interact();
   }
 
   // Input --------------------------------------------------------------
   function interact() {
-    // At rest the line is empty (and hidden); it speaks only while charging.
-    const idle = '';
     let shown = '';
     let reset = 0;
     let said = 0;
     let press = null;
+    let since = 0;
+    let used = false;
     const say = (text) => {
-      if (text === shown) return;
+      if (!status || text === shown) return;
       shown = text;
       status.textContent = text;
     };
     const sayFor = (text, ms) => {
       say(text);
       clearTimeout(reset);
-      reset = setTimeout(() => say(idle), ms);
+      reset = setTimeout(() => say(HINT), ms);
     };
-    say(idle);
-    // Charged to full at the gate: the pulse that lets the visitor in.
-    document.addEventListener('portfolio:waking', () => {
-      quiet = -2;
-      wave(1);
-      sayFor('Systems online.', 2600);
-    }, { once: true });
+    say(HINT);
 
-    // Left alone it still gives itself a small pulse now and then, so the
-    // first-time visitor sees what it does without having to try.
-    let quiet = 0;
-    const nudge = () => {
-      if (!state.awake || document.hidden || state.charging || press || state.power > 0) return;
-      state.pulse = 0.9;
-      wave(0.6);
+    // The charge ring follows the power while it is held, and drains after.
+    const ring = (power) => {
+      root.style.setProperty('--charge', power.toFixed(3));
+      root.classList.toggle('is-charging', state.charging || power > 0.01);
     };
-    setInterval(() => {
-      quiet += 1;
-      if (quiet >= 2) {
-        quiet = 0;
-        nudge();
+
+    // A ring of light that runs out from the core and across the hero. Only
+    // a pulse the visitor fires makes the name catch the light.
+    const wave = (p, flash) => {
+      const out = document.createElement('span');
+      out.className = 'reactor__wave';
+      out.setAttribute('aria-hidden', 'true');
+      root.append(out);
+      const reach = Math.hypot(hero.clientWidth, hero.clientHeight) / Math.max(1, hit.offsetWidth);
+      const done = () => out.remove();
+      if (out.animate) {
+        out.animate([
+          { transform: 'scale(0.55)', opacity: 0.95 },
+          { transform: `scale(${(1.2 + p * reach).toFixed(2)})`, opacity: 0 },
+        ], { duration: 700 + p * 800, easing: 'cubic-bezier(0.15, 0.7, 0.3, 1)' }).finished.then(done, done);
+      } else {
+        setTimeout(done, 700);
       }
-    }, 3000);
+      if (!flash) return;
+      hero.classList.remove('is-pulsed');
+      void hero.offsetWidth; // restart the name's flash
+      hero.classList.add('is-pulsed');
+    };
+
+    // Left alone it shows what it does a couple of times, softly, then rests.
+    let nudged = 0;
+    const nudge = setInterval(() => {
+      if (used || nudged >= NUDGES) {
+        clearInterval(nudge);
+        return;
+      }
+      if (document.hidden || state.charging || press) return;
+      nudged += 1;
+      state.pulse = 0.6;
+      wave(0.12, false);
+    }, NUDGE_MS);
 
     state.onTick = () => {
       if (!press) {
@@ -202,6 +160,7 @@ export function initReactor() {
         state.dragX *= 0.992;
         state.dragY *= 0.992;
       }
+      ring(state.power);
       if (state.charging) {
         const pct = Math.round(state.power * 100);
         say(pct >= 100 ? 'Full power. Let go.' : `Charging ${pct}%`);
@@ -209,39 +168,28 @@ export function initReactor() {
     };
 
     const charge = () => {
-      quiet = -4;
+      used = true;
+      since = performance.now();
       clearTimeout(reset);
       state.charging = true;
-    };
-
-    // A ring of light that runs out from the core and across the hero.
-    const wave = (p) => {
-      const ring = document.createElement('span');
-      ring.className = 'reactor__wave';
-      ring.setAttribute('aria-hidden', 'true');
-      root.append(ring);
-      const reach = Math.hypot(hero.clientWidth, hero.clientHeight) / hit.offsetWidth;
-      ring.animate([
-        { transform: 'scale(0.55)', opacity: 0.95 },
-        { transform: `scale(${(1.2 + p * reach).toFixed(2)})`, opacity: 0 },
-      ], { duration: 700 + p * 800, easing: 'cubic-bezier(0.15, 0.7, 0.3, 1)' }).finished.finally(() => ring.remove());
-      hero.classList.remove('is-pulsed');
-      void hero.offsetWidth; // restart the name's flash
-      hero.classList.add('is-pulsed');
+      ring(state.power);
+      if (!scene) say('Charging');
     };
 
     const fire = () => {
-      const p = state.power;
+      // Without the live model nothing counts the charge, so the hold's
+      // length stands in for it.
+      const p = scene ? state.power : Math.min(1, (performance.now() - since) / (CHARGE_S * 1000));
       state.charging = false;
       state.pulse = 0.35 + 0.65 * p;
-      wave(p);
+      if (!scene) ring(0);
+      wave(p, true);
       sayFor(p > 0.99 ? 'Full power pulse.' : LINES[said++ % LINES.length], 1800);
     };
 
-    // Behind the gate, presses belong to the gate (gate.js).
     hit.addEventListener('pointerdown', (event) => {
-      if (event.button !== 0 || !state.awake) return;
-      hit.setPointerCapture(event.pointerId);
+      if (event.button !== 0) return;
+      hit.setPointerCapture?.(event.pointerId);
       press = { x: event.clientX, y: event.clientY, lx: event.clientX, ly: event.clientY, drag: false };
       charge();
     });
@@ -255,7 +203,7 @@ export function initReactor() {
         press.drag = true;
         state.charging = false;
         root.classList.add('is-dragging');
-        say(idle);
+        say(HINT);
       }
       if (!press.drag) return;
       state.dragX = clamp(state.dragX + dx * 0.014, -2.1, 2.1);
@@ -271,7 +219,8 @@ export function initReactor() {
       root.classList.remove('is-dragging');
       if (drag || cancelled) {
         state.charging = false;
-        say(idle);
+        if (!scene) ring(0);
+        say(HINT);
       } else {
         fire();
       }
@@ -281,17 +230,20 @@ export function initReactor() {
     hit.addEventListener('contextmenu', (event) => event.preventDefault());
 
     hit.addEventListener('keydown', (event) => {
-      if (!state.awake || (event.key !== ' ' && event.key !== 'Enter')) return;
+      if (event.key !== ' ' && event.key !== 'Enter') return;
       event.preventDefault();
-      if (!event.repeat) charge();
+      if (!event.repeat && !state.charging) charge();
     });
     hit.addEventListener('keyup', (event) => {
-      if (!state.awake || (event.key !== ' ' && event.key !== 'Enter')) return;
+      if (event.key !== ' ' && event.key !== 'Enter') return;
       event.preventDefault();
       if (state.charging) fire();
     });
     hit.addEventListener('blur', () => {
-      if (!press) state.charging = false;
+      if (press || !state.charging) return;
+      state.charging = false;
+      if (!scene) ring(0);
+      say(HINT);
     });
 
     // With a mouse, the reactor turns to face the pointer anywhere on screen.

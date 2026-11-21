@@ -37,7 +37,7 @@
     <nav class="nav__links" aria-label="Primary">
       <a href="/#about">About</a>
       <a href="/#experience">Experience</a>
-      <a href="/#work">Work</a>
+      <a href="/#work">Projects</a>
       <a href="/#toolkit">Toolkit</a>
       <a href="/#contact">Contact</a>
     </nav>
@@ -51,7 +51,7 @@
     <ul class="menu__links">
       <li><a href="/#about">About</a></li>
       <li><a href="/#experience">Experience</a></li>
-      <li><a href="/#work">Selected work</a></li>
+      <li><a href="/#work">Projects</a></li>
       <li><a href="/#toolkit">Toolkit</a></li>
       <li><a href="/#contact">Contact</a></li>
     </ul>
@@ -62,7 +62,7 @@
   </nav>
 
   <main id="main" class="project">
-    <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
+    <a class="back" href="/#work"><span aria-hidden="true">←</span> All projects</a>
     <header class="project__head">
       <h1 class="project__title vt-website-revamp">Corporate Website Revamp Challenge</h1>
       <p class="project__lede">A nine-page interactive redesign of Univers’ website, built with no framework and no build step.</p>
@@ -70,7 +70,7 @@
       <dl class="stats">
         <div><dt>Finalist against senior solution architects worldwide</dt><dd><span data-count>Top 5</span></dd></div>
         <div><dt>Languages from one custom i18n engine</dt><dd><span data-count>7</span></dd></div>
-        <div><dt>Executive tools: ROI modeler, ops simulator, live counters</dt><dd><span data-count>3</span></dd></div>
+        <div><dt>Executive tools: ROI modeller, ops simulator, live counters</dt><dd><span data-count>3</span></dd></div>
       </dl>
     </header>
     <figure class="card reel project__figure">
@@ -92,17 +92,17 @@
       </dl></div>
       <div><h2 class="mono">Things to try</h2><div class="prose"><ul>
         <li><strong>Interactive mesh.</strong> A Three.js scene of connected endpoints with depth, glow and camera parallax. The nodes drift, link up and spring away from your cursor.</li>
-        <li><strong>Electric drag trail.</strong> Click and drag anywhere to leave a neon ribbon with physics-driven sparks.</li>
+        <li><strong>Electric drag trail.</strong> Click and drag anywhere to leave a neon ribbon with sparks.</li>
         <li><strong>Odometer counters.</strong> Each digit of a statistic scrolls like a mechanical ticker, and hover or click rolls it again.</li>
         <li><strong>3D card tilt</strong> with a specular flashlight that follows the pointer.</li>
         <li><strong>Interactive Lab.</strong> A grid stress test that spikes the telemetry and resolves in 11 ms, a sound engine built on the Web Audio API with no audio files, and three background modes.</li>
       </ul></div></div>
       <div><h2 class="mono">Decisions and trade-offs</h2><div class="prose"><ul>
-        <li><strong>No framework, on purpose.</strong> No React, no Tailwind, no build step and nothing to install. First paint is instant, and anyone can run it with a static file server.</li>
-        <li><strong>3D that can fail safely.</strong> Three.js loads with a single dynamic import from a CDN. If it is blocked, the site still runs, minus the background.</li>
+        <li><strong>Plain JavaScript.</strong> There is no React, Tailwind or build step, so anyone can run it with a static file server.</li>
+        <li><strong>The 3D is optional.</strong> Three.js loads with a single dynamic import from a CDN. If it is blocked, the site still runs, minus the background.</li>
         <li><strong>One i18n engine for seven languages</strong> (English, German, French, Japanese, Dutch, Norwegian and Chinese), written from scratch instead of a library.</li>
-        <li><strong>On brand.</strong> Univers' own palette, Inter with tabular figures for numbers and JetBrains Mono for telemetry.</li>
-        <li><strong>A real endpoint.</strong> The demo-booking form posts to a Vercel serverless function that validates business contact details and formats each request as a CSV record.</li>
+        <li><strong>Univers’ own palette and fonts.</strong> Inter with tabular figures for numbers and JetBrains Mono for telemetry.</li>
+        <li><strong>A working booking form.</strong> The demo-booking form posts to a Vercel serverless function that validates business contact details and formats each request as a CSV record.</li>
       </ul></div></div>
       <div><h2 class="mono">Result</h2><div class="prose">
         <p>It reached the Top 5 of 100 entries and I pitched it live to the CEO. This is a concept redesign, not the official Univers website, and the company's trademarks belong to their owners.</p>

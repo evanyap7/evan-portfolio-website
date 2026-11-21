@@ -26,9 +26,7 @@ export function initDeck() {
 
   const frame = () => {
     const vh = window.innerHeight;
-    // Behind the gate a phone's sections are out of the flow (reactor.css), so
-    // About's box says nothing: the hero is on screen and uncovered.
-    const top = root.classList.contains('gated') ? vh : about.getBoundingClientRect().top;
+    const top = about.getBoundingClientRect().top;
     root.classList.toggle('docked', top < vh * 0.3);
 
     const pin = pinned.matches && !still;

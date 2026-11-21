@@ -206,11 +206,20 @@ h1, h2, h3, h4 {
   text-wrap: balance;
 }
 
-/* Long words break at hyphens on narrow screens instead of overflowing. */
+/* Long words break at hyphens on narrow screens instead of overflowing.
+   Only long words: at least 5 letters stay on each side of the break, so
+   short ones like "intern" or "approved" are never split. */
 @media (max-width: 719px) {
   p, li, dd {
     -webkit-hyphens: auto;
     hyphens: auto;
+    hyphenate-limit-chars: 10 5 5;
+    -webkit-hyphenate-limit-before: 5;
+    -webkit-hyphenate-limit-after: 5;
+  }
+  .contact__invite {
+    -webkit-hyphens: manual;
+    hyphens: manual;
   }
 }
 

@@ -41,14 +41,15 @@ function split(title) {
 }
 
 function initTitles() {
-  const titles = [...document.querySelectorAll('.hero__title, .title, .project__title')];
+  // The home hero name is left whole and visible: it is the largest thing on
+  // a phone's first screen, so animating it in would hold back the paint.
+  const titles = [...document.querySelectorAll('.title, .project__title')];
   if (!titles.length) return;
   titles.forEach(split);
 
-  // The hero is on screen at load, so its words rise straight away, behind
-  // the gate or not: the headline is part of the first screen.
+  // A project page's title is on screen at load, so its words rise straight away.
   const show = (title) => title.classList.add('is-in');
-  const hero = titles.filter((title) => title.matches('.hero__title, .project__title'));
+  const hero = titles.filter((title) => title.matches('.project__title'));
   requestAnimationFrame(() => requestAnimationFrame(() => hero.forEach(show)));
 
   const observer = new IntersectionObserver((entries) => {

@@ -38,6 +38,7 @@ export function initProjects() {
   const root = document.documentElement;
   const still = window.matchMedia('not all').matches;
   const narrow = window.matchMedia('(max-width: 1023px)');
+  const phone = window.matchMedia('(max-width: 719px)');
   const $ = (id) => document.getElementById(id);
   const fig = chapter.querySelector('.opener__suit');
   const stats = [...chapter.querySelectorAll('.stat')];
@@ -80,9 +81,11 @@ export function initProjects() {
   const fitOnce = () => {
     const cs = getComputedStyle(stage);
     const w = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    const h = narrow.matches ? 168 : (stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)) * 0.9;
+    // On a phone the name shares the first screen with the figures, so it
+    // stays to two short lines.
+    const h = phone.matches ? 108 : narrow.matches ? 168 : (stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)) * 0.9;
     let lo = 32;
-    let hi = Math.max(lo, Math.min(520, w * 0.36));
+    let hi = Math.max(lo, Math.min(phone.matches ? 76 : 520, w * 0.36));
     for (let i = 0; i < 9; i += 1) {
       const mid = (lo + hi) / 2;
       name.style.fontSize = `${mid}px`;
@@ -143,11 +146,23 @@ export function initProjects() {
   };
 
   const pickers = [];
+  // On a phone the picker scrolls sideways: bring the chosen chip into the
+  // row's view, moving only the row, never the page.
+  const reveal = (i) => {
+    const chip = marksBox.querySelector(`button[data-mark="${i}"]`);
+    if (!chip || marksBox.scrollWidth <= marksBox.clientWidth) return;
+    const pad = parseFloat(getComputedStyle(marksBox).paddingLeft) || 0;
+    const left = chip.offsetLeft - marksBox.offsetLeft - pad;
+    const right = left + chip.offsetWidth + 2 * pad + 28;
+    if (left < marksBox.scrollLeft) marksBox.scrollTo({ left, behavior: still ? 'auto' : 'smooth' });
+    else if (right > marksBox.scrollLeft + marksBox.clientWidth) marksBox.scrollTo({ left: right - marksBox.clientWidth, behavior: still ? 'auto' : 'smooth' });
+  };
   const select = (i, { instant = false } = {}) => {
     if (i === current) return;
     current = i;
     const p = MARKS[i];
     pickers.forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.mark) === i)));
+    reveal(i);
     $('p-status').textContent = `Mark ${p.mark}, ${p.name}`;
     window.clearTimeout(swapTimer);
     chapter.classList.remove('swap');

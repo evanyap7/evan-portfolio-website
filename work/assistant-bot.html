@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>E.G.O | Evan Yap</title>
-  <meta name="description" content="E.G.O, Everything Gets Optimised: an autonomous multi-agent personal assistant on Telegram. An event-driven architecture orchestrating expenses, calendars, workouts, bill splitting and email from text, voice notes or photos, and lets friends book my free time. A three-model chain tries the cheapest model first.">
+  <meta name="description" content="E.G.O (Everything Gets Optimised) is my personal assistant on Telegram. A text, voice note or photo logs expenses, books meetings, runs workouts, splits bills and drafts email. Friends can book my free time, and a three-model chain tries the cheapest model first.">
   <meta name="theme-color" content="#04070a">
   <meta property="og:title" content="E.G.O | Evan Yap">
-  <meta property="og:description" content="E.G.O, Everything Gets Optimised: an autonomous multi-agent personal assistant on Telegram. An event-driven architecture orchestrating expenses, calendars, workouts, bill splitting and email from text, voice notes or photos, and lets friends book my free time. A three-model chain tries the cheapest model first.">
+  <meta property="og:description" content="E.G.O (Everything Gets Optimised) is my personal assistant on Telegram. A text, voice note or photo logs expenses, books meetings, runs workouts, splits bills and drafts email. Friends can book my free time, and a three-model chain tries the cheapest model first.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.evanyap.com/work/assistant-bot">
   <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
@@ -37,7 +37,7 @@
     <nav class="nav__links" aria-label="Primary">
       <a href="/#about">About</a>
       <a href="/#experience">Experience</a>
-      <a href="/#work">Work</a>
+      <a href="/#work">Projects</a>
       <a href="/#toolkit">Toolkit</a>
       <a href="/#contact">Contact</a>
     </nav>
@@ -51,7 +51,7 @@
     <ul class="menu__links">
       <li><a href="/#about">About</a></li>
       <li><a href="/#experience">Experience</a></li>
-      <li><a href="/#work">Selected work</a></li>
+      <li><a href="/#work">Projects</a></li>
       <li><a href="/#toolkit">Toolkit</a></li>
       <li><a href="/#contact">Contact</a></li>
     </ul>
@@ -62,7 +62,7 @@
   </nav>
 
   <main id="main" class="project">
-    <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
+    <a class="back" href="/#work"><span aria-hidden="true">←</span> All projects</a>
     <header class="project__head">
       <h1 class="project__title vt-assistant-bot">E.G.O</h1>
       <p class="project__lede">A personal assistant on Telegram that runs expenses, calendars, workouts, bill splitting and email from a text, a voice note or a photo.</p>
@@ -70,7 +70,7 @@
       <dl class="stats">
         <div><dt>Intents, each validated by a Zod schema</dt><dd><span data-count>37</span></dd></div>
         <div><dt>Test messages routed correctly (my own set of 39, Nov 2026)</dt><dd><span data-count>38/39</span></dd></div>
-        <div><dt>Lower latency than sequential parsing (6 receipts, mean of 3 runs)</dt><dd><span data-count>~74%</span></dd></div>
+        <div><dt>Less sync time than sequential parsing (6 receipts, mean of 3 runs)</dt><dd><span data-count>~74%</span></dd></div>
       </dl>
     </header>
     <figure class="card reel project__figure" data-reel="chain">
@@ -113,8 +113,8 @@
     </figure>
     <div class="rows project__body">
       <div><h2 class="mono">Overview</h2><div class="prose">
-        <p class="project__summary">One Telegram chat that runs my day. I type or send a voice note, and E.G.O logs the expense, books the meeting, coaches the lift and chases the to-do.</p>
-        <p>No app switching and no forms. A message like "log lunch $14 and move my 3pm to 4" becomes two tool calls and one reply, and both changes can be undone.</p>
+        <p class="project__summary">One Telegram chat for my money, calendar, workouts and to-dos. I type or send a voice note and it does the task.</p>
+        <p>A message like "log lunch $14 and move my 3pm to 4" becomes two tool calls and one reply, and I can undo both.</p>
       </div></div>
       <div><h2 class="mono">What it does</h2><dl class="facts">
         <div><dt>Finance</dt><dd>Apple Pay taps and DBS PayLah! and Grab emails log and categorise themselves. It handles 15+ currencies, bill splitting with an IOU ledger, budgets with pacing alerts and CSV export.</dd></div>
@@ -126,18 +126,18 @@
       </dl></div>
       <div><h2 class="mono">How it works</h2><div class="prose">
         <ol>
-          <li><strong>A fast path first.</strong> Slash commands, buttons, cron jobs and plain "weight x reps" logging skip the model entirely.</li>
-          <li><strong>Haiku classifies.</strong> Anything else goes to the cheapest model to work out what was asked.</li>
-          <li><strong>Sonnet orchestrates.</strong> It picks typed tools for finance, workouts, calendar, to-dos, email and search. Opus is the last resort for hard cases.</li>
-          <li><strong>Tools do the work.</strong> They read and write Google Sheets, Calendar and Gmail, then reply with an undo button.</li>
+          <li><strong>Commands skip the model.</strong> Slash commands, buttons, cron jobs and plain "weight x reps" logging skip the model entirely.</li>
+          <li><strong>Haiku works out the request.</strong> Anything else goes to the cheapest model to work out what was asked.</li>
+          <li><strong>Sonnet picks the tools.</strong> It picks typed tools for finance, workouts, calendar, to-dos, email and search. Opus is the last resort for hard cases.</li>
+          <li><strong>The tools do the work.</strong> They read and write Google Sheets, Calendar and Gmail, then reply with an undo button.</li>
         </ol>
         <p>Voice notes are transcribed by Gemini first and then routed like text. Photos, such as a schedule screenshot, go through the same chain. It runs on Vercel as stateless functions, with state held in Google Sheets and six scheduled jobs for briefs, reminders, the rest timer, recurring items and cleanup.</p>
       </div></div>
       <div><h2 class="mono">Decisions and trade-offs</h2><div class="prose"><ul>
         <li><strong>Skip the model where I can.</strong> Anything predictable is plain code, which is faster and costs nothing.</li>
         <li><strong>Cheapest model first.</strong> A single Haiku call costs about $0.001 against about $0.021 for Sonnet and $0.042 for Opus, and a credits command warns me at 10% and 5% balance.</li>
-        <li><strong>Safe by design.</strong> Only I get the full assistant. Friends I approve get a limited guest mode that works in private chats only and is rate-limited, and anyone not approved fails closed. It also has verified webhooks, Zod-validated tool inputs, confirmation tokens for destructive actions, soft deletes and an undo on every change.</li>
-        <li><strong>Stateless on purpose.</strong> Keeping state in Google Sheets means cold-start serverless functions are fine and I can inspect or edit my data by hand.</li>
+        <li><strong>Only I get full access.</strong> Friends I approve get a limited guest mode that works in private chats only and is rate-limited, and anyone not approved fails closed. It also has verified webhooks, Zod-validated tool inputs, confirmation tokens for destructive actions, soft deletes and an undo on every change.</li>
+        <li><strong>All state lives in Google Sheets.</strong> That means cold-start serverless functions are fine and I can inspect or edit my data by hand.</li>
       </ul></div></div>
       <div><h2 class="mono">Evidence</h2><div class="prose">
         <dl class="facts">
@@ -150,7 +150,7 @@
         </details>
       </div></div>
       <div><h2 class="mono">How I built it</h2><div class="prose">
-        <p>I built it solo as a full-stack developer, and I used AI coding assistants including Claude Code. The instructions they work from live in the repo, and the tests are how I check their work: there are suites for the orchestrator, workout sessions, bill splitting, calendar batching and memory, plus the routing eval and benchmark scripts.</p>
+        <p>I built it solo as a full-stack developer, and I used AI coding assistants including Claude Code. The instructions they work from live in the repo, and I check their work with tests: there are suites for the orchestrator, workout sessions, bill splitting, calendar batching and memory, plus the routing eval and benchmark scripts.</p>
       </div></div>
       <div><h2 class="mono">Stack</h2><p class="stack">Next.js · TypeScript · Vercel AI SDK · Claude (Haiku, Sonnet, Opus) · Gemini (voice notes) · Perplexity Sonar · Google Cloud Pub/Sub · Gmail, Sheets and Calendar APIs · Zod</p></div>
       <div><h2 class="mono">Links</h2><p class="links">

@@ -1,11 +1,9 @@
 /* The main page, section by section. */
 
 /* Hero -------------------------------------------------------------- */
-/* The name, split around the arc reactor (reactor.css), then the
-   headline, the lede, the two pills and the credentials. --core is the
-   reactor's diameter; the name's two words sit either side of it. */
+/* The hero's base: its box, name, lede and pills are laid out in
+   editions.css; the arc reactor in it (reactor.css) sets its own --core. */
 .hero {
-  --core: clamp(240px, 30vw, 440px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,55 +12,20 @@
   min-height: calc(100svh - var(--nav) - var(--nav-top));
   position: relative;
   isolation: isolate;
-  /* Clipped at the sides only (the reactor's canvas overhangs on phones);
-     above and below its glow may spill, so it never ends in a hard line. */
+  /* Clipped at the sides only, so the reactor's glow may spill above and
+     below and never ends in a hard line. */
   overflow: hidden;
   overflow: clip visible;
   padding: 32px var(--gutter) 64px;
   text-align: center;
 }
 
-.hero__stage {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  max-width: 1240px;
-  height: var(--core);
-}
-
-.hero__name {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: calc(var(--core) * 0.8);
-  align-items: center;
-  width: 100%;
-  font-size: clamp(64px, 12.4vw, 196px);
-  font-weight: 600;
-  line-height: 0.9;
-  letter-spacing: -0.055em;
-  pointer-events: none;
-}
-
-.hero__name span:first-child { justify-self: end; }
-.hero__name span:last-child { justify-self: start; }
-
-/* The reactor's canvas reaches past the stage; the text below sits over it. */
-.hero__who,
+/* The reactor's canvas reaches past its stage; the words sit over it. */
 .hero__title,
 .hero__lede,
 .hero__actions {
   position: relative;
   z-index: 2;
-}
-
-.hero__who {
-  font-size: clamp(18px, 2vw, 30px);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: var(--text-2);
 }
 
 .hero__title {
@@ -95,22 +58,7 @@
 
 @media (max-width: 719px) {
   .hero {
-    --core: min(280px, 72vw);
     padding-top: 24px;
-  }
-
-  /* On a phone the reactor comes first, then the name on one line. */
-  .hero__stage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-  }
-
-  .hero__name {
-    display: block;
-    margin-top: 8px;
-    font-size: clamp(52px, 16vw, 84px);
   }
 
   /* The headline leads: the biggest type on the screen, the rest below it. */
@@ -118,10 +66,6 @@
     margin-top: 14px;
     font-size: clamp(46px, 13.4vw, 68px);
     line-height: 1;
-  }
-
-  .hero__who {
-    font-size: 17px;
   }
 
   .hero__lede {
@@ -146,14 +90,12 @@
   }
 }
 
-/* Load: the words rise in under the headline, once. Behind the gate they
-   are already up, so waking does not run it again. */
+/* Load: the words rise in under the headline, once. */
 @media all {
-  .hero > :not(.hero__stage, .hero__title, .hero__lines) {
+  .hero > :not(.hero__stage, .hero__title) {
     animation: rise 900ms var(--ease-out) backwards;
   }
 
-  .hero > .reactor__panel { animation-delay: 700ms; }
   .hero > .hero__lede { animation-delay: 620ms; }
   .hero > .hero__actions { animation-delay: 700ms; }
 }
@@ -342,14 +284,15 @@
 }
 
 /* Experience -------------------------------------------------------- */
-/* A table of hairline rows: dates, who and what, then the points. A thin
-   timeline runs down the left: a hairline track, a brighter line that
-   motion.js draws down as the section scrolls past (--p, 0 to 1; whole
-   when motion is reduced), and a node per role that lights as the role
-   comes into view. */
+/* Built for a ten-second scan: one hairline row per role, with who and
+   when on the first line and one or two outcomes under it; anything more
+   waits behind "One more". A thin timeline runs down the left: a hairline
+   track, a brighter line that motion.js draws down as the section scrolls
+   past (--p, 0 to 1; whole when motion is reduced), and a node per role
+   that lights as the role comes into view. */
 .timeline {
   position: relative;
-  padding-left: 40px;
+  padding-left: 32px;
 }
 
 .timeline::before,
@@ -371,13 +314,24 @@
 
 .role {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "who dates" "body body";
+  gap: 12px 24px;
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+}
+
+.roles > .role:first-child {
+  border-top: 0;
+  padding-top: 8px;
 }
 
 .role::before {
   content: "";
   position: absolute;
-  top: 38px;
-  left: -40px;
+  top: 31px;
+  left: -32px;
   width: 9px;
   height: 9px;
   border: 1px solid var(--line-2);
@@ -386,36 +340,30 @@
   transition: background-color 400ms, border-color 400ms;
 }
 
+.roles > .role:first-child::before {
+  top: 15px;
+}
+
 .role.is-visible::before {
   border-color: var(--text);
   background: var(--text);
 }
 
-.roles--earlier .role::before {
-  top: 28px;
-}
-
-@media (max-width: 719px) {
-  .timeline {
-    padding-left: 28px;
-  }
-
-  .role::before {
-    top: 33px;
-    left: -28px;
-  }
-}
-
-.role {
-  display: grid;
-  grid-template-columns: 13rem minmax(0, 17rem) minmax(0, 1fr);
-  gap: 12px 40px;
-  padding: 36px 0;
+.role__who {
+  grid-area: who;
+  min-width: 0;
 }
 
 .role__dates {
-  padding-top: 5px;
+  grid-area: dates;
+  padding-top: 4px;
   color: var(--dim);
+  white-space: nowrap;
+}
+
+.role__body {
+  grid-area: body;
+  min-width: 0;
 }
 
 .role__org {
@@ -425,7 +373,7 @@
   letter-spacing: -0.01em;
 }
 
-/* The Univers logo, turned white. */
+/* The Univers logo, turned white (black on paper, editions.css). */
 .role__logo {
   width: auto;
   height: 22px;
@@ -434,65 +382,216 @@
 }
 
 .role__title {
-  margin-top: 6px;
+  margin-top: 4px;
   color: var(--muted);
   font-size: var(--t-small);
   line-height: 1.5;
 }
 
 .role__points {
+  max-width: 68ch;
   color: var(--text-2);
 }
 
 ul.role__points li + li {
-  margin-top: 12px;
+  margin-top: 8px;
+}
+
+/* The rest of a role, one tap away. */
+.role__more > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 2px;
+  color: var(--text);
+  font-size: var(--t-small);
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+}
+
+.role__more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.role__more > summary::after {
+  content: "+";
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.role__more[open] > summary::after {
+  content: "\2212";
+}
+
+.role__more > summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.role__more > .role__points {
+  margin-top: 4px;
+}
+
+/* A phone gives the title the full width; the dates go under it. */
+@media (max-width: 599px) {
+  .role {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "who" "dates" "body";
+    gap: 6px;
+  }
+
+  .role__dates {
+    padding-top: 0;
+  }
+
+  .role__body {
+    margin-top: 6px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .role {
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr) 10.5rem;
+    grid-template-areas: "who body dates";
+    gap: 8px 48px;
+  }
+
+  .role__dates {
+    text-align: right;
+  }
 }
 
 .roles__earlier {
-  margin: 64px 0 16px;
+  margin: 28px 0 0;
   color: var(--dim);
   font-weight: 400;
 }
 
 .roles--earlier .role {
-  padding: 22px 0;
+  padding: 12px 0 0;
+  border-top: 0;
+}
+
+.roles--earlier .role::before {
+  top: 19px;
 }
 
 .roles--earlier .role__org {
   font-size: 19px;
 }
 
-/* The honours, after the roles: each tier under its own small heading,
-   as the earlier roles are. */
+/* Credentials: every award, scholarship, certificate and school as one
+   dense row (logo, name, a line, the year), tiers in two columns on a
+   wide screen. */
+.honours__title {
+  margin: clamp(56px, 7vw, 96px) 0 0;
+  color: var(--text);
+  font: 800 clamp(28px, 3.2vw, 40px)/1 var(--display);
+  letter-spacing: -0.03em;
+}
+
+.honours {
+  columns: 2 24rem;
+  column-gap: 56px;
+}
+
+.honours__group {
+  break-inside: avoid;
+  padding-top: 28px;
+}
+
 .honours__tier {
-  margin: 64px 0 16px;
+  margin-bottom: 4px;
   color: var(--dim);
   font-weight: 400;
 }
 
-.honours__group {
-  scroll-margin-top: calc(var(--nav) + var(--nav-top) + 24px);
+.honours .rows > div,
+.honours .rows > div:first-child {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name year" "sub year";
+  gap: 2px 20px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
 }
 
-@media (max-width: 1023px) {
-  .role {
-    grid-template-columns: 9.5rem minmax(0, 1fr);
-  }
-
-  .role__points {
-    grid-column: 2;
-  }
+.honours .rows > .has-logo,
+.honours .rows > .has-logo:first-child {
+  padding-left: 64px;
 }
 
-@media (max-width: 719px) {
-  .role {
+.honours .rows dt {
+  grid-area: name;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+}
+
+.honours .rows dd {
+  grid-area: sub;
+  color: var(--text-2);
+  font-size: var(--t-small);
+  line-height: 1.5;
+}
+
+.honours .rows .cred__year {
+  grid-area: year;
+  padding-top: 3px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+/* A 44px link in a compact row: the target keeps its height, the row
+   does not grow to fit it. */
+.honours .text-link {
+  margin-block: -11px;
+}
+
+/* Logos sit in one 48 × 28 slot to the left of each name. */
+.honours__logo {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  width: 48px;
+  height: 28px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.honours__logo--white {
+  filter: brightness(0) invert(1);
+}
+
+/* The SUTD file is the mark over its wordmark; the slot shows the mark. */
+.honours__logo--sutd {
+  top: 19px;
+  width: 52px;
+  height: 14px;
+  object-fit: cover;
+  object-position: top;
+}
+
+@media (max-width: 599px) {
+  .honours .rows > div,
+  .honours .rows > div:first-child {
     grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-    padding: 28px 0;
+    grid-template-areas: "name" "sub" "year";
   }
 
-  .role__points {
-    grid-column: 1;
+  .honours .rows .cred__year {
+    padding-top: 0;
   }
 }
 
@@ -626,48 +725,6 @@ ul.role__points li + li {
   color: var(--muted);
 }
 
-.rows--named dt {
-  color: var(--text);
-  font-size: var(--t-card);
-  font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-}
-
-/* Logos of the schools and certificate providers, above each name. Most
-   are drawn in white, like the Univers logo; the VJC crest and the NCSF
-   mark keep their own colours. */
-.honours__logo {
-  display: block;
-  width: auto;
-  height: 32px;
-  margin-bottom: 14px;
-  object-fit: contain;
-  object-position: left center;
-}
-
-.honours__logo--sutd {
-  width: 94px;
-  height: 22px;
-  margin-bottom: 12px;
-  object-fit: cover;
-  object-position: top;
-  filter: brightness(0) invert(1);
-}
-
-.honours__logo--white {
-  height: 52px;
-  filter: brightness(0) invert(1);
-}
-
-.honours__logo--round {
-  height: 40px;
-}
-
-.honours__logo--wide {
-  height: 38px;
-}
-
 .text-link {
   display: inline-block;
   padding-block: 11px;
@@ -744,6 +801,4 @@ ul.role__points li + li {
    instead of filling a screen it cannot fit, and the name stops at the height. */
 @media (orientation: landscape) and (max-height: 500px) {
   .hero { min-height: 0; padding-block: 16px; }
-  .hero { --core: clamp(120px, 38vh, 180px); }
-  .hero__name { font-size: clamp(40px, 15vh, 64px); }
 }
