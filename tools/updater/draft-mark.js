@@ -95,18 +95,59 @@ function atoms(text) {
   return String(text).replace(/(\d),(?=\d)/g, '$1').match(/\d+(?:\.\d+)?/g) ?? [];
 }
 
-function assertNumbersGrounded(draft, claims) {
-  const known = new Set(claims.flatMap((c) => atoms(c.text)));
-  const bad = [];
-  for (const [a, b] of [...draft.chips, ...draft.rows]) {
-    for (const piece of [a, b]) {
-      for (const c of extractClaims(piece)) {
-        for (const n of atoms(c.text)) if (!known.has(n)) bad.push(c.text);
-      }
-    }
+const TLDS = 'com|net|org|io|dev|app|ai|co|xyz|example|me|info|biz|us|uk|site|online|tech|cloud|link|ly|gg|tv|cc|ru|cn|tk|top|store|shop|live|pro|vip|club';
+const DOMAIN_RE = new RegExp(String.raw`(?<![\w-])(?:[a-z0-9-]+\.)+(?:${TLDS})(?![\w-])`, 'gi');
+// Well-known technology names that merely look like domains.
+const TECH_NAMES = new Set(['socket.io', 'asp.net', 'node.js', 'vue.js', 'next.js', 'three.js', 'chart.js']);
+
+function hostAllowed(host, homepage) {
+  host = host.toLowerCase();
+  try {
+    return !!homepage && host === new URL(homepage).hostname.toLowerCase();
+  } catch {
+    return false;
   }
-  if (bad.length) {
-    throw new DraftSchemaError(`Numbers not found in the README or description: ${[...new Set(bad)].join(', ')}`, bad);
+}
+
+/** Text with every (already allowlisted) http(s)/www URL removed, for scanning. */
+function withoutUrls(text) {
+  return text.replace(URL_RE, ' ').replace(/(?<![\w.-])github\.com\/evanyap7(?:\/[^\s]*)?/gi, ' ');
+}
+
+/** Throws DraftSchemaError when a string carries anything that could smuggle a link or markup. */
+function assertSafeText(raw, filtered, homepage, where) {
+  const fail = (why) => {
+    throw new DraftSchemaError(`Unsafe text in ${where}: ${why}`, [why]);
+  };
+  if (/[\x00-\x1f\x7f]/.test(raw)) fail('control character or newline');
+  const t = withoutUrls(filtered);
+  if (/[<>]/.test(t)) fail('markup characters');
+  if (t.includes('//')) fail('protocol-relative or scheme-less link');
+  if (t.includes('@')) fail('email address or handle');
+  if (/\b[a-z][a-z0-9+.-]*:[^\s]/i.test(t)) fail('scheme token');
+  if (/\[\s*\.\s*\]|\(\s*\.\s*\)|\{\s*\.\s*\}|\[\s*dot\s*\]|\(\s*dot\s*\)|hxxp/i.test(t)) fail('obfuscated link');
+  for (const m of t.matchAll(DOMAIN_RE)) {
+    if (TECH_NAMES.has(m[0].toLowerCase())) continue;
+    if (hostAllowed(m[0], homepage)) continue;
+    fail(`domain-like token "${m[0]}"`);
+  }
+}
+
+function collectStrings(v, out = []) {
+  if (typeof v === 'string') out.push(v);
+  else if (Array.isArray(v)) v.forEach((x) => collectStrings(x, out));
+  else if (v && typeof v === 'object') Object.values(v).forEach((x) => collectStrings(x, out));
+  return out;
+}
+
+function assertNumbersGrounded(draft, sourceText) {
+  const known = new Set(atoms(sourceText));
+  const bad = new Set();
+  for (const s of collectStrings(draft)) {
+    for (const n of atoms(withoutUrls(s))) if (!known.has(n)) bad.add(n);
+  }
+  if (bad.size) {
+    throw new DraftSchemaError(`Numbers not found in the README or description: ${[...bad].join(', ')}`, [...bad]);
   }
 }
 
@@ -135,8 +176,16 @@ export async function draftMark(ctx, call = callClaude) {
   const problems = validate(reply, DRAFT_SCHEMA);
   if (problems.length) throw new DraftSchemaError(`Draft failed schema: ${problems.join('; ')}`, problems);
 
-  const { slug: _ignored, ...rest } = mapStrings(reply, (s) => filterUrls(s, ctx.homepage));
+  const { slug: _ignored, ...raw } = reply;
+  const rest = mapStrings(raw, (s) => {
+    const filtered = filterUrls(s, ctx.homepage);
+    assertSafeText(s, filtered, ctx.homepage, 'draft');
+    return filtered;
+  });
+  rest.stack = rest.stack.filter((x) => x !== '');
+  const after = validate(rest, DRAFT_SCHEMA);
+  if (after.length) throw new DraftSchemaError(`Draft failed schema after filtering: ${after.join('; ')}`, after);
   const claims = extractClaims(`${ctx.readme ?? ''}\n${ctx.description ?? ''}`);
-  assertNumbersGrounded(rest, claims);
+  assertNumbersGrounded(rest, `${ctx.readme ?? ''}\n${ctx.description ?? ''}\n${ctx.name ?? ''}`);
   return { ...rest, claims, slug: slugify(ctx.name) };
 }

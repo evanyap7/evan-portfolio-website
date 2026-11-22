@@ -15,7 +15,7 @@ const ctx = {
 
 const good = () => ({
   name: 'Cool Project',
-  role: 'Developer · 2026',
+  role: 'Developer',
   blurb: 'A tiny tool.',
   line: ['Small and ', 'fast', '.'],
   sub: 'Does one thing.',
@@ -110,4 +110,66 @@ test('callClaude throws a clear error without an API key and never leaks it', as
     if (saved === undefined) delete process.env.ANTHROPIC_API_KEY;
     else process.env.ANTHROPIC_API_KEY = saved;
   }
+});
+
+const rejects = (mutate) => draftMark(ctx, fake(mutate(good())));
+
+for (const [label, text] of [
+  ['bare domain', 'See evil.example for more'],
+  ['hxxps', 'See hxxps://evil.example'],
+  ['bracket-dot', 'See evil[.]example'],
+  ['protocol-relative', 'See //evil.example'],
+  ['md link //', 'See [x](//evil.example)'],
+  ['md link javascript:', 'See [x](javascript:alert(1))'],
+  ['mailto', 'Mail mailto:a@b.co'],
+  ['email', 'Mail me at bob@evil.io'],
+  ['data scheme', 'See data:text/html,hi'],
+  ['html anchor', 'See <a href="x">y</a>'],
+  ['html img', 'See <img src=x onerror=alert(1)>'],
+  ['newline', 'line one\nline two'],
+  ['control char', 'bad\u0007bell'],
+  ['non-allowlisted domain', 'Try foo.dev today'],
+  ['github other user', 'See github.com/other/x'],
+]) {
+  test(`rejects unsafe text: ${label}`, async () => {
+    for (const field of ['blurb', 'sub', 'stack']) {
+      await assert.rejects(
+        rejects((r) => (field === 'stack' ? ((r.stack = ['JavaScript', text]), r) : ((r[field] = text), r))),
+        DraftSchemaError,
+        `${field}: ${text}`,
+      );
+    }
+  });
+}
+
+test('ordinary tech names are not mistaken for domains', async () => {
+  const r = good();
+  r.stack = ['Next.js', 'Node.js', 'Vue.js', 'three.js', 'TypeScript', 'Socket.IO', 'ASP.NET', 'Chart.js'];
+  r.blurb = 'Built with Next.js and Node.js, plus Vue.js and three.js.';
+  const d = await draftMark(ctx, fake(r));
+  assert.equal(d.stack.length, 8);
+});
+
+test('allowlisted github link and homepage host are accepted', async () => {
+  const r = good();
+  r.blurb = 'Source at https://github.com/evanyap7/cool and demo.example.com';
+  const d = await draftMark({ ...ctx, homepage: 'https://demo.example.com' }, fake(r));
+  assert.match(d.blurb, /github\.com\/evanyap7\/cool/);
+});
+
+test('numbers are grounded in every field, not just chips and rows', async () => {
+  await assert.rejects(rejects((r) => ((r.blurb = 'Cuts latency 90%.'), r)), DraftSchemaError);
+  await assert.rejects(rejects((r) => ((r.role = 'Developer · 2019'), r)), DraftSchemaError);
+  await assert.rejects(rejects((r) => ((r.line = ['Over ', '77', ' users']), r)), DraftSchemaError);
+  await assert.rejects(rejects((r) => ((r.stack = ['Lib 9']), r)), DraftSchemaError);
+  const r = good();
+  r.blurb = 'Passes 120 tests and cuts latency by 40%.';
+  await draftMark(ctx, fake(r));
+});
+
+test('filtering that empties a required field rejects the draft; empty stack entries are dropped', async () => {
+  await assert.rejects(rejects((r) => ((r.sub = 'https://evil.example'), r)), DraftSchemaError);
+  await assert.rejects(rejects((r) => ((r.chips[0] = ['120', 'https://evil.example']), r)), DraftSchemaError);
+  const d = await draftMark(ctx, fake({ ...good(), stack: ['JavaScript', 'https://evil.example'] }));
+  assert.deepEqual(d.stack, ['JavaScript']);
 });
