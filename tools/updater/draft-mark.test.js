@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { draftMark, slugify, filterUrls } from './draft-mark.js';
+import { draftMark, slugify, filterUrls, SYSTEM } from './draft-mark.js';
 import { callClaude, DraftSchemaError, validate } from './claude.js';
 
 const ctx = {
@@ -172,4 +172,24 @@ test('filtering that empties a required field rejects the draft; empty stack ent
   await assert.rejects(rejects((r) => ((r.chips[0] = ['120', 'https://evil.example']), r)), DraftSchemaError);
   const d = await draftMark(ctx, fake({ ...good(), stack: ['JavaScript', 'https://evil.example'] }));
   assert.deepEqual(d.stack, ['JavaScript']);
+});
+
+for (const d of ['evil.zip', 'evil.sh', 'evil.page', 'evil.click', 'evil.de', 'evil.fr', 'evil.in', 'evil.ru', 'notsocket.io', 'evil.socket.io']) {
+  test(`rejects generic domain-shaped token: ${d}`, async () => {
+    await assert.rejects(rejects((r) => ((r.blurb = `Visit ${d} now`), r)), DraftSchemaError);
+    await assert.rejects(rejects((r) => ((r.stack = ['JavaScript', d]), r)), DraftSchemaError);
+  });
+}
+
+test('tech names and bare filenames are not domains', async () => {
+  const r = good();
+  r.stack = ['Express.js', 'D3.js', 'Socket.IO', 'ASP.NET', 'Nuxt.js'];
+  r.blurb = 'Entry point is index.js, with utils.ts and main.py.';
+  await draftMark(ctx, fake(r));
+});
+
+test('system prompt has no years or digits for the model to copy', () => {
+  assert.doesNotMatch(SYSTEM, /\b(19|20)\d\d\b/);
+  assert.doesNotMatch(SYSTEM, /\d/);
+  assert.match(SYSTEM, /not (?:include|invent)[^.]*(years|dates|numbers)/i);
 });
