@@ -89,6 +89,17 @@ test('disallowed elements fail closed: script, foreignObject, use, image, a, fil
   }
 });
 
+test('line and polyline survive with safe attributes; points must be numeric', () => {
+  const out = sanitizeSvg(wrap('<line x1="0" y1="1" x2="5" y2="6" stroke="#fff" stroke-width="2" stroke-dasharray="6 6"/><polyline points="0,0 10,5.5 -3,2e1" fill="none" stroke="#fff"/>'));
+  assert.match(out, /<line x1="0" y1="1" x2="5" y2="6" stroke="#fff"/);
+  assert.match(out, /<polyline points="0,0 10,5.5 -3,2e1" fill="none"/);
+  assert.throws(() => sanitizeSvg(wrap('<polyline points="1,2 evil"/>')), UnsafeSvgError);
+  assert.throws(() => sanitizeSvg(wrap('<polyline points="url(#g)"/>')), UnsafeSvgError);
+  const stripped = sanitizeSvg(wrap('<line x1="0" onload="alert(1)" y2="1"/><line/onclick=x() x2="1"/>'));
+  assert.doesNotMatch(stripped, /on(load|click)/);
+  assert.match(stripped, /<line x1="0" y2="1"\/>/);
+});
+
 test('rejects xmlns prefixes and foreign default namespace', () => {
   assert.throws(() => sanitizeSvg('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect/></svg>'), UnsafeSvgError);
   assert.throws(() => sanitizeSvg('<svg xmlns="http://evil.test/x"><rect/></svg>'), UnsafeSvgError);
