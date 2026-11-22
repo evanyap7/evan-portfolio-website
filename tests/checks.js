@@ -200,11 +200,26 @@ export function aboutPhoto(win) {
   ];
 }
 
-// The Projects chapter: one h2 titled Projects, a picker of seven Marks with
-// one pressed, the Mark's name whole on its stage, and the light sheet's link
-// to the project's page, which exists.
+// How many Marks js/marks.js holds. tests/ci.mjs reads that file in Node and
+// passes the count as /tests/?marks=N, so the harness never imports site code
+// at load. Opened by hand without it, the count is read from the file then,
+// inside the one check that needs it.
+async function markCount() {
+  const given = Number(new URLSearchParams(globalThis.location?.search ?? '').get('marks'));
+  if (Number.isInteger(given) && given > 0) return given;
+  try {
+    return (await import('../js/marks.js')).MARKS.length;
+  } catch {
+    return NaN;
+  }
+}
+
+// The Projects chapter: one h2 titled Projects, a picker with one button per
+// Mark in js/marks.js and one pressed, the Mark's name whole on its stage, and
+// the light sheet's link to the project's page, which exists.
 export async function opener(win) {
   const doc = win.document;
+  const expected = await markCount();
   const title = doc.getElementById('work-title');
   const buttons = [...doc.querySelectorAll('#work .marks button')];
   const pressed = buttons.filter((b) => b.getAttribute('aria-pressed') === 'true');
@@ -216,7 +231,7 @@ export async function opener(win) {
   const n = name?.getBoundingClientRect();
   return [
     result('Projects: one chapter, titled Projects', title?.tagName === 'H2' && title.textContent.trim() === 'Projects' && Boolean(title.closest('#work')), title?.textContent),
-    result('Projects: seven Marks in the picker, one pressed', buttons.length === 7 && pressed.length === 1, `${buttons.length} marks, ${pressed.length} pressed`),
+    result('Projects: every Mark in the picker, one pressed', buttons.length === expected && pressed.length === 1, `${buttons.length} of ${expected} marks, ${pressed.length} pressed`),
     result('Projects: the Mark\'s name sits whole on its stage', Boolean(s && n) && n.left >= s.left - 1 && n.right <= s.right + 1 && name.scrollWidth <= name.clientWidth + 1,
       n ? `name ${Math.round(n.left)}–${Math.round(n.right)} in stage ${Math.round(s.left)}–${Math.round(s.right)}` : 'missing'),
     result('Projects: the sheet links to a project page that exists', code === 200, cta?.getAttribute('href')),
@@ -234,7 +249,7 @@ export async function workCards(win) {
   const picking = doc.documentElement.classList.contains('marks-on');
   const out = [
     result('the list of every project hides while the picker runs', Boolean(list) && (!picking || !shown(list)), picking ? 'picker on' : 'no picker'),
-    result('eight work cards, in order', ids === CARDS.join(','), ids),
+    result('every work card, in order', ids === CARDS.join(','), ids),
     result('cards hold no nested links or buttons', cards.every((card) => !card.querySelector('a, button'))),
     result('cards hold a counting figure', cards.every((card) => card.querySelector('.work__figure [data-count]'))),
   ];
@@ -250,7 +265,7 @@ export async function workCards(win) {
 }
 
 // The project pages and the case study: the way back and the next project,
-// which runs through all eight and back to the start.
+// which leads on to another project page that exists.
 export async function projectPage(win) {
   const doc = win.document;
   const back = doc.querySelector('main .back');

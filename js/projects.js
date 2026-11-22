@@ -1,4 +1,4 @@
-// Projects: one chapter, seven Marks (js/marks.js), one project each.
+// Projects: one chapter, one Mark per project (js/marks.js).
 // Choosing a Mark, in the chapter's picker or the rail's, changes the words
 // on the stage and the light sheet below it, and tells the suit (suit.js)
 // which armour to assemble. The page marks itself `marks-on`; without this
@@ -19,6 +19,7 @@ const SLUGS = {
   others: 6,
 };
 const FIRST = 1;
+const LAST = MARKS.at(-1).mark;
 const SWAP_MS = 230;
 
 const el = (tag, text, cls) => {
@@ -106,9 +107,9 @@ export function initProjects() {
 
   const render = (p) => {
     const next = MARKS[(MARKS.indexOf(p) + 1) % MARKS.length];
-    $('p-mark').textContent = `Mark ${p.mark} of VII`;
+    $('p-mark').textContent = `Mark ${p.mark} of ${LAST}`;
     const now = $('p-now');
-    if (now) now.textContent = `${p.mark} / VII · ${p.name}`;
+    if (now) now.textContent = `${p.mark} / ${LAST} · ${p.name}`;
     $('p-role').textContent = p.role;
     name.textContent = p.name;
     stats.forEach((stat, i) => {

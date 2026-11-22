@@ -1,4 +1,4 @@
-// The seven Marks: one project each, in the order the Projects chapter
+// The Marks: one project each, in the order the Projects chapter
 // shows them. Copy and figures are the case studies' own. `spec` is the suit
 // the Hall draws (hall-scene.js), `hue` the tint of the code that forms it,
 // `chips` the three figures on the stage, `line` the tagline in three parts

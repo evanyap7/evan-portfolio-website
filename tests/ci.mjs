@@ -2,6 +2,7 @@
 //   node tests/ci.mjs        (locally uses installed Chrome; in CI uses Playwright's Chromium)
 import { spawn } from 'node:child_process';
 import { chromium } from 'playwright-core';
+import { MARKS } from '../js/marks.js';
 
 const PORT = 4178;
 const server = spawn('python3', ['tests/serve.py', String(PORT)], { stdio: 'ignore' });
@@ -25,7 +26,8 @@ try {
     if (request.failure()?.errorText === 'net::ERR_ABORTED') return;
     failedRequests.push(`${request.url().replace(`http://localhost:${PORT}`, '')} ${request.failure()?.errorText}`);
   });
-  await page.goto(`http://localhost:${PORT}/tests/`);
+  // The picker check compares against the Marks in js/marks.js, counted here.
+  await page.goto(`http://localhost:${PORT}/tests/?marks=${MARKS.length}`);
 
   // Wait in 30 second slices and say how far the run has got, so a run that
   // stalls shows where it stalled instead of one timeout after twenty minutes.
