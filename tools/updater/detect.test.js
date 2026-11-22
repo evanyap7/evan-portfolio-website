@@ -73,12 +73,41 @@ test('enrichRepos caps unseen repos and omits since; missing README hashes as em
   assert.match(commitCall, /per_page=\d+/);
 });
 
-test('enrichRepos does not mutate its input and rethrows non-404 errors', async () => {
+test('enrichRepos does not mutate its input', async () => {
   const input = repo('a');
   await enrichRepos([input], { repos: {} }, fakeGh());
   assert.equal(input.commitsSince, undefined);
-  const bad = { json: async () => [], text: async () => { throw new Error('gh: 500 boom'); } };
-  await assert.rejects(enrichRepos([input], { repos: {} }, bad), /500/);
+});
+
+test('enrichRepos treats a 409 empty-repo commits error as zero commits', async () => {
+  const gh = {
+    json: async () => { throw new Error('gh: 409 Git Repository is empty.'); },
+    text: async () => { throw new Error('gh: 404 Not Found'); },
+  };
+  const [e] = await enrichRepos([repo('empty')], { repos: {} }, gh);
+  assert.equal(e.commitsSince, 0);
+  assert.deepEqual(e.recentCommitMessages, []);
+});
+
+test('enrichRepos skips a repo that fails otherwise, with a warning, and enriches the rest', async () => {
+  const good = fakeGh({ readmes: { ok: 'hi' }, commits: { ok: ['feat: a'] } });
+  const gh = {
+    json: (p) => (p.includes('/bad/') ? Promise.reject(new Error('gh: 502 Bad Gateway')) : good.json(p)),
+    text: (p) => good.text(p),
+  };
+  const warnings = [];
+  const orig = console.warn;
+  console.warn = (...a) => warnings.push(a.join(' '));
+  let out;
+  try {
+    out = await enrichRepos([repo('bad'), repo('ok')], { repos: {} }, gh);
+  } finally {
+    console.warn = orig;
+  }
+  assert.deepEqual(out.map((r) => r.name), ['ok']);
+  assert.equal(out[0].commitsSince, 1);
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0], /bad.*502/);
 });
 
 test('isChoreOnly: conventional chore prefixes with optional scope', () => {

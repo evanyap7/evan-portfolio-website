@@ -37,6 +37,12 @@ test('extractClaims uses the surrounding sentence as source', () => {
   assert.equal(byText['2.5x'], 'Ranges 3-5 items, 2.5x faster.');
 });
 
+test('extractClaims never ends a claim in a comma', () => {
+  assert.deepEqual(extractClaims('In 2024, 5 users').map((c) => c.text), ['2024', '5']);
+  assert.deepEqual(extractClaims('1, 2, 3').map((c) => c.text), ['1', '2', '3']);
+  assert.deepEqual(extractClaims('Costs $1,200, mostly').map((c) => c.text), ['$1,200']);
+});
+
 test('extractClaims returns [] for empty or non-numeric text', () => {
   assert.deepEqual(extractClaims(''), []);
   assert.deepEqual(extractClaims('   \n '), []);

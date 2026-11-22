@@ -45,17 +45,27 @@ export function isChoreOnly(messages) {
  * @returns {Promise<Repo[]>}
  */
 export async function enrichRepos(repos, state, gh) {
-  return Promise.all(repos.map(async (repo) => {
-    const seen = state.repos[repo.name];
-    const since = seen ? `&since=${seen.pushedAt}` : '';
-    const perPage = seen ? MAX_COMMITS : UNSEEN_COMMIT_CAP;
-    const [commits, readme] = await Promise.all([
-      gh.json(`repos/${repo.fullName}/commits?sha=${repo.defaultBranch}&per_page=${perPage}${since}`),
-      fetchReadme(repo, gh),
-    ]);
-    const recentCommitMessages = commits.map((c) => c.commit.message);
-    return { ...repo, commitsSince: commits.length, readmeHash: hashReadme(readme), recentCommitMessages };
+  const results = await Promise.all(repos.map(async (repo) => {
+    try {
+      const seen = state.repos[repo.name];
+      const since = seen ? `&since=${seen.pushedAt}` : '';
+      const perPage = seen ? MAX_COMMITS : UNSEEN_COMMIT_CAP;
+      const [commits, readme] = await Promise.all([
+        gh.json(`repos/${repo.fullName}/commits?sha=${repo.defaultBranch}&per_page=${perPage}${since}`)
+          .catch((err) => {
+            if (/409/.test(String(err?.message))) return []; // empty repo
+            throw err;
+          }),
+        fetchReadme(repo, gh),
+      ]);
+      const recentCommitMessages = commits.map((c) => c.commit.message);
+      return { ...repo, commitsSince: commits.length, readmeHash: hashReadme(readme), recentCommitMessages };
+    } catch (err) {
+      console.warn(`updater: skipping ${repo.name}: ${err?.message ?? err}`);
+      return null;
+    }
   }));
+  return results.filter(Boolean);
 }
 
 /**

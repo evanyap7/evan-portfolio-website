@@ -62,7 +62,7 @@ export async function collectContext(repo, gh, sinceIso) {
 }
 
 // $5, 1,200, 2.5, 3-5, 38/39, with optional %, +, or x suffix.
-const NUM = String.raw`\d[\d,]*(?:\.\d+)?`;
+const NUM = String.raw`\d(?:[\d,]*\d)?(?:\.\d+)?`;
 const CLAIM_RE = new RegExp(String.raw`\$?${NUM}(?:\s?[-–]\s?${NUM}|/${NUM})?(?:%|\+|x\b)?`, 'g');
 
 /**
