@@ -100,7 +100,7 @@ test('rejects malformed structure and stray entities', () => {
   assert.throws(() => sanitizeSvg(wrap('<text>&foo;</text>')), UnsafeSvgError);
   assert.throws(() => sanitizeSvg(wrap('<text>&#60;script&#62;</text>')), UnsafeSvgError);
   assert.throws(() => sanitizeSvg(wrap('stray text')), UnsafeSvgError);
-  assert.throws(() => sanitizeSvg(wrap('<rect/>') + '<rect/>'.repeat(0) + '<svg/>'), UnsafeSvgError);
+  assert.throws(() => sanitizeSvg(wrap('<rect/>') + wrap('<rect/>')), UnsafeSvgError);
 });
 
 test('throws UnsafeSvgError for no svg root, oversize, DOCTYPE/ENTITY', () => {
