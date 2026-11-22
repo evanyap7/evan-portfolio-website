@@ -185,7 +185,9 @@
 .hall__suits {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  /* One row of equal columns, one per suit, however many there are. */
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 12px;
   margin-top: clamp(24px, 3vw, 40px);
 }
@@ -349,7 +351,7 @@
 
 @media (min-width: 1024px) {
   /* Words on the left, the suit standing in the shot on the right, the
-     seven tabs along the foot. */
+     suit tabs along the foot. */
   :root.lab main > #work > .hall {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
     align-items: center;
@@ -368,6 +370,7 @@
   :root.lab .hall__suits {
     grid-column: 1 / -1;
     grid-row: 2;
+    grid-auto-flow: row;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     row-gap: 8px;
     margin-top: 24px;

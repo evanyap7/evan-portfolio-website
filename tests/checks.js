@@ -229,7 +229,14 @@ export async function opener(win) {
   const code = cta ? await win.fetch(cta.href, { cache: 'no-store' }).then((response) => response.status, () => 0) : 0;
   const s = stage?.getBoundingClientRect();
   const n = name?.getBoundingClientRect();
+  // From 720px up the picker is one row of every Mark, however many there are
+  // (below that it is a sideways-scrolling row of chips).
+  const tops = [...new Set(buttons.map((b) => b.offsetTop))];
+  const oneRow = win.innerWidth >= 720
+    ? [result('Projects: every Mark in the picker on one row', buttons.length > 0 && tops.length === 1, `${buttons.length} marks on ${tops.length} row(s), tops ${tops.join(',')}`)]
+    : [];
   return [
+    ...oneRow,
     result('Projects: one chapter, titled Projects', title?.tagName === 'H2' && title.textContent.trim() === 'Projects' && Boolean(title.closest('#work')), title?.textContent),
     result('Projects: every Mark in the picker, one pressed', buttons.length === expected && pressed.length === 1, `${buttons.length} of ${expected} marks, ${pressed.length} pressed`),
     result('Projects: the Mark\'s name sits whole on its stage', Boolean(s && n) && n.left >= s.left - 1 && n.right <= s.right + 1 && name.scrollWidth <= name.clientWidth + 1,

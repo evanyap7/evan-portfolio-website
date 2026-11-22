@@ -1,7 +1,7 @@
 /* The home page as an "Editions" release page: a boxed hero with a section
    index, a rail that docks once the hero has passed, and sections that are
    sheets, each sliding up over the one before. Projects is one chapter that
-   holds all seven Marks (dark opener, light content, dark interlude).
+   holds every Mark (dark opener, light content, dark interlude).
 
    Loaded last, on the home page only: it restyles what base.css, layout.css,
    home.css, reactor.css, lab.css and fx.css set up, and leaves those files
@@ -161,10 +161,10 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .opener__bar { display: flex; justify-content: space-between; gap: 16px; padding: 18px var(--pad); color: var(--muted); }
 .opener__where > * { display: inline; margin: 0; font: inherit; letter-spacing: inherit; }
 .opener__where h2, #p-mark { color: var(--text); }
-/* The seven Marks: one project each. projects.js fills the picker and marks
-   the page `marks-on`; without it the chapter shows Mark II and the list of
-   every project below. */
-.marks { display: none; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; padding: 0 var(--pad); }
+/* The Marks: one project each, in one row of equal columns however many
+   there are. projects.js fills the picker and marks the page `marks-on`;
+   without it the chapter shows Mark II and the list of every project below. */
+.marks { display: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 2px; padding: 0 var(--pad); }
 .marks-on .marks { display: grid; }
 .marks button { display: grid; gap: 10px; align-content: space-between; min-width: 0; min-height: 70px; padding: 11px 12px 12px; text-align: left; font: inherit; color: var(--muted); background: none; border: 0; border-radius: 6px; cursor: pointer; transition: background-color 0.25s, color 0.25s; }
 .marks__now { display: none; margin: 0; }
@@ -312,7 +312,7 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
   .opener__bar > span:last-child { display: none; }
   .marks button { place-items: center; align-content: center; min-height: 48px; padding: 0; text-align: center; }
   .marks span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  /* Seven numerals in 320px: edge to edge, so each stays a full thumb wide. */
+  /* Every numeral in a narrow screen: edge to edge, so each stays a full thumb wide. */
   @media (max-width: 359px) { .marks { gap: 0; padding: 0; } }
   /* The numerals alone say little: the chosen project's name sits under them. */
   .marks-on .marks__now { display: block; padding: 8px var(--pad) 0; font-size: 14px; color: var(--text); overflow-wrap: anywhere; }
