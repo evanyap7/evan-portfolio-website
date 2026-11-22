@@ -11,47 +11,144 @@ export class UnsafeSvgError extends Error {
 const MAX_BYTES = 150 * 1024;
 const DEFAULT_FOCUS = '39% 50%';
 
-const BLOCKED = 'script|foreignObject|style|iframe|embed|object|animate|set|animateTransform|animateMotion|handler|listener|audio|video|canvas';
-const BLOCK_PAIR = new RegExp(`<\\s*(${BLOCKED})\\b[^>]*?(?:/\\s*>|>[\\s\\S]*?<\\s*/\\s*\\1\\s*>)`, 'gi');
-const BLOCK_ORPHAN = new RegExp(`<\\s*/?\\s*(?:${BLOCKED})\\b[^>]*>?`, 'gi');
-const EVENT_ATTR = /[\s/]+on[\w:.-]*\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*)/gi;
-const HREF_ATTR = /([\s/]+)((?:[\w-]+:)?href)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]*))/gi;
-const EXT_URL = /url\(\s*(?!['"]?\s*#)[^)]*\)?/gi;
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const ELEMENTS = new Set(['svg', 'defs', 'linearGradient', 'radialGradient', 'stop', 'rect', 'circle', 'ellipse', 'path', 'g', 'text', 'title']);
+const NUM = /^[\w\s.,#%+-]*$/;
+const PAINT = /^(?:none|currentColor|#[0-9a-fA-F]{3,8}|[a-zA-Z]{3,20}|(?:rgb|hsl)a?\([\d\s.,%/-]+\)|url\(#[\w-]+\))$/;
+const TRANSFORM = /^(?:\s*(?:translate|rotate|scale|matrix|skewX|skewY)\([\d\s.,e+-]*\)\s*)+$/;
+const FONT = /^[\w\s,'-]*$/;
+const ID = /^[\w-]+$/;
+// Attribute allowlist: name -> value validator. Every other attribute is removed.
+const ATTRS = new Map([
+  ...['fill', 'stroke', 'stop-color'].map((n) => [n, PAINT]),
+  ...['transform', 'gradientTransform'].map((n) => [n, TRANSFORM]),
+  ['font-family', FONT],
+  ['id', ID],
+  ['xmlns', (v) => v === SVG_NS],
+  ...['x', 'y', 'cx', 'cy', 'r', 'rx', 'ry', 'width', 'height', 'd', 'stroke-width', 'stroke-linecap', 'stroke-linejoin',
+    'stroke-dasharray', 'opacity', 'fill-opacity', 'stroke-opacity', 'viewBox', 'offset', 'stop-opacity', 'gradientUnits',
+    'x1', 'y1', 'x2', 'y2', 'fx', 'fy', 'font-size', 'font-weight', 'text-anchor', 'letter-spacing', 'preserveAspectRatio',
+    'points'].map((n) => [n, NUM]),
+]);
 
-function stripOnce(s) {
-  return s
-    .replace(/<!--[\s\S]*?-->|<\?[\s\S]*?\?>|<!\[CDATA\[[\s\S]*?\]\]>/g, '')
-    .replace(BLOCK_PAIR, '')
-    .replace(BLOCK_ORPHAN, '')
-    .replace(EVENT_ATTR, '')
-    .replace(HREF_ATTR, (m, ws, name, a, b, c) => ((a ?? b ?? c ?? '').trim().startsWith('#') ? m : ''))
-    .replace(EXT_URL, 'none')
-    .replace(/@import[^;"'<]*;?/gi, '');
+const fail = (m) => {
+  throw new UnsafeSvgError(m);
+};
+
+function checkValue(name, value) {
+  const rule = ATTRS.get(name);
+  const ok = typeof rule === 'function' ? rule(value) : rule.test(value);
+  if (!ok) fail(`Attribute ${name} has a disallowed value`);
+}
+
+function escText(t) {
+  if (/&(?!(?:amp|lt|gt|quot|apos);)/.test(t)) fail('SVG text contains an entity other than the predefined ones');
+  return t.replace(/>/g, '&gt;');
 }
 
 /**
- * Strip script, handlers, foreignObject, style, animation, external hrefs and
- * non-fragment url() references. Throws UnsafeSvgError when the input cannot be trusted at all.
+ * Tokenise one tag starting after '<'. Returns { next, closing, name, attrs, selfClose }.
+ * Attribute names are read up to whitespace, '=', '/', '>' or a quote, so no-space adjacency
+ * (`width="1"onload=...`) and `/onload=` forms yield separate attributes.
+ */
+function readTag(s, i) {
+  const n = s.length;
+  const closing = s[i] === '/';
+  if (closing) i++;
+  const m = /^[A-Za-z][\w:.-]*/.exec(s.slice(i, i + 64));
+  if (!m) fail('Malformed tag');
+  const name = m[0];
+  i += name.length;
+  const attrs = [];
+  let selfClose = false;
+  for (;;) {
+    while (i < n && /[\s/]/.test(s[i])) {
+      if (s[i] === '/' && /^\/\s*>/.test(s.slice(i, i + 20))) selfClose = true;
+      i++;
+    }
+    if (i >= n) fail('Unterminated tag');
+    if (s[i] === '>') return { next: i + 1, closing, name, attrs, selfClose };
+    const start = i;
+    while (i < n && !/[\s=/>"']/.test(s[i])) i++;
+    if (i === start) fail('Malformed attribute');
+    const an = s.slice(start, i);
+    while (i < n && /\s/.test(s[i])) i++;
+    let value = '';
+    if (s[i] === '=') {
+      i++;
+      while (i < n && /\s/.test(s[i])) i++;
+      if (s[i] === '"' || s[i] === "'") {
+        const end = s.indexOf(s[i], i + 1);
+        if (end < 0) fail('Unterminated attribute value');
+        value = s.slice(i + 1, end);
+        i = end + 1;
+      } else {
+        const st = i;
+        while (i < n && !/[\s>]/.test(s[i])) i++;
+        value = s.slice(st, i);
+      }
+    }
+    attrs.push([an, value]);
+  }
+}
+
+/**
+ * Rebuild the SVG from an element and attribute ALLOWLIST. Fails closed: any other element
+ * (script, foreignObject, style, use, image, a, filter, animation, any namespace-prefixed tag),
+ * comment, CDATA or malformed markup throws UnsafeSvgError. Unlisted attributes are dropped;
+ * listed ones must hold a safe literal (colour, url(#fragment), numbers, transform functions).
  */
 export function sanitizeSvg(svg) {
-  if (typeof svg !== 'string') throw new UnsafeSvgError('SVG is not a string');
-  if (Buffer.byteLength(svg) > MAX_BYTES) throw new UnsafeSvgError('SVG is larger than 150 KB');
-  if (/<!\s*(DOCTYPE|ENTITY)/i.test(svg)) throw new UnsafeSvgError('SVG declares a DOCTYPE or entity');
-  if (/&#/.test(svg)) throw new UnsafeSvgError('SVG contains numeric character references');
-  let s = svg.replace(/\0/g, '');
-  const start = s.search(/<svg[\s>/]/i);
-  const end = s.toLowerCase().lastIndexOf('</svg>');
-  if (start < 0 || end < start) throw new UnsafeSvgError('No <svg> root element');
-  s = s.slice(start, end + 6);
-  for (let i = 0; i < 10; i++) {
-    const next = stripOnce(s);
-    if (next === s) {
-      if (!/^<svg[\s>/]/i.test(s) || !/<\/svg>\s*$/i.test(s)) throw new UnsafeSvgError('No <svg> root element');
-      return s;
+  if (typeof svg !== 'string') fail('SVG is not a string');
+  if (Buffer.byteLength(svg) > MAX_BYTES) fail('SVG is larger than 150 KB');
+  if (/<!\s*(DOCTYPE|ENTITY)/i.test(svg)) fail('SVG declares a DOCTYPE or entity');
+  if (/&#/.test(svg)) fail('SVG contains numeric character references');
+  const src = svg.replace(/\0/g, '');
+  const start = src.search(/<svg[\s>/]/i);
+  const end = src.toLowerCase().lastIndexOf('</svg>');
+  if (start < 0 || end < start) fail('No <svg> root element');
+  const s = src.slice(start, end + 6);
+  let out = '';
+  const stack = [];
+  let rootClosed = false;
+  let i = 0;
+  while (i < s.length) {
+    if (s[i] !== '<') {
+      const j = s.indexOf('<', i);
+      const text = s.slice(i, j < 0 ? s.length : j);
+      i = j < 0 ? s.length : j;
+      if (/^\s*$/.test(text)) {
+        if (stack.length) out += text;
+      } else if (stack.length && (stack.at(-1) === 'text' || stack.at(-1) === 'title')) out += escText(text);
+      else fail('Text outside a text element');
+      continue;
     }
-    s = next;
+    if (/^<[!?]/.test(s.slice(i, i + 2))) fail('Comments, CDATA and processing instructions are not allowed');
+    const t = readTag(s, i + 1);
+    i = t.next;
+    if (!ELEMENTS.has(t.name)) fail(`Element <${t.name}> is not allowed`);
+    if (rootClosed) fail('Content after the root element');
+    if (t.closing) {
+      if (stack.pop() !== t.name) fail('Mismatched closing tag');
+      out += `</${t.name}>`;
+      if (!stack.length) rootClosed = true;
+      continue;
+    }
+    if (!stack.length && t.name !== 'svg') fail('Root element is not <svg>');
+    let tag = `<${t.name}`;
+    for (const [an, av] of t.attrs) {
+      if (/^xmlns:/i.test(an)) fail('Namespace prefix declarations are not allowed');
+      if (!ATTRS.has(an)) continue;
+      checkValue(an, av);
+      tag += ` ${an}="${av}"`;
+    }
+    out += tag + (t.selfClose ? '/>' : '>');
+    if (t.selfClose) {
+      if (!stack.length) rootClosed = true;
+    } else stack.push(t.name);
   }
-  throw new UnsafeSvgError('SVG could not be reduced to a safe form');
+  if (stack.length || !rootClosed) fail('Unclosed elements');
+  return out;
 }
 
 export const ART_SCHEMA = {
