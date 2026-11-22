@@ -1,0 +1,15 @@
+{
+  "owner": "evanyap7",
+  "baseBranch": "main",
+  "allow": [],
+  "deny": [
+    "ai-job-search",
+    "skills-introduction-to-github",
+    "introduction-to-github",
+    "open-higgsfield",
+    "evan-portfolio-website",
+    "evanyap7"
+  ],
+  "changeThresholds": { "minCommits": 5, "readmeChanged": true },
+  "models": { "draft": "claude-sonnet-5-5" }
+}

@@ -1,0 +1,40 @@
+{
+  "repos": {
+    "evans-trading-agent": {
+      "slug": "trading-agent",
+      "status": "published",
+      "pushedAt": "1970-01-01T00:00:00Z",
+      "readmeHash": ""
+    },
+    "telegram-personal-assistant": {
+      "slug": "assistant-bot",
+      "status": "published",
+      "pushedAt": "1970-01-01T00:00:00Z",
+      "readmeHash": ""
+    },
+    "ai-research-agent": {
+      "slug": "research-agent",
+      "status": "published",
+      "pushedAt": "1970-01-01T00:00:00Z",
+      "readmeHash": ""
+    },
+    "Parallel-Match": {
+      "slug": "parallel-match",
+      "status": "published",
+      "pushedAt": "1970-01-01T00:00:00Z",
+      "readmeHash": ""
+    },
+    "univers-homepage-revamp": {
+      "slug": "website-revamp",
+      "status": "published",
+      "pushedAt": "1970-01-01T00:00:00Z",
+      "readmeHash": ""
+    },
+    "WatchPartyyy": {
+      "slug": "others",
+      "status": "published",
+      "pushedAt": "1970-01-01T00:00:00Z",
+      "readmeHash": ""
+    }
+  }
+}
