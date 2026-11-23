@@ -46,6 +46,9 @@ const EXTRA = [
   { width: 1440, height: 800, src: '/', names: ['gateDoor'] },
   { width: 1440, height: 800, src: '/#toolkit', names: ['sceneDoor'] },
   { width: 393, height: 852, src: '/#toolkit', names: ['sceneDoor'] },
+  // The picker's names across the widths where they show, including either
+  // side of 1280, where the buttons are narrowest for their names.
+  ...[720, 852, 1024, 1152, 1279, 1280, 1440, 1920].map((width) => ({ width, height: 800, src: '/', names: ['pickerLabels'] })),
 ];
 
 // A frame that has not loaded, and had its fonts settle, by then is a failure.

@@ -786,3 +786,20 @@ export async function picker(win) {
     result('picker: the rail presses the same Mark', rail.length === 0 || railPressed === '3', railPressed),
   ];
 }
+
+// The picker's names stay inside their buttons however many Marks share the
+// row: no label is wider than its button's content box. (From 720 to 1023px
+// the names are hidden and only the numerals show, so those are skipped.)
+export async function pickerLabels(win) {
+  const doc = win.document;
+  await until(() => doc.querySelectorAll('#work .marks button').length > 0, 2000);
+  const buttons = [...doc.querySelectorAll('#work .marks button')];
+  const over = buttons.flatMap((b) => {
+    const span = b.querySelector('span');
+    if (!span || win.getComputedStyle(span).position === 'absolute') return [];
+    const style = win.getComputedStyle(b);
+    const content = b.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    return span.scrollWidth > content + 1 ? [`${span.textContent.trim()} ${span.scrollWidth}px in ${content.toFixed(1)}px`] : [];
+  });
+  return [result('picker: every Mark\'s name fits inside its button', buttons.length > 0 && over.length === 0, over.join('; ') || `${buttons.length} marks`)];
+}

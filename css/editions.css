@@ -170,7 +170,10 @@ html { scrollbar-color: hsl(var(--h) 12% 36%) var(--ink); }
 .marks__now { display: none; margin: 0; }
 .marks button:focus-visible { outline-offset: -3px; }
 .marks b { font: 600 15px/1 var(--font-sans); }
-.marks span { font: 500 14px/1.15 var(--font-sans); letter-spacing: -0.01em; overflow-wrap: break-word; }
+/* `anywhere`, not `break-word`: a long word ("Decarbonisation") then breaks
+   inside its button rather than widening the column past it when the row is
+   crowded. */
+.marks span { font: 500 14px/1.15 var(--font-sans); letter-spacing: -0.01em; overflow-wrap: anywhere; }
 .marks button:hover { color: var(--text); background: hsl(var(--h) 60% 85% / 0.07); }
 .marks button[aria-pressed="true"] { color: var(--bg); background: var(--text); }
 .marks button[aria-pressed="true"]:focus-visible { outline-color: var(--bg); outline-offset: -5px; }
