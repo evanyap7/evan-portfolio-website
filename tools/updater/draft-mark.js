@@ -99,8 +99,9 @@ function atoms(text) {
 const DOMAIN_RE = /(?<![\w-])[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}(?![\w-])/gi;
 // Whole-token exceptions: technology names and single bare filenames that merely look like domains.
 const TECH_NAMES = new Set(['socket.io', 'asp.net', 'node.js', 'vue.js', 'next.js', 'three.js', 'chart.js', 'express.js', 'd3.js', 'nuxt.js', 'react.js', 'angular.js', 'backbone.js', 'ember.js', 'p5.js', 'anime.js', 'alpine.js', 'nest.js', 'deno.js', 'bun.js', 'vite.js']);
-// .sh is left out on purpose: it is a real TLD, so evil.sh must still reject.
-const FILENAME_RE = /^[\w-]+\.(?:js|ts|tsx|jsx|py|rs|go|md|json|css|html)$/i;
+// Only extensions that are not TLDs. .py .rs .md .sh are ccTLDs and .go is too close to call, so
+// evil.py, evil.md and the like must still reject as domains.
+const FILENAME_RE = /^[\w-]+\.(?:js|ts|tsx|jsx|json|css|html)$/i;
 
 function hostAllowed(host, homepage) {
   host = host.toLowerCase();

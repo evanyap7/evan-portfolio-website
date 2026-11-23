@@ -174,7 +174,7 @@ test('filtering that empties a required field rejects the draft; empty stack ent
   assert.deepEqual(d.stack, ['JavaScript']);
 });
 
-for (const d of ['evil.zip', 'evil.sh', 'evil.page', 'evil.click', 'evil.de', 'evil.fr', 'evil.in', 'evil.ru', 'notsocket.io', 'evil.socket.io']) {
+for (const d of ['evil.py', 'evil.rs', 'evil.md', 'evil.go', 'evil.zip', 'evil.sh', 'evil.page', 'evil.click', 'evil.de', 'evil.fr', 'evil.in', 'evil.ru', 'notsocket.io', 'evil.socket.io']) {
   test(`rejects generic domain-shaped token: ${d}`, async () => {
     await assert.rejects(rejects((r) => ((r.blurb = `Visit ${d} now`), r)), DraftSchemaError);
     await assert.rejects(rejects((r) => ((r.stack = ['JavaScript', d]), r)), DraftSchemaError);
@@ -184,7 +184,7 @@ for (const d of ['evil.zip', 'evil.sh', 'evil.page', 'evil.click', 'evil.de', 'e
 test('tech names and bare filenames are not domains', async () => {
   const r = good();
   r.stack = ['Express.js', 'D3.js', 'Socket.IO', 'ASP.NET', 'Nuxt.js'];
-  r.blurb = 'Entry point is index.js, with utils.ts and main.py.';
+  r.blurb = 'Entry point is index.js, with utils.ts, app.jsx and data.json.';
   await draftMark(ctx, fake(r));
 });
 
