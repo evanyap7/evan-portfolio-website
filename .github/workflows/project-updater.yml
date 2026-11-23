@@ -57,8 +57,9 @@ jobs:
           cache: npm
       - run: npm ci
       # The quality gate runs the browser suite, as ci.yml does. A rejection only commits state.
+      # --no-install runs the locked playwright-core from npm ci, so its own browser build is used.
       - if: github.event.action != 'draft-rejected'
-        run: npx playwright install --with-deps chromium
+        run: npx --no-install playwright-core install --with-deps chromium
       - name: Commit identity
         env:
           GIT_EMAIL: ${{ vars.UPDATER_GIT_EMAIL }}

@@ -691,7 +691,11 @@ test('the workflow has the triggers, gate, concurrency and permissions it needs'
   assert.match(WORKFLOW, /^permissions:\n\s+contents: write\n\s+pull-requests: write$/m);
   assert.match(WORKFLOW, /uses: actions\/checkout@v4/);
   assert.match(WORKFLOW, /uses: actions\/setup-node@v4/);
-  assert.match(WORKFLOW, /npx playwright install --with-deps chromium/);
+  // The locked playwright-core (package-lock.json), never whatever `npx playwright` resolves today.
+  assert.match(WORKFLOW, /run: npx --no-install playwright-core install --with-deps chromium$/m);
+  assert.doesNotMatch(WORKFLOW, /npx playwright install/);
+  const lock = JSON.parse(readFileSync(new URL('../../package-lock.json', import.meta.url), 'utf8'));
+  assert.equal(lock.packages['node_modules/playwright-core'].version, '1.64.1');
   for (const s of ['secrets.ANTHROPIC_API_KEY', 'secrets.EGO_WEBHOOK_SECRET', 'secrets.GITHUB_TOKEN']) assert.ok(WORKFLOW.includes(s), s);
   assert.match(WORKFLOW, /EGO_WEBHOOK_URL: \$\{\{ vars\.EGO_WEBHOOK_URL \|\| secrets\.EGO_WEBHOOK_URL \}\}/);
   assert.match(WORKFLOW, /^# .*UPDATER_ENABLED/m);
