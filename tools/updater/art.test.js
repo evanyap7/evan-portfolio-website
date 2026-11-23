@@ -146,3 +146,17 @@ test('generateArt prompt carries draft and colours but never README text', async
   assert.match(user, /#112233 and #ddeeff/);
   assert.doesNotMatch(user, /SECRET README/);
 });
+
+test('a pathological transform value is rejected in linear time', () => {
+  // Whitespace that both the end of one group and the start of the next could claim used to
+  // backtrack exponentially (14 groups took seconds); it must now fail fast.
+  for (const n of [14, 40, 400]) {
+    const v = `${'translate(1)   '.repeat(n)}x`;
+    const t = Date.now();
+    assert.throws(() => sanitizeSvg(wrap(`<rect transform="${v}"/>`)), UnsafeSvgError);
+    assert.ok(Date.now() - t < 200, `${n} groups took ${Date.now() - t}ms`);
+  }
+  const long = 'translate(1) '.repeat(400);
+  assert.throws(() => sanitizeSvg(wrap(`<rect transform="${long}"/>`)), UnsafeSvgError, 'over the length bound');
+  assert.doesNotThrow(() => sanitizeSvg(wrap('<rect transform=" translate(1 2)  rotate(-7) scale(1.5e-1) "/>')));
+});

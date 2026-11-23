@@ -15,7 +15,11 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const ELEMENTS = new Set(['svg', 'defs', 'linearGradient', 'radialGradient', 'stop', 'rect', 'circle', 'ellipse', 'path', 'line', 'polyline', 'g', 'text', 'title']);
 const NUM = /^[\w\s.,#%+-]*$/;
 const PAINT = /^(?:none|currentColor|#[0-9a-fA-F]{3,8}|[a-zA-Z]{3,20}|(?:rgb|hsl)a?\([\d\s.,%/-]+\)|url\(#[\w-]+\))$/;
-const TRANSFORM = /^(?:\s*(?:translate|rotate|scale|matrix|skewX|skewY)\([\d\s.,e+-]*\)\s*)+$/;
+// Leading whitespace once, then whitespace only after each group: no run of spaces can be split
+// between two quantifiers, so a failing value is rejected in linear time. Values are also bounded.
+const TRANSFORM_RE = /^\s*(?:(?:translate|rotate|scale|matrix|skewX|skewY)\([\d\s.,e+-]*\)\s*)+$/;
+const MAX_TRANSFORM = 1000;
+const TRANSFORM = (v) => typeof v === 'string' && v.length <= MAX_TRANSFORM && TRANSFORM_RE.test(v);
 const POINTS = /^[\d\s.,e+-]*$/;
 const FONT = /^[\w\s,'-]*$/;
 const ID = /^[\w-]+$/;
