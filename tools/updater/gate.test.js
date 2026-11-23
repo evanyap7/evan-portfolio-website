@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
   runGate, buildClaimsFile, openDraftPr, findOpenDraftPr, pollPreviewUrl,
-  screenshotPreview, publishScreenshot,
+  screenshotPreview, publishScreenshot, defaultRunner, killGroup,
 } from './gate.js';
 import { loadConfig } from './config.js';
 
@@ -91,7 +91,7 @@ function prFixture({ openPrs = [], statuses = [] } = {}) {
 let clock = 0;
 const base = (fx, over = {}) => ({
   slug: 'my-proj', kind: 'new', branch: 'auto/project-my-proj', claimsMd: buildClaimsFile(claims),
-  root: '/r', repo: 'o/r', token: 't', fetch: fx.fetch, run: fx.run, sleep: async (ms) => { clock += ms; }, now: () => clock, ...over,
+  root: '/r', paths: ['work/my-proj.html', 'tools/projects-state.json'], repo: 'o/r', token: 't', fetch: fx.fetch, run: fx.run, sleep: async (ms) => { clock += ms; }, now: () => clock, ...over,
 });
 
 test('openDraftPr: commits with the repo email, no attribution, base from baseBranch, claims in body', async () => {
@@ -194,4 +194,65 @@ test('publishScreenshot returns the raw URL, or null on failure, never throwing'
   assert.equal(await publishScreenshot(png, 'Bad Slug', { repo: 'o/r', token: 't', fetch }), null);
   const fail = async () => ({ ok: false, status: 422, json: async () => ({}) });
   assert.equal(await publishScreenshot(png, 'my-proj', { repo: 'o/r', token: 't', fetch: fail }), null);
+});
+
+const ran = (fx, word) => fx.run.calls.some((c) => c.args.includes(word));
+
+test('openDraftPr stages only the given paths on a branch cut from origin/<base>', async () => {
+  const fx = prFixture();
+  await openDraftPr(base(fx, { baseBranch: 'develop' }));
+  const add = fx.run.calls.find((c) => c.args[0] === 'add');
+  assert.deepEqual(add.args, ['add', '--', 'work/my-proj.html', 'tools/projects-state.json']);
+  assert.ok(fx.run.calls.some((c) => c.args.join(' ') === 'fetch origin develop'));
+  assert.ok(fx.run.calls.some((c) => c.args.join(' ') === 'checkout -B auto/project-my-proj origin/develop'));
+  assert.ok(!fx.run.calls.some((c) => c.args.includes('-A')));
+});
+
+test('openDraftPr rejects missing, empty and unsafe paths before any git call', async () => {
+  const fx = prFixture();
+  for (const paths of [undefined, [], ['/etc/passwd'], ['../x'], ['a/../b'], ['--all'], ['']]) {
+    await assert.rejects(openDraftPr(base(fx, { paths })), /path/i);
+  }
+  assert.equal(fx.run.calls.length, 0);
+});
+
+test('openDraftPr refuses a stale remote branch before checkout or commit', async () => {
+  const fx = prFixture();
+  fx.run = runner((cmd, args) => {
+    if (args.join(' ') === 'config user.email') return { stdout: 'fake@example.test\n' };
+    if (args[0] === 'ls-remote') return { stdout: 'abc\trefs/heads/auto/project-my-proj\n' };
+  });
+  await assert.rejects(openDraftPr(base(fx)), /already exists on origin/);
+  assert.ok(!ran(fx, 'checkout') && !ran(fx, 'commit') && !ran(fx, 'push'));
+});
+
+test('openDraftPr maps a 422 on PR creation to an already-drafted error with the message', async () => {
+  const fx = prFixture();
+  const inner = fx.fetch;
+  fx.fetch = async (url, init = {}) => (init.method === 'POST' && String(url).endsWith('/pulls')
+    ? { ok: false, status: 422, json: async () => ({ message: 'A pull request already exists' }) }
+    : inner(url, init));
+  await assert.rejects(openDraftPr(base(fx)), /already drafted.*A pull request already exists/);
+});
+
+test('killGroup kills the negative pid group, falling back to the child', () => {
+  const seen = [];
+  killGroup({ pid: 42, kill: () => seen.push('child') }, (pid, sig) => seen.push([pid, sig]));
+  assert.deepEqual(seen, [[-42, 'SIGKILL']]);
+  const seen2 = [];
+  killGroup({ pid: 42, kill: (s) => seen2.push(s) }, () => { throw new Error('ESRCH'); });
+  assert.deepEqual(seen2, ['SIGKILL']);
+});
+
+test('defaultRunner spawns detached and kills the process group on timeout', async () => {
+  const { EventEmitter } = await import('node:events');
+  let opts;
+  const child = Object.assign(new EventEmitter(), { pid: 7, stdout: new EventEmitter(), stderr: new EventEmitter() });
+  const killed = [];
+  const spawn = (cmd, args, o) => { opts = o; return child; };
+  const p = defaultRunner('x', [], { timeoutMs: 5 }, { spawn, kill: (pid, sig) => { killed.push([pid, sig]); child.emit('close', null); } });
+  const r = await p;
+  assert.equal(opts.detached, true);
+  assert.deepEqual(killed, [[-7, 'SIGKILL']]);
+  assert.equal(r.code, 1);
 });

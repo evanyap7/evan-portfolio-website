@@ -23,13 +23,18 @@ function assertSlug(slug) {
   if (typeof slug !== 'string' || !SLUG_RE.test(slug)) throw new Error(`Invalid slug: ${JSON.stringify(slug)}`);
 }
 
+/** Kills a detached child's whole process group (npm, node, Chrome, the python server). */
+export function killGroup(child, kill = process.kill) {
+  try { kill(-child.pid, 'SIGKILL'); } catch { try { child.kill('SIGKILL'); } catch { /* already gone */ } }
+}
+
 /** @type {CommandRunner} */
-export function defaultRunner(cmd, args, { cwd, timeoutMs = 120000 } = {}) {
+export function defaultRunner(cmd, args, { cwd, timeoutMs = 120000 } = {}, deps = {}) {
   return new Promise((resolve) => {
-    const child = spawn(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = (deps.spawn ?? spawn)(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
     let stdout = '';
     let stderr = '';
-    const timer = setTimeout(() => child.kill('SIGKILL'), timeoutMs);
+    const timer = setTimeout(() => killGroup(child, deps.kill), timeoutMs);
     child.stdout.on('data', (d) => { stdout += d; });
     child.stderr.on('data', (d) => { stderr += d; });
     child.on('error', (err) => { clearTimeout(timer); resolve({ code: 127, stdout, stderr: stderr + String(err.message) }); });
@@ -130,18 +135,27 @@ async function git(run, root, args) {
  *   run?: CommandRunner, sleep?: Function, now?: Function }} opts
  */
 export async function openDraftPr(opts) {
-  const { slug, kind, branch, claimsMd, root, baseBranch = 'main', gateLog = '' } = opts;
+  const { slug, kind, branch, claimsMd, root, baseBranch = 'main', gateLog = '', paths } = opts;
   assertSlug(slug);
   if (branch !== `auto/project-${slug}`) throw new Error(`Unexpected branch ${JSON.stringify(branch)}`);
+  if (!Array.isArray(paths) || paths.length === 0) throw new Error('openDraftPr needs a non-empty paths list');
+  for (const p of paths) {
+    if (typeof p !== 'string' || p === '' || p.startsWith('/') || p.startsWith('-') || p.split('/').includes('..')) {
+      throw new Error(`Invalid path to stage: ${JSON.stringify(p)}`);
+    }
+  }
   const existing = await findOpenDraftPr(slug, opts);
   if (existing) throw new Error(`A draft PR is already open for ${slug}: ${existing}`);
 
   const run = opts.run ?? defaultRunner;
+  const remote = await git(run, root, ['ls-remote', '--heads', 'origin', branch]);
+  if (remote.trim()) throw new Error(`Branch ${branch} already exists on origin with no open PR; delete it or resume it by hand`);
   const email = (await git(run, root, ['config', 'user.email'])).trim();
   if (!email) throw new Error('git user.email is not configured');
   const title = kind === 'new' ? `Add ${slug} to the portfolio` : `Update ${slug} on the portfolio`;
-  await git(run, root, ['checkout', '-B', branch]);
-  await git(run, root, ['add', '-A']);
+  await git(run, root, ['fetch', 'origin', baseBranch]);
+  await git(run, root, ['checkout', '-B', branch, `origin/${baseBranch}`]);
+  await git(run, root, ['add', '--', ...paths]);
   await git(run, root, ['-c', 'user.name=evanyap7', '-c', `user.email=${email}`, 'commit', '-m', title]);
   await git(run, root, ['push', '-u', 'origin', branch]);
 
@@ -155,6 +169,10 @@ export async function openDraftPr(opts) {
   ].join('\n');
   const { call } = ghFetch(opts);
   const res = await call('POST', 'pulls', { title, head: branch, base: baseBranch, body, draft: true });
+  if (res.status === 422) {
+    const detail = await res.json().catch(() => ({}));
+    throw new Error(`A draft PR is already drafted for ${slug} (GitHub 422: ${detail.message ?? 'validation failed'})`);
+  }
   if (!res.ok) throw new Error(`Opening the PR failed: ${res.status}`);
   const pr = await res.json();
   const previewUrl = await pollPreviewUrl(pr.head.sha, opts);
