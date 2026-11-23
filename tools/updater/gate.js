@@ -168,7 +168,9 @@ export async function openDraftPr(opts) {
     ...(gateLog ? ['', '## Gate log (last lines)', '', '```', tail(gateLog, PR_LOG_LINES), '```'] : []),
   ].join('\n');
   const { call } = ghFetch(opts);
-  const res = await call('POST', 'pulls', { title, head: branch, base: baseBranch, body, draft: true });
+  // Ready for review, not a GitHub draft: the gate has passed, and EGO's Approve refuses to merge a
+  // draft PR (reason "pr-draft"). "Draft" in this module means "awaiting Evan's approval".
+  const res = await call('POST', 'pulls', { title, head: branch, base: baseBranch, body, draft: false });
   if (res.status === 422) {
     const detail = await res.json().catch(() => ({}));
     throw new Error(`A draft PR is already drafted for ${slug} (GitHub 422: ${detail.message ?? 'validation failed'})`);

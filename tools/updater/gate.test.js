@@ -102,7 +102,8 @@ test('openDraftPr: commits with the repo email, no attribution, base from baseBr
   const post = fx.requests.find((q) => q.method === 'POST' && q.url.endsWith('/pulls'));
   assert.equal(post.body.base, 'develop');
   assert.equal(post.body.head, 'auto/project-my-proj');
-  assert.equal(post.body.draft, true);
+  // EGO's Approve refuses to merge a GitHub draft PR (reason "pr-draft"); the gate has passed.
+  assert.equal(post.body.draft, false);
   assert.match(post.body.body, /from README, unverified/);
   assert.match(post.body.body, /38\/39/);
   assert.doesNotMatch(post.body.body, FORBIDDEN);

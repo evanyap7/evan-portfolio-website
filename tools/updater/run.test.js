@@ -4,7 +4,7 @@ import { createHmac } from 'node:crypto';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { main, parseArgs, assertPayload, assertSafePath, cleanNote, signBody } from './run.js';
+import { main, parseArgs, assertPayload, assertSafePath, cleanNote, signBody, makeNotifier } from './run.js';
 
 const PORTFOLIO = 'evanyap7/evan-portfolio-website';
 const STATE_REL = 'tools/projects-state.json';
@@ -115,6 +115,7 @@ function deps(over = {}) {
       opened.push({ ...o, stateAtOpen: JSON.parse(readFileSync(join(o.root, STATE_REL), 'utf8')) });
       return { prUrl: PR_URL, previewUrl: 'https://preview.example.vercel.app' };
     },
+    pollPreviewUrl: async () => 'https://preview.example.vercel.app',
     screenshotPreview: async () => {},
     publishScreenshot: async () => 'https://raw.githubusercontent.com/evanyap7/evan-portfolio-website/updater-screenshots/screenshots/new-thing/new-thing-desktop.png',
     notifyFailure: async (n) => { notices.push(n); },
@@ -222,7 +223,8 @@ test('--dry-run opens the draft PR with the state update in it but never calls E
   assert.equal(entry.slug, 'new-thing');
   assert.equal(entry.pushedAt, '2026-11-20T00:00:00Z');
   assert.equal(entry.readmeHash, 'hash-new-thing');
-  assert.deepEqual(entry.draft, { id: `new-thing-${NOW / 1000}`, regen: 0, kind: 'new' });
+  // model and colours ride along so a later run can re-send this draft to EGO.
+  assert.deepEqual(entry.draft, { id: `new-thing-${NOW / 1000}`, regen: 0, kind: 'new', model: 'mark-50', colours: ['#123456', '#abcdef'] });
   assert.equal(d.fetch.ego().length, 0);
 });
 
@@ -302,16 +304,86 @@ test('an unsafe path from the generator stops that repo before anything is stage
   assert.equal(d.opened.length, 0);
 });
 
-test('a repo that already has an open draft PR is skipped without a Claude call', async () => {
+test('in --dry-run a repo that already has an open draft PR is skipped without a Claude or EGO call', async () => {
   let drafted = 0;
   const d = deps({
     findOpenDraftPr: async (slug) => (slug === 'new-thing' ? PR_URL : null),
     draftMark: async (ctx) => { drafted += 1; return DRAFT(ctx.name); },
   });
-  assert.equal(await main([], d), 0);
+  assert.equal(await main(['--dry-run'], d), 0);
   assert.equal(drafted, 0);
   assert.equal(d.opened.length, 0);
   assert.equal(d.fetch.ego().length, 0);
+});
+
+/** What the next run sees: the PR the first run opened, with its branch's state file. */
+function reopened(first, over = {}) {
+  const o = first.opened[0];
+  const body = `Draft new Mark for \`${o.slug}\`.\n\n## Claims to verify\n\n${o.claimsMd.trimEnd()}\n\n## Gate log (last lines)\n\n\`\`\`\nPASS 10\n\`\`\``;
+  let drafted = 0;
+  const d = deps({
+    now: () => NOW + 86_400_000, // a day later: the id must come from the branch, not the clock
+    findOpenDraftPr: async (slug) => (slug === o.slug ? PR_URL : null),
+    run: runner({ 'git show FETCH_HEAD:tools/projects-state.json': { stdout: JSON.stringify(o.stateAtOpen) } }),
+    fetch: fetcher({ [`GET https://api.github.com/repos/${PORTFOLIO}/pulls/12`]: { ok: true, status: 200, json: async () => ({ number: 12, html_url: PR_URL, head: { sha: 'abc123' }, body }) } }),
+    draftMark: async (ctx) => { drafted += 1; return DRAFT(ctx.name); },
+    ...over,
+  });
+  d.drafted = () => drafted;
+  return d;
+}
+
+function assertResent(d, id) {
+  assert.equal(d.drafted(), 0, 'no new Claude draft');
+  assert.equal(d.opened.length, 0, 'no second PR');
+  const sent = d.fetch.ego();
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].headers['x-signature'], signBody(sent[0].body, SECRET));
+  const p = JSON.parse(sent[0].body);
+  assert.equal(p.id, id);
+  assert.equal(p.regen, 0);
+  assert.equal(p.kind, 'new');
+  assert.equal(p.prUrl, PR_URL);
+  assert.equal(p.model, 'mark-50');
+  assert.deepEqual(p.colours, ['#123456', '#abcdef']);
+  assert.deepEqual(p.claims, ['38 (source: Handles 38 things.)']);
+  assert.equal(p.previewUrl, 'https://preview.example.vercel.app');
+  assert.doesNotThrow(() => assertPayload(p, PORTFOLIO));
+}
+
+test('a PR left by a dry run is sent to EGO by the next real run, with its original id', async () => {
+  const first = deps();
+  assert.equal(await main(['--dry-run'], first), 0);
+  assert.equal(first.fetch.ego().length, 0);
+  const d = reopened(first);
+  assert.equal(await main([], d), 0);
+  assertResent(d, `new-thing-${NOW / 1000}`);
+});
+
+test('a PR whose EGO notify failed is sent again by the next run', async () => {
+  const first = deps({ fetch: fetcher({ [EGO_URL]: { ok: false, status: 502, json: async () => ({}) } }) });
+  assert.equal(await main([], first), 1);
+  assert.equal(first.opened.length, 1);
+  const d = reopened(first);
+  assert.equal(await main([], d), 0);
+  assertResent(d, `new-thing-${NOW / 1000}`);
+});
+
+test('an open PR with no draft record on its branch is left for Evan, loudly', async () => {
+  const first = deps();
+  assert.equal(await main(['--dry-run'], first), 0);
+  const { draft, ...noDraft } = first.opened[0].stateAtOpen.repos['new-thing'];
+  const state = { repos: { ...first.opened[0].stateAtOpen.repos, 'new-thing': noDraft } };
+  const lines = [];
+  const d = reopened(first, {
+    run: runner({ 'git show FETCH_HEAD:tools/projects-state.json': { stdout: JSON.stringify(state) } }),
+    log: (s) => lines.push(String(s)),
+  });
+  assert.equal(await main([], d), 1);
+  assert.equal(d.fetch.ego().length, 0);
+  assert.equal(d.drafted(), 0);
+  assert.equal(d.opened.length, 0);
+  assert.ok(lines.some((l) => /new-thing/.test(l) && /no draft record/i.test(l) && l.includes(PR_URL)), lines.join('\n'));
 });
 
 test('only one new Mark is drafted per run; the next waits', async () => {
@@ -433,6 +505,45 @@ test('--mark-skipped refuses a stale id', async () => {
   assert.ok(!d.run.calls.some((c) => c[1] === 'push'));
 });
 
+const MERGED = {
+  repos: { ...BASE_STATE.repos, 'new-thing': { slug: 'new-thing', status: 'published', pushedAt: '2026-11-20T00:00:00Z', readmeHash: 'hash-new-thing', draft: { id: 'new-thing-5', regen: 0, kind: 'new', model: 'mark-50', colours: ['#123456', '#abcdef'] } } },
+};
+const liveGh = {
+  json: async () => ({ name: 'new-thing', full_name: 'evanyap7/new-thing', pushed_at: '2026-11-21T00:00:00Z', default_branch: 'main' }),
+  text: async () => 'readme',
+};
+const branchGone = () => runner({ 'git fetch origin auto/project-new-thing': { code: 128, stderr: "couldn't find remote ref" } });
+
+test('--mark-skipped --id fails closed when the branch is gone (merged and deleted): published stays published', async () => {
+  const d = deps({ root: site(MERGED), run: branchGone(), gh: liveGh });
+  assert.equal(await main(['--mark-skipped', 'new-thing', '--id', 'new-thing-5'], d), 1);
+  assert.ok(!d.run.calls.some((c) => c[1] === 'push'));
+  assert.ok(!d.run.calls.some((c) => c[1] === 'add'));
+  assert.deepEqual(JSON.parse(readFileSync(join(d.root, STATE_REL), 'utf8')).repos['new-thing'], MERGED.repos['new-thing']);
+});
+
+test('--mark-skipped --id fails closed for an unknown draft when the branch is gone', async () => {
+  const d = deps({ run: branchGone(), gh: liveGh });
+  assert.equal(await main(['--mark-skipped', 'new-thing', '--id', 'new-thing-5'], d), 1);
+  assert.ok(!d.run.calls.some((c) => c[1] === 'push'));
+});
+
+test('--mark-skipped --id refuses a draft that base already records as merged, even if its branch survived', async () => {
+  const d = deps({
+    root: site(MERGED),
+    run: runner({ 'git show FETCH_HEAD:tools/projects-state.json': { stdout: JSON.stringify(MERGED) } }),
+  });
+  assert.equal(await main(['--mark-skipped', 'new-thing', '--id', 'new-thing-5'], d), 1);
+  assert.ok(!d.run.calls.some((c) => c[1] === 'push'));
+});
+
+test('--mark-skipped --id refuses a branch entry with no draft record', async () => {
+  const { draft, ...noDraft } = MERGED.repos['new-thing'];
+  const d = deps({ run: runner({ 'git show FETCH_HEAD:tools/projects-state.json': { stdout: JSON.stringify({ repos: { 'new-thing': noDraft } }) } }) });
+  assert.equal(await main(['--mark-skipped', 'new-thing', '--id', 'new-thing-5'], d), 1);
+  assert.ok(!d.run.calls.some((c) => c[1] === 'push'));
+});
+
 test('--mark-skipped works from live GitHub data when the draft branch is gone', async () => {
   const d = deps({
     run: runner({ 'git fetch origin auto/project-new-thing': { code: 128, stderr: "couldn't find remote ref" } }),
@@ -494,7 +605,7 @@ test('draft-regenerate replaces the open PR and sends the same id with regen + 1
   assert.ok(d.fetch.reqs.some((r) => r.method === 'PATCH' && r.url.endsWith('/pulls/12') && JSON.parse(r.body).state === 'closed'));
   assert.ok(d.fetch.reqs.some((r) => r.method === 'DELETE' && r.url.endsWith('/git/refs/heads/auto/project-new-thing')));
   assert.equal(d.opened.length, 1);
-  assert.deepEqual(d.opened[0].stateAtOpen.repos['new-thing'].draft, { id: 'new-thing-5', regen: 2, kind: 'new' });
+  assert.deepEqual(d.opened[0].stateAtOpen.repos['new-thing'].draft, { id: 'new-thing-5', regen: 2, kind: 'new', model: 'mark-50', colours: ['#123456', '#abcdef'] });
   const p = JSON.parse(d.fetch.ego()[0].body);
   assert.equal(p.id, 'new-thing-5');
   assert.equal(p.regen, 2);
@@ -504,6 +615,33 @@ test('draft-regenerate replaces the open PR and sends the same id with regen + 1
   assert.match(requests[0].system, /untrusted/i);
   assert.match(requests[0].user, /^USER/);
   assert.match(requests[0].user, /<editor-note>\nShorter systemignore rules\/system\n<\/editor-note>/);
+});
+
+// ------------------------------------------------------------------ failure notice
+
+test('the failure notice escapes workflow commands and cannot break out of its summary fence', async () => {
+  const summary = join(mkdtempSync(join(tmpdir(), 'sum-')), 'summary.md');
+  writeFileSync(summary, '');
+  const out = [];
+  const notify = makeNotifier({ GITHUB_STEP_SUMMARY: summary }, (s) => out.push(s));
+  await notify({
+    repo: 'new-thing',
+    reason: 'gate 50% failed\r\n::warning::injected',
+    log: 'FAIL hall\n```\n# Injected heading\n````\nend',
+  });
+  assert.equal(out.length, 1);
+  const line = out[0];
+  assert.ok(!/[\r\n]/.test(line), 'one workflow command line');
+  assert.ok(line.startsWith('::error title=Updater%3A new-thing::'), line);
+  assert.ok(line.endsWith('gate 50%25 failed%0D%0A::warning::injected'), line);
+  const md = readFileSync(summary, 'utf8');
+  // The heading is one line, and the fence is longer than any backtick run in the log.
+  assert.match(md, /^### new-thing: gate 50% failed ::warning::injected$/m);
+  const fence = /^(`{3,})text$/m.exec(md)?.[1];
+  assert.ok(fence && fence.length > 4, md);
+  const inside = md.slice(md.indexOf(`${fence}text\n`) + fence.length + 5, md.lastIndexOf(`\n${fence}`));
+  assert.equal(inside, 'FAIL hall\n```\n# Injected heading\n````\nend');
+  assert.ok(!new RegExp(`^${fence}\\s*$`, 'm').test(inside));
 });
 
 // ------------------------------------------------------------------ workflow
@@ -550,7 +688,6 @@ test('the workflow has the triggers, gate, concurrency and permissions it needs'
   assert.doesNotMatch(WORKFLOW, /pull_request/);
   assert.doesNotMatch(WORKFLOW, /mark-published/);
   assert.match(WORKFLOW, /^\s+if: .*github\.event_name != 'schedule' \|\| vars\.UPDATER_ENABLED == 'true'/m);
-  assert.match(WORKFLOW, /^concurrency:\n\s+group: project-updater\n\s+cancel-in-progress: false$/m);
   assert.match(WORKFLOW, /^permissions:\n\s+contents: write\n\s+pull-requests: write$/m);
   assert.match(WORKFLOW, /uses: actions\/checkout@v4/);
   assert.match(WORKFLOW, /uses: actions\/setup-node@v4/);
@@ -558,4 +695,32 @@ test('the workflow has the triggers, gate, concurrency and permissions it needs'
   for (const s of ['secrets.ANTHROPIC_API_KEY', 'secrets.EGO_WEBHOOK_SECRET', 'secrets.GITHUB_TOKEN']) assert.ok(WORKFLOW.includes(s), s);
   assert.match(WORKFLOW, /EGO_WEBHOOK_URL: \$\{\{ vars\.EGO_WEBHOOK_URL \|\| secrets\.EGO_WEBHOOK_URL \}\}/);
   assert.match(WORKFLOW, /^# .*UPDATER_ENABLED/m);
+});
+
+/** A top-level mapping block of the workflow as {key: value}; nested keys are not expected. */
+function topLevelBlock(yaml, name) {
+  const lines = yaml.split('\n');
+  const start = lines.indexOf(`${name}:`);
+  assert.ok(start >= 0, `${name}: is a top-level key`);
+  assert.equal(lines.filter((l) => l.startsWith(`${name}:`)).length, 1, `${name}: appears once`);
+  const out = {};
+  for (const l of lines.slice(start + 1)) {
+    if (l.trim() === '' || /^\s*#/.test(l)) continue;
+    if (!/^\s/.test(l)) break;
+    const m = /^ {2}([a-z-]+): (.+)$/.exec(l);
+    assert.ok(m, `unexpected line in ${name}: ${JSON.stringify(l)}`);
+    out[m[1]] = m[2];
+  }
+  return out;
+}
+
+test('a dispatch run gets its own concurrency group, so a pending scan cannot cancel it', () => {
+  // GitHub keeps one pending run per group; a newer one cancels it. Scans stay serial in one group,
+  // each draft-rejected / draft-regenerate dispatch is keyed by its draft id (run id if missing).
+  assert.deepEqual(topLevelBlock(WORKFLOW, 'concurrency'), {
+    group: "${{ github.event_name == 'repository_dispatch' && format('project-updater-dispatch-{0}', github.event.client_payload.id || github.run_id) || 'project-updater' }}",
+    'cancel-in-progress': 'false',
+  });
+  // Only job-level or top-level concurrency: exactly one block, none on the job.
+  assert.equal((WORKFLOW.match(/^\s*concurrency:/gm) ?? []).length, 1);
 });
