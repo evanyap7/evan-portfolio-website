@@ -117,7 +117,7 @@ function withoutUrls(text) {
 }
 
 /** Throws DraftSchemaError when a string carries anything that could smuggle a link or markup. */
-function assertSafeText(raw, filtered, homepage, where) {
+export function assertSafeText(raw, filtered, homepage, where) {
   const fail = (why) => {
     throw new DraftSchemaError(`Unsafe text in ${where}: ${why}`, [why]);
   };
@@ -142,7 +142,7 @@ function collectStrings(v, out = []) {
   return out;
 }
 
-function assertNumbersGrounded(draft, sourceText) {
+export function assertNumbersGrounded(draft, sourceText) {
   const known = new Set(atoms(sourceText));
   const bad = new Set();
   for (const s of collectStrings(draft)) {
