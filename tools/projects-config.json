@@ -8,7 +8,10 @@
     "introduction-to-github",
     "open-higgsfield",
     "evan-portfolio-website",
-    "evanyap7"
+    "evanyap7",
+    "evans-trading-agent",
+    "finance-tracker",
+    "ATPI-Webpage"
   ],
   "changeThresholds": { "minCommits": 5, "readmeChanged": true },
   "models": { "draft": "claude-sonnet-5-5" }
