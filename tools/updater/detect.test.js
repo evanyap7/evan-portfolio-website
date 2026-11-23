@@ -27,6 +27,30 @@ test('listEligibleRepos drops private, fork, archived and denied repos', async (
   assert.equal(repos[0].defaultBranch, 'main');
 });
 
+test('listEligibleRepos follows pages of 100 until a short page', async () => {
+  const paths = [];
+  const page = (n, count) => Array.from({ length: count }, (_, i) => raw(`p${n}-${i}`));
+  const gh = {
+    async json(path) {
+      paths.push(path);
+      const n = Number(/[?&]page=(\d+)/.exec(path)?.[1]);
+      assert.match(path, /per_page=100/);
+      return n === 1 ? page(1, 100) : n === 2 ? page(2, 100) : page(3, 7);
+    },
+  };
+  const repos = await listEligibleRepos(config, gh);
+  assert.equal(repos.length, 207);
+  assert.equal(paths.length, 3);
+  assert.deepEqual(paths.map((p) => /[?&]page=(\d+)/.exec(p)[1]), ['1', '2', '3']);
+});
+
+test('listEligibleRepos stops at a page cap instead of looping forever', async () => {
+  let calls = 0;
+  const gh = { json: async () => { calls += 1; return Array.from({ length: 100 }, (_, i) => raw(`r${calls}-${i}`)); } };
+  await assert.rejects(listEligibleRepos(config, gh), /pages/i);
+  assert.ok(calls <= 10, `${calls} calls`);
+});
+
 test('listEligibleRepos restricts to allow when non-empty; deny still wins', async () => {
   const gh = { json: async () => [raw('a'), raw('b'), raw('denied')] };
   const repos = await listEligibleRepos({ ...config, allow: ['a', 'denied'] }, gh);

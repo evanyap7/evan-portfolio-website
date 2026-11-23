@@ -7,6 +7,8 @@ import { fetchReadme, hashReadme } from './context.js';
 
 const UNSEEN_COMMIT_CAP = 30;
 const MAX_COMMITS = 100;
+const PER_PAGE = 100;
+const MAX_PAGES = 10;
 const CHORE_RE = /^(chore|docs|ci|style|test)(\([^)]*\))?!?:/i;
 
 /**
@@ -16,7 +18,14 @@ const CHORE_RE = /^(chore|docs|ci|style|test)(\([^)]*\))?!?:/i;
  * @returns {Promise<Repo[]>}
  */
 export async function listEligibleRepos(config, gh) {
-  const raw = await gh.json(`users/${config.owner}/repos?type=owner&sort=pushed&per_page=100`);
+  const raw = [];
+  for (let page = 1; ; page += 1) {
+    if (page > MAX_PAGES) throw new Error(`More than ${MAX_PAGES} pages of repos; refusing a partial list`);
+    const batch = await gh.json(`users/${config.owner}/repos?type=owner&sort=pushed&per_page=${PER_PAGE}&page=${page}`);
+    if (!Array.isArray(batch)) throw new Error('GitHub repo list is not an array');
+    raw.push(...batch);
+    if (batch.length < PER_PAGE) break;
+  }
   return raw
     .filter((r) => !r.private && !r.fork && !r.archived)
     .filter((r) => !config.deny.includes(r.name))
