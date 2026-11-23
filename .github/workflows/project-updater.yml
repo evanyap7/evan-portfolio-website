@@ -1,0 +1,92 @@
+# Project updater: drafts new and changed GitHub repos into the site as draft PRs and asks EGO
+# (Telegram) for approval. Merging a PR is what publishes; its own tools/projects-state.json
+# update marks the repo published.
+#
+# The scheduled trigger is enabled only after Evan's go-ahead: the daily run does nothing until
+# the repository variable UPDATER_ENABLED is set to 'true'. Manual and EGO dispatch runs work
+# before that. Every run fails closed (a clear error, no partial run) until these exist:
+#   secrets.ANTHROPIC_API_KEY, secrets.EGO_WEBHOOK_SECRET, and EGO_WEBHOOK_URL as a variable or
+#   secret (the last two are not needed for a dry run). GITHUB_TOKEN is provided by Actions.
+#   Settings > Actions > General must allow GitHub Actions to create pull requests.
+#
+# Dispatch payload values and workflow_dispatch inputs are untrusted. They reach the script only
+# through env and are passed to node as separate argv entries; run.js validates each one.
+name: Project updater
+
+on:
+  schedule:
+    - cron: '23 19 * * *'
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'Only this repo (name, not owner/name). Empty means every eligible repo.'
+        type: string
+        required: false
+        default: ''
+      dry_run:
+        description: 'Open the PR but do not ask EGO for approval'
+        type: boolean
+        default: true
+  repository_dispatch:
+    types: [draft-rejected, draft-regenerate]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: project-updater
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.event_name != 'schedule' || vars.UPDATER_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # The quality gate runs the browser suite, as ci.yml does. A rejection only commits state.
+      - if: github.event.action != 'draft-rejected'
+        run: npx playwright install --with-deps chromium
+      - name: Commit identity
+        env:
+          GIT_EMAIL: ${{ vars.UPDATER_GIT_EMAIL }}
+        run: git config user.email "${GIT_EMAIL:-evanyap7@users.noreply.github.com}"
+      - name: Run the updater
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EGO_WEBHOOK_SECRET: ${{ secrets.EGO_WEBHOOK_SECRET }}
+          EGO_WEBHOOK_URL: ${{ vars.EGO_WEBHOOK_URL || secrets.EGO_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
+          DRAFT_ID: ${{ github.event.client_payload.id }}
+          DRAFT_REPO: ${{ github.event.client_payload.repo }}
+          DRAFT_NOTE: ${{ github.event.client_payload.note }}
+          INPUT_REPO: ${{ inputs.repo }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          args=()
+          case "$EVENT_NAME:$EVENT_ACTION" in
+            repository_dispatch:draft-rejected)
+              args=(--mark-skipped "$DRAFT_REPO" --id "$DRAFT_ID") ;;
+            repository_dispatch:draft-regenerate)
+              args=(--regenerate "$DRAFT_ID" --repo "$DRAFT_REPO" --note "$DRAFT_NOTE") ;;
+            workflow_dispatch:*)
+              if [ "$INPUT_DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+              if [ -n "$INPUT_REPO" ]; then args+=(--repo "$INPUT_REPO"); fi ;;
+            schedule:*)
+              ;;
+            *)
+              echo "::error::Unexpected trigger"; exit 1 ;;
+          esac
+          node tools/updater/run.js "${args[@]}"

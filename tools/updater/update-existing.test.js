@@ -175,3 +175,13 @@ test('the README is delimited as untrusted data in the prompt', async () => {
   assert.ok(seen.user.includes('<readme>'));
   assert.equal((seen.user.match(/<\/readme>/g) ?? []).length, 1);
 });
+
+test('applyEdits returns the files it wrote, for the PR to stage', async () => {
+  const root = mk();
+  assert.deepEqual(applyEdits(root, []), []);
+  const r = await propose(root, [
+    edit({ before: 'Plain intro text.', after: 'Calm text.' }),
+    edit({ file: 'js/marks.js', before: 'It is fast.', after: 'It is calm.' }),
+  ]);
+  assert.deepEqual(applyEdits(root, r.edits).sort(), ['js/marks.js', 'work/foo.html']);
+});

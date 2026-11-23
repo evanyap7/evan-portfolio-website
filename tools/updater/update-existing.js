@@ -216,6 +216,7 @@ export async function proposeUpdate(root, slug, ctx, call = callClaude) {
  * @param {string} root
  * @param {Edit[]} edits each carrying its `slug` (proposeUpdate adds it)
  * @param {string} [slug] overrides the edits' own slug
+ * @returns {string[]} the repo-relative files written
  */
 export function applyEdits(root, edits, slug) {
   if (!Array.isArray(edits)) throw new TypeError('edits must be an array');
@@ -223,7 +224,8 @@ export function applyEdits(root, edits, slug) {
   const slugs = new Set(edits.map((e) => slug ?? e?.slug));
   if (slugs.size > 1) throw new TypeError('Edits belong to more than one slug');
   const [s] = slugs;
-  if (!edits.length) return;
+  if (!edits.length) return [];
   const files = planEdits(root, s, edits, undefined);
   for (const [file, text] of files) writeFileSync(join(root, file), text);
+  return [...files.keys()];
 }
