@@ -7,8 +7,8 @@ import { proposeUpdate, applyEdits } from './update-existing.js';
 
 const PAGE = '<html><body><p>Routes 38/39 test messages correctly.</p><p>Over 476+ tests run.</p><p>A friendly assistant.</p><p>A friendly assistant.</p><p class="x">Plain intro text.</p></body></html>\n';
 const MARKS = `export const MARKS = [
-  { mark: 'I', name: 'Other', blurb: 'Intro text for other.', links: [['Read', 'work/other.html']] },
-  { mark: 'II', name: 'Foo', blurb: 'Routes 38/39 messages. It is fast.', sub: 'Intro text for other.', links: [['Read', 'work/foo.html']] },
+  { mark: 'I', name: 'Other', blurb: 'Intro text for other.', sub: 'Only other has this.', links: [['Read', 'work/other.html']] },
+  { mark: 'II', name: 'Foo', blurb: 'Routes 38/39 messages. It is fast.', sub: 'Intro text for other.', colours: ['#aabbcc'], paint: 'Raw iron', art: { file: 'foo.svg', focus: '1% 2%' }, links: [['Read', 'work/foo.html']] },
 ];
 `;
 const INDEX = `<ul class="work__grid">
@@ -71,7 +71,7 @@ test('marks.js edit limited to the slug entry', async () => {
   applyEdits(root, ok.edits);
   const src = readFileSync(join(root, 'js/marks.js'), 'utf8');
   assert.match(src, /Routes 38\/39 messages\. It is calm\./);
-  assert.match(src, /Intro text for other\.', links: \[\['Read', 'work\/other/);
+  assert.match(src, /blurb: 'Intro text for other\.', sub: 'Only other/);
   await assert.rejects(propose(root, [edit({ file: 'js/marks.js', before: "name: 'Other'", after: "name: 'X'" })]), /entry|exactly once/i);
 });
 
@@ -90,15 +90,54 @@ test('markup, URL and obfuscated domain in after rejected', async () => {
     await assert.rejects(propose(root, [edit({ before: 'Plain intro text.', after })]), undefined, after);
 });
 
-test('ungrounded number rejected', async () => {
+test('a new number that is not in the README is rejected by grounding', async () => {
   const root = mk();
-  await assert.rejects(propose(root, [edit({ before: 'Plain intro text.', after: 'Plain 2031 text.' })]), /digit|number/i);
+  writeFileSync(join(root, 'work/foo.html'), PAGE.replace('Plain intro text.', 'Plain 12 and 3 text.'));
+  // digits [12,3] are unchanged, but "12.3" is a new figure the README does not contain
+  await assert.rejects(propose(root, [edit({ before: '12 and 3', after: '12.3' })]), /not found in the README/i);
+  const c = { ...ctx, readme: 'It reaches 12.3 in tests.' };
+  assert.equal((await propose(root, [edit({ before: '12 and 3', after: '12.3' })], c)).edits.length, 1);
 });
 
-test('grounding is enforced when digits are unchanged', async () => {
+test('an unchanged figure already on the site needs no grounding', async () => {
   const root = mk();
   const c = { ...ctx, readme: 'No figures here.', commits: [] };
-  await assert.rejects(propose(root, [edit({ before: 'Routes 38/39 test messages correctly.', after: 'Sends 38/39 test messages.' })], c), /not found|number/i);
+  const r = await propose(root, [edit({ before: 'Routes 38/39 test messages correctly.', after: 'Sends 38/39 test messages.' })], c);
+  assert.equal(r.edits.length, 1);
+});
+
+test('digits must survive the before/after boundary (whole-file rule)', async () => {
+  const root = mk();
+  await assert.rejects(propose(root, [edit({ before: 'Over 47', after: 'Over 47 of' })]), /digit/i);
+  await assert.rejects(propose(root, [edit({ before: '76+ tests', after: 'x76+ tests' })]), /digit/i);
+  assert.throws(() => applyEdits(root, [{ file: 'work/foo.html', before: 'Over 47', after: 'Over 47 of', slug: 'foo' }]), /digit/i);
+  const ok = await propose(root, [edit({ before: 'Over 476+ tests run.', after: 'More than 476+ tests run.' })]);
+  assert.equal(ok.edits.length, 1);
+});
+
+test('marks.js: links, art, colours, paint and other entries are immutable', async () => {
+  const root = mk();
+  const m = (before, after) => propose(root, [edit({ file: 'js/marks.js', before, after })]);
+  await assert.rejects(m('work/foo.html', 'work/other.html'), /structure|immutable|prose/i);
+  await assert.rejects(m('work/foo.html', '../x.html'), /structure|immutable|prose|unsafe/i);
+  await assert.rejects(m('foo.svg', 'bar.svg'), /structure|immutable|prose|unsafe/i);
+  await assert.rejects(m('#aabbcc', '#aabbdd'), /structure|immutable|prose/i);
+  await assert.rejects(m('Raw iron', 'Raw steel'), /structure|immutable|prose/i);
+  await assert.rejects(m('Only other has this.', 'Changed other.'), /outside|entry/i);
+  assert.equal((await m('It is fast.', 'It is calm.')).edits.length, 1);
+});
+
+test('marks.js text is safe in a template literal too', async () => {
+  const root = mk();
+  const r = await propose(root, [edit({ file: 'js/marks.js', before: 'It is fast.', after: 'A `tick` and ${x} here.' })]);
+  applyEdits(root, r.edits);
+  const src = readFileSync(join(root, 'js/marks.js'), 'utf8');
+  assert.ok(src.includes('A \\`tick\\` and \\${x} here.'));
+});
+
+test('applyEdits rejects a slug that differs from an edit\'s own slug', () => {
+  const root = mk();
+  assert.throws(() => applyEdits(root, [{ file: 'work/foo.html', before: 'Plain intro text.', after: 'Calm.', slug: 'foo' }], 'other'), /slug/i);
 });
 
 test('$& stays literal and HTML is escaped', async () => {

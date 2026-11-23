@@ -87,12 +87,20 @@ function region(file, src, slug) {
 }
 
 /** Escapes `after` for a JS string literal in either quote style. */
-const jsText = (s) => JSON.stringify(s).slice(1, -1).replace(/'/g, "\\'");
+const jsText = (s) => JSON.stringify(s).slice(1, -1).replace(/['`]/g, '\\$&').replace(/\$\{/g, '\\${');
 
-function marksShape(src) {
-  const value = structuredClone(vm.runInNewContext(`${src.replace(/^export /m, '')}\n;MARKS`, Object.create(null), { timeout: 1000 }));
+// The only keys of the slug's own entry whose text may change; everything else is immutable.
+const PROSE_KEYS = new Set(['blurb', 'sub', 'role', 'line', 'rows', 'chips']);
+
+function marksValue(src) {
+  return structuredClone(vm.runInNewContext(`${src.replace(/^export /m, '')}\n;MARKS`, Object.create(null), { timeout: 1000 }));
+}
+
+/** MARKS with the slug entry's prose strings blanked, as a string: equal before and after means only prose changed. */
+function marksFrozen(src, slug) {
   const strip = (v) => (typeof v === 'string' ? '' : Array.isArray(v) ? v.map(strip) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, strip(x)])) : v);
-  return JSON.stringify(strip(value));
+  const own = (m) => (m?.links ?? []).some((l) => l?.[1] === `work/${slug}.html` || l?.[1] === `case-studies/${slug}.html`);
+  return JSON.stringify(marksValue(src).map((m) => (own(m) ? Object.fromEntries(Object.entries(m).map(([k, x]) => [k, PROSE_KEYS.has(k) ? strip(x) : x])) : m)));
 }
 
 /** Validates one edit against `src` (the file's current text) and returns the new text. */
@@ -108,7 +116,8 @@ function applyOne(root, slug, e, src, source) {
   if (bd !== ad) reject(`Edit changes digits: [${bd}] became [${ad}] in "${before.slice(0, 60)}"`);
   if (/https?:|www\./i.test(after)) reject('Edit contains a URL');
   assertSafeText(after, after, undefined, 'edit');
-  if (source !== undefined) assertNumbersGrounded(after, source);
+  // Only figures new to the page need grounding; those already in `before` are on the site.
+  if (source !== undefined) assertNumbersGrounded(after, `${source}\n${before.replace(/&#?\w+;/g, ' ')}`);
 
   const [rs, re] = region(file, src, slug);
   const at = src.indexOf(before);
@@ -127,12 +136,15 @@ function applyOne(root, slug, e, src, source) {
   if (file === 'js/marks.js') {
     let same = false;
     try {
-      same = marksShape(src) === marksShape(out);
+      same = marksFrozen(src, slug) === marksFrozen(out, slug);
     } catch {
       /* falls through to the rejection */
     }
-    if (!same) reject('Edit would change the structure of js/marks.js');
+    if (!same) reject('Edit would change js/marks.js outside the prose of this entry (structure, links, art, colours, other entries)');
   }
+  const sd = digitsOf(src).join(',');
+  const od = digitsOf(out).join(',');
+  if (sd !== od) reject(`Edit changes the digits of ${file} across its boundary: [${sd.slice(0, 80)}] became [${od.slice(0, 80)}]`);
   return out;
 }
 
@@ -207,6 +219,7 @@ export async function proposeUpdate(root, slug, ctx, call = callClaude) {
  */
 export function applyEdits(root, edits, slug) {
   if (!Array.isArray(edits)) throw new TypeError('edits must be an array');
+  for (const e of edits) if (slug !== undefined && e?.slug !== undefined && e.slug !== slug) throw new TypeError(`Edit slug "${e.slug}" does not match "${slug}"`);
   const slugs = new Set(edits.map((e) => slug ?? e?.slug));
   if (slugs.size > 1) throw new TypeError('Edits belong to more than one slug');
   const [s] = slugs;
