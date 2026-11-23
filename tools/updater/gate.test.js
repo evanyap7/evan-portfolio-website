@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
   runGate, buildClaimsFile, openDraftPr, findOpenDraftPr, pollPreviewUrl,
-  screenshotPreview, publishScreenshot, defaultRunner, killGroup,
+  screenshotPreview, publishScreenshot, defaultRunner, killGroup, gateEnv,
 } from './gate.js';
 import { loadConfig } from './config.js';
 
@@ -50,6 +50,22 @@ test('runGate: a failure line is not ok even with PASS and exit 0; failed reques
   assert.equal((await runGate('/r', bad)).ok, false);
   const info = runner((c, a) => (npmArg(a).includes('browser') ? { stderr: '1 failed requests:\n/x\n', stdout: 'PASS 6487\n' } : {}));
   assert.equal((await runGate('/r', info)).ok, true);
+});
+
+test('runGate runs the suite without the run\'s secrets in its environment', async () => {
+  const env = {
+    PATH: '/usr/bin', HOME: '/home/x', CI: 'true', CHECK_TIMEOUT_MS: '9', PLAYWRIGHT_BROWSERS_PATH: '/pw',
+    ANTHROPIC_API_KEY: 'sk-secret', EGO_WEBHOOK_SECRET: 'whsec', GITHUB_TOKEN: 'ghs', GH_TOKEN: 'ghs2', EGO_WEBHOOK_URL: 'https://e',
+  };
+  const run = runner((cmd, args) => (npmArg(args).includes('check:browser') ? { stdout: 'PASS 1\n' } : {}));
+  assert.equal((await runGate('/r', run, { env })).ok, true);
+  assert.equal(run.calls.length, 2);
+  for (const c of run.calls) {
+    assert.deepEqual(c.opts.env, { PATH: '/usr/bin', HOME: '/home/x', CI: 'true', CHECK_TIMEOUT_MS: '9', PLAYWRIGHT_BROWSERS_PATH: '/pw' });
+  }
+  // The default comes from process.env, scrubbed the same way.
+  const keys = Object.keys(gateEnv({ ...env, RANDOM_THING: 'x' }));
+  for (const k of ['ANTHROPIC_API_KEY', 'EGO_WEBHOOK_SECRET', 'GITHUB_TOKEN', 'GH_TOKEN', 'EGO_WEBHOOK_URL', 'RANDOM_THING']) assert.ok(!keys.includes(k), k);
 });
 
 test('runGate: non-zero exit with a PASS line is not ok', async () => {
@@ -254,6 +270,17 @@ test('defaultRunner spawns detached and kills the process group on timeout', asy
   const p = defaultRunner('x', [], { timeoutMs: 5 }, { spawn, kill: (pid, sig) => { killed.push([pid, sig]); child.emit('close', null); } });
   const r = await p;
   assert.equal(opts.detached, true);
+  assert.equal(opts.env, undefined, 'no env option: the child inherits, as git needs');
   assert.deepEqual(killed, [[-7, 'SIGKILL']]);
   assert.equal(r.code, 1);
+});
+
+test('defaultRunner hands an env option to the child as its whole environment', async () => {
+  const { EventEmitter } = await import('node:events');
+  let opts;
+  const child = Object.assign(new EventEmitter(), { pid: 8, stdout: new EventEmitter(), stderr: new EventEmitter() });
+  const spawn = (cmd, args, o) => { opts = o; setImmediate(() => child.emit('close', 0)); return child; };
+  const r = await defaultRunner('x', [], { env: { PATH: '/bin' } }, { spawn });
+  assert.equal(r.code, 0);
+  assert.deepEqual(opts.env, { PATH: '/bin' });
 });

@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { basename, extname } from 'node:path';
 
 /** @typedef {import('./context.js').Claim} Claim */
-/** @typedef {(cmd: string, args: string[], opts?: { cwd?: string, timeoutMs?: number }) => Promise<{ code: number, stdout: string, stderr: string }>} CommandRunner */
+/** @typedef {(cmd: string, args: string[], opts?: { cwd?: string, timeoutMs?: number, env?: Record<string, string> }) => Promise<{ code: number, stdout: string, stderr: string }>} CommandRunner */
 
 const SLUG_RE = /^[a-z0-9-]+$/;
 const SCREENSHOT_BRANCH = 'updater-screenshots';
@@ -28,10 +28,26 @@ export function killGroup(child, kill = process.kill) {
   try { kill(-child.pid, 'SIGKILL'); } catch { try { child.kill('SIGKILL'); } catch { /* already gone */ } }
 }
 
-/** @type {CommandRunner} */
-export function defaultRunner(cmd, args, { cwd, timeoutMs = 120000 } = {}, deps = {}) {
+// What `npm run check`, `npm run check:browser` and their Chrome need, and nothing else: the
+// run's ANTHROPIC_API_KEY, EGO_WEBHOOK_SECRET and GITHUB_TOKEN never reach the suite or a page.
+const GATE_ENV_KEYS = ['PATH', 'HOME', 'USER', 'LOGNAME', 'SHELL', 'LANG', 'LC_ALL', 'TERM', 'TMPDIR', 'TMP', 'TEMP', 'CI',
+  'CHECK_TIMEOUT_MS', 'PLAYWRIGHT_BROWSERS_PATH', 'XDG_CACHE_HOME', 'XDG_CONFIG_HOME', 'XDG_RUNTIME_DIR', 'DISPLAY'];
+
+/** The allowlisted part of an environment, for the gate and the screenshot browser. */
+export function gateEnv(env = process.env) {
+  const out = {};
+  for (const k of GATE_ENV_KEYS) if (typeof env[k] === 'string') out[k] = env[k];
+  return out;
+}
+
+/**
+ * Without opts.env the child inherits this process's environment (git needs it); with it, that
+ * object is the child's whole environment.
+ * @type {CommandRunner}
+ */
+export function defaultRunner(cmd, args, { cwd, timeoutMs = 120000, env } = {}, deps = {}) {
   return new Promise((resolve) => {
-    const child = (deps.spawn ?? spawn)(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
+    const child = (deps.spawn ?? spawn)(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], detached: true, ...(env ? { env } : {}) });
     let stdout = '';
     let stderr = '';
     const timer = setTimeout(() => killGroup(child, deps.kill), timeoutMs);
@@ -46,15 +62,18 @@ const joinLog = (r) => `${r.stdout ?? ''}${r.stderr ? `\n${r.stderr}` : ''}`;
 
 /**
  * Runs `npm run check`, then `npm run check:browser`. ok needs exit 0, the suite's `PASS <n>`
- * line, and no `FAIL ...` line. "failed requests" lines are informational.
+ * line, and no `FAIL ...` line. "failed requests" lines are informational. Both run with the
+ * scrubbed gateEnv(), never the run's secrets.
  * @param {string} root
  * @param {CommandRunner} [run]
+ * @param {{ env?: Record<string, string|undefined> }} [opts] the environment to scrub (process.env)
  */
-export async function runGate(root, run = defaultRunner) {
-  const syntax = await run('npm', ['run', 'check'], { cwd: root, timeoutMs: 5 * 60 * 1000 });
+export async function runGate(root, run = defaultRunner, { env: from = process.env } = {}) {
+  const env = gateEnv(from);
+  const syntax = await run('npm', ['run', 'check'], { cwd: root, timeoutMs: 5 * 60 * 1000, env });
   const syntaxLog = `$ npm run check\n${joinLog(syntax)}`;
   if (syntax.code !== 0) return { ok: false, log: syntaxLog };
-  const browser = await run('npm', ['run', 'check:browser'], { cwd: root, timeoutMs: BROWSER_TIMEOUT_MS });
+  const browser = await run('npm', ['run', 'check:browser'], { cwd: root, timeoutMs: BROWSER_TIMEOUT_MS, env });
   const out = joinLog(browser);
   const log = `${syntaxLog}\n$ npm run check:browser\n${out}`;
   const passed = /^PASS \d+\s*$/m.test(out);
@@ -192,7 +211,7 @@ export async function screenshotPreview(url, outPath, opts = {}) {
   const launch = opts.launch ?? (async () => {
     // The browser suite's own dependency: playwright-core with installed Chrome (Chromium in CI).
     const { chromium } = await import('playwright-core');
-    return chromium.launch(process.env.CI ? {} : { channel: 'chrome' });
+    return chromium.launch({ ...(process.env.CI ? {} : { channel: 'chrome' }), env: gateEnv() });
   });
   const stem = outPath.slice(0, outPath.length - extname(outPath).length);
   const browser = await launch();
