@@ -634,6 +634,58 @@ test('a changed repo with no page to edit needs attention and fails the run', as
   assert.ok(lines.some((l) => /gone-thing/.test(l) && /needs-attention/.test(l) && /work\/gone-thing\.html/.test(l)), lines.join('\n'));
 });
 
+/**
+ * A runner whose `git push` fails the first `fails` times, as when another run pushed first.
+ * Like real git, `checkout --force -B` puts origin's copy of the state file back.
+ */
+function racingRunner(root, fails, script = {}) {
+  const inner = runner(script);
+  const origin = readFileSync(join(root, STATE_REL), 'utf8');
+  let pushes = 0;
+  const run = async (cmd, args, opts) => {
+    if (cmd === 'git' && args[0] === 'checkout' && args.includes('-B')) writeFileSync(join(root, STATE_REL), origin);
+    if (cmd === 'git' && args[0] === 'push') {
+      pushes += 1;
+      inner.calls.push([cmd, ...args]);
+      return pushes <= fails ? { code: 1, stdout: '', stderr: '! [rejected] main -> main (fetch first)' } : { code: 0, stdout: '', stderr: '' };
+    }
+    return inner(cmd, args, opts);
+  };
+  run.calls = inner.calls;
+  return run;
+}
+
+test('a rejected state push is retried on a fresh fetch, with the change applied again', async () => {
+  const root = site();
+  const d = deps({ root, proposeUpdate: async () => ({ edits: [], claims: [] }), run: racingRunner(root, 1) });
+  d.repos = [repo('old-thing')];
+  assert.equal(await main([], d), 0);
+  const calls = d.run.calls.map((c) => c.join(' '));
+  assert.equal(calls.filter((c) => c === 'git push origin HEAD:refs/heads/main').length, 2);
+  const firstPush = calls.indexOf('git push origin HEAD:refs/heads/main');
+  const after = calls.slice(firstPush + 1);
+  assert.ok(after.includes('git fetch origin main'), 'refetches before the retry');
+  assert.ok(after.includes('git checkout --force -B main origin/main'), 'rebuilds on the new base');
+  assert.ok(!calls.some((c) => /push.*(--force|-f\b)/.test(c)), 'never force-pushes');
+  assert.equal(JSON.parse(readFileSync(join(d.root, STATE_REL), 'utf8')).repos['old-thing'].readmeHash, 'hash-old-thing');
+});
+
+test('a state push that keeps failing gives up after three tries and fails the run', async () => {
+  const root = site();
+  const d = deps({ root, proposeUpdate: async () => ({ edits: [], claims: [] }), run: racingRunner(root, 99) });
+  d.repos = [repo('old-thing')];
+  assert.equal(await main([], d), 1);
+  assert.equal(d.run.calls.filter((c) => c[1] === 'push').length, 3);
+});
+
+test('--mark-skipped survives a concurrent push to the base branch', async () => {
+  const root = site();
+  const d = deps({ root, run: racingRunner(root, 2, { 'git show FETCH_HEAD:tools/projects-state.json': { stdout: branchState({ id: 'new-thing-5', regen: 0, kind: 'new' }) } }) });
+  assert.equal(await main(['--mark-skipped', 'new-thing', '--id', 'new-thing-5'], d), 0);
+  assert.equal(d.run.calls.filter((c) => c[1] === 'push').length, 3);
+  assert.equal(JSON.parse(readFileSync(join(d.root, STATE_REL), 'utf8')).repos['new-thing'].status, 'skipped');
+});
+
 // ------------------------------------------------------------------ regenerate
 
 test('draft-regenerate refuses past three regenerations', async () => {

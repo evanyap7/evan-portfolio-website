@@ -54,6 +54,7 @@ const MAX_CLAIM = 300;
 const MAX_BODY = 16 * 1024;
 const MAX_URL = 500;
 const EGO_ATTEMPTS = 3;
+const STATE_PUSH_ATTEMPTS = 3;
 const FAILED = new Set(['failed', 'gate-failed', 'needs-attention']);
 const PAYLOAD_KEYS = ['id', 'repo', 'sourceRepo', 'kind', 'prUrl', 'headSha', 'previewUrl', 'screenshotUrl', 'colours', 'model', 'claims', 'regen'];
 const SHA_RE = /^[0-9a-f]{40}$/;
@@ -349,19 +350,30 @@ async function resetTree(c) {
   if (dirty.length) await git(c, ['clean', '-fdq', '--', ...dirty]);
 }
 
-/** Commits tools/projects-state.json alone to the base branch. */
+/**
+ * Commits tools/projects-state.json alone to the base branch. A scan and a dispatch run can
+ * overlap (they are in different concurrency groups), so a rejected push is retried on a fresh
+ * fetch with `mutate` applied again to the newer state, never force-pushed.
+ */
 async function commitStateToBase(c, mutate, message) {
-  await git(c, ['fetch', 'origin', c.base]);
-  await git(c, ['checkout', '--force', '-B', c.base, `origin/${c.base}`]);
-  const state = loadState(c.statePath);
-  if (!mutate(state)) return false;
-  saveState(state, c.statePath);
   const email = (await git(c, ['config', 'user.email'])).stdout.trim();
   if (!email) throw new Error('git user.email is not configured');
-  await git(c, ['add', '--', STATE_REL]);
-  await git(c, ['-c', `user.name=${COMMIT_NAME}`, '-c', `user.email=${email}`, 'commit', '-m', message]);
-  await git(c, ['push', 'origin', `HEAD:refs/heads/${c.base}`]);
-  return true;
+  let last = '';
+  for (let attempt = 1; attempt <= STATE_PUSH_ATTEMPTS; attempt += 1) {
+    await git(c, ['fetch', 'origin', c.base]);
+    await git(c, ['checkout', '--force', '-B', c.base, `origin/${c.base}`]);
+    const state = loadState(c.statePath);
+    if (!mutate(state)) return false;
+    saveState(state, c.statePath);
+    await git(c, ['add', '--', STATE_REL]);
+    await git(c, ['-c', `user.name=${COMMIT_NAME}`, '-c', `user.email=${email}`, 'commit', '-m', message]);
+    const pushed = await git(c, ['push', 'origin', `HEAD:refs/heads/${c.base}`], { allowFail: true });
+    if (pushed.code === 0) return true;
+    last = String(pushed.stderr ?? '').trim();
+    c.log(`updater: state push to ${c.base} rejected (attempt ${attempt} of ${STATE_PUSH_ATTEMPTS}): ${last}`);
+    if (attempt < STATE_PUSH_ATTEMPTS) await c.sleep(1000 * attempt);
+  }
+  throw new Error(`git push failed ${STATE_PUSH_ATTEMPTS} times: ${last}`);
 }
 
 async function setup(d, args) {

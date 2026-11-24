@@ -36,7 +36,9 @@ permissions:
 
 # A group holds one pending run and a newer one replaces it, so a single shared group could drop a
 # reject or regenerate. Each dispatch gets its own group (run_id when the payload id is empty);
-# scheduled and manual scans share one. Expressions are safe here: concurrency is not a shell.
+# scheduled and manual scans share one. A scan and a dispatch can therefore overlap, so the state
+# commit to the base branch refetches and retries a rejected push (run.js commitStateToBase).
+# Expressions are safe here: concurrency is not a shell.
 concurrency:
   group: ${{ github.event_name == 'repository_dispatch' && format('project-updater-dispatch-{0}', github.event.client_payload.id || github.run_id) || 'project-updater' }}
   cancel-in-progress: false
