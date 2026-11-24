@@ -568,7 +568,8 @@ function usableDraft(d, slug) {
 
 /** The claims gate.js wrote into the PR body ("- text" then "  source: ..."), for a re-send. */
 function claimsFromBody(body) {
-  const lines = String(body ?? '').split('\n');
+  // GitHub can hand a body edited in the web UI back with CRLF line endings.
+  const lines = String(body ?? '').split(/\r?\n/);
   const start = lines.findIndex((l) => l.trim() === '## Claims to verify');
   if (start < 0) return [];
   const out = [];

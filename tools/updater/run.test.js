@@ -385,6 +385,18 @@ test('a PR whose EGO notify failed is sent again by the next run', async () => {
   assertResent(d, `new-thing-${NOW / 1000}`);
 });
 
+test('a re-send reads claims from a PR body with CRLF line endings', async () => {
+  const first = deps();
+  assert.equal(await main(['--dry-run'], first), 0);
+  const o = first.opened[0];
+  const body = `Draft new Mark.\r\n\r\n## Claims to verify\r\n\r\n${o.claimsMd.trimEnd().replace(/\n/g, '\r\n')}\r\n\r\n## Gate log\r\n`;
+  const d = reopened(first, {
+    fetch: fetcher({ [`GET https://api.github.com/repos/${PORTFOLIO}/pulls/12`]: { ok: true, status: 200, json: async () => ({ number: 12, head: { sha: RESENT_SHA }, body }) } }),
+  });
+  assert.equal(await main([], d), 0);
+  assert.deepEqual(JSON.parse(d.fetch.ego()[0].body).claims, ['38 (source: Handles 38 things.)']);
+});
+
 test('an open PR whose head commit cannot be read is not re-sent', async () => {
   const first = deps();
   assert.equal(await main(['--dry-run'], first), 0);
