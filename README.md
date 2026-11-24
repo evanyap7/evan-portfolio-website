@@ -2,21 +2,21 @@
 
 **Live:** <https://www.evanyap.com>
 
-An Iron Man themed portfolio, built as **Editions**: the home page is a deck of paper sheets that slide up over a dark hero. Projects are seven suits, one per project, each a 3D model you drag to turn. Every project has its own page, and four of them (E.G.O, the research agent, Parallel Match and the Univers revamp) carry a full write-up: overview, how it works, trade-offs, evidence with its limits, my part, stack and links. Plain HTML, CSS and JavaScript as ES modules: no framework and no build step. The only npm packages are dev tools for the checks. three.js and the fonts load from CDNs. The site animates whatever the device's Reduce Motion setting says; the Pause background button stops the scene.
+An Iron Man themed portfolio, built as **Editions**: the home page is a deck of paper sheets that slide up over a dark hero. Projects are eight suits, one per Mark (the last, "Other builds", gathers the smaller ones), each a 3D model you drag to turn. Every project has its own page, and five of them (E.G.O, the research agent, Parallel Match, the Univers revamp and Chaperone) carry a full write-up: overview, how it works, trade-offs, evidence with its limits, my part, stack and links. Plain HTML, CSS and JavaScript as ES modules: no framework and no build step. The only npm packages are dev tools for the checks. three.js and the fonts load from CDNs. The site animates whatever the device's Reduce Motion setting says; the Pause background button stops the scene.
 
 ![The hero: the Hall of Armor behind Evan's name and headline, with the section rail along the bottom](docs/hero.png)
 
-![The Projects chapter: a picker of seven projects, the project's name set huge behind its suit, and three figures](docs/projects.png)
+![The Projects chapter: a picker of the projects, the project's name set huge behind its suit, and three figures](docs/projects.png)
 
 ## Highlights
 
 - **A deck of sheets.** The hero stays put while the next sheet covers it and darkens it a little. The suit and its figures drift at their own rates. On a phone nothing floats: the opener keeps only the picker, the name and the suit, because the sheet right below repeats the figures.
-- **Seven suits, seven projects.** Pick a project and the suit assembles from the code that draws it, then stands there to drag or turn with the arrow keys. A plain list of every project sits below the picker for browsers without it, and for crawlers.
+- **Eight suits, one per Mark.** Pick a project and the suit assembles from the code that draws it, then stands there to drag or turn with the arrow keys. A plain list of every project sits below the picker for browsers without it, and for crawlers.
 - **A case study per project.** Claims are limited to what the repos show, and each page says what its numbers do not prove (a self-written eval set, synthetic data, no accuracy claim).
 - **The reactor is the door.** A first visit finds the room dark ("Systems offline"). Press and hold the reactor (or hold Space on it) and it charges; at 100% the room comes up. It never opens by itself, so the resume and email stay reachable throughout.
 - **A room that answers the pointer.** A shot per section that leans away from the cursor, a light that follows it and dust that parts round it.
 - **Looping project diagrams** drawn as inline SVG, played only while on screen, each with a pause button.
-- **Tested in the browser.** [`/tests/`](tests/) loads the site at 13 sizes (320px to 1920px) and runs about 6,600 checks: section order, heading levels, no sideways scroll, 44px tap targets, WCAG contrast, focus rings, keyboard paths, the gate, the scene, the picker and the project pages. It also runs with the device asking for Reduce Motion (ignored) and with three.js blocked.
+- **Tested in the browser.** [`/tests/`](tests/) loads the site at 13 sizes (320px to 1920px) and runs about 7,000 checks: section order, heading levels, no sideways scroll, 44px tap targets, WCAG contrast, focus rings, keyboard paths, the gate, the scene, the picker and the project pages. It also runs with the device asking for Reduce Motion (ignored) and with three.js blocked.
 
 ## How it was built
 
@@ -49,14 +49,24 @@ npm run check:browser            # the full headless-Chrome suite, about 8 minut
 ## Maintaining it
 
 - **Email:** change `CONTACT_EMAIL` in `js/config.js`; every link and the copy button read from it.
-- **Add a project:** copy a page in `work/`, add a Mark to `js/marks.js` and a card to `ul.work__grid` in `index.html`, fix the "Next project" loop, list it in `sitemap.xml`, and add it to `PAGES` in `tests/run.js` and `CARDS` in `tests/checks.js`.
+- **Add a project:** the project updater (below) drafts this for a new GitHub repo. By hand: copy a page in `work/`, add a Mark to `js/marks.js` and a card to `ul.work__grid` in `index.html` (both before "Other builds", which stays last), renumber what follows, fix the "Next project" loop, list it in `sitemap.xml`, and add it to `PAGES` in `tests/run.js` and `CARDS` in `tests/checks.js`.
 - **Resume:** replace `resume/Evan-Yap-Resume.pdf`, with the phone number removed from the file itself (covering it with a box is not enough).
 - **Share image:** recapture `img/og.jpg` (1200 x 630) if the hero changes.
 - **Design:** one hue (`--h`, arc blue) tints the whole palette; tokens live at the top of `css/base.css`. Type is Instrument Sans, Instrument Serif (italic accents) and Satoshi (the wordmark); code and HUD labels use the system monospace.
 
+## Project updater
+
+[`tools/updater/`](tools/updater/) keeps the site current from GitHub. A scheduled GitHub Action ([`project-updater.yml`](.github/workflows/project-updater.yml)) looks at my public repos. For a new repo, Claude drafts a Mark and a case-study page from the README: the card text, an overview, how it works, trade-offs, evidence and limits, how it was built, and a new suit and art plate. The writer inserts it before "Other builds" and renumbers the rest. Every figure in a draft has to appear in the README, and the draft has to pass the checks before it becomes a draft pull request. The pull request is sent to EGO (my Telegram assistant) for approval, and nothing goes live until I merge it.
+
+The daily run does nothing until the repository variable `UPDATER_ENABLED` is `true`. A manual run (Actions, "Project updater") takes a repo name and a dry-run switch, which opens the pull request without asking EGO.
+
+```sh
+npm run test:updater             # the updater's unit tests
+```
+
 ## Deploy
 
-Static, served by Vercel from the repo root with `cleanUrls` on. The default branch on GitHub is `tony-stark`. Vercel deploys whichever branch its project settings name as Production; other branches get previews.
+Static, served by Vercel from the repo root with `cleanUrls` on. The default branch on GitHub is `main`, and Vercel deploys it to production; other branches get previews.
 
 ## License
 
