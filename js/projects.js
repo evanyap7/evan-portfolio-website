@@ -15,9 +15,9 @@ const SLUGS = {
   'parallel-match': 3,
   'website-revamp': 4,
   'v-bay': 5,
-  watchpartyyy: 6,
-  others: 6,
-  chaperone: 7,
+  chaperone: 6,
+  watchpartyyy: 7,
+  others: 7,
 };
 const FIRST = 1;
 const LAST = MARKS.at(-1).mark;

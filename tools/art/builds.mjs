@@ -1,4 +1,4 @@
-// Draws img/art/builds.svg for Mark VII, which holds two builds. Behind the
+// Draws img/art/builds.svg for Mark VIII, which holds two builds. Behind the
 // name, Dragon Tiles: the sculpture's piano keys laid along a dragon's back
 // on a CAD grid, pressed in turn, the wave lit where it has reached. Around
 // it, WatchPartyyy: the extension's three scripts, and the relay holding a

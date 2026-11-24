@@ -199,4 +199,43 @@ function sync({ pop, fade, travel }) {
   fade('result', 4600);
 }
 
-export const SCENES = { chain, ledger, rating, market, fork, sync };
+// Chaperone: three worker agents each send an action through one gate. The
+// first is allowed, the second held for the owner, the third (carrying an
+// injected instruction) is blocked. Every decision lands in the hash chain.
+function gate({ track, pop, fade, draw, travel, jolt }) {
+  const glow = (at, colour, ms) => [
+    [at, { stroke: LINE }],
+    [at + 100, { stroke: colour }],
+    [at + ms, { stroke: colour }],
+    [at + ms + 200, { stroke: LINE }],
+  ];
+
+  pop('w1', 250);
+  pop('w2', 370);
+  pop('w3', 490);
+  pop('gate', 610);
+  pop('o1', 730);
+  pop('o2', 850);
+  pop('o3', 970);
+  fade('wires', 700);
+  fade('logname', 900);
+
+  travel('tok1', [[1200, 150, 58], [1700, 226, 118]]);
+  track('o1box', glow(1800, OK, 700));
+  pop('b1', 2100);
+
+  travel('tok2', [[3000, 150, 118], [3500, 226, 118]]);
+  track('o2box', glow(3600, OK, 800));
+  pop('b2', 3900);
+  draw('link1', 3900, 250);
+
+  travel('tok3', [[4900, 150, 178], [5400, 226, 118]]);
+  track('gate', jolt(5400));
+  track('o3box', glow(5500, BAD, 900));
+  pop('b3', 5900);
+  draw('link2', 5900, 250);
+
+  fade('summary', 6600);
+}
+
+export const SCENES = { chain, ledger, rating, market, fork, sync, gate };

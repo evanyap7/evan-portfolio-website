@@ -16,7 +16,8 @@
 [data-mark="iii"] { --suit: #0e7a4c; }
 [data-mark="iv"] { --suit: #da291c; }
 [data-mark="v"] { --suit: #5b2ba3; }
-[data-mark="vii"] { --suit: #1b3a78; }
+[data-mark="vii"] { --suit: #6f205c; }
+[data-mark="viii"] { --suit: #1b3a78; }
 /* Black and gold: the black is the ground already, so the gold leads. */
 [data-mark="vi"] {
   --suit: #1d1e22;

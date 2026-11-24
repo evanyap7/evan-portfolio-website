@@ -24,8 +24,8 @@ const SUITS = [
   { id: 'parallel-match', mark: 'IV', hue: 356, spec: { model: 'mark-50', tone: 0xb3141a, paint: { base: 0xda291c, accent: 0x111214, metal: 0.55, rough: 0.4 }, badge: { name: 'crest-mufc', x: 0.12, y: 1.6, size: 0.13 } } },
   { id: 'website-revamp', mark: 'V', hue: 268, spec: { model: 'mark-7-lite', paint: { base: 0x5b2ba3, accent: 0x9aa1ad } } },
   { id: 'v-bay', mark: 'VI', hue: 44, spec: { model: 'mark-50', tone: 0x2e2f35, paint: { base: 0x1d1e22, accent: 0xd3a339, metal: 0.7, rough: 0.35 } } },
-  { id: 'others', mark: 'VII', hue: 218, spec: { model: 'mark-7', paint: { base: 0x1b3a78, accent: 0x8fa3bd, metal: 0.75, rough: 0.38 } } },
-  { id: "chaperone", mark: "VIII", hue: 314, spec: { model: "mark-7-lite", paint: { base: 0x6f205c, accent: 0xd87064, metal: 0.6, rough: 0.45 } } },
+  { id: "chaperone", mark: "VII", hue: 314, spec: { model: "mark-7-lite", paint: { base: 0x6f205c, accent: 0xd87064, metal: 0.6, rough: 0.45 } } },
+  { id: 'others', mark: 'VIII', hue: 218, spec: { model: 'mark-7', paint: { base: 0x1b3a78, accent: 0x8fa3bd, metal: 0.75, rough: 0.38 } } },
 ];
 const HINT = 'Drag to turn';
 
@@ -90,7 +90,7 @@ function mountOthers(suits) {
     list.append(item);
   });
   const cta = element('p', 'others__cta');
-  const ctaBtn = element('button', 'pill others__cta-btn', '⊞ View all 8 projects in full card grid →');
+  const ctaBtn = element('button', 'pill others__cta-btn', '⊞ View all 9 projects in full card grid →');
   ctaBtn.type = 'button';
   cta.append(ctaBtn);
   root.append(title, list, cta);

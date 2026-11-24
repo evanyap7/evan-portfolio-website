@@ -20,10 +20,10 @@ const PAGES = [
   '/case-studies/trading-agent.html',
   '/work/research-agent.html',
   '/work/v-bay.html',
+  '/work/chaperone.html',
   '/work/parallel-match.html',
   '/work/watchpartyyy.html',
   '/work/others.html',
-  "/work/chaperone.html",
 ];
 const PAGE_CHECKS = ['titles', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'emDash', 'projectPage', 'figureText', 'menu'];
 
