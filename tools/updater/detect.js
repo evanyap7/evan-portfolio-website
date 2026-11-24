@@ -38,6 +38,7 @@ export async function listEligibleRepos(config, gh) {
       defaultBranch: r.default_branch,
       topics: r.topics ?? [],
       language: r.language ?? null,
+      homepage: r.homepage || null,
     }));
 }
 

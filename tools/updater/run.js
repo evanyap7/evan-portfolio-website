@@ -491,7 +491,9 @@ async function draftOne(c, state, repo, kind, opts = {}) {
     const spec = c.pickSuit(ctx, c.lastSuitModels(c.root));
     const art = await c.generateArt(ctx, draft, spec, call);
     c.dirty.add(`work/${slug}.html`).add(`img/art/${slug}.svg`);
-    written = c.applyNewMark(c.root, draft, spec, art, { sourceUrl: `https://github.com/${repo.fullName}` }).changed;
+    // The repo's homepage becomes the Live site link, when it is an https address.
+    const liveUrl = /^https:\/\//.test(repo.homepage ?? '') ? repo.homepage : undefined;
+    written = c.applyNewMark(c.root, draft, spec, art, { sourceUrl: `https://github.com/${repo.fullName}`, liveUrl }).changed;
     claims = draft.claims;
     look = { colours: spec.colours, model: spec.model };
   } else {

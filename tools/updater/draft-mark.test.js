@@ -22,6 +22,12 @@ const good = () => ({
   chips: [['120', 'tests'], ['40%', 'lower latency'], ['3', 'commands']],
   rows: [['120 tests', 'All pass.']],
   stack: ['JavaScript'],
+  overview: 'A small tool for one job.',
+  how: [['Read', 'It reads the input.'], ['Run', 'It runs one command.'], ['Report', 'It prints the result.']],
+  decisions: [['One job', 'It stays small, but does less.'], ['No config', 'Easy to start, harder to tune.']],
+  evidence: [['Tests', '120 tests pass.']],
+  limits: '',
+  built: 'Written in JavaScript.',
 });
 const fake = (reply) => async () => reply;
 
