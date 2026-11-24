@@ -196,8 +196,11 @@ export async function openDraftPr(opts) {
   }
   if (!res.ok) throw new Error(`Opening the PR failed: ${res.status}`);
   const pr = await res.json();
-  const previewUrl = await pollPreviewUrl(pr.head.sha, opts);
-  return { prUrl: pr.html_url, previewUrl };
+  const headSha = pr?.head?.sha;
+  if (typeof headSha !== 'string' || !/^[0-9a-f]{40}$/.test(headSha)) throw new Error('The new PR has no head commit sha');
+  const previewUrl = await pollPreviewUrl(headSha, opts);
+  // headSha is the commit the gate passed on; EGO's Approve merges only that commit.
+  return { prUrl: pr.html_url, previewUrl, headSha };
 }
 
 /**

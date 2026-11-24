@@ -96,7 +96,7 @@ function prFixture({ openPrs = [], statuses = [] } = {}) {
     const u = String(url);
     const ok = (data) => ({ ok: true, status: 200, json: async () => data, text: async () => JSON.stringify(data) });
     if (method === 'GET' && u.includes('/pulls?')) return ok(openPrs);
-    if (method === 'POST' && u.endsWith('/pulls')) return ok({ html_url: 'https://github.com/o/r/pull/9', head: { sha: 'abc123' } });
+    if (method === 'POST' && u.endsWith('/pulls')) return ok({ html_url: 'https://github.com/o/r/pull/9', head: { sha: 'a'.repeat(40) } });
     if (u.includes('/deployments?')) return ok([]);
     if (u.includes('/status')) return ok({ statuses });
     return ok({});
@@ -115,6 +115,8 @@ test('openDraftPr: commits with the repo email, no attribution, base from baseBr
   const r = await openDraftPr(base(fx, { baseBranch: 'develop' }));
   assert.equal(r.prUrl, 'https://github.com/o/r/pull/9');
   assert.equal(r.previewUrl, 'https://p.vercel.app');
+  // The head the gate passed on: EGO merges only this commit.
+  assert.equal(r.headSha, 'a'.repeat(40));
   const post = fx.requests.find((q) => q.method === 'POST' && q.url.endsWith('/pulls'));
   assert.equal(post.body.base, 'develop');
   assert.equal(post.body.head, 'auto/project-my-proj');

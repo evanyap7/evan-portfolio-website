@@ -16,6 +16,7 @@ const ENV = {
 };
 const NOW = 1_763_900_000_000; // fixed clock
 const PR_URL = `https://github.com/${PORTFOLIO}/pull/12`;
+const HEAD_SHA = 'b'.repeat(40);
 
 const BASE_STATE = {
   repos: {
@@ -113,7 +114,7 @@ function deps(over = {}) {
     findOpenDraftPr: async () => null,
     openDraftPr: async (o) => {
       opened.push({ ...o, stateAtOpen: JSON.parse(readFileSync(join(o.root, STATE_REL), 'utf8')) });
-      return { prUrl: PR_URL, previewUrl: 'https://preview.example.vercel.app' };
+      return { prUrl: PR_URL, previewUrl: 'https://preview.example.vercel.app', headSha: HEAD_SHA };
     },
     pollPreviewUrl: async () => 'https://preview.example.vercel.app',
     screenshotPreview: async () => {},
@@ -241,7 +242,8 @@ test('a drafted Mark is sent to EGO with a valid payload and a signature over th
   assert.equal(headers['x-signature'], expected);
   assert.equal(signBody(body, SECRET), expected);
   const p = JSON.parse(body);
-  assert.deepEqual(Object.keys(p).sort(), ['claims', 'colours', 'id', 'kind', 'model', 'prUrl', 'previewUrl', 'regen', 'repo', 'screenshotUrl', 'sourceRepo'].sort());
+  assert.deepEqual(Object.keys(p).sort(), ['claims', 'colours', 'headSha', 'id', 'kind', 'model', 'prUrl', 'previewUrl', 'regen', 'repo', 'screenshotUrl', 'sourceRepo'].sort());
+  assert.equal(p.headSha, HEAD_SHA, 'the gated commit, which EGO merges by sha');
   assert.equal(p.id, `new-thing-${NOW / 1000}`);
   assert.equal(p.repo, PORTFOLIO);
   assert.equal(p.sourceRepo, 'new-thing');
@@ -258,11 +260,14 @@ test('a drafted Mark is sent to EGO with a valid payload and a signature over th
 
 test('assertPayload mirrors the EGO intake rules', () => {
   const good = {
-    id: 'foo-1763900000', repo: PORTFOLIO, sourceRepo: 'foo', kind: 'new', prUrl: PR_URL, previewUrl: null,
+    id: 'foo-1763900000', repo: PORTFOLIO, sourceRepo: 'foo', kind: 'new', prUrl: PR_URL, headSha: HEAD_SHA, previewUrl: null,
     screenshotUrl: null, colours: ['#000000', '#ffffff'], model: 'mark-7', claims: [], regen: 0,
   };
   assert.doesNotThrow(() => assertPayload(good, PORTFOLIO));
+  assert.doesNotThrow(() => assertPayload({ ...good, previewUrl: 'https://evan-portfolio-abc123.vercel.app' }, PORTFOLIO));
   const bad = [
+    { headSha: 'abc123' }, { headSha: 'B'.repeat(40) }, { headSha: null },
+    { previewUrl: 'https://evil.example' }, { previewUrl: 'https://vercel.app.evil.example' }, { previewUrl: 'https://.vercel.app' },
     { id: 'Foo-1' }, { id: 'foo' }, { id: `${'a'.repeat(50)}-1234567890` }, { repo: 'evanyap7/other' }, { sourceRepo: '...' },
     { sourceRepo: 'a/b' }, { kind: 'failed' }, { prUrl: 'https://github.com/evanyap7/other/pull/1' }, { prUrl: `${PR_URL}x` },
     { previewUrl: 'http://x.example' }, { previewUrl: 'https://u:p@x.example' }, { colours: ['#000000'] },
@@ -272,6 +277,8 @@ test('assertPayload mirrors the EGO intake rules', () => {
   for (const b of bad) assert.throws(() => assertPayload({ ...good, ...b }, PORTFOLIO), undefined, JSON.stringify(b));
   const { regen, ...missing } = good;
   assert.throws(() => assertPayload(missing, PORTFOLIO));
+  const { headSha, ...noSha } = good;
+  assert.throws(() => assertPayload(noSha, PORTFOLIO), /headSha|keys/);
 });
 
 test('a failing EGO call is retried, then the repo counts as failed', async () => {
@@ -316,6 +323,8 @@ test('in --dry-run a repo that already has an open draft PR is skipped without a
   assert.equal(d.fetch.ego().length, 0);
 });
 
+const RESENT_SHA = 'c'.repeat(40);
+
 /** What the next run sees: the PR the first run opened, with its branch's state file. */
 function reopened(first, over = {}) {
   const o = first.opened[0];
@@ -325,7 +334,7 @@ function reopened(first, over = {}) {
     now: () => NOW + 86_400_000, // a day later: the id must come from the branch, not the clock
     findOpenDraftPr: async (slug) => (slug === o.slug ? PR_URL : null),
     run: runner({ 'git show FETCH_HEAD:tools/projects-state.json': { stdout: JSON.stringify(o.stateAtOpen) } }),
-    fetch: fetcher({ [`GET https://api.github.com/repos/${PORTFOLIO}/pulls/12`]: { ok: true, status: 200, json: async () => ({ number: 12, html_url: PR_URL, head: { sha: 'abc123' }, body }) } }),
+    fetch: fetcher({ [`GET https://api.github.com/repos/${PORTFOLIO}/pulls/12`]: { ok: true, status: 200, json: async () => ({ number: 12, html_url: PR_URL, head: { sha: RESENT_SHA }, body }) } }),
     draftMark: async (ctx) => { drafted += 1; return DRAFT(ctx.name); },
     ...over,
   });
@@ -344,6 +353,7 @@ function assertResent(d, id) {
   assert.equal(p.regen, 0);
   assert.equal(p.kind, 'new');
   assert.equal(p.prUrl, PR_URL);
+  assert.equal(p.headSha, RESENT_SHA, 'a re-send carries the PR head it read');
   assert.equal(p.model, 'mark-50');
   assert.deepEqual(p.colours, ['#123456', '#abcdef']);
   assert.deepEqual(p.claims, ['38 (source: Handles 38 things.)']);
@@ -367,6 +377,27 @@ test('a PR whose EGO notify failed is sent again by the next run', async () => {
   const d = reopened(first);
   assert.equal(await main([], d), 0);
   assertResent(d, `new-thing-${NOW / 1000}`);
+});
+
+test('an open PR whose head commit cannot be read is not re-sent', async () => {
+  const first = deps();
+  assert.equal(await main(['--dry-run'], first), 0);
+  const d = reopened(first, {
+    fetch: fetcher({ [`GET https://api.github.com/repos/${PORTFOLIO}/pulls/12`]: { ok: true, status: 200, json: async () => ({ number: 12, head: { sha: 'abc123' }, body: '' }) } }),
+  });
+  assert.equal(await main([], d), 1);
+  assert.equal(d.fetch.ego().length, 0);
+});
+
+test('a preview URL outside vercel.app is dropped from the payload', async () => {
+  let shots = 0;
+  const d = deps({
+    openDraftPr: async () => ({ prUrl: PR_URL, previewUrl: 'https://evil.example', headSha: HEAD_SHA }),
+    screenshotPreview: async () => { shots += 1; },
+  });
+  assert.equal(await main([], d), 0);
+  assert.equal(shots, 0, 'the screenshot browser never visits a non-Vercel host');
+  assert.equal(JSON.parse(d.fetch.ego()[0].body).previewUrl, null);
 });
 
 test('an open PR with no draft record on its branch is left for Evan, loudly', async () => {
