@@ -175,6 +175,16 @@ test('classify: skipped repos are re-proposed only when changed again', () => {
   assert.deepEqual(out.map((x) => [x.repo.name, x.kind]), [['b', 'changed'], ['c', 'changed']]);
 });
 
+test('classify: a rejected new repo that changes again is redrafted as new, not as a copy update', () => {
+  const state = { repos: { a: tracked('skipped', { kind: 'new' }), b: tracked('skipped', { kind: 'changed' }), c: tracked('skipped', { kind: 'new' }) } };
+  const out = classify([
+    enriched('a', { readmeHash: 'h9' }),
+    enriched('b', { readmeHash: 'h9' }),
+    enriched('c'),
+  ], state, config);
+  assert.deepEqual(out.map((x) => [x.repo.name, x.kind]), [['a', 'new'], ['b', 'changed']]);
+});
+
 test('classify: pending repos are never re-proposed', () => {
   const state = { repos: { a: tracked('pending') } };
   const out = classify([enriched('a', { readmeHash: 'zzz', commitsSince: 50, recentCommitMessages: ['feat: x'] })], state, config);

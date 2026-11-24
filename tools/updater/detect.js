@@ -79,7 +79,8 @@ export async function enrichRepos(repos, state, gh) {
 
 /**
  * New = unseen. Changed = published/skipped and (README hash differs, or enough
- * non-chore-only commits). Pending repos are never re-proposed.
+ * non-chore-only commits); a skipped entry recorded with kind 'new' comes back as new.
+ * Pending repos are never re-proposed.
  * @param {Repo[]} repos enriched repos
  * @param {State} state
  * @param {Config} config
@@ -97,7 +98,9 @@ export function classify(repos, state, config) {
     if (seen.status === 'pending') continue;
     const readmeDiffers = readmeChanged && repo.readmeHash !== undefined && repo.readmeHash !== seen.readmeHash;
     const enoughCommits = (repo.commitsSince ?? 0) >= minCommits && !isChoreOnly(repo.recentCommitMessages ?? []);
-    if (readmeDiffers || enoughCommits) out.push({ repo, kind: 'changed' });
+    // A rejected new repo has no page to edit, so when it changes it is proposed as new again.
+    const kind = seen.status === 'skipped' && seen.kind === 'new' ? 'new' : 'changed';
+    if (readmeDiffers || enoughCommits) out.push({ repo, kind });
   }
   return out;
 }

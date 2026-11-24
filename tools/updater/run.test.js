@@ -489,7 +489,7 @@ test('--mark-skipped records skipped on the base branch and commits only the sta
   const code = await main(['--mark-skipped', 'new-thing', '--id', 'new-thing-5'], d);
   assert.equal(code, 0);
   const state = JSON.parse(readFileSync(join(d.root, STATE_REL), 'utf8'));
-  assert.deepEqual(state.repos['new-thing'], { slug: 'new-thing', status: 'skipped', pushedAt: '2026-11-20T00:00:00Z', readmeHash: 'hash-new-thing' });
+  assert.deepEqual(state.repos['new-thing'], { slug: 'new-thing', status: 'skipped', kind: 'new', pushedAt: '2026-11-20T00:00:00Z', readmeHash: 'hash-new-thing' });
   assert.deepEqual(state.repos['old-thing'], BASE_STATE.repos['old-thing']);
   const adds = d.run.calls.filter((c) => c[1] === 'add');
   assert.deepEqual(adds, [['git', 'add', '--', STATE_REL]]);
@@ -557,6 +557,50 @@ test('--mark-skipped works from live GitHub data when the draft branch is gone',
   assert.equal(entry.status, 'skipped');
   assert.equal(entry.pushedAt, '2026-11-21T00:00:00Z');
   assert.match(entry.readmeHash, /^[0-9a-f]{64}$/);
+});
+
+test('--mark-skipped on a repo that has a page records kind changed', async () => {
+  const d = deps({ run: runner({ 'git fetch origin auto/project-old-thing': { code: 128, stderr: "couldn't find remote ref" } }), gh: liveGh });
+  assert.equal(await main(['--mark-skipped', 'old-thing'], d), 0);
+  const entry = JSON.parse(readFileSync(join(d.root, STATE_REL), 'utf8')).repos['old-thing'];
+  assert.equal(entry.status, 'skipped');
+  assert.equal(entry.kind, 'changed');
+});
+
+test('a rejected new repo that changes is redrafted as a new Mark, and publishing drops the skip kind', async () => {
+  const state = { repos: { ...BASE_STATE.repos, 'new-thing': { slug: 'new-thing', status: 'skipped', kind: 'new', pushedAt: '2026-01-01T00:00:00Z', readmeHash: 'old' } } };
+  const d = deps({ root: site(state) });
+  assert.equal(await main([], d), 0);
+  assert.equal(d.opened.length, 1);
+  assert.equal(d.opened[0].kind, 'new');
+  const entry = d.opened[0].stateAtOpen.repos['new-thing'];
+  assert.equal(entry.status, 'published');
+  assert.equal('kind' in entry, false);
+  assert.equal(JSON.parse(d.fetch.ego()[0].body).kind, 'new');
+});
+
+test('an open PR for a rejected new repo still holds back other new Marks', async () => {
+  const state = { repos: { ...BASE_STATE.repos, 'earlier-thing': { slug: 'earlier-thing', status: 'skipped', kind: 'new', pushedAt: '2026-11-20T00:00:00Z', readmeHash: 'x' } } };
+  const d = deps({
+    root: site(state),
+    fetch: fetcher({
+      'GET https://api.github.com/repos/evanyap7/evan-portfolio-website/pulls?state=open': {
+        ok: true, status: 200, json: async () => [{ head: { ref: 'auto/project-earlier-thing' } }],
+      },
+    }),
+  });
+  assert.equal(await main([], d), 0);
+  assert.equal(d.opened.length, 0);
+});
+
+test('a changed repo with no page to edit needs attention and fails the run', async () => {
+  const state = { repos: { ...BASE_STATE.repos, 'gone-thing': { slug: 'gone-thing', status: 'published', pushedAt: '2026-01-01T00:00:00Z', readmeHash: 'old' } } };
+  const lines = [];
+  const d = deps({ root: site(state), log: (s) => lines.push(String(s)) });
+  d.repos = [repo('gone-thing')];
+  assert.equal(await main([], d), 1);
+  assert.equal(d.opened.length, 0);
+  assert.ok(lines.some((l) => /gone-thing/.test(l) && /needs-attention/.test(l) && /work\/gone-thing\.html/.test(l)), lines.join('\n'));
 });
 
 // ------------------------------------------------------------------ regenerate

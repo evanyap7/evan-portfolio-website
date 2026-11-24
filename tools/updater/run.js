@@ -307,7 +307,8 @@ async function clearClosedBranch(c, slug) {
 async function pendingNewMark(c, state) {
   const res = await api(c, 'GET', 'pulls?state=open&per_page=100');
   if (!res.ok) throw new Error(`GitHub pulls lookup failed: ${res.status}`);
-  const known = new Set(Object.values(state.repos).map((r) => r.slug));
+  // A rejected new Mark (skipped, kind new) is not on the site, so its open PR is still a pending new Mark.
+  const known = new Set(Object.values(state.repos).filter((r) => !(r.status === 'skipped' && r.kind === 'new')).map((r) => r.slug));
   for (const pr of await res.json()) {
     const ref = String(pr?.head?.ref ?? '');
     if (ref.startsWith(BRANCH_PREFIX) && !known.has(ref.slice(BRANCH_PREFIX.length))) return ref.slice(BRANCH_PREFIX.length);
@@ -440,7 +441,7 @@ async function draftOne(c, state, repo, kind, opts = {}) {
     if (open) return resendOpenDraft(c, name, slug, open);
   }
   if (kind === 'changed' && !existsSync(join(c.root, 'work', `${slug}.html`))) {
-    return { outcome: 'unsupported', detail: `no work/${slug}.html to edit`, slug };
+    return { outcome: 'needs-attention', detail: `no work/${slug}.html to edit, so this changed repo cannot be drafted`, slug };
   }
 
   const ctx = await c.collectContext(repo, c.gh, kind === 'changed' ? prev.pushedAt : undefined);
@@ -472,7 +473,8 @@ async function draftOne(c, state, repo, kind, opts = {}) {
 
   // The PR's own copy of the state: merging it is what publishes.
   const next = loadState(c.statePath);
-  const { draft: _old, ...kept } = next.repos[name] ?? {};
+  // kind only describes a skipped entry; a published one has its page.
+  const { draft: _old, kind: _skippedKind, ...kept } = next.repos[name] ?? {};
   // model and colours are kept so a later run can re-send this draft to EGO (resendOpenDraft).
   const draftRecord = { id, regen, kind, model: look.model, colours: look.colours };
   next.repos[name] = { ...kept, slug, status: 'published', pushedAt: repo.pushedAt, readmeHash, draft: draftRecord };
@@ -665,8 +667,10 @@ async function markSkipped(args, d) {
   }
   if (typeof pushedAt !== 'string' || Number.isNaN(Date.parse(pushedAt))) throw new Error(`No pushedAt for ${name}`);
   const committed = await commitStateToBase(c, (s) => {
-    const { draft: _d, ...kept } = s.repos[name] ?? {};
-    const want = { ...kept, slug, status: 'skipped', pushedAt, readmeHash };
+    const { draft: _d, kind: _k, ...kept } = s.repos[name] ?? {};
+    // kind 'new' means the site has no page for it, so a later change is proposed as new again.
+    const kind = existsSync(join(c.root, 'work', `${slug}.html`)) ? 'changed' : 'new';
+    const want = { ...kept, slug, status: 'skipped', kind, pushedAt, readmeHash };
     if (JSON.stringify(s.repos[name]) === JSON.stringify(want)) return false;
     s.repos[name] = want;
     return true;
