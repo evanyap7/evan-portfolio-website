@@ -5,11 +5,16 @@
  *   node tools/updater/run.js [--dry-run] [--repo <name>]
  *   node tools/updater/run.js --regenerate <id> --repo <name> --note <text> [--dry-run]
  *   node tools/updater/run.js --mark-skipped <name> [--id <id>]
+ *   node tools/updater/run.js --baseline [--dry-run] [--repo <name>]
  *
  * A scan finds new and changed repos, drafts each one into the site, runs the quality gate and
  * opens a draft PR on auto/project-<slug>. The PR carries its own tools/projects-state.json
  * update (status published), so merging it publishes; nothing else writes "published".
  * Outside --dry-run each PR is then sent to EGO, signed, for Evan's approval.
+ *
+ * --baseline records each tracked repo's current pushedAt and README hash on the base branch
+ * without drafting anything or calling Claude or EGO, so the first real scan only proposes repos
+ * that change after it. Repos not yet in the state file are listed, not recorded.
  *
  * Every collaborator (git runner, fetch, GitHub client, Claude, the pipeline steps) is
  * injectable through main()'s second argument. Values from a dispatch payload are validated
@@ -92,10 +97,15 @@ export function cleanNote(note) {
 
 export function parseArgs(argv) {
   const out = { dryRun: false };
+  const flags = { '--dry-run': 'dryRun', '--baseline': 'baseline' };
   const takes = { '--repo': 'repo', '--regenerate': 'regenerate', '--note': 'note', '--mark-skipped': 'markSkipped', '--id': 'id' };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
-    if (a === '--dry-run') { out.dryRun = true; continue; }
+    if (Object.hasOwn(flags, a)) {
+      if (out[flags[a]] === true) throw new UsageError(`${a} given twice`);
+      out[flags[a]] = true;
+      continue;
+    }
     const key = Object.hasOwn(takes, a) ? takes[a] : undefined;
     if (!key) throw new UsageError(`Unknown argument ${JSON.stringify(a)}`);
     if (key in out) throw new UsageError(`${a} given twice`);
@@ -104,6 +114,9 @@ export function parseArgs(argv) {
     i += 1;
   }
   if (out.regenerate !== undefined && out.markSkipped !== undefined) throw new UsageError('Use only one of --regenerate and --mark-skipped');
+  if (out.baseline && (out.regenerate !== undefined || out.markSkipped !== undefined)) {
+    throw new UsageError('--baseline cannot be combined with --regenerate or --mark-skipped');
+  }
   if (out.repo !== undefined && !isRepoName(out.repo)) throw new UsageError('Invalid --repo value');
   if (out.note !== undefined && out.regenerate === undefined) throw new UsageError('--note only goes with --regenerate');
   if (out.id !== undefined && out.markSkipped === undefined) throw new UsageError('--id only goes with --mark-skipped');
@@ -265,7 +278,7 @@ function withDefaults(deps) {
 /** Null when the environment can run this mode, else the reason it cannot. */
 function missingEnv(args, env) {
   if (!env.GITHUB_TOKEN) return 'GITHUB_TOKEN is not set; refusing to run.';
-  if (args.markSkipped) return null;
+  if (args.markSkipped || args.baseline) return null;
   if (!env.ANTHROPIC_API_KEY) return 'ANTHROPIC_API_KEY is not set; refusing to run.';
   if (args.dryRun) return null;
   if (!env.EGO_WEBHOOK_URL) return 'EGO_WEBHOOK_URL is not set; refusing to run (use --dry-run to draft without EGO).';
@@ -669,6 +682,56 @@ async function scan(args, d) {
   return report(c, outcomes);
 }
 
+/**
+ * Moves every tracked repo's pushedAt and readmeHash to what GitHub has now. Only those two
+ * fields change; slug, status and any draft record stay. Nothing is drafted or sent.
+ */
+async function baseline(args, d) {
+  const c = await setup(d, args);
+  const state = loadState(c.statePath);
+  const outcomes = [];
+  let repos = await c.listEligibleRepos(c.config, c.gh);
+  if (args.repo) {
+    repos = repos.filter((r) => r.name === args.repo);
+    if (!repos.length) outcomes.push({ repo: args.repo, outcome: 'failed', detail: 'not an eligible repo' });
+  }
+  const enriched = await c.enrichRepos(repos, state, c.gh);
+  const found = [];
+  for (const r of repos) {
+    const e = enriched.find((x) => x.name === r.name);
+    const seen = state.repos[r.name];
+    if (!e) outcomes.push({ repo: r.name, outcome: 'failed', detail: 'could not read it from GitHub' });
+    else if (typeof e.pushedAt !== 'string' || Number.isNaN(Date.parse(e.pushedAt)) || typeof e.readmeHash !== 'string') {
+      outcomes.push({ repo: r.name, outcome: 'failed', detail: 'GitHub gave no pushedAt or README' });
+    } else if (!seen) outcomes.push({ repo: r.name, outcome: 'untracked', detail: 'not in the state file; the next scan proposes it as a new Mark' });
+    else if (seen.pushedAt === e.pushedAt && seen.readmeHash === e.readmeHash) outcomes.push({ repo: r.name, outcome: 'unchanged' });
+    else found.push({ name: r.name, pushedAt: e.pushedAt, readmeHash: e.readmeHash });
+  }
+  if (found.length && !args.dryRun) {
+    try {
+      await commitStateToBase(c, (s) => {
+        let changed = false;
+        for (const b of found) {
+          const e = s.repos[b.name];
+          if (e && (e.pushedAt !== b.pushedAt || e.readmeHash !== b.readmeHash)) {
+            Object.assign(e, { pushedAt: b.pushedAt, readmeHash: b.readmeHash });
+            changed = true;
+          }
+        }
+        return changed;
+      }, `chore(updater): baseline ${found.map((b) => b.name).join(', ')}`);
+    } catch (err) {
+      for (const b of found) outcomes.push({ repo: b.name, outcome: 'failed', detail: `baseline commit: ${err.message}` });
+      return report(c, outcomes);
+    }
+  }
+  for (const b of found) {
+    outcomes.push({ repo: b.name, outcome: args.dryRun ? 'would-baseline' : 'baselined', detail: `pushedAt ${b.pushedAt}` });
+  }
+  await resetTree(c);
+  return report(c, outcomes);
+}
+
 async function markSkipped(args, d) {
   const c = await setup(d, args);
   const name = args.markSkipped;
@@ -769,6 +832,7 @@ export async function main(argv, deps = {}) {
     return 1;
   }
   try {
+    if (args.baseline) return await baseline(args, d);
     if (args.markSkipped) return await markSkipped(args, d);
     if (args.regenerate) return await regenerate(args, d);
     return await scan(args, d);

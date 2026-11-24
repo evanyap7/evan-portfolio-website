@@ -27,6 +27,10 @@ on:
         description: 'Open the PR but do not ask EGO for approval'
         type: boolean
         default: true
+      baseline:
+        description: 'Only record current pushedAt and README hashes; no drafts (with dry_run, only print)'
+        type: boolean
+        default: false
   repository_dispatch:
     types: [draft-rejected, draft-regenerate]
 
@@ -79,6 +83,7 @@ jobs:
           DRAFT_NOTE: ${{ github.event.client_payload.note }}
           INPUT_REPO: ${{ inputs.repo }}
           INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          INPUT_BASELINE: ${{ inputs.baseline }}
         run: |
           set -euo pipefail
           args=()
@@ -88,6 +93,7 @@ jobs:
             repository_dispatch:draft-regenerate)
               args=(--regenerate "$DRAFT_ID" --repo "$DRAFT_REPO" --note "$DRAFT_NOTE") ;;
             workflow_dispatch:*)
+              if [ "$INPUT_BASELINE" = "true" ]; then args+=(--baseline); fi
               if [ "$INPUT_DRY_RUN" = "true" ]; then args+=(--dry-run); fi
               if [ -n "$INPUT_REPO" ]; then args+=(--repo "$INPUT_REPO"); fi ;;
             schedule:*)

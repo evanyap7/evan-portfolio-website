@@ -145,6 +145,12 @@ test('parseArgs reads every mode and rejects bad input', () => {
   assert.throws(() => parseArgs(['--regenerate', 'foo-1', '--repo', 'foo', '--note', 'x'.repeat(501)]), /note/i);
   assert.throws(() => parseArgs(['--mark-skipped', 'foo', '--regenerate', 'foo-1', '--repo', 'foo', '--note', 'x']), /one of/i);
   assert.throws(() => parseArgs(['--mark-skipped', 'foo', '--dry-run']), /dry-run/i);
+  assert.deepEqual(parseArgs(['--baseline']), { dryRun: false, baseline: true });
+  assert.deepEqual(parseArgs(['--baseline', '--dry-run', '--repo', 'foo']), { dryRun: true, baseline: true, repo: 'foo' });
+  assert.throws(() => parseArgs(['--baseline', '--baseline']), /twice/);
+  assert.throws(() => parseArgs(['--dry-run', '--dry-run']), /twice/);
+  assert.throws(() => parseArgs(['--baseline', '--mark-skipped', 'foo']), /baseline/);
+  assert.throws(() => parseArgs(['--baseline', '--regenerate', 'foo-1', '--repo', 'foo', '--note', 'x']), /baseline/);
 });
 
 test('a bad argument exits non-zero before any command or request', async () => {
@@ -686,6 +692,80 @@ test('--mark-skipped survives a concurrent push to the base branch', async () =>
   assert.equal(JSON.parse(readFileSync(join(d.root, STATE_REL), 'utf8')).repos['new-thing'].status, 'skipped');
 });
 
+// ------------------------------------------------------------------ baseline
+
+/** The seeded state: every repo at 1970 with no README hash, as the first live run would see it. */
+const SEEDED = {
+  repos: {
+    'old-thing': { slug: 'old-thing', status: 'published', pushedAt: '1970-01-01T00:00:00Z', readmeHash: '' },
+    'broken-thing': { slug: 'broken-thing', status: 'skipped', kind: 'changed', pushedAt: '1970-01-01T00:00:00Z', readmeHash: '' },
+  },
+};
+const noDrafting = {
+  call: async () => { throw new Error('baseline must not call Claude'); },
+  collectContext: async () => { throw new Error('baseline must not collect context'); },
+  draftMark: async () => { throw new Error('baseline must not draft'); },
+  proposeUpdate: async () => { throw new Error('baseline must not draft'); },
+  runGate: async () => { throw new Error('baseline must not gate'); },
+  openDraftPr: async () => { throw new Error('baseline must not open a PR'); },
+  findOpenDraftPr: async () => { throw new Error('baseline must not look for PRs'); },
+};
+
+test('--baseline records real pushedAt and README hashes for tracked repos without drafting or calling EGO', async () => {
+  const lines = [];
+  const d = deps({ root: site(SEEDED), ...noDrafting, log: (s) => lines.push(String(s)) });
+  d.repos = [repo('old-thing'), repo('broken-thing'), repo('new-thing')];
+  assert.equal(await main(['--baseline'], d), 0);
+  const state = JSON.parse(readFileSync(join(d.root, STATE_REL), 'utf8'));
+  assert.deepEqual(state.repos['old-thing'], { slug: 'old-thing', status: 'published', pushedAt: '2026-11-20T00:00:00Z', readmeHash: 'hash-old-thing' });
+  assert.deepEqual(state.repos['broken-thing'], { slug: 'broken-thing', status: 'skipped', kind: 'changed', pushedAt: '2026-11-20T00:00:00Z', readmeHash: 'hash-broken-thing' });
+  assert.equal(state.repos['new-thing'], undefined, 'an untracked repo is listed, not recorded');
+  assert.ok(lines.some((l) => /new-thing/.test(l) && /untracked/.test(l)), lines.join('\n'));
+  assert.deepEqual(d.run.calls.filter((c) => c[1] === 'add'), [['git', 'add', '--', STATE_REL]]);
+  assert.equal(d.run.calls.filter((c) => c[1] === 'push').length, 1);
+  assert.equal(d.fetch.ego().length, 0);
+  assert.equal(d.opened.length, 0);
+  // After it, the same repos classify as unchanged: nothing would be redrafted.
+  const { classify } = await import('./detect.js');
+  const config = JSON.parse(readFileSync(join(d.root, 'tools/projects-config.json'), 'utf8'));
+  assert.deepEqual(classify([repo('old-thing', { commitsSince: 0 })], state, config), []);
+});
+
+test('--baseline needs only GITHUB_TOKEN', async () => {
+  const d = deps({ root: site(SEEDED), ...noDrafting, env: { GITHUB_TOKEN: 'y', GITHUB_REPOSITORY: PORTFOLIO } });
+  d.repos = [repo('old-thing')];
+  assert.equal(await main(['--baseline'], d), 0);
+  const d2 = deps({ root: site(SEEDED), ...noDrafting, env: { GITHUB_REPOSITORY: PORTFOLIO } });
+  assert.equal(await main(['--baseline'], d2), 1);
+  assert.equal(d2.run.calls.length, 0);
+});
+
+test('--baseline --dry-run prints what it would record and commits nothing', async () => {
+  const lines = [];
+  const d = deps({ root: site(SEEDED), ...noDrafting, log: (s) => lines.push(String(s)) });
+  d.repos = [repo('old-thing')];
+  assert.equal(await main(['--baseline', '--dry-run'], d), 0);
+  assert.equal(JSON.parse(readFileSync(join(d.root, STATE_REL), 'utf8')).repos['old-thing'].pushedAt, '1970-01-01T00:00:00Z');
+  assert.ok(!d.run.calls.some((c) => c[1] === 'push' || c[1] === 'add'));
+  assert.ok(lines.some((l) => /old-thing/.test(l) && /would-baseline/.test(l)), lines.join('\n'));
+});
+
+test('--baseline reports a repo GitHub could not read as failed and still records the rest', async () => {
+  const d = deps({ root: site(SEEDED), ...noDrafting, enrichRepos: async (rs) => rs.filter((r) => r.name !== 'broken-thing') });
+  d.repos = [repo('old-thing'), repo('broken-thing')];
+  assert.equal(await main(['--baseline'], d), 1);
+  const state = JSON.parse(readFileSync(join(d.root, STATE_REL), 'utf8'));
+  assert.equal(state.repos['old-thing'].readmeHash, 'hash-old-thing');
+  assert.equal(state.repos['broken-thing'].readmeHash, '');
+});
+
+test('--baseline with nothing to move commits nothing', async () => {
+  const d = deps({ ...noDrafting });
+  d.repos = [repo('old-thing', { pushedAt: '2026-01-01T00:00:00Z', readmeHash: 'old' })];
+  assert.equal(await main(['--baseline'], d), 0);
+  assert.ok(!d.run.calls.some((c) => c[1] === 'push'));
+});
+
 // ------------------------------------------------------------------ regenerate
 
 test('draft-regenerate refuses past three regenerations', async () => {
@@ -806,6 +886,8 @@ test('the workflow never interpolates an expression into a run: script', () => {
   assert.match(WORKFLOW, /^\s+DRAFT_ID: \$\{\{ github\.event\.client_payload\.id \}\}$/m);
   assert.match(WORKFLOW, /^\s+DRAFT_NOTE: \$\{\{ github\.event\.client_payload\.note \}\}$/m);
   assert.match(WORKFLOW, /^\s+INPUT_REPO: \$\{\{ inputs\.repo \}\}$/m);
+  assert.match(WORKFLOW, /^\s+INPUT_BASELINE: \$\{\{ inputs\.baseline \}\}$/m);
+  assert.match(WORKFLOW, /if \[ "\$INPUT_BASELINE" = "true" \]; then args\+=\(--baseline\); fi/);
 });
 
 test('the workflow has the triggers, gate, concurrency and permissions it needs', () => {
