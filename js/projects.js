@@ -17,6 +17,7 @@ const SLUGS = {
   'v-bay': 5,
   watchpartyyy: 6,
   others: 6,
+  chaperone: 7,
 };
 const FIRST = 1;
 const LAST = MARKS.at(-1).mark;

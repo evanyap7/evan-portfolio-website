@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chaperone | Evan Yap</title>
+  <meta name="description" content="Chaperone is an oversight agent that sits between a one-person company&#39;s AI worker agents and the outside world. Each action goes through one logged gate that classifies the data, checks the facts and returns allow, hold or block, with the source file quoted. Built for the QwenWork x Hashmeta AI One-Person Company Hackathon, Track 2.">
+  <meta name="theme-color" content="#04070a">
+  <meta property="og:title" content="Chaperone | Evan Yap">
+  <meta property="og:description" content="Chaperone is an oversight agent that sits between a one-person company&#39;s AI worker agents and the outside world. Each action goes through one logged gate that classifies the data, checks the facts and returns allow, hold or block, with the source file quoted. Built for the QwenWork x Hashmeta AI One-Person Company Hackathon, Track 2.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.evanyap.com/work/chaperone">
+  <meta property="og:image" content="https://www.evanyap.com/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://www.evanyap.com/work/chaperone">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000'/%3E%3Crect x='8' y='20' width='16' height='3' rx='1.5' fill='%23fafafa'/%3E%3C/svg%3E">
+
+  <link rel="preload" href="/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/satoshi-900.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/figures.css">
+  <link rel="stylesheet" href="/css/project.css">
+
+  <script>document.documentElement.classList.add('js');addEventListener('pagereveal',function(e){if(e.viewTransition)document.documentElement.classList.add('vt')});</script>
+</head>
+<body data-mark="viii" style="--suit: #6f205c">
+
+  <a class="skip-link" href="#main">Skip to content</a>
+  <span class="progress" aria-hidden="true" data-progress></span>
+
+  <header class="nav">
+    <a class="wordmark" href="/" aria-label="Evan Yap, home">evan<span class="wordmark__dot">.</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="/#about">About</a>
+      <a href="/#experience">Experience</a>
+      <a href="/#work">Projects</a>
+      <a href="/#toolkit">Toolkit</a>
+      <a href="/#contact">Contact</a>
+    </nav>
+    <div class="nav__end">
+      <a class="pill pill--solid nav__resume" href="/resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume <span aria-hidden="true">↓</span><span class="visually-hidden"> (PDF, opens in a new tab)</span></a>
+      <button class="pill nav__menu" type="button" aria-expanded="false" aria-controls="menu" data-menu-button>Menu</button>
+    </div>
+  </header>
+
+  <nav class="menu" id="menu" aria-label="Menu" hidden data-menu>
+    <ul class="menu__links">
+      <li><a href="/#about">About</a></li>
+      <li><a href="/#experience">Experience</a></li>
+      <li><a href="/#work">Projects</a></li>
+      <li><a href="/#toolkit">Toolkit</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+    <p class="menu__more">
+      <a class="pill pill--solid" href="/resume/Evan-Yap-Resume.pdf" target="_blank" rel="noopener">Resume (PDF) <span aria-hidden="true">↓</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      <a class="pill" href="/#contact" data-contact-link data-contact-text>Email</a>
+    </p>
+  </nav>
+
+  <main id="main" class="project">
+    <a class="back" href="/#work"><span aria-hidden="true">←</span> All projects</a>
+    <header class="project__head">
+      <h1 class="project__title vt-chaperone">Chaperone</h1>
+      <p class="project__lede">Chaperone is an oversight agent that sits between a one-person company&#39;s AI worker agents and the outside world. Each action goes through one logged gate that classifies the data, checks the facts and returns allow, hold or block, with the source file quoted. Built for the QwenWork x Hashmeta AI One-Person Company Hackathon, Track 2.</p>
+      <p class="mono label">Full-stack developer</p>
+      <dl class="stats">
+        <div><dt>sensitivity classifier files matched to ground truth</dt><dd><span data-count>30/30</span></dd></div>
+        <div><dt>unit tests passing</dt><dd><span data-count>173/173</span></dd></div>
+        <div><dt>red-team attacks held or blocked, up from 40/107</dt><dd><span data-count>100/107</span></dd></div>
+      </dl>
+    </header>
+    <figure class="card reel project__figure">
+      <figcaption class="reel__bar"><span class="reel__name">Mark VIII · Magenta and red</span></figcaption>
+      <div class="reel__scene reel__scene--plate"><img src="/img/art/chaperone.svg" width="2400" height="1600" decoding="async" alt=""></div>
+    </figure>
+    <div class="rows project__body">
+      <div><h2 class="mono">Overview</h2><div class="prose">
+        <p class="project__summary">A single gate that checks every worker-agent action and logs why.</p>
+        <p>Agents thatanswerto someone.</p>
+      </div></div>
+      <div><h2 class="mono">What it does</h2><dl class="facts">
+        <div><dt>The gate</dt><dd>Classifies data by content, tracks lineage, checks task scope, fact-checks figures, aggregates payments and scans for injection.</dd></div>
+        <div><dt>Decisions</dt><dd>ALLOW, HOLD_FOR_APPROVAL or BLOCK under 19 policy rules. NEVER rules can&#39;t be approved by anyone.</dd></div>
+        <div><dt>Owner control</dt><dd>Only the signed-in owner can decide real queue items. Approvals are single-use. Visitors get a sandboxed demo mode.</dd></div>
+        <div><dt>Audit log</dt><dd>Append-only and hash-chained. It records the agent, action, files, data level, rule IDs and quoted evidence.</dd></div>
+        <div><dt>Scenarios</dt><dd>Ten scenarios, including a payment split, a fake owner approval and prompt injection, all scored on decision, rules and evidence.</dd></div>
+        <div><dt>Integration</dt><dd>A QwenWork PreToolUse hook routes tool calls through the gate. The live app runs on QwenWork Pages.</dd></div>
+      </dl></div>
+      <div><h2 class="mono">Stack</h2><p class="stack">JavaScript · Python · Node.js · HTML · CSS · Shell · Server-sent events · Playwright · Kokoro · faster-whisper</p></div>
+      <div><h2 class="mono">Links</h2><p class="links">
+          <a class="pill" href="https://github.com/evanyap7/chaperone" target="_blank" rel="noopener">Source <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+        </p></div>
+    </div>
+    <a class="next" data-mark="i" href="/case-studies/trading-agent.html">
+      <span class="next__title"><span><span class="next__pre">Next</span> Systematic Trading System</span> <span aria-hidden="true">→</span></span>
+    </a>
+  </main>
+
+  <footer class="footer">
+    <p class="mono">© 2026 Evan Yap</p>
+    <a class="wordmark" href="/" aria-label="Evan Yap, home">evan<span class="wordmark__dot">.</span></a>
+  </footer>
+
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>

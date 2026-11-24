@@ -25,6 +25,7 @@ const SUITS = [
   { id: 'website-revamp', mark: 'V', hue: 268, spec: { model: 'mark-7-lite', paint: { base: 0x5b2ba3, accent: 0x9aa1ad } } },
   { id: 'v-bay', mark: 'VI', hue: 44, spec: { model: 'mark-50', tone: 0x2e2f35, paint: { base: 0x1d1e22, accent: 0xd3a339, metal: 0.7, rough: 0.35 } } },
   { id: 'others', mark: 'VII', hue: 218, spec: { model: 'mark-7', paint: { base: 0x1b3a78, accent: 0x8fa3bd, metal: 0.75, rough: 0.38 } } },
+  { id: "chaperone", mark: "VIII", hue: 314, spec: { model: "mark-7-lite", paint: { base: 0x6f205c, accent: 0xd87064, metal: 0.6, rough: 0.45 } } },
 ];
 const HINT = 'Drag to turn';
 

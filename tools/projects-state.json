@@ -35,6 +35,22 @@
       "status": "published",
       "pushedAt": "1970-01-01T00:00:00Z",
       "readmeHash": ""
+    },
+    "chaperone": {
+      "slug": "chaperone",
+      "status": "published",
+      "pushedAt": "2026-11-23T15:33:20Z",
+      "readmeHash": "8557fd9cd7cf768ead4599bad1391299acd7e696eff965dda52c6a7b303746dd",
+      "draft": {
+        "id": "chaperone-1795509727",
+        "regen": 0,
+        "kind": "new",
+        "model": "mark-7-lite",
+        "colours": [
+          "#6f205c",
+          "#d87064"
+        ]
+      }
     }
   }
 }

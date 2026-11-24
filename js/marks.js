@@ -61,4 +61,12 @@ export const MARKS = [
     rows: [['WatchPartyyy', 'It never touches the video, so everyone uses their own subscription.'], ['Dragon Tiles', 'I led the design engineering, from CAD model to physical prototype.']],
     stack: ['JavaScript', 'Chrome extension (Manifest)', 'Node', 'WebSocket (ws)', 'Docker', 'Fly.io', 'Grasshopper', 'Python', 'Blender', 'CAD'],
     links: [['WatchPartyyy', 'work/watchpartyyy.html'], ['Dragon Tiles', 'work/others.html']] },
+  { mark: "VIII", name: "Chaperone", role: "Full-stack developer", hue: 314, spec: { model: "mark-7-lite", paint: { base: 0x6f205c, accent: 0xd87064, metal: 0.6, rough: 0.45 } }, colours: ["#6f205c", "#d87064"], paint: "Magenta and red",
+    art: { file: "chaperone.svg", focus: "39% 50%" },
+    chips: [["30/30", "sensitivity classifier files matched to ground truth"], ["173/173", "unit tests passing"], ["100/107", "red-team attacks held or blocked, up from 40/107"]],
+    blurb: "Chaperone is an oversight agent that sits between a one-person company's AI worker agents and the outside world. Each action goes through one logged gate that classifies the data, checks the facts and returns allow, hold or block, with the source file quoted. Built for the QwenWork x Hashmeta AI One-Person Company Hackathon, Track 2.",
+    line: ["Agents that", "answer", "to someone."], sub: "A single gate that checks every worker-agent action and logs why.",
+    rows: [["The gate", "Classifies data by content, tracks lineage, checks task scope, fact-checks figures, aggregates payments and scans for injection."], ["Decisions", "ALLOW, HOLD_FOR_APPROVAL or BLOCK under 19 policy rules. NEVER rules can't be approved by anyone."], ["Owner control", "Only the signed-in owner can decide real queue items. Approvals are single-use. Visitors get a sandboxed demo mode."], ["Audit log", "Append-only and hash-chained. It records the agent, action, files, data level, rule IDs and quoted evidence."], ["Scenarios", "Ten scenarios, including a payment split, a fake owner approval and prompt injection, all scored on decision, rules and evidence."], ["Integration", "A QwenWork PreToolUse hook routes tool calls through the gate. The live app runs on QwenWork Pages."]],
+    stack: ["JavaScript", "Python", "Node.js", "HTML", "CSS", "Shell", "Server-sent events", "Playwright", "Kokoro", "faster-whisper"],
+    links: [["Read the case study", "work/chaperone.html"]] },
 ];

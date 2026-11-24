@@ -6,12 +6,13 @@ const WIDE = 1024;
 // The sections in page order. Only the hero has a shot in the scene; the rest
 // are sheets laid over it.
 const SECTIONS = ['top', 'about', 'experience', 'work', 'toolkit', 'contact'];
-const CARDS = ['assistant-bot', 'trading-agent', 'website-revamp', 'parallel-match', 'research-agent', 'v-bay', 'watchpartyyy', 'others'];
+const CARDS = ['assistant-bot', 'trading-agent', 'website-revamp', 'parallel-match', 'research-agent', 'v-bay', 'watchpartyyy', 'others', "chaperone"];
 // The Mark each old card link (#work-<slug>) picks in the Projects picker
 // (js/projects.js), and the Mark shown first.
 const MARK_OF = {
   'trading-agent': 0, 'assistant-bot': 1, 'research-agent': 2, 'parallel-match': 3,
   'website-revamp': 4, 'v-bay': 5, watchpartyyy: 6, others: 6,
+  chaperone: 7,
 };
 const FIRST_MARK = 1;
 // The drawing-set palette (paper, desk, ink, accent) and the pastels before it.

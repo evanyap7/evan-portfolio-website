@@ -23,6 +23,7 @@ const PAGES = [
   '/work/parallel-match.html',
   '/work/watchpartyyy.html',
   '/work/others.html',
+  "/work/chaperone.html",
 ];
 const PAGE_CHECKS = ['titles', 'headings', 'removed', 'overflow', 'fonts', 'targets', 'palette', 'emDash', 'projectPage', 'figureText', 'menu'];
 
