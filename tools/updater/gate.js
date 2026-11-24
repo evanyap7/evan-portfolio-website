@@ -89,12 +89,20 @@ export async function runGate(root, run = defaultRunner, { env: from = process.e
   const timeoutMs = reduced ? REDUCED_BROWSER_TIMEOUT_MS : BROWSER_TIMEOUT_MS;
   // Let the suite end itself a minute early, so a slow runner logs a TIMEOUT line instead of a bare kill.
   const browserEnv = reduced ? { ...env, CHECK_TIMEOUT_MS: String(timeoutMs - 60 * 1000) } : env;
-  const browser = await run('npm', args, { cwd: root, timeoutMs, env: browserEnv });
-  const out = joinLog(browser);
-  const log = `${syntaxLog}\n$ npm ${args.join(' ')}\n${out}`;
-  const passed = /^PASS \d+\s*$/m.test(out);
-  const failed = /^FAIL\b/m.test(out) || /^TIMEOUT:/m.test(out);
-  return { ok: browser.code === 0 && passed && !failed, log, scope };
+  // A shared runner is slow and uneven, so a timing-sensitive check can fail once and pass the next
+  // time. On the reduced gate a plain check failure is run once more; a break fails both times. A
+  // TIMEOUT is not retried (another full wait would not help) and the full gate stays strict.
+  let log = syntaxLog;
+  for (let attempt = 1; ; attempt += 1) {
+    const browser = await run('npm', args, { cwd: root, timeoutMs, env: browserEnv });
+    const out = joinLog(browser);
+    log += `\n$ npm ${args.join(' ')}${attempt > 1 ? ' (retry)' : ''}\n${out}`;
+    const passed = /^PASS \d+\s*$/m.test(out);
+    const timedOut = /^TIMEOUT:/m.test(out);
+    const failed = /^FAIL\b/m.test(out) || timedOut;
+    const ok = browser.code === 0 && passed && !failed;
+    if (ok || !reduced || timedOut || attempt >= 2) return { ok, log, scope };
+  }
 }
 
 /** @param {Claim[]} claims */

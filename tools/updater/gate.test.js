@@ -321,6 +321,28 @@ test('runGate: reduced still needs the PASS line, and a failure line or TIMEOUT 
   assert.equal((await gate('PASS 300\n')).ok, true);
 });
 
+test('runGate: reduced runs a failed browser suite once more, and only a second failure fails it', async () => {
+  const browserCalls = (run) => run.calls.filter((c) => npmArg(c.args).includes('browser')).length;
+  // Fails, then passes: ok, two runs, and the log keeps the first failure for the record.
+  let n = 0;
+  const flaky = runner((c, a) => (npmArg(a).includes('browser') ? { stdout: (n += 1) === 1 ? 'FAIL 1 of 300\n' : 'PASS 300\n' } : {}));
+  const r = await runGate('/r', flaky, { scope: 'reduced', slug: 'x' });
+  assert.equal(r.ok, true);
+  assert.equal(browserCalls(flaky), 2);
+  assert.match(r.log, /FAIL 1 of 300[\s\S]*\(retry\)[\s\S]*PASS 300/);
+  // Fails both times: not ok, and never a third run.
+  const broken = runner((c, a) => (npmArg(a).includes('browser') ? { stdout: 'FAIL 1 of 300\n' } : {}));
+  assert.equal((await runGate('/r', broken, { scope: 'reduced', slug: 'x' })).ok, false);
+  assert.equal(browserCalls(broken), 2);
+  // A TIMEOUT is not retried, and the full gate never retries.
+  const slow = runner((c, a) => (npmArg(a).includes('browser') ? { stdout: 'TIMEOUT: the checks did not finish within 840s\n', code: 2 } : {}));
+  assert.equal((await runGate('/r', slow, { scope: 'reduced', slug: 'x' })).ok, false);
+  assert.equal(browserCalls(slow), 1);
+  const full = runner((c, a) => (npmArg(a).includes('browser') ? { stdout: 'FAIL 1 of 6487\n' } : {}));
+  assert.equal((await runGate('/r', full)).ok, false);
+  assert.equal(browserCalls(full), 1);
+});
+
 test('runGate: reduced refuses a missing or unsafe slug, and any unknown scope', async () => {
   const run = runner(() => ({}));
   await assert.rejects(runGate('/r', run, { scope: 'reduced' }), /Invalid slug/);
