@@ -59,10 +59,12 @@ export async function callClaude({ model, system, user, schema }) {
     body: JSON.stringify({
       model,
       max_tokens: 2000,
-      system,
+      // Some models reject a forced tool_choice, so ask for the tool in the prompt and let the
+      // missing-tool_use check below fail closed if the model answers in prose instead.
+      system: `${system}\n\nReply only by calling the ${TOOL_NAME} tool exactly once.`,
       messages: [{ role: 'user', content: user }],
       tools: [{ name: TOOL_NAME, description: 'Return the result.', input_schema: schema }],
-      tool_choice: { type: 'tool', name: TOOL_NAME },
+      tool_choice: { type: 'auto' },
     }),
   });
   if (!res.ok) {
