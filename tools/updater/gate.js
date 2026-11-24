@@ -14,6 +14,12 @@ import { basename, extname } from 'node:path';
 const SLUG_RE = /^[a-z0-9-]+$/;
 const SCREENSHOT_BRANCH = 'updater-screenshots';
 const BROWSER_TIMEOUT_MS = 20 * 60 * 1000;
+// The reduced scope runs about 480 checks (about 45 seconds locally) where the full suite runs ~6,500
+// (about 8 minutes). GitHub's runner managed ~780 full-suite checks in 1200s (~0.65 a second), so
+// 480 checks is an estimated 12 minutes there; 15 minutes covers that with a little headroom.
+const REDUCED_BROWSER_TIMEOUT_MS = 15 * 60 * 1000;
+/** The note a reduced gate puts in the PR body and the step summary. */
+export const REDUCED_GATE_NOTE = 'Reduced gate on the runner: run `npm run check:browser` locally before approving';
 const PREVIEW_WAIT_MS = 10 * 60 * 1000;
 const PREVIEW_POLL_MS = 15 * 1000;
 const PR_LOG_LINES = 200;
@@ -63,22 +69,32 @@ const joinLog = (r) => `${r.stdout ?? ''}${r.stderr ? `\n${r.stderr}` : ''}`;
 /**
  * Runs `npm run check`, then `npm run check:browser`. ok needs exit 0, the suite's `PASS <n>`
  * line, and no `FAIL ...` line. "failed requests" lines are informational. Both run with the
- * scrubbed gateEnv(), never the run's secrets.
+ * scrubbed gateEnv(), never the run's secrets. scope 'reduced' (with the slug being drafted) runs
+ * `check:browser -- --scope=reduced --slug=<slug>`, which prints its own PASS line; 'full' (the
+ * default) runs the whole suite exactly as before. The result says which scope ran.
  * @param {string} root
  * @param {CommandRunner} [run]
- * @param {{ env?: Record<string, string|undefined> }} [opts] the environment to scrub (process.env)
+ * @param {{ env?: Record<string, string|undefined>, scope?: 'full'|'reduced', slug?: string }} [opts]
+ *   env is the environment to scrub (process.env)
  */
-export async function runGate(root, run = defaultRunner, { env: from = process.env } = {}) {
+export async function runGate(root, run = defaultRunner, { env: from = process.env, scope = 'full', slug } = {}) {
+  if (scope !== 'full' && scope !== 'reduced') throw new Error(`Invalid gate scope: ${JSON.stringify(scope)}`);
+  if (scope === 'reduced') assertSlug(slug);
   const env = gateEnv(from);
   const syntax = await run('npm', ['run', 'check'], { cwd: root, timeoutMs: 5 * 60 * 1000, env });
   const syntaxLog = `$ npm run check\n${joinLog(syntax)}`;
-  if (syntax.code !== 0) return { ok: false, log: syntaxLog };
-  const browser = await run('npm', ['run', 'check:browser'], { cwd: root, timeoutMs: BROWSER_TIMEOUT_MS, env });
+  if (syntax.code !== 0) return { ok: false, log: syntaxLog, scope };
+  const reduced = scope === 'reduced';
+  const args = reduced ? ['run', 'check:browser', '--', '--scope=reduced', `--slug=${slug}`] : ['run', 'check:browser'];
+  const timeoutMs = reduced ? REDUCED_BROWSER_TIMEOUT_MS : BROWSER_TIMEOUT_MS;
+  // Let the suite end itself a minute early, so a slow runner logs a TIMEOUT line instead of a bare kill.
+  const browserEnv = reduced ? { ...env, CHECK_TIMEOUT_MS: String(timeoutMs - 60 * 1000) } : env;
+  const browser = await run('npm', args, { cwd: root, timeoutMs, env: browserEnv });
   const out = joinLog(browser);
-  const log = `${syntaxLog}\n$ npm run check:browser\n${out}`;
+  const log = `${syntaxLog}\n$ npm ${args.join(' ')}\n${out}`;
   const passed = /^PASS \d+\s*$/m.test(out);
   const failed = /^FAIL\b/m.test(out) || /^TIMEOUT:/m.test(out);
-  return { ok: browser.code === 0 && passed && !failed, log };
+  return { ok: browser.code === 0 && passed && !failed, log, scope };
 }
 
 /** @param {Claim[]} claims */
@@ -150,11 +166,11 @@ async function git(run, root, args) {
 /**
  * Commits the working tree to auto/project-<slug>, pushes, and opens a draft PR.
  * @param {{ slug: string, kind: 'new'|'changed', branch: string, claimsMd: string, root: string,
- *   baseBranch?: string, gateLog?: string, repo?: string, token?: string, fetch?: Function,
+ *   baseBranch?: string, gateLog?: string, gateScope?: 'full'|'reduced', repo?: string, token?: string, fetch?: Function,
  *   run?: CommandRunner, sleep?: Function, now?: Function }} opts
  */
 export async function openDraftPr(opts) {
-  const { slug, kind, branch, claimsMd, root, baseBranch = 'main', gateLog = '', paths } = opts;
+  const { slug, kind, branch, claimsMd, root, baseBranch = 'main', gateLog = '', gateScope = 'full', paths } = opts;
   assertSlug(slug);
   if (branch !== `auto/project-${slug}`) throw new Error(`Unexpected branch ${JSON.stringify(branch)}`);
   if (!Array.isArray(paths) || paths.length === 0) throw new Error('openDraftPr needs a non-empty paths list');
@@ -181,6 +197,7 @@ export async function openDraftPr(opts) {
   const body = [
     `Draft ${kind === 'new' ? 'new Mark' : 'copy update'} for \`${slug}\`. Merging also records it in tools/projects-state.json.`,
     '',
+    ...(gateScope === 'reduced' ? [`**${REDUCED_GATE_NOTE}.**`, ''] : []),
     '## Claims to verify',
     '',
     claimsMd.trimEnd(),

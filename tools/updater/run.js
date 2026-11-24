@@ -35,7 +35,7 @@ import { generateArt } from './art.js';
 import { applyNewMark, lastSuitModels } from './write-site.js';
 import { proposeUpdate, applyEdits } from './update-existing.js';
 import {
-  runGate, buildClaimsFile, findOpenDraftPr, openDraftPr, pollPreviewUrl, screenshotPreview, publishScreenshot, defaultRunner,
+  runGate, REDUCED_GATE_NOTE, buildClaimsFile, findOpenDraftPr, openDraftPr, pollPreviewUrl, screenshotPreview, publishScreenshot, defaultRunner,
 } from './gate.js';
 
 const STATE_REL = 'tools/projects-state.json';
@@ -516,7 +516,10 @@ async function draftOne(c, state, repo, kind, opts = {}) {
   next.repos[name] = { ...kept, slug, status: 'published', pushedAt: repo.pushedAt, readmeHash, draft: draftRecord };
   saveState(next, c.statePath);
 
-  const gate = await c.runGate(c.root, c.run);
+  // GitHub's runner cannot finish the full browser suite in time, so there (UPDATER_GATE_SCOPE=reduced,
+  // or CI=true) the gate is reduced; run locally it is the full suite.
+  const gateScope = (c.env.UPDATER_GATE_SCOPE ?? (c.env.CI === 'true' ? 'reduced' : 'full')) === 'reduced' ? 'reduced' : 'full';
+  const gate = await c.runGate(c.root, c.run, { scope: gateScope, slug });
   if (!gate.ok) {
     await c.notifyFailure({ repo: name, slug, kind, id, reason: 'quality gate failed', log: tail(gate.log, 60) });
     return { outcome: 'gate-failed', detail: 'quality gate failed; no PR opened', slug };
@@ -530,8 +533,11 @@ async function draftOne(c, state, repo, kind, opts = {}) {
   }
   const { prUrl, previewUrl, headSha } = await c.openDraftPr({
     ...c.ghOpts, slug, kind, branch: `${BRANCH_PREFIX}${slug}`, claimsMd: buildClaimsFile(claims ?? []), root: c.root,
-    baseBranch: c.base, gateLog: gate.log, paths,
+    baseBranch: c.base, gateLog: gate.log, gateScope: gate.scope ?? gateScope, paths,
   });
+  if (gateScope === 'reduced' && c.env.GITHUB_STEP_SUMMARY) {
+    appendFileSync(c.env.GITHUB_STEP_SUMMARY, `> ${slug}: ${REDUCED_GATE_NOTE}\n\n`);
+  }
 
   let screenshotUrl = null;
   if (isPreviewUrl(previewUrl)) {

@@ -949,3 +949,51 @@ test('a dispatch run gets its own concurrency group, so a pending scan cannot ca
   // Only job-level or top-level concurrency: exactly one block, none on the job.
   assert.equal((WORKFLOW.match(/^\s*concurrency:/gm) ?? []).length, 1);
 });
+
+// ------------------------------------------------------------------ gate scope
+
+const gateCalls = () => {
+  const calls = [];
+  return { calls, runGate: async (root, run, opts) => { calls.push(opts); return { ok: true, log: 'PASS 10', scope: opts.scope }; } };
+};
+
+test('a local run gates with the full scope; the PR body note and step summary stay absent', async () => {
+  const g = gateCalls();
+  const summary = join(mkdtempSync(join(tmpdir(), 'gate-scope-')), 'summary.md');
+  writeFileSync(summary, '');
+  const d = deps({ runGate: g.runGate });
+  d.env.GITHUB_STEP_SUMMARY = summary;
+  assert.equal(await main(['--dry-run'], d), 0);
+  assert.deepEqual(g.calls, [{ scope: 'full', slug: 'new-thing' }]);
+  assert.equal(d.opened[0].gateScope, 'full');
+  assert.doesNotMatch(readFileSync(summary, 'utf8'), /Reduced gate/);
+});
+
+test('on the runner the gate is reduced for the slug, and the step summary says so plainly', async () => {
+  for (const envOver of [{ UPDATER_GATE_SCOPE: 'reduced' }, { CI: 'true' }]) {
+    const g = gateCalls();
+    const summary = join(mkdtempSync(join(tmpdir(), 'gate-scope-')), 'summary.md');
+    writeFileSync(summary, '');
+    const d = deps({ runGate: g.runGate });
+    Object.assign(d.env, envOver, { GITHUB_STEP_SUMMARY: summary });
+    assert.equal(await main(['--dry-run'], d), 0);
+    assert.deepEqual(g.calls, [{ scope: 'reduced', slug: 'new-thing' }]);
+    assert.equal(d.opened[0].gateScope, 'reduced');
+    assert.match(readFileSync(summary, 'utf8'), /Reduced gate on the runner: run `npm run check:browser` locally before approving/);
+  }
+});
+
+test('UPDATER_GATE_SCOPE=full overrides CI, and the webhook payload has no scope field', async () => {
+  const g = gateCalls();
+  const d = deps({ runGate: g.runGate });
+  Object.assign(d.env, { CI: 'true', UPDATER_GATE_SCOPE: 'full' });
+  delete d.env.EGO_WEBHOOK_SECRET;
+  assert.equal(await main(['--dry-run'], d), 0);
+  assert.equal(g.calls[0].scope, 'full');
+  const g2 = gateCalls();
+  const d2 = deps({ runGate: g2.runGate });
+  d2.env.UPDATER_GATE_SCOPE = 'reduced';
+  assert.equal(await main([], d2), 0);
+  const sent = JSON.parse(d2.fetch.ego()[0].init?.body ?? d2.fetch.ego()[0].body);
+  assert.deepEqual(Object.keys(sent).filter((k) => /scope|gate/i.test(k)), []);
+});

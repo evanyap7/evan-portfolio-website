@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
   runGate, buildClaimsFile, openDraftPr, findOpenDraftPr, pollPreviewUrl,
-  screenshotPreview, publishScreenshot, defaultRunner, killGroup, gateEnv,
+  screenshotPreview, publishScreenshot, defaultRunner, killGroup, gateEnv, REDUCED_GATE_NOTE,
 } from './gate.js';
 import { loadConfig } from './config.js';
 
@@ -285,4 +285,64 @@ test('defaultRunner hands an env option to the child as its whole environment', 
   const r = await defaultRunner('x', [], { env: { PATH: '/bin' } }, { spawn });
   assert.equal(r.code, 0);
   assert.deepEqual(opts.env, { PATH: '/bin' });
+});
+
+// ------------------------------------------------------------------ reduced scope
+
+test('runGate: default scope is full, runs plain check:browser, and says so', async () => {
+  const run = runner((c, a) => (npmArg(a).includes('browser') ? { stdout: 'PASS 6487\n' } : {}));
+  const r = await runGate('/r', run);
+  assert.equal(r.scope, 'full');
+  assert.deepEqual(run.calls[1].args, ['run', 'check:browser']);
+  assert.equal(run.calls[1].opts.timeoutMs, 20 * 60 * 1000);
+  assert.match(r.log, /\$ npm run check:browser\n/);
+});
+
+test('runGate: reduced passes scope and slug, has a shorter timeout, and reports the scope', async () => {
+  const run = runner((c, a) => (npmArg(a).includes('browser') ? { stdout: 'PASS 312\n' } : {}));
+  const r = await runGate('/r', run, { scope: 'reduced', slug: 'my-proj', env: { PATH: '/p', CI: 'true' } });
+  assert.equal(r.ok, true);
+  assert.equal(r.scope, 'reduced');
+  assert.deepEqual(run.calls[1].args, ['run', 'check:browser', '--', '--scope=reduced', '--slug=my-proj']);
+  assert.ok(run.calls[1].opts.timeoutMs < 20 * 60 * 1000);
+  assert.ok(Number(run.calls[1].opts.env.CHECK_TIMEOUT_MS) < run.calls[1].opts.timeoutMs);
+  // The syntax step is untouched, and the env still carries only the allowlist plus that timeout.
+  assert.deepEqual(run.calls[0].args, ['run', 'check']);
+  assert.deepEqual(Object.keys(run.calls[1].opts.env).sort(), ['CHECK_TIMEOUT_MS', 'CI', 'PATH']);
+});
+
+test('runGate: reduced still needs the PASS line, and a failure line or TIMEOUT still fails it', async () => {
+  const gate = (stdout, code = 0) => runGate('/r', runner((c, a) => (npmArg(a).includes('browser') ? { stdout, code } : {})), { scope: 'reduced', slug: 'x' });
+  assert.equal((await gate('')).ok, false);
+  assert.equal((await gate('12 failed requests:\n/a.js net::ERR\n')).ok, false);
+  assert.equal((await gate('FAIL 1 of 300\nPASS 300\n')).ok, false);
+  assert.equal((await gate('TIMEOUT: the checks did not finish within 840s\n', 2)).ok, false);
+  assert.equal((await gate('PASS 300\n', 1)).ok, false);
+  assert.equal((await gate('PASS 300\n')).ok, true);
+});
+
+test('runGate: reduced refuses a missing or unsafe slug, and any unknown scope', async () => {
+  const run = runner(() => ({}));
+  await assert.rejects(runGate('/r', run, { scope: 'reduced' }), /Invalid slug/);
+  await assert.rejects(runGate('/r', run, { scope: 'reduced', slug: '../x' }), /Invalid slug/);
+  await assert.rejects(runGate('/r', run, { scope: 'half', slug: 'x' }), /Invalid gate scope/);
+  assert.equal(run.calls.length, 0);
+});
+
+test('gateEnv: the allowlist does not carry a scope or slug from the parent environment', () => {
+  const keys = Object.keys(gateEnv({ PATH: '/p', CHECK_SCOPE: 'reduced', CHECK_SLUG: 'x', UPDATER_GATE_SCOPE: 'reduced' }));
+  assert.deepEqual(keys, ['PATH']);
+});
+
+test('openDraftPr: the reduced-gate note is in the PR body only for a reduced gate', async () => {
+  const reduced = prFixture();
+  await openDraftPr(base(reduced, { gateScope: 'reduced' }));
+  const body = reduced.requests.find((q) => q.method === 'POST').body.body;
+  assert.ok(body.includes(REDUCED_GATE_NOTE));
+  assert.match(body, /Reduced gate on the runner: run `npm run check:browser` locally before approving/);
+  for (const opts of [{}, { gateScope: 'full' }]) {
+    const fx = prFixture();
+    await openDraftPr(base(fx, opts));
+    assert.ok(!fx.requests.find((q) => q.method === 'POST').body.body.includes('Reduced gate'));
+  }
 });

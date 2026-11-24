@@ -62,7 +62,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      # The quality gate runs the browser suite, as ci.yml does. A rejection only commits state.
+      # The quality gate runs a reduced browser suite (UPDATER_GATE_SCOPE below). A rejection only commits state.
       # --no-install runs the locked playwright-core from npm ci, so its own browser build is used.
       - if: github.event.action != 'draft-rejected'
         run: npx --no-install playwright-core install --with-deps chromium
@@ -84,6 +84,9 @@ jobs:
           INPUT_REPO: ${{ inputs.repo }}
           INPUT_DRY_RUN: ${{ inputs.dry_run }}
           INPUT_BASELINE: ${{ inputs.baseline }}
+          # The full browser suite does not finish on this runner within the gate's timeout, so the
+          # gate runs a reduced scope here; the PR body says so. Evan runs the full suite locally.
+          UPDATER_GATE_SCOPE: reduced
         run: |
           set -euo pipefail
           args=()

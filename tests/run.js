@@ -1,4 +1,5 @@
 import * as checks from './checks.js';
+import { reducedRuns } from './scope.js';
 
 // Viewports for the page-wide checks: desktops, tablets, phones, a landscape
 // phone, and 1280 × 800 at 200% zoom.
@@ -119,10 +120,14 @@ async function run({ width, height, src, names }, results) {
 
 window.__done = (async () => {
   const results = [];
-  const runs = [
-    ...SIZES.map(([width, height]) => ({ width, height, src: '/', names: ALL })),
-    ...EXTRA,
-  ];
+  // ?scope=reduced&slug=<slug> (the updater's runner) runs fewer checks; see tests/scope.js.
+  const params = new URLSearchParams(location.search);
+  const runs = params.get('scope') === 'reduced'
+    ? reducedRuns({ slug: params.get('slug'), all: ALL, pageChecks: PAGE_CHECKS })
+    : [
+      ...SIZES.map(([width, height]) => ({ width, height, src: '/', names: ALL })),
+      ...EXTRA,
+    ];
   for (const each of runs) {
     try {
       await run(each, results);

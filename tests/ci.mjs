@@ -3,8 +3,11 @@
 import { spawn } from 'node:child_process';
 import { chromium } from 'playwright-core';
 import { MARKS } from '../js/marks.js';
+import { parseScope, scopeQuery } from './scope.js';
 
 const PORT = 4178;
+// --scope=reduced --slug=<slug> runs the updater's reduced browser gate; the default runs everything.
+const scope = parseScope(process.argv.slice(2));
 const server = spawn('python3', ['tests/serve.py', String(PORT)], { stdio: 'ignore' });
 let code = 1;
 try {
@@ -27,7 +30,7 @@ try {
     failedRequests.push(`${request.url().replace(`http://localhost:${PORT}`, '')} ${request.failure()?.errorText}`);
   });
   // The picker check compares against the Marks in js/marks.js, counted here.
-  await page.goto(`http://localhost:${PORT}/tests/?marks=${MARKS.length}`);
+  await page.goto(`http://localhost:${PORT}/tests/?marks=${MARKS.length}${scopeQuery(scope)}`);
 
   // Wait in 30 second slices and say how far the run has got, so a run that
   // stalls shows where it stalled instead of one timeout after twenty minutes.
