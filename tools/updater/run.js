@@ -521,6 +521,8 @@ async function draftOne(c, state, repo, kind, opts = {}) {
   const gateScope = (c.env.UPDATER_GATE_SCOPE ?? (c.env.CI === 'true' ? 'reduced' : 'full')) === 'reduced' ? 'reduced' : 'full';
   const gate = await c.runGate(c.root, c.run, { scope: gateScope, slug });
   if (!gate.ok) {
+    // A dry run never reaches EGO, so print the reason where the Actions log shows it.
+    console.error(`updater: gate output (last lines)\n${tail(gate.log, 60)}`);
     await c.notifyFailure({ repo: name, slug, kind, id, reason: 'quality gate failed', log: tail(gate.log, 60) });
     return { outcome: 'gate-failed', detail: 'quality gate failed; no PR opened', slug };
   }
