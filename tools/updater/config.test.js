@@ -34,8 +34,9 @@ test('committed state seeds six public repos as published, slugs exist in projec
   for (const [repo, slug] of Object.entries(expected)) {
     assert.equal(repos[repo].slug, slug);
     assert.equal(repos[repo].status, 'published');
-    assert.equal(repos[repo].pushedAt, '1970-01-01T00:00:00Z');
-    assert.equal(repos[repo].readmeHash, '');
+    // Placeholders until the baseline run records the real values.
+    assert.match(repos[repo].pushedAt, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/);
+    assert.equal(typeof repos[repo].readmeHash, 'string');
     assert.match(src, new RegExp(`['"]?${slug}['"]?\\s*:`), slug);
   }
   // Every seeded repo the updater may edit has its own work page and home-page card.

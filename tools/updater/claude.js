@@ -58,7 +58,7 @@ export async function callClaude({ model, system, user, schema }) {
     headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
     body: JSON.stringify({
       model,
-      max_tokens: 2000,
+      max_tokens: 16000, // the art step returns an SVG of tens of KB; a low cap truncates the tool input
       // Some models reject a forced tool_choice, so ask for the tool in the prompt and let the
       // missing-tool_use check below fail closed if the model answers in prose instead.
       system: `${system}\n\nReply only by calling the ${TOOL_NAME} tool exactly once.`,
@@ -73,6 +73,7 @@ export async function callClaude({ model, system, user, schema }) {
     throw new Error(`Anthropic API ${res.status}: ${body.slice(0, 300)}`);
   }
   const data = await res.json();
+  if (data.stop_reason === 'max_tokens') throw new DraftSchemaError('Model reply was cut off at the token limit', ['stop_reason max_tokens']);
   const block = (data.content ?? []).find((b) => b.type === 'tool_use');
   if (!block) throw new DraftSchemaError('Model reply had no structured result', ['no tool_use block']);
   const problems = validate(block.input, schema);
