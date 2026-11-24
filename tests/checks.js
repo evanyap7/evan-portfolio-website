@@ -489,9 +489,12 @@ export async function timeline(win) {
     win.scrollTo({ top: y, behavior: 'instant' });
     await wait(60);
   }
+  // Poll rather than wait a fixed beat: a slow runner can be late with the IntersectionObserver turn.
+  const allLit = () => [...line.querySelectorAll('.role')].every((role) => role.classList.contains('is-visible'));
+  for (let waited = 0; waited < 3000 && !allLit(); waited += 100) await wait(100);
   await wait(300);
   const matrix = new win.DOMMatrixReadOnly(win.getComputedStyle(fill).transform);
-  const lit = [...line.querySelectorAll('.role')].every((role) => role.classList.contains('is-visible'));
+  const lit = allLit();
   win.scrollTo({ top: 0, behavior: 'instant' });
   await wait(50);
   return [
